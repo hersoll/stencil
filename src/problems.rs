@@ -50,9 +50,8 @@ pub trait ProblemArea {
     fn get_problem_types() -> &'static [&'static ProblemType];
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq)]
 pub struct ProblemType {
-    pub name: &'static str,
     pub difficulty: Difficulty,
     pub weight: u8,
     pub generator: fn() -> Problem,
@@ -60,7 +59,7 @@ pub struct ProblemType {
 
 impl PartialEq for ProblemType {
     fn eq(&self, other: &Self) -> bool {
-        self.name == other.name
+        self.generator as usize == other.generator as usize
     }
 }
 
@@ -107,7 +106,10 @@ impl SetBuilder {
                 .problem_areas
                 .iter()
                 .flat_map(|area| area.iter())
-                .filter(|problem_type| problem_type.difficulty == *target_difficulty)
+                .filter(|problem_type| {
+                    problem_type.difficulty == *target_difficulty
+                        && !self.exclusions.contains(problem_type)
+                })
                 .map(|problem_type| *problem_type)
                 .collect();
 

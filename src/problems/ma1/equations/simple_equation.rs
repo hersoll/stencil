@@ -3,13 +3,11 @@ use rand::prelude::*;
 
 crate::collect_into!(SimpleLinearEquations {
     ONLY_ADDITION_OR_SUBTRACTION = ProblemType {
-    name: "Endast addition eller subtraktion i ekvationen",
     difficulty: Difficulty::Intro,
     weight: 1,
     generator: only_addition_or_subtraction,
 },
     ONLY_MULTIPLICATION = ProblemType {
-    name: "Endast multiplikation i ekvationen",
     difficulty: Difficulty::Intro,
     weight: 2,
     generator: only_multiplication,
