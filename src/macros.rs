@@ -1,55 +1,24 @@
 #[macro_export]
-macro_rules! metadata {
+macro_rules! collect_into {
     (
-        map $struct_name:ident to $enum_name:ident {
-            $(
-                $subject:ident : ( $method_name:ident , $difficulty:expr $(, $weight:expr)? )
-            ),* $(,)?
+        $name:ident {
+            $($const_name:ident = $value:expr),+ $(,)?
         }
     ) => {
-        use crate::problems::{Difficulty, Problem, ProblemBuilder, Config};
+        pub struct $name;
 
+        impl $name {
+            $(pub const $const_name: &'static crate::problems::ProblemType = &$value;)+
 
-        #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-        pub enum $enum_name {
-            $( $subject ),*
+            const ALL: &'static [&'static crate::problems::ProblemType] = &[
+                $(Self::$const_name),+
+            ];
         }
 
-        #[derive(Debug, Default)]
-        pub struct $struct_name {
-            config: Config<$enum_name>,
-        }
-
-        impl ProblemBuilder for $struct_name {
-            type ProblemId = $enum_name;
-
-            fn new() -> Self {
-                Self {config: Config::default()}
-            }
-
-            fn config(&mut self) -> &mut Config<Self::ProblemId> {
-                &mut self.config
-            }
-
-            fn read_config(&self) -> &Config<Self::ProblemId> {
-                &self.config
-            }
-
-            fn problem_registry(&mut self) -> Vec<(Self::ProblemId, fn(&Self) -> Problem, u8, Difficulty)> {
-                vec![
-                    $(
-                        (
-                            <$enum_name>::$subject,
-                            $struct_name::$method_name,
-                            metadata!(@unwrap_weight $( $weight )?),
-                            $difficulty
-                        )
-                    ),*
-                ]
+        impl crate::problems::ProblemArea for $name {
+            fn get_problem_types() -> &'static [&'static crate::problems::ProblemType] {
+                &Self::ALL
             }
         }
     };
-
-    (@unwrap_weight) => { 1 };
-    (@unwrap_weight $weight:expr) => { $weight };
 }

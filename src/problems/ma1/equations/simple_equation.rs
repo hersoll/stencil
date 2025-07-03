@@ -1,32 +1,39 @@
-use crate::{metadata, problems::ProblemType};
+use crate::problems::{Difficulty, Problem, ProblemType};
 use rand::prelude::*;
 
-metadata! {
-    map SimpleEquation to SimpleEquations {
-        OnlyAdditionOrSubtraction: (only_addition_or_subtraction, Difficulty::Intro),
-        OnlyMultiplication: (only_multiplication, Difficulty::Intro, 2),
+crate::collect_into!(SimpleLinearEquations {
+    ONLY_ADDITION_OR_SUBTRACTION = ProblemType {
+    name: "Endast addition eller subtraktion i ekvationen",
+    difficulty: Difficulty::Intro,
+    weight: 1,
+    generator: only_addition_or_subtraction,
+},
+    ONLY_MULTIPLICATION = ProblemType {
+    name: "Endast multiplikation i ekvationen",
+    difficulty: Difficulty::Intro,
+    weight: 2,
+    generator: only_multiplication,
+},
+});
+
+fn only_addition_or_subtraction() -> Problem {
+    let mut rng = rand::rng();
+    let answer: i8 = rng.random_range(2..=10);
+    let constant: i8 = rng.random_range(-9..=9);
+    Problem {
+        question: format!("$x {:+} = {}$", constant, answer + constant),
+        answer: format!("$x = {}$", answer),
+        solution: String::new(),
     }
 }
 
-impl SimpleEquation {
-    fn only_addition_or_subtraction(&self) -> Problem {
-        let mut rng = rand::rng();
-        let answer: i8 = rng.random_range(2..=10);
-        let constant: i8 = rng.random_range(-9..=9);
-        Problem {
-            question: format!("$x {:+} = {}$", constant, answer + constant),
-            answer: format!("$x = {}$", answer),
-            solution: String::new(),
-        }
-    }
-    fn only_multiplication(&self) -> Problem {
-        let mut rng = rand::rng();
-        let answer: u8 = rng.random_range(2..=5);
-        let coefficient: u8 = rng.random_range(3..=9);
-        Problem {
-            question: format!("${}x = {}$", coefficient, answer * coefficient),
-            answer: format!("$x = {}", answer),
-            solution: String::new(),
-        }
+fn only_multiplication() -> Problem {
+    let mut rng = rand::rng();
+    let answer: u8 = rng.random_range(2..=5);
+    let coefficient: u8 = rng.random_range(3..=9);
+    Problem {
+        question: format!("${}x = {}$", coefficient, answer * coefficient),
+        answer: format!("$x = {}", answer),
+        solution: String::new(),
     }
 }

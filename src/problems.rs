@@ -11,7 +11,6 @@ pub use ma1::*;
 //#################################
 //#   PROBLEM ENUMS AND STRUCTS   #
 //#################################
-//
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 pub enum Difficulty {
     Intro,
@@ -47,44 +46,21 @@ impl Problem {
     }
 }
 
-//#################################
-//#            CONFIG             #
-//#################################
-
-#[derive(Debug)]
-pub struct Config<E> {
-    exclusions: Vec<E>,
-    sets: Vec<(Difficulty, u8)>,
+pub trait ProblemArea {
+    fn get_problem_types() -> &'static [&'static ProblemType];
 }
 
-impl<E> Default for Config<E> {
-    fn default() -> Self {
-        Self {
-            exclusions: Vec::new(),
-            sets: Vec::new(),
-        }
-    }
+#[derive(Debug, Clone, Copy)]
+pub struct ProblemType {
+    pub name: &'static str,
+    pub difficulty: Difficulty,
+    pub weight: u8,
+    pub generator: fn() -> Problem,
 }
 
-impl<E: PartialEq> Config<E> {
-    pub fn exclusions(&self) -> &Vec<E> {
-        &self.exclusions
-    }
-
-    pub fn exclude(&mut self, problem_id: E) -> &mut Self {
-        if !self.exclusions.contains(&problem_id) {
-            self.exclusions.push(problem_id);
-        }
-        self
-    }
-
-    pub fn add(&mut self, difficulty: Difficulty, n: u8) -> &mut Self {
-        self.sets.push((difficulty, n));
-        self
-    }
-
-    pub fn sets(&self) -> &Vec<(Difficulty, u8)> {
-        &self.sets
+impl PartialEq for ProblemType {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
     }
 }
 
@@ -93,46 +69,54 @@ impl<E: PartialEq> Config<E> {
 //#################################
 use rand::seq::IndexedRandom;
 
-pub trait ProblemType {}
-
+#[derive(Debug, Default)]
 pub struct SetBuilder {
-    problem_types: Vec<Box<dyn ProblemType>>,
-    exclusions: Vec<Box<dyn ProblemType>>,
-    sets: Vec<(Difficulty, u8)>,
+    problem_areas: Vec<&'static [&'static ProblemType]>,
+    exclusions: Vec<ProblemType>,
+    batches: Vec<(Difficulty, u8)>,
 }
 
-pub trait ProblemBuilder {
-    type ProblemId: Copy + PartialEq + Eq;
-    fn new() -> Self;
-    fn config(&mut self) -> &mut Config<Self::ProblemId>;
-    fn read_config(&self) -> &Config<Self::ProblemId>;
-    fn problem_registry(&mut self) -> Vec<(Self::ProblemId, fn(&Self) -> Problem, u8, Difficulty)>;
-    fn add(&mut self, difficulty: Difficulty, n: u8) -> &mut Self {
-        self.config().add(difficulty, n);
-        self
+impl SetBuilder {
+    pub fn new() -> SetBuilder {
+        SetBuilder::default()
     }
-    fn exclude(&mut self, problem_id: Self::ProblemId) -> &mut Self {
-        self.config().exclude(problem_id);
-        self
-    }
-    fn build(&mut self) -> Vec<Problem> {
-        let mut problems = Vec::new();
-        let problem_registry = self.problem_registry();
-        let config = self.read_config();
 
-        for (target_difficulty, n) in &config.sets {
-            let candidates: Vec<_> = problem_registry
+    pub fn area<T: ProblemArea>(&mut self, _area_struct: T) -> &mut Self {
+        let area = T::get_problem_types();
+        if !self.problem_areas.contains(&area) {
+            self.problem_areas.push(&area);
+        }
+        self
+    }
+
+    pub fn batch(&mut self, difficulty: Difficulty, n: u8) -> &mut Self {
+        self.batches.push((difficulty, n));
+        self
+    }
+    pub fn exclude(&mut self, problem_id: &ProblemType) -> &mut Self {
+        if !self.exclusions.contains(problem_id) {
+            self.exclusions.push(*problem_id);
+        }
+        self
+    }
+    pub fn build(&mut self) -> Vec<Problem> {
+        let mut problems = Vec::new();
+
+        for (target_difficulty, n) in &self.batches {
+            let candidates: Vec<&ProblemType> = self
+                .problem_areas
                 .iter()
-                .filter(|(id, _, _, diff)| {
-                    *target_difficulty == *diff && !config.exclusions.contains(id)
-                })
+                .flat_map(|area| area.iter())
+                .filter(|problem_type| problem_type.difficulty == *target_difficulty)
+                .map(|problem_type| *problem_type)
                 .collect();
 
             let mut rng = rand::rng();
             for _ in 0..*n {
-                let chosen = candidates.choose_weighted(&mut rng, |(_, _, weight, _)| *weight);
+                let chosen =
+                    candidates.choose_weighted(&mut rng, |problem_type| problem_type.weight);
                 let problem = match chosen {
-                    Ok((_, func, _, _)) => func(self),
+                    Ok(problem) => (problem.generator)(),
                     Err(e) => {
                         eprintln!("Error: {}", e);
                         Problem::new("ERROR", "ERROR")
@@ -155,7 +139,7 @@ mod tests {
 
     // PROBLEM STRUCT
     #[test]
-    fn problem_type_initialisation() {
+    fn problem_initialisation() {
         assert_eq!(
             Problem::new("question", "answer"),
             Problem {
@@ -164,56 +148,5 @@ mod tests {
                 solution: String::new()
             }
         )
-    }
-
-    // CONFIG
-    #[derive(Debug, PartialEq, Eq)]
-    enum TestEnum {
-        Problem1,
-        Problem2,
-    }
-
-    #[test]
-    fn config_default() {
-        let config: Config<TestEnum> = Config::default();
-        assert!(config.sets.len() == 0);
-        assert!(config.exclusions.len() == 0);
-    }
-
-    #[test]
-    fn config_getters() {
-        let mut config: Config<TestEnum> = Config::default();
-        config.exclude(TestEnum::Problem1);
-        assert_eq!(config.sets(), config.sets());
-        assert_eq!(*config.exclusions(), config.exclusions);
-    }
-
-    #[test]
-    fn config_exclude() {
-        let mut config: Config<TestEnum> = Config::default();
-        config.exclude(TestEnum::Problem1);
-        assert_eq!(config.exclusions, vec![TestEnum::Problem1]);
-        config.exclude(TestEnum::Problem2);
-        assert_eq!(
-            config.exclusions,
-            vec![TestEnum::Problem1, TestEnum::Problem2]
-        );
-        config.exclude(TestEnum::Problem2);
-        assert_eq!(
-            config.exclusions,
-            vec![TestEnum::Problem1, TestEnum::Problem2]
-        );
-    }
-
-    #[test]
-    fn config_add() {
-        let mut config: Config<TestEnum> = Config::default();
-        config.add(Difficulty::Intro, 2);
-        assert_eq!(config.sets, vec![(Difficulty::Intro, 2)]);
-        config.add(Difficulty::Hard, 3);
-        assert_eq!(
-            config.sets,
-            vec![(Difficulty::Intro, 2), (Difficulty::Hard, 3)]
-        );
     }
 }
