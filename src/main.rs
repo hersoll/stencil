@@ -32,10 +32,8 @@ fn main() {
     let write_time = time::SystemTime::now();
     println!("Writing the document...");
     let typst_file = typst_writer::TypstWriter::new()
-        .heading("Test heading")
         .add_problem_set(processed_problems_1)
         .add_problem_set(processed_problems_2)
-        .file_name("testing_file_name")
         .build()
         .unwrap();
     println!(

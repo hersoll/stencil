@@ -1,4 +1,7 @@
-use crate::problems::{Difficulty, IntRange, Problem, ProblemType};
+use crate::{
+    fmt_term_first,
+    problems::{Difficulty, IntRange, Problem, ProblemType},
+};
 
 crate::collect_into!(
     SimpleLinearEquations {
@@ -17,8 +20,8 @@ crate::collect_into!(
 
 fn only_addition_or_subtraction() -> Problem {
     let answer_range = IntRange::with_zero(0, 9);
-    let constant_range = IntRange::without_zero(-9, 9);
     let answer = answer_range.random();
+    let constant_range = IntRange::without_zero(-answer, 9);
     let constant = constant_range.random();
     Problem {
         question: format!("$x {constant:+} = {}$", answer + constant),
@@ -26,7 +29,7 @@ fn only_addition_or_subtraction() -> Problem {
         solution: format!(
             "
             $ x {c:+} &= {rhs} \\
-              x col({i:+}) &= {rhs} col({i:+}) \\
+              x {c:+} col({i:+}) &= {rhs} col({i:+}) \\
               bold(x &= {a}) $
             ",
             c = constant,
