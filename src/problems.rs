@@ -54,7 +54,7 @@ impl Problem {
     pub fn process(self) -> ProcessedProblem {
         ProcessedProblem {
             question: self.question,
-            answer: self.answer,
+            answer: self.solution,
         }
     }
 }

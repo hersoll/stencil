@@ -16,7 +16,7 @@ pub struct TypstWriter {
 impl TypstWriter {
     pub fn new() -> TypstWriter {
         TypstWriter {
-            preamble: Preamble::default(),
+            preamble: Preamble::new(),
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
             file_name: String::from("stencil"),
@@ -89,17 +89,38 @@ impl TypstFile {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Preamble {
     pub heading: String,
+    pub paper: String,
+    pub x_margin: u8,
+    pub y_margin: u8,
 }
 
 impl Preamble {
     fn new() -> Preamble {
-        Preamble::default()
+        Preamble {
+            heading: String::new(),
+            paper: "a4".to_string(),
+            x_margin: 2,
+            y_margin: 2,
+        }
     }
     fn build(&self) -> String {
-        let preamble_string = String::from("= ") + self.heading.as_str() + "\n";
-        preamble_string
+        let page_setup = format!(
+            "#set page(paper: \"{}\", margin: (x: {}cm, y: {}cm))\n",
+            self.paper, self.x_margin, self.y_margin
+        );
+
+        let color_macro = "#let col(x) = text(fill: color.linear-rgb(10%, 10%, 10%), $#x$)\n";
+
+        //Adjust order of preamble here if required
+        let mut preamble = String::new() + &page_setup + color_macro;
+
+        if !self.heading.is_empty() {
+            let heading_string = String::from("= ") + &self.heading + "\n";
+            preamble += &heading_string;
+        }
+        preamble
     }
 }
