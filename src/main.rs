@@ -4,21 +4,52 @@ use stencil::{problems, typst_writer};
 fn main() {
     let now = time::SystemTime::now();
     println!("Generating problems...");
-    let problems = stencil::SetBuilder::new()
+    let problems_1 = stencil::SetBuilder::new()
+        .exclude(problems::SimpleLinearEquations::ONLY_MULTIPLICATION)
+        .area(problems::SimpleLinearEquations)
+        .batch(stencil::Difficulty::Intro, 10)
+        .build();
+    let problems_2 = stencil::SetBuilder::new()
+        .exclude(problems::SimpleLinearEquations::ONLY_ADDITION_OR_SUBTRACTION)
         .area(problems::SimpleLinearEquations)
         .batch(stencil::Difficulty::Intro, 10)
         .build();
     println!(
-        "Problems generated in {} s",
+        "Problems generated in {} s\n",
         now.elapsed().unwrap_or_default().as_secs_f32()
     );
 
-    let message = problems.iter().next().unwrap().question();
-    match typst_writer::write(message) {
-        Ok(_) => println!(
-            "Finished the program. Duration: {} s",
-            now.elapsed().unwrap_or_default().as_secs_f32()
-        ),
-        Err(e) => eprintln!("Error: {}", e),
-    }
+    // TODO: Refactor. Should be baked in to SetBuilder, should include logic about when to use answer and when to use solution
+    let processed_problems_1: Vec<problems::ProcessedProblem> = problems_1
+        .into_iter()
+        .map(|problem| problem.process())
+        .collect();
+    let processed_problems_2: Vec<problems::ProcessedProblem> = problems_2
+        .into_iter()
+        .map(|problem| problem.process())
+        .collect();
+
+    let write_time = time::SystemTime::now();
+    println!("Writing the document...");
+    let typst_file = typst_writer::TypstWriter::new()
+        .heading("Test heading")
+        .add_problem_set(processed_problems_1)
+        .add_problem_set(processed_problems_2)
+        .file_name("testing_file_name")
+        .build()
+        .unwrap();
+    println!(
+        "Finished writing in {} s\n",
+        write_time.elapsed().unwrap_or_default().as_secs_f32()
+    );
+
+    let compile_time = time::SystemTime::now();
+    println!("Compiling the document...");
+    let pdf_path = typst_file.compile().unwrap();
+    println!(
+        "Finished compiling in {} s\n",
+        compile_time.elapsed().unwrap_or_default().as_secs_f32()
+    );
+
+    crate::typst_writer::file_handler::open_pdf(pdf_path);
 }

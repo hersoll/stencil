@@ -1,21 +1,17 @@
 use std::process::Command;
 
-pub fn compile(file_name: String) {
-    println!("Compiling the document...");
-    let typ_path: String = file_name.clone() + ".typ";
-    Command::new("typst")
-        .args(["compile", typ_path.as_str()])
-        .status()
-        .expect("failed to execute compilation");
+use crate::typst_writer::file_handler;
 
-    show(file_name);
-}
+/// Compiles a Typst file to a PDF. Returns the PDF path.
+pub fn compile(typst_file_name: &String) -> std::io::Result<String> {
+    assert!(typst_file_name.ends_with(".typ"));
+    let output_name = file_handler::typst_to_pdf_name(&typst_file_name);
 
-fn show(file_name: String) {
-    println!("Opening PDF...");
-    let pdf_path: String = file_name + ".pdf";
-    Command::new("open")
-        .args(["-a", "Skim", pdf_path.as_str()])
+    match Command::new("typst")
+        .args(["compile", typst_file_name.as_str(), output_name.as_str()])
         .status()
-        .expect("failed to open the PDF");
+    {
+        Ok(_) => Ok(output_name),
+        Err(e) => Err(e),
+    }
 }

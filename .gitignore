@@ -1,5 +1,5 @@
-typst.typ
-typst.pdf
+*.typ
+*.pdf
 /target
 /**/.DS_Store
 .DS_Store

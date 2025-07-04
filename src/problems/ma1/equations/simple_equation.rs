@@ -17,7 +17,10 @@ crate::collect_into!(SimpleLinearEquations {
 fn only_addition_or_subtraction() -> Problem {
     let mut rng = rand::rng();
     let answer: i8 = rng.random_range(2..=10);
-    let constant: i8 = rng.random_range(-9..=9);
+    let mut constant: i8 = rng.random_range(1..10);
+    if constant == 0 {
+        constant = 9;
+    }
     Problem {
         question: format!("$x {:+} = {}$", constant, answer + constant),
         answer: format!("$x = {}$", answer),
@@ -31,7 +34,7 @@ fn only_multiplication() -> Problem {
     let coefficient: u8 = rng.random_range(3..=9);
     Problem {
         question: format!("${}x = {}$", coefficient, answer * coefficient),
-        answer: format!("$x = {}", answer),
+        answer: format!("$x = {}$", answer),
         solution: String::new(),
     }
 }

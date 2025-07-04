@@ -20,11 +20,11 @@ pub enum Difficulty {
     Hard,
 }
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct Problem {
-    question: String,
-    answer: String,
-    solution: String,
+    pub question: String,
+    pub answer: String,
+    pub solution: String,
 }
 
 impl Problem {
@@ -44,6 +44,19 @@ impl Problem {
     pub fn solution(&self) -> &String {
         &self.solution
     }
+
+    pub fn process(self) -> ProcessedProblem {
+        ProcessedProblem {
+            question: self.question,
+            answer: self.answer,
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct ProcessedProblem {
+    pub question: String,
+    pub answer: String,
 }
 
 pub trait ProblemArea {
@@ -98,7 +111,7 @@ impl SetBuilder {
         }
         self
     }
-    pub fn build(&mut self) -> Vec<Problem> {
+    pub fn build(&self) -> Vec<Problem> {
         let mut problems = Vec::new();
 
         for (target_difficulty, n) in &self.batches {
