@@ -1,7 +1,4 @@
-use crate::{
-    fmt_term_first,
-    problems::{Difficulty, IntRange, Problem, ProblemType},
-};
+use crate::problems::{Difficulty, IntRange, Problem, ProblemType};
 
 crate::collect_into!(
     SimpleLinearEquations {
