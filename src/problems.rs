@@ -20,11 +20,14 @@ pub enum Difficulty {
     Hard,
 }
 
+type ProblemId = (String, Vec<i32>, usize);
+
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Problem {
     pub question: String,
     pub answer: String,
     pub solution: String,
+    pub id: ProblemId,
 }
 
 impl Problem {
@@ -33,6 +36,7 @@ impl Problem {
             question: question.to_string(),
             answer: answer.to_string(),
             solution: String::new(),
+            id: (String::new(), Vec::new(), 0),
         }
     }
     pub fn question(&self) -> &String {
@@ -113,7 +117,12 @@ impl SetBuilder {
     }
     pub fn build(&self) -> Vec<Problem> {
         let mut problems = Vec::new();
+        let mut ids: Vec<ProblemId> = Vec::new();
 
+        // NOTE: IDEA! The weight of the problem types should change
+        //       depending on if it was chosen or not.
+        //       Also, if candidates.len() >= n, just take one from each candidate (set weight of
+        //       chosen to 0?)
         for (target_difficulty, n) in &self.batches {
             let candidates: Vec<&ProblemType> = self
                 .problem_areas
@@ -131,12 +140,33 @@ impl SetBuilder {
                 let chosen =
                     candidates.choose_weighted(&mut rng, |problem_type| problem_type.weight);
                 let problem = match chosen {
-                    Ok(problem) => (problem.generator)(),
+                    Ok(problem_type) => {
+                        let mut problem;
+                        loop {
+                            // This loop will both:
+                            // - Generate a problem until it is unique
+                            // - Start fresh if all IDs are taken
+                            problem = (problem_type.generator)();
+                            let (ref name, _, ref max_count) = problem.id;
+
+                            let count = ids.iter().filter(|(n, _, _)| n == name).count();
+                            if count >= *max_count {
+                                ids.retain(|(n, _, _)| n != name);
+                            }
+
+                            if !ids.contains(&problem.id) {
+                                break;
+                            }
+                        }
+
+                        problem
+                    }
                     Err(e) => {
                         eprintln!("Error: {}", e);
                         Problem::new("ERROR", "ERROR")
                     }
                 };
+                ids.push(problem.id.clone());
                 problems.push(problem);
             }
         }
@@ -160,7 +190,8 @@ mod tests {
             Problem {
                 question: String::from("question"),
                 answer: String::from("answer"),
-                solution: String::new()
+                solution: String::new(),
+                id: (String::new(), Vec::new(), 0),
             }
         )
     }
