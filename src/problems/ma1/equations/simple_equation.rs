@@ -24,11 +24,9 @@ fn only_addition_or_subtraction() -> Problem {
         question: format!("$x {constant:+} = {}$", answer + constant),
         answer: format!("$x = {answer}$"),
         solution: format!(
-            "
-            $ x {c:+} &= {rhs} \\
+            "$ x {c:+} &= {rhs} \\
               x {c:+} col({i:+}) &= {rhs} col({i:+}) \\
-              bold(x &= {a}) $
-            ",
+              bold(x &= {a}) $",
             c = constant,
             a = answer,
             rhs = answer + constant,
@@ -51,11 +49,9 @@ fn only_multiplication() -> Problem {
         question: format!("${}x = {}$", coefficient, answer * coefficient),
         answer: format!("$x = {}$", answer),
         solution: format!(
-            "
-            $ {c}x &= {rhs} \\
+            "$ {c}x &= {rhs} \\
                 ({c}x) / col({c}) &= {rhs} / col({c}) \\
-              bold(x &= {a}) $
-            ",
+              bold(x &= {a}) $",
             c = coefficient,
             a = answer,
             rhs = answer * coefficient,
