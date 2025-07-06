@@ -1,11 +1,8 @@
 use crate::problems::Problem;
 
 pub mod file_handler;
-pub mod preamble;
 mod renderer;
 pub mod typst;
-
-pub use preamble::*;
 
 #[derive(Debug)]
 pub struct TypstWriter {
@@ -29,13 +26,13 @@ impl Default for TypstWriter {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
             file_name: String::from("stencil"),
-            write_solutions: Default::default(),
+            write_solutions: WriteSolutions::None,
 
             heading: String::new(),
             paper_size: "a4".to_string(),
             x_margin: 20,
             y_margin: 20,
-            par_spacing: 12,
+            par_spacing: 6,
             enum_spacing: 6,
         }
     }
@@ -58,10 +55,9 @@ impl TypstFile {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub enum WriteSolutions {
     All,
-    #[default]
     None,
     First,
 }
@@ -112,13 +108,16 @@ impl TypstWriter {
             .into_iter()
             .map(|problem| match self.write_solutions {
                 WriteSolutions::None => (problem.question, problem.answer),
-                WriteSolutions::All => (problem.question, problem.solution),
+                WriteSolutions::All => (
+                    problem.question,
+                    Self::build_solution(problem.answer, problem.solution),
+                ),
                 WriteSolutions::First => {
                     if added_problem_names.contains(&problem.id.name) {
-                        (problem.question, problem.answer)
+                        Self::add_answer_to_set(problem)
                     } else {
-                        added_problem_names.push(problem.id.name);
-                        (problem.question, problem.solution)
+                        added_problem_names.push(problem.id.name.clone());
+                        Self::add_solution_to_set(problem)
                     }
                 }
             })
@@ -128,7 +127,25 @@ impl TypstWriter {
         self
     }
 
-    fn sets_to_string(sets: &Vec<Vec<String>>) -> String {
+    fn add_answer_to_set(problem: Problem) -> (String, String) {
+        (problem.question, problem.answer)
+    }
+
+    fn add_solution_to_set(problem: Problem) -> (String, String) {
+        (
+            problem.question,
+            Self::build_solution(problem.answer, problem.solution),
+        )
+    }
+
+    fn build_solution(answer: String, solution: String) -> String {
+        let mut solution_string = answer + "\\ \n";
+        solution_string += "  #v(0pt)\n  #emph([Lösning:])\n  #v(-6pt)\n";
+        solution_string += crate::typst_writer::typst::equation_solution(solution).as_str();
+        solution_string
+    }
+
+    fn sets_to_string(&self, sets: &Vec<Vec<String>>) -> String {
         let mut collection = String::new();
         for set in sets {
             let mut set_string: String = set
@@ -138,6 +155,7 @@ impl TypstWriter {
                 .join("\n");
 
             set_string += &typst::empty_line();
+            set_string += format!("#v({}mm)\n", self.par_spacing).as_str();
             collection += &set_string;
         }
         collection
@@ -145,9 +163,9 @@ impl TypstWriter {
 
     pub fn build(&self) -> Result<TypstFile, std::io::Error> {
         let preamble = self.build_preamble();
-        let question_string = Self::sets_to_string(&self.question_sets);
+        let question_string = self.sets_to_string(&self.question_sets);
         let answer_preamble = typst::page_break() + &typst::reset_enum();
-        let answer_string = Self::sets_to_string(&self.answer_sets);
+        let answer_string = self.sets_to_string(&self.answer_sets);
 
         let typst_file_name = file_handler::to_typst_file_name(&self.file_name);
         let typst_file = file_handler::create_typst_file(&typst_file_name)?;
@@ -164,7 +182,6 @@ impl TypstWriter {
             String::from(PREAMBLE_STR),
             self.build_page_size(),
             self.build_enum_spacing(),
-            self.build_par_spacing(),
         ];
 
         if !self.heading.is_empty() {
@@ -183,10 +200,6 @@ impl TypstWriter {
 
     fn build_enum_spacing(&self) -> String {
         format!("#set enum(start: 0, spacing: {}mm)", self.enum_spacing)
-    }
-
-    fn build_par_spacing(&self) -> String {
-        format!("#set par(spacing: {}mm)", self.par_spacing)
     }
 }
 
@@ -211,7 +224,7 @@ static PREAMBLE_STR: &str = r#"
 }
 
 //Equation solution template
-#let equation-solution(equations, operations, linecolor: black) = {
+#let equation-solution(equations, operations) = {
   context {
     let max-eq-width = 0pt
     let max-op-width = 0pt
@@ -237,9 +250,3 @@ static PREAMBLE_STR: &str = r#"
   }
 }
 "#;
-
-//#equation-solution(
-//  ($ 3x +1 &= 16 - 2x $, $ (5x +1)/2 &= 16 $, $ 5x &= 15 $, $ x&=5/7 $),
-//  ($+2x$, $dot.op 2$, $div 5$, $$),
-//  linecolor: linecolor,
-//)
