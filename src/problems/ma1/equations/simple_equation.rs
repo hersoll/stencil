@@ -33,7 +33,7 @@ fn only_addition_or_subtraction() -> Problem {
     Problem {
         question: format!("$x {constant:+} = {}$", answer + constant),
         answer: format!("$x = {answer}$"),
-        solution,
+        solution: crate::equation_solution(solution),
         id: ProblemId::new("1-e-s-add-sub", vec![constant], constant_range.len()),
     }
 }
@@ -55,7 +55,7 @@ fn only_multiplication() -> Problem {
     Problem {
         question: format!("${}x = {}$", coefficient, answer * coefficient),
         answer: format!("$x = {}$", answer),
-        solution,
+        solution: crate::equation_solution(solution),
         id: ProblemId::new("1-e-s-mul", vec![coefficient], coefficient_range.len()),
     }
 }

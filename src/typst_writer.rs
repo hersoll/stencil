@@ -107,11 +107,8 @@ impl TypstWriter {
         let (question_set, answer_set) = problem_set
             .into_iter()
             .map(|problem| match self.write_solutions {
-                WriteSolutions::None => (problem.question, problem.answer),
-                WriteSolutions::All => (
-                    problem.question,
-                    Self::build_solution(problem.answer, problem.solution),
-                ),
+                WriteSolutions::None => Self::add_answer_to_set(problem),
+                WriteSolutions::All => Self::add_solution_to_set(problem),
                 WriteSolutions::First => {
                     if added_problem_names.contains(&problem.id.name) {
                         Self::add_answer_to_set(problem)
@@ -141,7 +138,7 @@ impl TypstWriter {
     fn build_solution(answer: String, solution: String) -> String {
         let mut solution_string = answer + "\\ \n";
         solution_string += "  #v(0pt)\n  #emph([Lösning:])\n  #v(-6pt)\n";
-        solution_string += crate::typst_writer::typst::equation_solution(solution).as_str();
+        solution_string += solution.as_str();
         solution_string
     }
 
