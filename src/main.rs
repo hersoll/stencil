@@ -19,21 +19,13 @@ fn main() {
         now.elapsed().unwrap_or_default().as_secs_f32()
     );
 
-    // TODO: Refactor. Should be baked in to SetBuilder, should include logic about when to use answer and when to use solution
-    let processed_problems_1: Vec<problems::ProcessedProblem> = problems_1
-        .into_iter()
-        .map(|problem| problem.process())
-        .collect();
-    let processed_problems_2: Vec<problems::ProcessedProblem> = problems_2
-        .into_iter()
-        .map(|problem| problem.process())
-        .collect();
-
     let write_time = time::SystemTime::now();
     println!("Writing the document...");
     let typst_file = typst_writer::TypstWriter::new()
-        .add_problem_set(processed_problems_1)
-        .add_problem_set(processed_problems_2)
+        .heading("Equations")
+        .write_solutions(typst_writer::WriteSolutions::First)
+        .add_problem_set(problems_1)
+        .add_problem_set(problems_2)
         .build()
         .unwrap();
     println!(

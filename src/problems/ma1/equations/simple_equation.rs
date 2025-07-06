@@ -1,4 +1,4 @@
-use crate::problems::{Difficulty, IntRange, Problem, ProblemType};
+use crate::problems::{Difficulty, IntRange, Problem, ProblemId, ProblemType};
 
 crate::collect_into!(
     SimpleLinearEquations {
@@ -32,11 +32,7 @@ fn only_addition_or_subtraction() -> Problem {
             rhs = answer + constant,
             i = -constant
         ),
-        id: (
-            "lin-eq-add-sub".to_string(),
-            vec![constant],
-            constant_range.len(),
-        ),
+        id: ProblemId::new("1-e-s-add-sub", vec![constant], constant_range.len()),
     }
 }
 
@@ -56,10 +52,6 @@ fn only_multiplication() -> Problem {
             a = answer,
             rhs = answer * coefficient,
         ),
-        id: (
-            "lin-eq-only-mult".to_string(),
-            vec![coefficient],
-            coefficient_range.len(),
-        ),
+        id: ProblemId::new("1-e-s-mul", vec![coefficient], coefficient_range.len()),
     }
 }

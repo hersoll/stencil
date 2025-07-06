@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::problems::ProcessedProblem;
+use crate::problems::Problem;
 
 pub mod file_handler;
 mod renderer;
@@ -11,6 +11,15 @@ pub struct TypstWriter {
     question_sets: Vec<Vec<String>>,
     answer_sets: Vec<Vec<String>>,
     file_name: String,
+    write_solutions: WriteSolutions,
+}
+
+#[derive(Debug, Default)]
+pub enum WriteSolutions {
+    All,
+    #[default]
+    None,
+    First,
 }
 
 impl TypstWriter {
@@ -20,23 +29,56 @@ impl TypstWriter {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
             file_name: String::from("stencil"),
+            write_solutions: Default::default(),
         }
     }
 
-    pub fn file_name<T: ToString>(&mut self, file_name: T) -> &mut Self {
-        self.file_name = file_name.to_string();
+    pub fn file_name<T: Into<String>>(&mut self, file_name: T) -> &mut Self {
+        self.file_name = file_name.into();
         self
     }
 
-    pub fn heading<T: ToString>(&mut self, heading: T) -> &mut Self {
-        self.preamble.heading = heading.to_string();
+    pub fn write_solutions(&mut self, option: WriteSolutions) -> &mut Self {
+        self.write_solutions = option;
         self
     }
 
-    pub fn add_problem_set(&mut self, problem_set: Vec<ProcessedProblem>) -> &mut Self {
+    pub fn heading<T: Into<String>>(&mut self, heading: T) -> &mut Self {
+        self.preamble.heading = heading.into();
+        self
+    }
+
+    pub fn paper_size<T: Into<String>>(&mut self, size: T) -> &mut Self {
+        self.preamble.paper_size = size.into();
+        self
+    }
+
+    pub fn x_margin<T: Into<u8>>(&mut self, margin: T) -> &mut Self {
+        self.preamble.x_margin = margin.into();
+        self
+    }
+
+    pub fn y_margin<T: Into<u8>>(&mut self, margin: T) -> &mut Self {
+        self.preamble.y_margin = margin.into();
+        self
+    }
+
+    pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> &mut Self {
+        let mut added_problem_names: Vec<String> = Vec::new();
         let (question_set, answer_set) = problem_set
             .into_iter()
-            .map(|problem| (problem.question, problem.answer))
+            .map(|problem| match self.write_solutions {
+                WriteSolutions::None => (problem.question, problem.answer),
+                WriteSolutions::All => (problem.question, problem.solution),
+                WriteSolutions::First => {
+                    if added_problem_names.contains(&problem.id.name) {
+                        (problem.question, problem.answer)
+                    } else {
+                        added_problem_names.push(problem.id.name);
+                        (problem.question, problem.solution)
+                    }
+                }
+            })
             .unzip();
         self.question_sets.push(question_set);
         self.answer_sets.push(answer_set);
@@ -94,7 +136,7 @@ impl TypstFile {
 #[derive(Debug)]
 pub struct Preamble {
     pub heading: String,
-    pub paper: String,
+    pub paper_size: String,
     pub x_margin: u8,
     pub y_margin: u8,
 }
@@ -103,7 +145,7 @@ impl Preamble {
     fn new() -> Preamble {
         Preamble {
             heading: String::new(),
-            paper: "a4".to_string(),
+            paper_size: "a4".to_string(),
             x_margin: 2,
             y_margin: 2,
         }
@@ -111,7 +153,7 @@ impl Preamble {
     fn build(&self) -> String {
         let page_setup = format!(
             "#set page(paper: \"{}\", margin: (x: {}cm, y: {}cm))\n",
-            self.paper, self.x_margin, self.y_margin
+            self.paper_size, self.x_margin, self.y_margin
         );
 
         let color_macro = "#let col(x) = text(fill: color.linear-rgb(10%, 10%, 10%), $#x$)\n";
