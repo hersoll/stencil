@@ -8,6 +8,9 @@ pub struct SetBuilder {
     batches: Vec<(Difficulty, u8)>,
 }
 
+//#################################
+//#   PUBLIC BUILDER FUNCTIONS    #
+//#################################
 impl SetBuilder {
     pub fn new() -> SetBuilder {
         SetBuilder::default()
@@ -42,7 +45,13 @@ impl SetBuilder {
         }
         problems
     }
+}
 
+//#################################
+//# PROBLEM SELECTION ALGORITHMS  #
+//#################################
+
+impl SetBuilder {
     fn choose_problems(
         &self,
         target_difficulty: &Difficulty,
