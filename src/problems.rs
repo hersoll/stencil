@@ -26,13 +26,22 @@ pub enum Difficulty {
 }
 
 impl Difficulty {
-    pub fn to_enum(difficulty_number: u8) -> Difficulty {
+    pub fn num_to_enum(difficulty_number: u8) -> Difficulty {
         match difficulty_number {
             0 | 1 => Difficulty::Intro,
             2 | 3 | 4 => Difficulty::Easy,
             5 | 6 | 7 => Difficulty::Medium,
             8 | 9 | 10 => Difficulty::Hard,
             _ => panic!("Invalid difficulty number: {difficulty_number}"),
+        }
+    }
+
+    pub fn enum_to_nums(difficulty: Difficulty) -> Vec<u8> {
+        match difficulty {
+            Difficulty::Intro => vec![0, 1],
+            Difficulty::Easy => vec![2, 3, 4],
+            Difficulty::Medium => vec![5, 6, 7],
+            Difficulty::Hard => vec![8, 9, 10],
         }
     }
 }
