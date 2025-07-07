@@ -65,16 +65,10 @@ impl SetBuilder {
         // but rather the ids to avoid when generating a problem to encourage uniqueness.
         // The difference is that `ids` might be cleared out in `get_unique_problem_or_reset_ids()`
         let mut ids: Vec<ProblemId> = Vec::new();
-        let mut added_problem_types: Vec<&ProblemType> = Vec::new();
-        // NOTE: IDEA! The weight of the problem types should change
-        //       depending on if it was chosen or not.
-        //       Also, if candidates.len() >= n, just take one from each candidate (set weight of
-        //       chosen to 0?)
-        let candidates: Vec<&ProblemType> = self.get_valid_problem_types(target_difficulty);
-
-        let count_per_difficulty_number = Self::get_count_per_difficulty_number(&candidates, n);
         let difficulty_range = Difficulty::enum_to_nums(*target_difficulty);
 
+        let candidates: Vec<&ProblemType> = self.get_valid_problem_types(target_difficulty);
+        let count_per_difficulty_number = Self::get_count_per_difficulty_number(&candidates, n);
         let candidates_with_scores: Vec<(&ProblemType, u8)> = candidates
             .into_iter()
             .map(|candidate| (candidate, 100))
@@ -111,7 +105,6 @@ impl SetBuilder {
                     filtered_candidates[*chosen_index].1 -= 1;
                     problems.push(problem);
                 }
-                dbg!(&filtered_candidates);
             }
         }
         problems
@@ -224,7 +217,6 @@ mod tests {
     fn problem_type_generator(difficulty: u8) -> ProblemType {
         ProblemType {
             difficulty,
-            weight: 1,
             generator: mock_problem_generator,
         }
     }

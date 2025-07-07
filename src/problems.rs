@@ -93,7 +93,6 @@ pub trait ProblemArea {
 #[derive(Debug, Clone, Copy, Eq)]
 pub struct ProblemType {
     pub difficulty: u8,
-    pub weight: u8,
     pub generator: fn() -> Problem,
 }
 
