@@ -5,12 +5,10 @@ fn main() {
     let now = time::SystemTime::now();
     println!("Generating problems...");
     let problems_1 = stencil::SetBuilder::new()
-        .exclude(problems::SimpleLinearEquations::ONLY_MULTIPLICATION)
         .area(problems::SimpleLinearEquations)
-        .batch(stencil::Difficulty::Intro, 5)
+        .batch(stencil::Difficulty::Intro, 20)
         .build();
     let problems_2 = stencil::SetBuilder::new()
-        .exclude(problems::SimpleLinearEquations::ONLY_ADDITION_OR_SUBTRACTION)
         .area(problems::SimpleLinearEquations)
         .batch(stencil::Difficulty::Intro, 5)
         .build();

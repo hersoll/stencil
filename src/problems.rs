@@ -11,18 +11,30 @@ pub mod set_builder;
 pub use ma1::*;
 pub use range::*;
 pub use set_builder::*;
-#[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 
 //#################################
 //#          DIFFICULTY           #
 //#################################
 
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 pub enum Difficulty {
     Intro,
     #[default]
     Easy,
     Medium,
     Hard,
+}
+
+impl Difficulty {
+    pub fn to_enum(difficulty_number: u8) -> Difficulty {
+        match difficulty_number {
+            0 | 1 => Difficulty::Intro,
+            2 | 3 | 4 => Difficulty::Easy,
+            5 | 6 | 7 => Difficulty::Medium,
+            8 | 9 | 10 => Difficulty::Hard,
+            _ => panic!("Invalid difficulty number: {difficulty_number}"),
+        }
+    }
 }
 
 //#################################
@@ -71,7 +83,7 @@ pub trait ProblemArea {
 
 #[derive(Debug, Clone, Copy, Eq)]
 pub struct ProblemType {
-    pub difficulty: Difficulty,
+    pub difficulty: u8,
     pub weight: u8,
     pub generator: fn() -> Problem,
 }

@@ -1,14 +1,14 @@
-use crate::problems::{Difficulty, IntRange, Problem, ProblemId, ProblemType};
+use crate::problems::{IntRange, Problem, ProblemId, ProblemType};
 
 crate::collect_into!(
     SimpleLinearEquations {
         ONLY_ADDITION_OR_SUBTRACTION = ProblemType {
-            difficulty: Difficulty::Intro,
+            difficulty: 0,
             weight: 1,
             generator: only_addition_or_subtraction,
         },
         ONLY_MULTIPLICATION = ProblemType {
-            difficulty: Difficulty::Intro,
+            difficulty: 0,
             weight: 2,
             generator: only_multiplication,
         },
