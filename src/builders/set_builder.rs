@@ -4,11 +4,21 @@ use std::cmp::Ordering;
 
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct SetBuilder {
     problem_areas: Vec<&'static [&'static ProblemType]>,
     exclusions: Vec<ProblemType>,
     batches: Vec<(Difficulty, u8)>,
+}
+
+impl Default for SetBuilder {
+    fn default() -> Self {
+        SetBuilder {
+            problem_areas: Vec::new(),
+            exclusions: Vec::new(),
+            batches: Vec::new(),
+        }
+    }
 }
 
 //#################################
@@ -24,18 +34,23 @@ impl SetBuilder {
         if !self.problem_areas.contains(&area) {
             self.problem_areas.push(&area);
         }
+        // else Err
         self
     }
 
     pub fn batch(&mut self, difficulty: Difficulty, n: u8) -> &mut Self {
-        self.batches.push((difficulty, n));
+        if n > 0 {
+            self.batches.push((difficulty, n));
+        }
+        // else Err
         self
     }
 
-    pub fn exclude(&mut self, problem_id: &ProblemType) -> &mut Self {
-        if !self.exclusions.contains(problem_id) {
-            self.exclusions.push(*problem_id);
+    pub fn exclude(&mut self, problem_type: &ProblemType) -> &mut Self {
+        if !self.exclusions.contains(problem_type) {
+            self.exclusions.push(*problem_type);
         }
+        // else Err
         self
     }
 
