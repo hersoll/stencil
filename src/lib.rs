@@ -1,10 +1,10 @@
 mod macros;
 
+pub mod builders;
 pub mod document;
 pub mod problems;
-pub mod utils;
 
+pub use builders::*;
 pub use document::typst_formatting::equation_solution;
 pub use problems::Difficulty;
-pub use problems::SetBuilder;
-pub use utils::IntRange;
+pub use problems::int_range::IntRange;

@@ -1,6 +1,7 @@
+use crate::Difficulty;
+use crate::problems::*;
 use std::cmp::Ordering;
 
-use super::*;
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
 
 #[derive(Debug, Default)]

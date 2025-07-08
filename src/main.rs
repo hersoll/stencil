@@ -1,4 +1,5 @@
 use std::time;
+use stencil::{DocumentBuilder, WriteSolutions};
 
 use stencil::{document, problems};
 fn main() {
@@ -19,9 +20,9 @@ fn main() {
 
     let write_time = time::SystemTime::now();
     println!("Writing the document...");
-    let typst_file = document::DocumentBuilder::new()
+    let typst_file = DocumentBuilder::new()
         .heading("Equations")
-        .write_solutions(document::WriteSolutions::First)
+        .write_solutions(WriteSolutions::First)
         .add_problem_set(problems_1)
         .add_problem_set(problems_2)
         .build()

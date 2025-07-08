@@ -1,50 +1,86 @@
-# Stencil - A tool for creating math problem sheets
+# Stencil (Work in progress)
+
+A Rust library for generating opinionated math problem sets and rendering them to PDF using Typst.
+
+## Features
+
+- **Flexible Problem Generation:** Generate math problems with configurable difficulty levels
+- **Hand-written solutions:** Every single problem has a custom step-by-step solution if wanted
+- **Builder Pattern API:**: Intuitive interface for constructing problem sets
+- **Multiple Math Areas (Under construction):** Sorted after the Swedish curriculum
+- **PDF Output:** Renders (soon to be) beautiful problem sets using Typst
+- **Extensible:** Easy to add new problem types
 
 ## Examples
-Each set (section of the PDF page) is built by the `SetBuilder`, which uses a builder pattern. The `SetBuilder` 
-takes its problems from defined problem areas (e.g. `SimpleEquation` or `GeneralQuadraticEquation`)
-given to it in the code and constructs batches with specified difficulties.
-
-### Shortest example
-Each set requires at least one `area` and one `batch`. Each batch has a difficulty (`Intro`, `Easy`, `Medium` or `Hard`) and a number of problems.
+Each set requires at least one `area` and one `batch`. Each `batch` has a difficulty (`Intro`, `Easy`, `Medium` or `Hard`) and a number of problems.
 The set is returned in the form of a `Vec<Problem>`.
-```rust
-//Will generate a Vec with one Problem
-let equations = stencil::SetBuilder::new()
-        .area(stencil::problems::SimpleEquations)
-        .batch(Difficulty::Intro, 1)
-        .build();
-let equation = equations.iter().first().unwrap();
-println!("{}", equation.question());
-println!("{}", equation.answer());
-```
 
-### Multiple batches
-Multiple batches can be chained and still be part of the same set (the same section in the actual PDF). The order of the batches is preserved.
+### Basic Usage
+
 ```rust
-let equations = stencil::SetBuilder::new()
-        .area(stencil::problems::SimpleEquations)
-        .add(Difficulty::Intro, 2)
-        .add(Difficulty::Easy, 3)
-        .add(Difficulty::Medium, 2)
-        .add(Difficulty::Hard, 1)
-        .build();
-while let Some(equation) = equations.iter().next() {
-    println!("{}", equation.question());
-    println!("{}", equation.answer());
+use stencil::{SetBuilder, Difficulty};
+use stencil::problems::SimpleEquations;
+
+// Generate a simple problem set
+let problems = SetBuilder::new()
+    .area(SimpleEquations)
+    .batch(Difficulty::Easy, 5)
+    .build();
+
+// Print questions and answers
+for problem in problems {
+    println!("Q: {}", problem.question());
+    println!("A: {}", problem.answer());
+    println!("Solution: {}", problem.solution());
 }
 ```
 
-### Excluding types of questions
-If you want to exempt a type of problem, you can call `exclude()` on the builder. 
-The problem types are accessed through the `area` struct.
-Exclusion can happen at any time before `build()`, even before the related area is added!
+### Advanced Usage
 
 ```rust
-use stencil::problems::*
-let equations = stencil::SetBuilder::new()
+use stencil::{SetBuilder, Difficulty};
+use stencil::problems::*;
+
+// Create a mixed difficulty set and write out the solution for each problem
+let problems = SetBuilder::new()
+    .area(SimpleEquations)
+    .batch(Difficulty::Intro, 2)
+    .batch(Difficulty::Easy, 3)
+    .batch(Difficulty::Medium, 2)
+    .batch(Difficulty::Hard, 1)
+    .build();
+
+// Exclude specific problem types
+let problems = SetBuilder::new()
     .area(SimpleEquations)
     .exclude(SimpleEquations::ONLY_MULTIPLICATION)
-    .add(Difficulty::Intro, 5)
+    .batch(Difficulty::Easy, 5)
     .build();
 ```
+
+### Generating PDFs
+
+```rust
+use stencil::{SetBuilder, DocumentBuilder, WriteSolutions};
+
+// Create problems
+let problems = SetBuilder::new()
+    .area(SimpleEquations)
+    .batch(Difficulty::Easy, 10)
+    .build();
+
+// Render to PDF
+let document = DocumentBuilder::new()
+    .heading("Math Practice Set")
+    .write_solutions(WriteSolutions::All)
+    .add_problem_set(problems)
+    .file_name("practice_set")
+    .build()?
+    .compile()?;
+
+```
+
+## License
+
+This project is licensed under the YourName Non-Commercial License.  
+Commercial use is not allowed without permission. See `LICENSE` for details.
