@@ -80,8 +80,3 @@ let document = DocumentBuilder::new()
 
 ```
 
-## License
-
-- Non-commercial: hersoll Non-Commercial License (see LICENSE file)
-- Commercial: Contact me for a commercial license
-
