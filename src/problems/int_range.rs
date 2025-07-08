@@ -93,4 +93,9 @@ impl IntRange {
         let mut rng = rand::rng();
         *values.choose(&mut rng).unwrap()
     }
+
+    pub fn and_random(self) -> (i32, Self) {
+        let random = self.random();
+        (random, self)
+    }
 }

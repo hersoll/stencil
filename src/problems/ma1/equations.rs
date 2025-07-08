@@ -1,2 +1,2 @@
-pub mod simple_equation;
-pub use simple_equation::*;
+pub mod simple_equations;
+pub use simple_equations::*;

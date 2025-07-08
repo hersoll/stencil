@@ -7,9 +7,10 @@ fn main() {
     println!("Generating problems...");
     let problems_1 = stencil::SetBuilder::new()
         .area(problems::SimpleLinearEquations)
-        .batch(problems::Difficulty::Intro, 20)
+        .batch(problems::Difficulty::Intro, 5)
+        .batch(problems::Difficulty::Easy, 10)
         .build();
-    let problems_2 = stencil::SetBuilder::new()
+    let _problems_2 = stencil::SetBuilder::new()
         .area(problems::SimpleLinearEquations)
         .batch(problems::Difficulty::Intro, 5)
         .build();
@@ -24,7 +25,6 @@ fn main() {
         .heading("Equations")
         .write_solutions(WriteSolutions::First)
         .add_problem_set(problems_1)
-        .add_problem_set(problems_2)
         .build()
         .unwrap();
     println!(
