@@ -5,10 +5,10 @@ use crate::problems::Problem;
 pub struct DocumentBuilder {
     question_sets: Vec<Vec<String>>,
     answer_sets: Vec<Vec<String>>,
-    file_name: String,
     write_solutions: WriteSolutions,
 
     //Config options
+    file_name: String,
     heading: String,
     paper_size: String,
     x_margin: u8,
@@ -22,9 +22,9 @@ impl Default for DocumentBuilder {
         DocumentBuilder {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
-            file_name: String::from("stencil"),
             write_solutions: WriteSolutions::None,
 
+            file_name: String::from("stencil"),
             heading: String::new(),
             paper_size: "a4".to_string(),
             x_margin: 20,
@@ -187,7 +187,7 @@ impl DocumentBuilder {
 
     fn build_page_size(&self) -> String {
         format!(
-            "#set page(paper: \"{}\", margin: (x: {}mm, y: {}mm))",
+            "#set page(paper: \"{}\", margin: (x: {}mm, y: {}mm), columns: 2)",
             self.paper_size, self.x_margin, self.y_margin
         )
     }
