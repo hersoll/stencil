@@ -82,5 +82,6 @@ let document = DocumentBuilder::new()
 
 ## License
 
-This project is licensed under the YourName Non-Commercial License.  
-Commercial use is not allowed without permission. See `LICENSE` for details.
+- Non-commercial: hersoll Non-Commercial License (see LICENSE file)
+- Commercial: Contact me on GitHub for a commercial license
+
