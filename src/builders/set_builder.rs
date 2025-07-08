@@ -99,12 +99,13 @@ impl SetBuilder {
         let difficulty_range = Difficulty::enum_to_nums(*target_difficulty);
 
         let candidates: Vec<&ProblemType> = self.get_valid_problem_types(target_difficulty);
+
         let count_per_difficulty_number = Self::get_count_per_difficulty_number(&candidates, n);
         let candidates_with_scores: Vec<ScoredProblemType> = candidates
             .into_iter()
             .map(|candidate| ScoredProblemType {
                 problem_type: candidate,
-                score: DEFAULT_SCORE,
+                score: DEFAULT_SCORE.max(count_per_difficulty_number.iter().sum()),
             })
             .collect();
 
@@ -237,23 +238,16 @@ impl SetBuilder {
         problem_type: &ProblemType,
         ids: &mut Vec<ProblemId>,
     ) -> Problem {
-        let mut problem;
-        loop {
-            // This loop will both:
-            // - Generate a problem until it is unique
-            // - Start fresh if all IDs are taken
-            problem = (problem_type.generator)();
-
-            let count = ids.iter().filter(|id| id.name == problem.id.name).count();
-            if count >= problem.id.combinations {
-                ids.retain(|id| id.name != problem.id.name);
-            }
-
-            if !ids.contains(&problem.id) {
-                ids.push(problem.id.clone());
-                return problem;
-            }
+        let mut problem = (problem_type.generator)();
+        let count = ids.iter().filter(|id| id.name == problem.id.name).count();
+        if count >= problem.id.combinations {
+            ids.retain(|id| id.name != problem.id.name);
         }
+        while ids.contains(&problem.id) {
+            problem = (problem_type.generator)();
+        }
+        ids.push(problem.id.clone());
+        return problem;
     }
 }
 
