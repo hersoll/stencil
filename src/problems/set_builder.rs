@@ -53,6 +53,21 @@ impl SetBuilder {
 //# PROBLEM SELECTION ALGORITHMS  #
 //#################################
 
+// Ratios when choosing a difficulty level (0-10) within a Difficulty
+const EASY_MEDIUM_RATIO: f32 = 0.60;
+const MEDIUM_HARD_RATIO: f32 = 0.60;
+const EASY_HARD_RATIO: f32 = 0.70;
+const EASY_RATIO: f32 = 0.40;
+const MEDIUM_RATIO: f32 = 0.30;
+
+const DEFAULT_SCORE: u8 = 100;
+
+#[derive(Debug, Clone, Copy)]
+struct ScoredProblemType<'a> {
+    problem_type: &'a ProblemType,
+    score: u8,
+}
+
 impl SetBuilder {
     fn choose_problems(
         &self,
@@ -69,14 +84,18 @@ impl SetBuilder {
 
         let candidates: Vec<&ProblemType> = self.get_valid_problem_types(target_difficulty);
         let count_per_difficulty_number = Self::get_count_per_difficulty_number(&candidates, n);
-        let candidates_with_scores: Vec<(&ProblemType, u8)> = candidates
+        let candidates_with_scores: Vec<ScoredProblemType> = candidates
             .into_iter()
-            .map(|candidate| (candidate, 100))
+            .map(|candidate| ScoredProblemType {
+                problem_type: candidate,
+                score: DEFAULT_SCORE,
+            })
             .collect();
 
         // This loop goes through each difficulty number, and finds the max score of that
         // difficulty number. If several problems has the max score, one is chosen at random.
         // It generates a problem of that type, and lowers that problem's score.
+        // Indices are tracked to be able to change the relevant score in `candidates_with_scores`
         for (i, count) in count_per_difficulty_number.iter().enumerate() {
             if *count > 0 {
                 let mut filtered_candidates =
@@ -85,10 +104,10 @@ impl SetBuilder {
                     let mut max_score: u8 = 0;
                     let mut max_indices: Vec<usize> = Vec::new();
 
-                    for (i, (_, score)) in filtered_candidates.iter().enumerate() {
-                        match score.partial_cmp(&max_score) {
+                    for (i, candidate) in filtered_candidates.iter().enumerate() {
+                        match candidate.score.partial_cmp(&max_score) {
                             Some(Ordering::Greater) => {
-                                max_score = *score;
+                                max_score = candidate.score;
                                 max_indices.clear();
                                 max_indices.push(i);
                             }
@@ -100,9 +119,12 @@ impl SetBuilder {
                     }
 
                     let chosen_index = max_indices.choose(rng).unwrap();
-                    let (problem_type, _) = filtered_candidates[*chosen_index];
-                    let problem = Self::get_unique_problem_or_reset_ids(problem_type, &mut ids);
-                    filtered_candidates[*chosen_index].1 -= 1;
+                    let scored_problem_type = filtered_candidates[*chosen_index];
+                    let problem = Self::get_unique_problem_or_reset_ids(
+                        scored_problem_type.problem_type,
+                        &mut ids,
+                    );
+                    filtered_candidates[*chosen_index].score -= 1;
                     problems.push(problem);
                 }
             }
@@ -111,17 +133,20 @@ impl SetBuilder {
     }
 
     fn filter_candidates<'a>(
-        candidates_with_scores: &Vec<(&'a ProblemType, u8)>,
+        candidates_with_scores: &'a Vec<ScoredProblemType>,
         difficulty_range: &Vec<u8>,
         index: usize,
-    ) -> Vec<(&'a ProblemType, u8)> {
+    ) -> Vec<ScoredProblemType<'a>> {
         candidates_with_scores
             .iter()
-            .filter(|(candidate, _)| candidate.difficulty == difficulty_range[index])
-            .map(|(candidate, score)| (*candidate, *score))
+            .filter(|candidate| candidate.problem_type.difficulty == difficulty_range[index])
+            .map(|candidate| *candidate)
             .collect()
     }
 
+    /// Calculates how many problems should be generated from each difficulty number (0-10)
+    ///
+    /// This method is only intended to be called with candidates from a specific `Difficulty`
     fn get_count_per_difficulty_number(candidates: &Vec<&ProblemType>, n: &u8) -> [u8; 3] {
         let mut found_difficulty_numbers: [u8; 3] = [0; 3];
 
@@ -149,21 +174,24 @@ impl SetBuilder {
             [_, 0, 0] => easier = *n,
             [0, _, 0] => medium = *n,
             [0, 0, _] => harder = *n,
+            [_, _, 0] => {
+                easier = (*n as f32 * EASY_MEDIUM_RATIO).round() as u8;
+                medium = *n - easier;
+            }
             [0, _, _] => {
-                medium = (*n as f32 * 0.60).round() as u8;
+                medium = (*n as f32 * MEDIUM_HARD_RATIO).round() as u8;
                 harder = *n - medium;
             }
             [_, 0, _] => {
-                easier = (*n as f32 * 0.70).round() as u8;
+                easier = (*n as f32 * EASY_HARD_RATIO).round() as u8;
                 harder = *n - easier;
             }
-            [_, _, 0] => {
-                easier = (*n as f32 * 0.60).round() as u8;
-                medium = *n - easier;
-            }
+
             [_, _, _] => {
-                easier = (*n as f32 * 0.40).ceil() as u8;
-                medium = (*n as f32 * 0.30).round() as u8;
+                // It's intentional to have one ceil() and one round().
+                // This is ensures that n = 1 works correctly and nets an easier problem
+                easier = (*n as f32 * EASY_RATIO).ceil() as u8;
+                medium = (*n as f32 * MEDIUM_RATIO).round() as u8;
                 harder = *n - easier - medium;
             }
         }
@@ -171,6 +199,8 @@ impl SetBuilder {
         [easier, medium, harder]
     }
 
+    /// Returns all `ProblemType`s of the desired `target_difficulty`
+    /// that haven't been called by `exclude()`
     fn get_valid_problem_types(&self, target_difficulty: &Difficulty) -> Vec<&ProblemType> {
         self.problem_areas
             .iter()
@@ -183,6 +213,10 @@ impl SetBuilder {
             .collect()
     }
 
+    /// Generates a problem with a unique ID (the actual numbers that makes the problem different).
+    ///
+    /// If there are no more possible IDs to generate, the relevant IDs are removed from `ids` for
+    /// a fresh start.
     fn get_unique_problem_or_reset_ids(
         problem_type: &ProblemType,
         ids: &mut Vec<ProblemId>,
