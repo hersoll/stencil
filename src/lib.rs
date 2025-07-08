@@ -1,8 +1,10 @@
 mod macros;
 
+pub mod document;
 pub mod problems;
-pub mod typst_writer;
+pub mod utils;
 
+pub use document::typst_formatting::equation_solution;
 pub use problems::Difficulty;
 pub use problems::SetBuilder;
-pub use typst_writer::typst::equation_solution;
+pub use utils::IntRange;

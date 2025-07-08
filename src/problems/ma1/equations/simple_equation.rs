@@ -1,4 +1,5 @@
-use crate::problems::{IntRange, Problem, ProblemId, ProblemType};
+use crate::IntRange;
+use crate::problems::{Problem, ProblemId, ProblemType};
 
 crate::collect_into!(
     SimpleLinearEquations {

@@ -2,14 +2,12 @@
 //#           IMPORTS             #
 //#################################
 pub mod ma1;
-pub mod range;
 pub mod set_builder;
 
 //#################################
 //#          FLATTENING           #
 //#################################
 pub use ma1::*;
-pub use range::*;
 pub use set_builder::*;
 
 //#################################

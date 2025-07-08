@@ -1,11 +1,11 @@
 use std::process::Command;
 
-use crate::typst_writer::file_handler;
+use super::file_helpers;
 
 /// Compiles a Typst file to a PDF. Returns the PDF path.
 pub fn compile(typst_file_name: &String) -> std::io::Result<String> {
     assert!(typst_file_name.ends_with(".typ"));
-    let output_name = file_handler::typst_to_pdf_name(&typst_file_name);
+    let output_name = file_helpers::typst_to_pdf_name(&typst_file_name);
 
     match Command::new("typst")
         .args(["compile", typst_file_name.as_str(), output_name.as_str()])

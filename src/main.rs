@@ -1,16 +1,16 @@
 use std::time;
 
-use stencil::{problems, typst_writer};
+use stencil::{document, problems};
 fn main() {
     let now = time::SystemTime::now();
     println!("Generating problems...");
     let problems_1 = stencil::SetBuilder::new()
         .area(problems::SimpleLinearEquations)
-        .batch(stencil::Difficulty::Intro, 20)
+        .batch(problems::Difficulty::Intro, 20)
         .build();
     let problems_2 = stencil::SetBuilder::new()
         .area(problems::SimpleLinearEquations)
-        .batch(stencil::Difficulty::Intro, 5)
+        .batch(problems::Difficulty::Intro, 5)
         .build();
     println!(
         "Problems generated in {} s\n",
@@ -19,9 +19,9 @@ fn main() {
 
     let write_time = time::SystemTime::now();
     println!("Writing the document...");
-    let typst_file = typst_writer::TypstWriter::new()
+    let typst_file = document::DocumentBuilder::new()
         .heading("Equations")
-        .write_solutions(typst_writer::WriteSolutions::First)
+        .write_solutions(document::WriteSolutions::First)
         .add_problem_set(problems_1)
         .add_problem_set(problems_2)
         .build()
@@ -39,5 +39,5 @@ fn main() {
         compile_time.elapsed().unwrap_or_default().as_secs_f32()
     );
 
-    crate::typst_writer::file_handler::open_pdf(pdf_path);
+    document::file_handler::open_pdf(pdf_path);
 }
