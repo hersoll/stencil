@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::{collections::HashMap, fs};
 
 pub type TranslationTable = HashMap<String, HashMap<String, HashMap<String, String>>>;
 
@@ -10,10 +10,14 @@ pub struct Translations {
 }
 
 impl Translations {
-    pub fn new(table: TranslationTable, lang: &str) -> Translations {
+    pub fn new(lang: &str) -> Translations {
+        let data =
+            fs::read_to_string("translations.json").expect("Failed to read translations.json");
+        let table: TranslationTable =
+            serde_json::from_str(&data).expect("Failed to parse translation JSON");
         Translations {
             lang: lang.to_string(),
-            table,
+            table: table,
         }
     }
     pub fn get_phrase(&self, group: &str, key: &str) -> String {

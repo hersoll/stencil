@@ -1,14 +1,10 @@
-use std::{fs, time};
+use std::time;
 use stencil::translations::{self, Translations};
 use stencil::{DocumentBuilder, WriteSolutions};
 
 use stencil::{document, problems};
 fn main() {
-    let translation_data =
-        fs::read_to_string("translations.json").expect("Failed to read translations.json");
-    let translation_table: translations::TranslationTable =
-        serde_json::from_str(&translation_data).expect("Failed to parse translation JSON");
-    let translations: translations::Translations = Translations::new(translation_table, "en");
+    let translations: translations::Translations = Translations::new("en");
 
     let now = time::SystemTime::now();
     println!("Generating problems...");
