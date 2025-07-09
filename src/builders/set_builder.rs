@@ -11,22 +11,16 @@ pub struct SetBuilder {
     batches: Vec<(Difficulty, u8)>,
 }
 
-impl Default for SetBuilder {
-    fn default() -> Self {
-        SetBuilder {
-            problem_areas: Vec::new(),
-            exclusions: Vec::new(),
-            batches: Vec::new(),
-        }
-    }
-}
-
 //#################################
 //#   PUBLIC BUILDER FUNCTIONS    #
 //#################################
 impl SetBuilder {
     pub fn new() -> SetBuilder {
-        SetBuilder::default()
+        SetBuilder {
+            problem_areas: Vec::new(),
+            exclusions: Vec::new(),
+            batches: Vec::new(),
+        }
     }
 
     pub fn area<T: ProblemArea>(&mut self, _area_struct: T) -> &mut Self {
@@ -137,7 +131,7 @@ impl SetBuilder {
 
                     let chosen_index = max_indices.choose(rng).unwrap();
                     let scored_problem_type = filtered_candidates[*chosen_index];
-                    let problem = Self::get_unique_problem_or_reset_ids(
+                    let problem = self.get_unique_problem_or_reset_ids(
                         scored_problem_type.problem_type,
                         &mut ids,
                     );
@@ -235,6 +229,7 @@ impl SetBuilder {
     /// If there are no more possible IDs to generate, the relevant IDs are removed from `ids` for
     /// a fresh start.
     fn get_unique_problem_or_reset_ids(
+        &self,
         problem_type: &ProblemType,
         ids: &mut Vec<ProblemId>,
     ) -> Problem {
@@ -253,6 +248,7 @@ impl SetBuilder {
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
     fn mock_problem_generator() -> Problem {
         Problem::new("mock", "mock")

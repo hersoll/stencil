@@ -1,10 +1,9 @@
 use crate::document::*;
 use crate::problems::Problem;
-use crate::translations::Translations;
+use crate::translations::TRANSLATIONS;
 
 #[derive(Debug)]
 pub struct DocumentBuilder {
-    translations: Translations,
     question_sets: Vec<Vec<String>>,
     answer_sets: Vec<Vec<String>>,
     write_solutions: WriteSolutions,
@@ -44,9 +43,8 @@ pub enum WriteSolutions {
 }
 
 impl DocumentBuilder {
-    pub fn new(translations: Translations) -> DocumentBuilder {
+    pub fn new() -> DocumentBuilder {
         DocumentBuilder {
-            translations,
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
             write_solutions: WriteSolutions::None,
@@ -130,9 +128,10 @@ impl DocumentBuilder {
     }
 
     fn build_solution(&self, answer: String, solution: String) -> String {
+        let translation = TRANSLATIONS.lock().unwrap();
         let heading = format!(
             "  #v(0pt)\n  #emph([{}])\n  #v(-6pt)",
-            self.translations.get_phrase("solutions", "heading")
+            translation.get_phrase("solutions", "heading")
         );
         [answer, heading, solution].join("\n")
     }

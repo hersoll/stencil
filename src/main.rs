@@ -1,11 +1,8 @@
 use std::time;
-use stencil::translations::{self, Translations};
 use stencil::{DocumentBuilder, WriteSolutions};
 
 use stencil::{document, problems};
 fn main() {
-    let translations: translations::Translations = Translations::new("en");
-
     let now = time::SystemTime::now();
     println!("Generating problems...");
     let problems_1 = stencil::SetBuilder::new()
@@ -24,7 +21,7 @@ fn main() {
 
     let write_time = time::SystemTime::now();
     println!("Writing the document...");
-    let typst_file = DocumentBuilder::new(translations)
+    let typst_file = DocumentBuilder::new()
         .heading("Equations")
         .write_solutions(WriteSolutions::First)
         .add_problem_set(problems_1)

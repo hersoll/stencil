@@ -1,5 +1,17 @@
+use once_cell::sync::Lazy;
 use serde::Deserialize;
-use std::{collections::HashMap, fs};
+use std::{
+    collections::HashMap,
+    fs,
+    sync::{Arc, Mutex},
+};
+
+pub static TRANSLATIONS: Lazy<Arc<Mutex<Translations>>> = Lazy::new(|| {
+    let data = fs::read_to_string("translations.json").expect("Failed to read translations.json");
+    let table: TranslationTable =
+        serde_json::from_str(&data).expect("Failed to parse translation JSON");
+    Arc::new(Mutex::new(Translations::new(table, "sv")))
+});
 
 pub type TranslationTable = HashMap<String, HashMap<String, HashMap<String, String>>>;
 
@@ -10,11 +22,7 @@ pub struct Translations {
 }
 
 impl Translations {
-    pub fn new(lang: &str) -> Translations {
-        let data =
-            fs::read_to_string("translations.json").expect("Failed to read translations.json");
-        let table: TranslationTable =
-            serde_json::from_str(&data).expect("Failed to parse translation JSON");
+    pub fn new(table: TranslationTable, lang: &str) -> Translations {
         Translations {
             lang: lang.to_string(),
             table: table,
