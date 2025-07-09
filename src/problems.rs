@@ -8,6 +8,34 @@ pub mod ma1;
 //#          FLATTENING           #
 //#################################
 pub use ma1::*;
+use serde::Deserialize;
+
+//#################################
+//#       COURSE STRUCTURE        #
+//#################################
+
+#[derive(Debug, Deserialize)]
+pub struct ProblemRegistry {
+    pub courses: Vec<Course>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Course {
+    pub name: String,
+    pub chapters: Vec<Chapter>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Chapter {
+    pub name: String,
+    pub topics: Vec<Topic>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Topic {
+    pub name: String,
+    pub problems: Vec<String>,
+}
 
 //#################################
 //#          DIFFICULTY           #

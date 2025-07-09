@@ -46,5 +46,11 @@
             "sv": "Endast positiva svar (9x + 7 = 25)",
             "en": "Positive answers only (9x + 7 = 25)"
         }
+    },
+    "solutions": {
+        "heading": {
+            "sv": "Lösning:",
+            "en": "Solution:"
+        }
     }
 }

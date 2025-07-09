@@ -6,6 +6,10 @@ pub fn to_heading(heading: &String) -> String {
     String::from("= ") + heading
 }
 
+pub fn line_break() -> String {
+    String::from("\\")
+}
+
 pub fn empty_line() -> String {
     String::from("\n\\\n")
 }

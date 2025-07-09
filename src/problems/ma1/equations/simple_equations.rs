@@ -11,8 +11,11 @@ crate::collect_into!(
             difficulty: 0,
             generator: only_multiplication,
         },
-    // TODO: Simple Equation with mults up to 5, difficulty 1
-        DEFAULT_POSITIVE_ONLY = ProblemType {
+        DEFAULT_POSITIVE_UP_TO_5 = ProblemType {
+            difficulty: 1,
+            generator: default_equation_positive_up_to_5,
+        },
+        DEFAULT_POSITIVE = ProblemType {
             difficulty: 2,
             generator: default_equation_positive_answers,
         },
@@ -60,8 +63,43 @@ fn only_multiplication() -> Problem {
     }
 }
 
+fn default_equation_positive_up_to_5() -> Problem {
+    let (answer, _answer_range) = IntRange::without_zero(0, 5).and_random();
+    let (coefficient, coefficient_range) = IntRange::without_zero(2, 5).and_random();
+    let (constant, constant_range) =
+        IntRange::without_zero((-coefficient * answer).max(-5), 5).and_random();
+
+    let solution = format!(
+        "{cf}x {co:+} = {rhs} \\ {m_co:+} \\
+                            {cf}x = {cf_a} \\ div {cf} \\
+                                x = {a} \\",
+        cf = coefficient,
+        co = constant,
+        rhs = coefficient * answer + constant,
+        m_co = -constant,
+        cf_a = coefficient * answer,
+        a = answer
+    );
+
+    Problem {
+        question: format!(
+            "${cf}x {co:+} = {rhs}$",
+            cf = coefficient,
+            co = constant,
+            rhs = coefficient * answer + constant
+        ),
+        answer: format!("$x = {}$", answer),
+        solution: crate::equation_solution(solution),
+        id: ProblemId::new(
+            "1-e-simp-default-positive",
+            vec![coefficient, constant],
+            coefficient_range.len() * constant_range.len(),
+        ),
+    }
+}
+
 fn default_equation_positive_answers() -> Problem {
-    let (answer, _answer_range) = IntRange::without_zero(0, 11).and_random();
+    let (answer, _answer_range) = IntRange::without_zero(0, 10).and_random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 9).and_random();
     let (constant, constant_range) =
         IntRange::without_zero((-coefficient * answer).max(-10), 10).and_random();

@@ -1,8 +1,10 @@
 use crate::document::*;
 use crate::problems::Problem;
+use crate::translations::Translations;
 
 #[derive(Debug)]
 pub struct DocumentBuilder {
+    translations: Translations,
     question_sets: Vec<Vec<String>>,
     answer_sets: Vec<Vec<String>>,
     write_solutions: WriteSolutions,
@@ -15,24 +17,6 @@ pub struct DocumentBuilder {
     y_margin: u8,
     enum_spacing: u8,
     par_spacing: u8,
-}
-
-impl Default for DocumentBuilder {
-    fn default() -> Self {
-        DocumentBuilder {
-            question_sets: Vec::new(),
-            answer_sets: Vec::new(),
-            write_solutions: WriteSolutions::None,
-
-            file_name: String::from("stencil"),
-            heading: String::new(),
-            paper_size: "a4".to_string(),
-            x_margin: 20,
-            y_margin: 20,
-            par_spacing: 6,
-            enum_spacing: 6,
-        }
-    }
 }
 
 pub struct FinishedFile {
@@ -60,8 +44,21 @@ pub enum WriteSolutions {
 }
 
 impl DocumentBuilder {
-    pub fn new() -> DocumentBuilder {
-        DocumentBuilder::default()
+    pub fn new(translations: Translations) -> DocumentBuilder {
+        DocumentBuilder {
+            translations,
+            question_sets: Vec::new(),
+            answer_sets: Vec::new(),
+            write_solutions: WriteSolutions::None,
+
+            file_name: String::from("stencil"),
+            heading: String::new(),
+            paper_size: "a4".to_string(),
+            x_margin: 20,
+            y_margin: 20,
+            par_spacing: 6,
+            enum_spacing: 6,
+        }
     }
 
     pub fn file_name<T: Into<String>>(&mut self, file_name: T) -> &mut Self {
@@ -104,14 +101,14 @@ impl DocumentBuilder {
         let (question_set, answer_set) = problem_set
             .into_iter()
             .map(|problem| match self.write_solutions {
-                WriteSolutions::None => Self::add_answer_to_set(problem),
-                WriteSolutions::All => Self::add_solution_to_set(problem),
+                WriteSolutions::None => self.add_answer_to_set(problem),
+                WriteSolutions::All => self.add_solution_to_set(problem),
                 WriteSolutions::First => {
                     if added_problem_names.contains(&problem.id.name) {
-                        Self::add_answer_to_set(problem)
+                        self.add_answer_to_set(problem)
                     } else {
                         added_problem_names.push(problem.id.name.clone());
-                        Self::add_solution_to_set(problem)
+                        self.add_solution_to_set(problem)
                     }
                 }
             })
@@ -121,22 +118,23 @@ impl DocumentBuilder {
         self
     }
 
-    fn add_answer_to_set(problem: Problem) -> (String, String) {
+    fn add_answer_to_set(&self, problem: Problem) -> (String, String) {
         (problem.question, problem.answer)
     }
 
-    fn add_solution_to_set(problem: Problem) -> (String, String) {
+    fn add_solution_to_set(&self, problem: Problem) -> (String, String) {
         (
             problem.question,
-            Self::build_solution(problem.answer, problem.solution),
+            self.build_solution(problem.answer, problem.solution),
         )
     }
 
-    fn build_solution(answer: String, solution: String) -> String {
-        let mut solution_string = answer + "\\ \n";
-        solution_string += "  #v(0pt)\n  #emph([Lösning:])\n  #v(-6pt)\n";
-        solution_string += solution.as_str();
-        solution_string
+    fn build_solution(&self, answer: String, solution: String) -> String {
+        let heading = format!(
+            "  #v(0pt)\n  #emph([{}])\n  #v(-6pt)",
+            self.translations.get_phrase("solutions", "heading")
+        );
+        [answer, heading, solution].join("\n")
     }
 
     fn sets_to_string(&self, sets: &Vec<Vec<String>>) -> String {
