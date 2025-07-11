@@ -2,18 +2,8 @@
 #![allow(dead_code)]
 use dioxus::prelude::*;
 
-use components::{Header, TopicSelection};
-
-mod backend;
-mod components;
-mod errors;
-mod frontend_types;
-
-pub use errors::{Error, Result};
-use frontend_types::SetData;
-use macros::problem;
-
-use crate::components::PDFButtons;
+use app::components::{Header, TopicSelection, PDFButtons};
+use app::frontend_types::SetData;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");

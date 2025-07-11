@@ -1,7 +1,7 @@
 use crate::backend::IntRange;
 use crate::backend::problems::{Problem, ProblemId};
 use crate::backend::typst_formatting;
-use crate::problem;
+use macros::problem;
 
 #[problem(id = "add_sub_only", difficulty = 0)]
 fn only_addition_or_subtraction() -> Problem {
