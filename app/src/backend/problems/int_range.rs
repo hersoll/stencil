@@ -98,6 +98,10 @@ impl IntRange {
         *values.choose(&mut rng).unwrap()
     }
 
+    /// Returns a random value alongside the range in a tuple
+    ///
+    /// Useful for when you want to generate a random value immediately, but also need the range
+    /// for later.
     pub fn and_random(self) -> (i32, Self) {
         let random = self.random();
         (random, self)

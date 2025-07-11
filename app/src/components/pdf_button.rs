@@ -88,9 +88,8 @@ pub fn PDFButtons() -> Element {
             button { onclick: view_pdf, disabled: generating_pdf, "Generate PDF" }
             button { onclick: download_pdf, disabled: pdf_url().is_none(), "Download" }
             if let Some(error_message) = generation_error() {
-                p {"{error_message}"}
-        }
-            else if let Some(url) = pdf_url() {
+                p { "{error_message}" }
+            } else if let Some(url) = pdf_url() {
                 iframe { src: "{url}", width: "100%", height: "800px" }
             }
         }

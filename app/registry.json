@@ -2,27 +2,83 @@
     "courses": [
         {
             "name": "ma1b",
+            "desc": {
+                "sv": "Matematik 1b",
+                "en": "Mathematics 1b"
+            },
             "chapters": [
                 {
                     "name": "equations",
+                    "desc": {
+                        "sv": "Ekvationer",
+                        "en": "Equations"
+                    },
                     "topics": [
                         {
                             "name": "standard_equations",
-                            "problems": [
-                                "mult_only",
-                                "add_sub_only",
-                                "up_to_5",
-                                "default_positive"
-                            ]
+                            "desc": {
+                                "sv": "Standardekvationer (ax + b = c)",
+                                "en": "Standard equations (ax + b = c)"
+                            },
+                            "problems": {
+                                "mult_only": {
+                                    "desc": {
+                                        "sv": "Endast multiplikation (ax = b)",
+                                        "en": "Multiplication only (ax = b)"
+                                    }
+                                },
+                                "add_sub_only": {
+                                    "desc": {
+                                        "sv": "Endast addition och subtraktion (x + a = b)",
+                                        "en": "Addition and subtraction only (x + a = b)"
+                                    }
+                                },
+                                "up_to_5": {
+                                    "desc": {
+                                        "sv": "Upp till 5:ans multiplikationstabell (5x + 3 = 13)",
+                                        "en": "Multiplications up to 5 (5x + 3 = 13)"
+                                    }
+                                },
+                                "default_positive": {
+                                    "desc": {
+                                        "sv": "Endast positiva svar (9x + 7 = 25)",
+                                        "en": "Positive answers only (9x + 7 = 25)"
+                                    }
+                                }
+                            }
                         }
                     ]
                 },
                 {
                     "name": "functions",
+                    "desc": {
+                        "sv": "Funktioner",
+                        "en": "Functions"
+                    },
                     "topics": [
                         {
-                            "name": "f(x)",
-                            "problems": []
+                            "name": "f_x",
+                            "desc": {
+                                "sv": "f(x)"
+                            },
+                            "problems": {
+                                "without_notation_y": {
+                                    "desc": {
+                                        "sv": "Bestäm y om du vet x (utan f(x))"
+                                    },
+                                    "question": {
+                                        "sv": "Du har sambandet ${}$. Bestäm $y$ om du vet att $x = {}$."
+                                    }
+                                },
+                                "without_notation_x": {
+                                    "desc": {
+                                        "sv": "Bestäm x om du vet y (utan f(x))"
+                                    },
+                                    "question": {
+                                        "sv": "Du har sambandet ${}$. Bestäm $x$ om du vet att $y = {}$."
+                                    }
+                                }
+                            }
                         }
                     ]
                 }

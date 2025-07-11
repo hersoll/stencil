@@ -37,6 +37,8 @@ pub enum Error {
     // Externals
     #[from]
     Io(std::io::Error),
+    #[from]
+    Serde(serde_json::Error),
 }
 
 impl core::fmt::Display for Error {

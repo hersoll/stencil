@@ -12,6 +12,8 @@ pub fn TopicSelection() -> Element {
         wasm_bindgen_futures::spawn_local(async move {
             if let Ok(data) = backend::load_registry().await {
                 registry.set(Some(data));
+            } else {
+                println!("Error");
             }
         });
     });
@@ -64,7 +66,7 @@ pub fn TopicSelection() -> Element {
                                     if let Some(topic) = chapter.topics.iter().find(|t| &t.name == topic_name) {
                                         ul {
                                             {topic.problems.iter().map(|problem| rsx! {
-                                                li { "{problem}" }
+                                                li { "{problem.0}" }
                                             })}
                                         }
                                     }
@@ -75,6 +77,5 @@ pub fn TopicSelection() -> Element {
                 }
             }
         }
-
     }
 }

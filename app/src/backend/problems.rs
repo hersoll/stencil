@@ -1,4 +1,5 @@
 use crate::{Error, Result};
+use std::collections::HashMap;
 //#################################
 //#           IMPORTS             #
 //#################################
@@ -27,19 +28,22 @@ pub struct ProblemRegistry {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Course {
     pub name: String,
+    pub desc: HashMap<String, String>,
     pub chapters: Vec<Chapter>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Chapter {
     pub name: String,
+    pub desc: HashMap<String, String>,
     pub topics: Vec<Topic>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Topic {
     pub name: String,
-    pub problems: Vec<String>,
+    pub desc: HashMap<String, String>,
+    pub problems: HashMap<String, HashMap<String, HashMap<String, String>>>,
 }
 
 //#################################

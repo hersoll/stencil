@@ -14,6 +14,7 @@ use crate::{
 pub async fn load_registry() -> Result<super::ProblemRegistry, ServerFnError> {
     let json = std::fs::read_to_string("registry.json")?;
     let parsed: crate::backend::ProblemRegistry = serde_json::from_str(&json)?;
+    dbg!(&parsed);
     Ok(parsed)
 }
 
@@ -35,6 +36,7 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
         "standard_equations_mult_only",
         "standard_equations_add_sub_only",
         "standard_equations_default_positive",
+        "f_x_without_notation_y",
     ];
     let problem_types: Vec<ProblemType> = ids
         .iter()

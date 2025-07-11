@@ -7,4 +7,3 @@ use crate::backend::ProblemType;
 
 pub static PROBLEM_REGISTRY: Lazy<Mutex<HashMap<String, super::ProblemType>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
-

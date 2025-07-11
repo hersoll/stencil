@@ -11,6 +11,27 @@ impl Symbol {
     }
 }
 
+/// Other modules interact with the symbols throught the methods on this struct
+pub struct Symbols;
+impl Symbols {
+
+    /// Get a random unknown - the x in 3x + 1 = 10 or (2x + 1) - (x + 2)
+    pub fn get_unknown() -> Result<char> {
+        get_random(&UNKNOWNS)
+    }
+
+    /// Get a random function name - the f in f(x).
+    pub fn get_function_name() -> Result<char> {
+        get_random(&FUNCTION_NAMES)
+    }
+
+    /// Get a random **function** variable, i.e. the x in f(x).
+    pub fn get_variable() -> Result<char> {
+        get_random(&VARIABLES)
+    }
+}
+
+
 fn get_random(symbols: &[Symbol]) -> Result<char> {
 let mut rng = rand::rng();
         symbols
@@ -20,7 +41,6 @@ let mut rng = rand::rng();
 
 }
 
-pub struct Unknowns;
 /// UNKNOWNS are used in equations and expressions - y is fine here
 static UNKNOWNS: [Symbol; 12] = [
     Symbol::new('a', 3),
@@ -37,17 +57,6 @@ static UNKNOWNS: [Symbol; 12] = [
     Symbol::new('z', 1),
 ];
 
-impl Unknowns {
-    pub fn get_unknown() -> Result<char> {
-        let mut rng = rand::rng();
-        UNKNOWNS
-            .choose_weighted(&mut rng, |symbol| symbol.weight)
-            .map(|symbol| symbol.char)
-            .map_err(|_| crate::Error::EmptyStatic)
-    }
-}
-
-pub struct FunctionNames;
 /// Function names are used for the form f(x) - note that y is not included here
 /// since it is uncommon in Sweden to explicitly write y(x).
 static FUNCTION_NAMES: [Symbol; 5] = [
@@ -57,12 +66,8 @@ static FUNCTION_NAMES: [Symbol; 5] = [
     Symbol::new('s', 2),
     Symbol::new('v', 5),
 ];
-impl FunctionNames {
-    pub fn get_function_name() -> Result<char> {
-        let mut rng = rand::rng();
-        FUNCTION_NAMES
-            .choose_weighted(&mut rng, |symbol| symbol.weight)
-            .map(|symbol| symbol.char)
-            .map_err(|_| crate::Error::EmptyStatic)
-    }
-}
+
+static VARIABLES: [Symbol; 2] = [
+    Symbol::new('x', 7),
+    Symbol::new('t', 1),
+];
