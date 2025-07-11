@@ -118,7 +118,7 @@ impl Problem {
     }
 }
 
-pub type ProblemGenerator = fn() -> Problem;
+pub type ProblemGenerator = fn() -> Result<Problem>;
 
 #[derive(Debug, Clone, Copy, Eq)]
 pub struct ProblemType {

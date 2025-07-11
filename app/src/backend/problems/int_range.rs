@@ -38,29 +38,32 @@ pub struct IntRange {
 }
 
 impl IntRange {
-    pub fn with_zero(min: i32, max: i32) -> IntRange {
+    pub fn with_zero(min: i32, max: i32) -> Result<IntRange> {
         Self::new(min, max, Vec::new())
     }
 
-    pub fn without_zero(min: i32, max: i32) -> IntRange {
+    pub fn without_zero(min: i32, max: i32) -> Result<IntRange> {
         Self::new(min, max, vec![0])
     }
 
-    pub fn without_ones(min: i32, max: i32) -> IntRange {
+    pub fn without_ones(min: i32, max: i32) -> Result<IntRange> {
         Self::new(min, max, vec![1, -1])
     }
 
-    pub fn without_ones_and_zero(min: i32, max: i32) -> IntRange {
+    pub fn without_ones_and_zero(min: i32, max: i32) -> Result<IntRange> {
         Self::new(min, max, vec![-1, 0, 1])
     }
 
-    fn new(min: i32, max: i32, wanted_exclusions: Vec<i32>) -> IntRange {
-        assert!(min <= max, "min must be smaller than max!");
+    fn new(min: i32, max: i32, wanted_exclusions: Vec<i32>) -> Result<IntRange> {
+        if min > max {
+            return Err(Error::InvalidIntRange { min, max })
+        }
+        Ok(
         IntRange {
             min,
             max,
             exclude: Self::get_exclusions_in_range(wanted_exclusions, &min, &max),
-        }
+        })
     }
 
     /// Passes on the integers in `exclude` that are part of the range
@@ -88,7 +91,7 @@ impl IntRange {
     pub fn random(&self) -> i32 {
         assert!(
             self.len() > 0,
-            "Trying to access a random number from an empty IntRange."
+            "Trying to access a random number from an empty range."
         );
         let values = self.values();
         let mut rng = rand::rng();

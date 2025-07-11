@@ -127,7 +127,7 @@ impl SetBuilder {
                     let problem = self.get_unique_problem_or_reset_ids(
                         scored_problem_type.problem_type,
                         &mut ids,
-                    );
+                    )?;
                     filtered_candidates[*chosen_index].score -= 1;
                     problems.push(problem);
                 }
@@ -231,25 +231,25 @@ impl SetBuilder {
         &self,
         problem_type: &ProblemType,
         ids: &mut Vec<ProblemId>,
-    ) -> Problem {
-        let mut problem = (problem_type.generator)();
+    ) -> Result<Problem> {
+        let mut problem = (problem_type.generator)()?;
         let count = ids.iter().filter(|id| id.name == problem.id.name).count();
         if count >= problem.id.combinations {
             ids.retain(|id| id.name != problem.id.name);
         }
         while ids.contains(&problem.id) {
-            problem = (problem_type.generator)();
+            problem = (problem_type.generator)()?;
         }
         ids.push(problem.id.clone());
-        return problem;
+        Ok(problem)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    fn mock_problem_generator() -> Problem {
-        Problem::new("mock", "mock")
+    fn mock_problem_generator() -> Result<Problem> {
+        Ok(Problem::new("mock", "mock"))
     }
 
     fn problem_type_generator(difficulty: u8) -> ProblemType {
