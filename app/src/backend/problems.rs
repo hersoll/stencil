@@ -1,9 +1,11 @@
+use crate::{Error, Result};
 //#################################
 //#           IMPORTS             #
 //#################################
 pub mod int_range;
 pub mod ma1;
 mod registry;
+mod symbols;
 
 //#################################
 //#          FLATTENING           #
@@ -54,13 +56,15 @@ pub enum Difficulty {
 }
 
 impl Difficulty {
-    pub fn num_to_enum(difficulty_number: u8) -> Difficulty {
+    pub fn num_to_enum(difficulty_number: u8) -> Result<Difficulty> {
         match difficulty_number {
-            0 | 1 => Difficulty::Intro,
-            2 | 3 | 4 => Difficulty::Easy,
-            5 | 6 | 7 => Difficulty::Medium,
-            8 | 9 | 10 => Difficulty::Hard,
-            _ => panic!("Invalid difficulty number: {difficulty_number}"),
+            0 | 1 => Ok(Difficulty::Intro),
+            2 | 3 | 4 => Ok(Difficulty::Easy),
+            5 | 6 | 7 => Ok(Difficulty::Medium),
+            8 | 9 | 10 => Ok(Difficulty::Hard),
+            _ => Err(Error::InvalidDifficulty {
+                difficulty: difficulty_number,
+            }),
         }
     }
 

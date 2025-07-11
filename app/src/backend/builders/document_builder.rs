@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::backend::document::*;
 use crate::backend::problems::Problem;
 use crate::backend::translations::TRANSLATIONS;
+use crate::{Error, Result};
 
 #[derive(Debug)]
 pub struct DocumentBuilder {
@@ -102,46 +103,49 @@ impl DocumentBuilder {
         self
     }
 
-    pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> &mut Self {
+    pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> Result<&mut Self> {
         let mut added_problem_names: Vec<String> = Vec::new();
-        let (question_set, answer_set) = problem_set
+        let results: Result<Vec<(String, String)>> = problem_set
             .into_iter()
             .map(|problem| match self.options.write_solutions {
-                WriteSolutions::None => self.add_answer_to_set(problem),
+                WriteSolutions::None => Ok(self.add_answer_to_set(problem)),
                 WriteSolutions::All => self.add_solution_to_set(problem),
                 WriteSolutions::First => {
                     if added_problem_names.contains(&problem.id.name) {
-                        self.add_answer_to_set(problem)
+                        Ok(self.add_answer_to_set(problem))
                     } else {
                         added_problem_names.push(problem.id.name.clone());
                         self.add_solution_to_set(problem)
                     }
                 }
             })
-            .unzip();
+            .collect();
+        let (question_set, answer_set): (Vec<String>, Vec<String>) = results?.into_iter().unzip();
         self.question_sets.push(question_set);
         self.answer_sets.push(answer_set);
-        self
+        Ok(self)
     }
 
     fn add_answer_to_set(&self, problem: Problem) -> (String, String) {
         (problem.question, problem.answer)
     }
 
-    fn add_solution_to_set(&self, problem: Problem) -> (String, String) {
-        (
+    fn add_solution_to_set(&self, problem: Problem) -> Result<(String, String)> {
+        Ok((
             problem.question,
-            self.build_solution(problem.answer, problem.solution),
-        )
+            self.build_solution(problem.answer, problem.solution)?,
+        ))
     }
 
-    fn build_solution(&self, answer: String, solution: String) -> String {
-        let translation = TRANSLATIONS.lock().unwrap();
+    fn build_solution(&self, answer: String, solution: String) -> Result<String> {
+        let translation = TRANSLATIONS
+            .lock()
+            .map_err(|_| Error::RegistryMutexIsPoisoned)?;
         let heading = format!(
             "  #v(0pt)\n  #emph([{}])\n  #v(-6pt)",
-            translation.get_phrase("solutions", "heading")
+            translation.get_phrase("solutions", "heading")?
         );
-        [answer, heading, solution].join("\n")
+        Ok([answer, heading, solution].join("\n"))
     }
 
     fn sets_to_string(&self, sets: &Vec<Vec<String>>) -> String {
@@ -160,7 +164,7 @@ impl DocumentBuilder {
         collection
     }
 
-    pub fn build(&self) -> Result<FinishedFile, std::io::Error> {
+    pub fn build(&self) -> Result<FinishedFile> {
         let preamble = self.build_preamble();
         let question_string = self.sets_to_string(&self.question_sets);
         let answer_preamble = typst_formatting::page_break() + &typst_formatting::reset_enum();

@@ -1,3 +1,4 @@
+use crate::{Error, Result};
 use once_cell::sync::Lazy;
 use serde::Deserialize;
 use std::{
@@ -28,7 +29,7 @@ impl Translations {
             table: table,
         }
     }
-    pub fn get_phrase(&self, group: &str, key: &str) -> String {
+    pub fn get_phrase(&self, group: &str, key: &str) -> Result<String> {
         match self
             .table
             .get(group)
@@ -36,11 +37,12 @@ impl Translations {
             .and_then(|lang_map| lang_map.get(&self.lang))
             .cloned()
         {
-            Some(val) => val,
-            None => panic!(
-                "No translation of group {group}, key {key} and lang {}",
-                self.lang
-            ),
+            Some(val) => Ok(val),
+            None => Err(Error::InvalidTranslationKey {
+                group: group.to_string(),
+                key: key.to_string(),
+                lang: self.lang.to_string(),
+            }),
         }
     }
     pub fn get_placeholder_phrase(
@@ -48,7 +50,7 @@ impl Translations {
         group: &str,
         key: &str,
         args: HashMap<&str, &str>,
-    ) -> String {
+    ) -> Result<String> {
         if let Some(val) = self
             .table
             .get(group)
@@ -56,12 +58,13 @@ impl Translations {
             .and_then(|lang_map| lang_map.get(&self.lang))
             .cloned()
         {
-            Self::fill_args(&val, &args)
+            Ok(Self::fill_args(&val, &args))
         } else {
-            panic!(
-                "No translation of group {group}, key {key} and lang {}",
-                self.lang
-            )
+            Err(Error::InvalidTranslationKey {
+                group: group.to_string(),
+                key: key.to_string(),
+                lang: self.lang.to_string(),
+            })
         }
     }
     pub fn change_language(&mut self, lang: &str) {

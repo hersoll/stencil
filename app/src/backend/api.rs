@@ -2,9 +2,12 @@ use std::fs;
 
 use dioxus::prelude::*;
 
-use crate::backend::{
-    PROBLEM_REGISTRY, ProblemType,
-    builders::{DocumentBuilder, DocumentOptions, WriteSolutions},
+use crate::{
+    Error,
+    backend::{
+        PROBLEM_REGISTRY, ProblemType,
+        builders::{DocumentBuilder, WriteSolutions},
+    },
 };
 
 #[server]
@@ -20,40 +23,42 @@ pub async fn generate_pdf() -> Result<Vec<u8>, ServerFnError> {
     // Turn them into batches
     // Create sets
     // Run them through the document builder with the documentoptions
-    let pdf = generate_standard_pdf().await;
+    let pdf = generate_standard_pdf().await?;
     Ok(pdf)
 }
 
-async fn generate_standard_pdf() -> Vec<u8> {
-    let registry = PROBLEM_REGISTRY.lock().unwrap();
-    // println!("{:#?}", registry);
-    // println!(
-    //     "{:#?}",
-    //     registry.get("standard_equations_mult_only").unwrap()
-    // );
-    let ids = vec![
+async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
+    let registry = PROBLEM_REGISTRY
+        .lock()
+        .map_err(|_| Error::RegistryMutexIsPoisoned)?;
+    let ids: Vec<&str> = vec![
         "standard_equations_mult_only",
         "standard_equations_add_sub_only",
         "standard_equations_default_positive",
     ];
     let problem_types: Vec<ProblemType> = ids
         .iter()
-        .map(|id| registry.get(*id).unwrap().clone())
-        .collect();
+        .map(|id| {
+            registry
+                .get(*id)
+                .cloned()
+                .ok_or(Error::NoSuchProblemInRegistry { id: id.to_string() })
+        })
+        .collect::<crate::Result<Vec<ProblemType>>>()?;
+
     let problems = crate::backend::builders::SetBuilder::new()
         .area(problem_types)
         .batch(crate::backend::Difficulty::Intro, 5)
         .batch(crate::backend::Difficulty::Easy, 10)
-        .build();
+        .build()?;
 
     let typst_file = DocumentBuilder::new()
         .heading("Equations")
         .write_solutions(WriteSolutions::First)
-        .add_problem_set(problems)
-        .build()
-        .unwrap();
+        .add_problem_set(problems)?
+        .build()?;
 
-    let pdf_path = typst_file.compile().unwrap();
+    let pdf_path = typst_file.compile()?;
 
-    fs::read(pdf_path).expect("Failed to read generated PDF")
+    Ok(fs::read(pdf_path)?)
 }

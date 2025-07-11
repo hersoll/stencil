@@ -1,11 +1,15 @@
+//Remember to eventually remove this (when #[server] is fixed....)
+#![allow(dead_code)]
 use dioxus::prelude::*;
 
 use components::{Header, TopicSelection};
 
 mod backend;
 mod components;
+mod errors;
 mod frontend_types;
 
+pub use errors::{Error, Result};
 use frontend_types::SetData;
 use macros::problem;
 
@@ -15,9 +19,6 @@ const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
 
 fn main() {
-    //let registry = backend::PROBLEM_REGISTRY.lock().unwrap();
-    //println!("{:#?}", registry);
-
     dioxus::launch(App);
 }
 

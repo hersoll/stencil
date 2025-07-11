@@ -14,12 +14,3 @@ pub fn write(mut file: &File, s: String) -> std::io::Result<()> {
     file.write_all(s.as_bytes())?;
     Ok(())
 }
-
-pub fn open_pdf(pdf_file_name: String) {
-    assert!(pdf_file_name.ends_with(".pdf"));
-    println!("Opening PDF...");
-    Command::new("open")
-        .args(["-a", "Skim", pdf_file_name.as_str()])
-        .status()
-        .expect("failed to open the PDF");
-}

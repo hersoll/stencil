@@ -1,3 +1,4 @@
+use crate::{Error, Result};
 use rand::seq::IndexedRandom;
 
 /// Range of integers where both limits are inclusive.
@@ -87,7 +88,7 @@ impl IntRange {
     pub fn random(&self) -> i32 {
         assert!(
             self.len() > 0,
-            "Trying to access a random number from an empty range."
+            "Trying to access a random number from an empty IntRange."
         );
         let values = self.values();
         let mut rng = rand::rng();

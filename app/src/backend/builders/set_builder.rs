@@ -1,5 +1,7 @@
-use crate::backend::problems::*;
+use crate::Error;
+use crate::Result;
 use crate::backend::Difficulty;
+use crate::backend::problems::*;
 use std::cmp::Ordering;
 
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
@@ -9,7 +11,6 @@ use serde::Serialize;
 #[derive(Debug)]
 pub struct SetBuilder {
     problem_areas: Vec<Vec<ProblemType>>,
-    exclusions: Vec<ProblemType>,
     batches: Vec<(Difficulty, u8)>,
 }
 
@@ -20,7 +21,6 @@ impl SetBuilder {
     pub fn new() -> SetBuilder {
         SetBuilder {
             problem_areas: Vec::new(),
-            exclusions: Vec::new(),
             batches: Vec::new(),
         }
     }
@@ -41,22 +41,14 @@ impl SetBuilder {
         self
     }
 
-    pub fn exclude(&mut self, problem_type: &ProblemType) -> &mut Self {
-        if !self.exclusions.contains(problem_type) {
-            self.exclusions.push(*problem_type);
-        }
-        // else Err
-        self
-    }
-
-    pub fn build(&self) -> Vec<Problem> {
+    pub fn build(&self) -> Result<Vec<Problem>> {
         let mut rng = rand::rng();
         let mut problems = Vec::new();
 
         for (target_difficulty, n) in &self.batches {
-            problems.append(&mut self.choose_problems(target_difficulty, n, &mut rng));
+            problems.append(&mut self.choose_problems(target_difficulty, n, &mut rng)?);
         }
-        problems
+        Ok(problems)
     }
 }
 
@@ -85,7 +77,7 @@ impl SetBuilder {
         target_difficulty: &Difficulty,
         n: &u8,
         rng: &mut ThreadRng,
-    ) -> Vec<Problem> {
+    ) -> Result<Vec<Problem>> {
         let mut problems = Vec::new();
         // `ids` is not a registry of ALL chosen ids (those can be found in `problems`),
         // but rather the ids to avoid when generating a problem to encourage uniqueness.
@@ -93,9 +85,9 @@ impl SetBuilder {
         let mut ids: Vec<ProblemId> = Vec::new();
         let difficulty_range = Difficulty::enum_to_nums(*target_difficulty);
 
-        let candidates: Vec<&ProblemType> = self.get_valid_problem_types(target_difficulty);
+        let candidates: Vec<&ProblemType> = self.get_valid_problem_types(target_difficulty)?;
 
-        let count_per_difficulty_number = Self::get_count_per_difficulty_number(&candidates, n);
+        let count_per_difficulty_number = Self::get_count_per_difficulty_number(&candidates, n)?;
         let candidates_with_scores: Vec<ScoredProblemType> = candidates
             .into_iter()
             .map(|candidate| ScoredProblemType {
@@ -130,7 +122,7 @@ impl SetBuilder {
                         }
                     }
 
-                    let chosen_index = max_indices.choose(rng).unwrap();
+                    let chosen_index = max_indices.choose(rng).ok_or(Error::NoValidProblems)?;
                     let scored_problem_type = filtered_candidates[*chosen_index];
                     let problem = self.get_unique_problem_or_reset_ids(
                         scored_problem_type.problem_type,
@@ -141,7 +133,7 @@ impl SetBuilder {
                 }
             }
         }
-        problems
+        Ok(problems)
     }
 
     fn filter_candidates<'a>(
@@ -159,7 +151,7 @@ impl SetBuilder {
     /// Calculates how many problems should be generated from each difficulty number (0-10)
     ///
     /// This method is only intended to be called with candidates from a specific `Difficulty`
-    fn get_count_per_difficulty_number(candidates: &Vec<&ProblemType>, n: &u8) -> [u8; 3] {
+    fn get_count_per_difficulty_number(candidates: &Vec<&ProblemType>, n: &u8) -> Result<[u8; 3]> {
         let mut found_difficulty_numbers: [u8; 3] = [0; 3];
 
         // To make matching easier, all difficulties are mapped to 0-2
@@ -168,13 +160,17 @@ impl SetBuilder {
                 0 | 2 | 5 | 8 => 0,
                 1 | 3 | 6 | 9 => 1,
                 4 | 7 | 10 => 2,
-                _ => panic!("Recieved a difficulty larger than 10!"),
+                _ => {
+                    return Err(Error::InvalidDifficulty {
+                        difficulty: candidate.difficulty,
+                    });
+                }
             };
             found_difficulty_numbers[relative_difficulty] += 1;
         }
 
         if found_difficulty_numbers.iter().sum::<u8>() == 0 {
-            panic!("get_count_per_difficulty_number recieved a candidates vec with no problems");
+            return Err(Error::NoValidProblems);
         }
 
         let mut easier: u8 = 0;
@@ -208,19 +204,22 @@ impl SetBuilder {
             }
         }
 
-        [easier, medium, harder]
+        Ok([easier, medium, harder])
     }
 
     /// Returns all `ProblemType`s of the desired `target_difficulty`
     /// that haven't been called by `exclude()`
-    fn get_valid_problem_types(&self, target_difficulty: &Difficulty) -> Vec<&ProblemType> {
+    fn get_valid_problem_types(&self, target_difficulty: &Difficulty) -> Result<Vec<&ProblemType>> {
         self.problem_areas
             .iter()
             .flat_map(|area| area.iter())
-            .filter(|problem_type| {
-                Difficulty::num_to_enum(problem_type.difficulty) == *target_difficulty
-                    && !self.exclusions.contains(problem_type)
-            })
+            .filter_map(
+                |problem_type| match Difficulty::num_to_enum(problem_type.difficulty) {
+                    Ok(difficulty) if difficulty == *target_difficulty => Some(Ok(problem_type)),
+                    Ok(_) => None,
+                    Err(e) => Some(Err(e)),
+                },
+            )
             .collect()
     }
 
@@ -248,7 +247,6 @@ impl SetBuilder {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     fn mock_problem_generator() -> Problem {
         Problem::new("mock", "mock")
@@ -280,7 +278,7 @@ mod tests {
         ];
         for (input, result) in inputs_and_results {
             assert_eq!(
-                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input),
+                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input).unwrap(),
                 result
             );
         }
@@ -301,7 +299,7 @@ mod tests {
         let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
         for (input, result) in inputs_and_results {
             assert_eq!(
-                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input),
+                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input).unwrap(),
                 result
             );
         }
@@ -310,14 +308,14 @@ mod tests {
         let candidates: Vec<ProblemType> = vec![problem_type_generator(1)];
         let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
         assert_eq!(
-            SetBuilder::get_count_per_difficulty_number(&ref_candidates, &7),
+            SetBuilder::get_count_per_difficulty_number(&ref_candidates, &7).unwrap(),
             [0, 7, 0]
         );
         // Higher difficulty
         let candidates: Vec<ProblemType> = vec![problem_type_generator(10)];
         let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
         assert_eq!(
-            SetBuilder::get_count_per_difficulty_number(&ref_candidates, &7),
+            SetBuilder::get_count_per_difficulty_number(&ref_candidates, &7).unwrap(),
             [0, 0, 7]
         );
     }
@@ -338,7 +336,7 @@ mod tests {
         let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
         for (input, result) in inputs_and_results {
             assert_eq!(
-                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input),
+                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input).unwrap(),
                 result
             );
         }
@@ -357,7 +355,7 @@ mod tests {
         let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
         for (input, result) in inputs_and_results {
             assert_eq!(
-                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input),
+                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input).unwrap(),
                 result
             );
         }
@@ -376,7 +374,7 @@ mod tests {
         let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
         for (input, result) in inputs_and_results {
             assert_eq!(
-                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input),
+                SetBuilder::get_count_per_difficulty_number(&ref_candidates, &input).unwrap(),
                 result
             );
         }

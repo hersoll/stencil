@@ -4,7 +4,6 @@ use super::file_helpers;
 
 /// Compiles a Typst file to a PDF. Returns the PDF path.
 pub fn compile(typst_file_name: &String) -> std::io::Result<String> {
-    assert!(typst_file_name.ends_with(".typ"));
     let output_name = file_helpers::typst_to_pdf_name(&typst_file_name);
 
     match Command::new("typst")

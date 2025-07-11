@@ -1,2 +1,1 @@
-pub mod standard_equations;
-pub use standard_equations::*;
+mod standard_equations;

@@ -18,6 +18,7 @@ wasm-bindgen-futures = "0.4.50"
 gloo = { version = "0.11.0", features = ["file"] }
 web-sys = {version = "0.3.77", features = ["Window", "Document", "HtmlAnchorElement", "Url"]}
 js-sys = "0.3.77"
+derive_more = { version = "2.0.1", features = ["from"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.3", features = ["wasm_js"] }

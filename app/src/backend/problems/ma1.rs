@@ -1,4 +1,5 @@
-pub mod algebra;
-pub mod equations;
+mod algebra;
+mod equations;
+mod functions;
 
-pub use equations::*;
+
