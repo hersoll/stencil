@@ -1,0 +1,56 @@
+{
+    "courses": {
+        "ma1b": {
+            "sv": "Matematik 1b",
+            "en": "Mathematics 1b"
+        },
+        "ma2b": {
+            "sv": "Matematik 2b",
+            "en": "Mathematics 2b"
+        }
+    },
+    "chapters": {
+        "algebra": {
+            "sv": "Algebra",
+            "en": "Algebra"
+        },
+        "equations": {
+            "sv": "Ekvationer",
+            "en": "Equations"
+        },
+        "functions": {
+            "sv": "Funktioner",
+            "en": "Functions"
+        }
+    },
+    "topics": {
+        "standard_equations": {
+            "sv": "Standardekvationer (ax + b = c)",
+            "en": "Standard equations (ax + b = c)"
+        }
+    },
+    "problems": {
+        "standard_equations_mult_only": {
+            "sv": "Endast multiplikation (ax = b)",
+            "en": "Multiplication only (ax = b)"
+        },
+        "standard_equations_add_sub_only": {
+            "sv": "Endast addition och subtraktion (x + a = b)",
+            "en": "Addition and subtraction only (x + a = b)"
+        },
+        "standard_equations_up_to_5": {
+            "sv": "Upp till 5:ans multiplikationstabell (5x + 3 = 13)",
+            "en": "Multiplications up to 5 (5x + 3 = 13)"
+        },
+        "standard_equations_default_positive": {
+            "sv": "Endast positiva svar (9x + 7 = 25)",
+            "en": "Positive answers only (9x + 7 = 25)"
+        }
+    },
+    "solutions": {
+        "heading": {
+            "sv": "Lösning:",
+            "en": "Solution:"
+        }
+    }
+}

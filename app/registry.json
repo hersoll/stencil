@@ -1,0 +1,32 @@
+{
+    "courses": [
+        {
+            "name": "ma1b",
+            "chapters": [
+                {
+                    "name": "equations",
+                    "topics": [
+                        {
+                            "name": "standard_equations",
+                            "problems": [
+                                "mult_only",
+                                "add_sub_only",
+                                "up_to_5",
+                                "default_positive"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "functions",
+                    "topics": [
+                        {
+                            "name": "f(x)",
+                            "problems": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

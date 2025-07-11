@@ -1,0 +1,10 @@
+/Users/herman/code/projects/stencil/stencil/target/wasm-dev/deps/const_serialize-39c731d7787cbd80.d: /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/lib.rs /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/const_buffers.rs /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/const_vec.rs /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/../README.md
+
+/Users/herman/code/projects/stencil/stencil/target/wasm-dev/deps/libconst_serialize-39c731d7787cbd80.rlib: /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/lib.rs /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/const_buffers.rs /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/const_vec.rs /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/../README.md
+
+/Users/herman/code/projects/stencil/stencil/target/wasm-dev/deps/libconst_serialize-39c731d7787cbd80.rmeta: /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/lib.rs /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/const_buffers.rs /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/const_vec.rs /Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/../README.md
+
+/Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/lib.rs:
+/Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/const_buffers.rs:
+/Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/const_vec.rs:
+/Users/herman/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-serialize-0.6.2/src/../README.md:
