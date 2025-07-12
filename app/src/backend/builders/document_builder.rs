@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::backend::problems::Problem;
-use crate::backend::translations::TRANSLATIONS;
+use crate::backend::translations::GENERAL_TRANSLATIONS;
 use crate::backend::{ProblemGenerator, document::*};
 use crate::{Error, Result};
 
@@ -138,12 +138,12 @@ impl DocumentBuilder {
     }
 
     fn build_solution(&self, answer: String, solution: String) -> Result<String> {
-        let translation = TRANSLATIONS
+        let translation = GENERAL_TRANSLATIONS
             .lock()
             .map_err(|_| Error::RegistryMutexIsPoisoned)?;
         let heading = format!(
             "  #v(0pt)\n  #emph([{}])\n  #v(-6pt)",
-            translation.get_phrase("solutions", "heading")?
+            translation.get_phrase("solution")?
         );
         Ok([answer, heading, solution].join("\n"))
     }

@@ -16,11 +16,12 @@ pub use registry::PROBLEM_REGISTRY;
 use serde::Deserialize;
 use serde::Serialize;
 
+
 //#################################
 //#       COURSE STRUCTURE        #
 //#################################
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone,  PartialEq)]
 pub struct ProblemRegistry {
     pub courses: Vec<Course>,
 }

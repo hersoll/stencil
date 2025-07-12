@@ -1,6 +1,5 @@
 use crate::{
-    Result,
-    backend::{IntRange, Problem},
+    backend::{translations, IntRange, Problem}, Result
 };
 /// In this module, problems in the form of f(3) is known as "calculating y"
 /// and problems like f(x) = 3 are known as "calculating x"

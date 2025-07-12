@@ -3,18 +3,14 @@ use std::fs;
 use dioxus::prelude::*;
 
 use crate::{
-    Error,
     backend::{
-        PROBLEM_REGISTRY, ProblemType,
-        builders::{DocumentBuilder, WriteSolutions},
-    },
+        builders::{DocumentBuilder, WriteSolutions}, translations::REGISTRY_TRANSLATIONS, ProblemType, PROBLEM_REGISTRY
+    }, Error
 };
 
 #[server]
 pub async fn load_registry() -> Result<super::ProblemRegistry, ServerFnError> {
-    let json = std::fs::read_to_string("registry.json")?;
-    let parsed: crate::backend::ProblemRegistry = serde_json::from_str(&json)?;
-    Ok(parsed)
+    Ok(REGISTRY_TRANSLATIONS.clone())
 }
 
 #[server]

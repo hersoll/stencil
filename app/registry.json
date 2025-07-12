@@ -1,21 +1,18 @@
 {
-    "courses": [
-        {
-            "name": "ma1b",
+    "courses": {
+        "ma1b": {
             "desc": {
                 "sv": "Matematik 1b",
                 "en": "Mathematics 1b"
             },
-            "chapters": [
-                {
-                    "name": "equations",
+            "chapters": {
+                "equations": {
                     "desc": {
                         "sv": "Ekvationer",
                         "en": "Equations"
                     },
-                    "topics": [
-                        {
-                            "name": "standard_equations",
+                    "topics": {
+                        "standard_equations":{
                             "desc": {
                                 "sv": "Standardekvationer (ax + b = c)",
                                 "en": "Standard equations (ax + b = c)"
@@ -47,17 +44,15 @@
                                 }
                             }
                         }
-                    ]
+                    }
                 },
-                {
-                    "name": "functions",
+                "functions": {
                     "desc": {
                         "sv": "Funktioner",
                         "en": "Functions"
                     },
-                    "topics": [
-                        {
-                            "name": "f_x",
+                    "topics": {
+                        "f_x": {
                             "desc": {
                                 "sv": "f(x)"
                             },
@@ -80,9 +75,9 @@
                                 }
                             }
                         }
-                    ]
+                    }
                 }
-            ]
+            }
         }
-    ]
+    }
 }

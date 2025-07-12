@@ -24,7 +24,6 @@ pub enum Error {
 
     // Translations
     InvalidTranslationKey {
-        group: String,
         key: String,
         lang: String,
     },
