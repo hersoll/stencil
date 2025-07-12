@@ -1,8 +1,9 @@
 //Remember to eventually remove this (when #[server] is fixed....)
 #![allow(dead_code)]
+use app::errors;
 use dioxus::prelude::*;
 
-use app::components::{Header, TopicSelection, PDFButtons};
+use app::components::{ErrorDisplay, Header, PDFButtons, TopicSelection};
 use app::frontend_types::SetData;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -28,7 +29,16 @@ fn App() -> Element {
 
 
         Header {}
-        TopicSelection {}
-        PDFButtons {}
+        ErrorBoundary {
+            handle_error: |error: ErrorContext| {
+                rsx! {
+                    for e in error.errors() {
+                        ErrorDisplay { message_signal: errors::clean_error_message(format!("{:#?}", e)) }
+                    }
+                }
+            },
+            TopicSelection {}
+            PDFButtons {}
+        }
     }
 }

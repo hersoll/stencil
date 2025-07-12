@@ -1,27 +1,29 @@
 use crate::backend::{self, ProblemRegistry};
-use dioxus::prelude::*;
+use dioxus::{
+    CapturedError,
+    prelude::{server_fn::error::ServerFnErrorErr, *},
+};
 
 #[component]
 pub fn TopicSelection() -> Element {
-    let mut registry = use_signal(|| Option::<ProblemRegistry>::None);
+    let registry_result: Resource<Result<ProblemRegistry, ServerFnErrorErr>> =
+        use_resource(move || async move {
+            let reg = backend::load_registry()
+                .await
+                .map_err(ServerFnErrorErr::from)?;
+            Ok(reg)
+        });
+    if let Some(Err(e)) = registry_result.read().as_ref() {
+        throw_error(e.clone())
+    }
     let mut selected_course = use_signal(|| Option::<String>::None);
     let mut selected_chapter = use_signal(|| Option::<String>::None);
     let mut selected_topic = use_signal(|| Option::<String>::None);
 
-    use_effect(move || {
-        wasm_bindgen_futures::spawn_local(async move {
-            if let Ok(data) = backend::load_registry().await {
-                registry.set(Some(data));
-            } else {
-                println!("Error");
-            }
-        });
-    });
-
     rsx! {
-        div { id: "topic-picker",
-            h1 { "Topic picker" }
-            if let Some(reg) = registry.read().as_ref() {
+        if let Some(Ok(reg)) = registry_result.read().as_ref() {
+            div { id: "topic-picker",
+                h1 { "Topic picker" }
                 select {
                     onchange: move |ev| {
                         selected_course.set(Some(ev.value().to_string()));
@@ -33,7 +35,6 @@ pub fn TopicSelection() -> Element {
                         option { value: "{course.name}", "{course.name}" }
                     })}
                 }
-
                 // Chapters
                 if let Some(course_name) = selected_course.read().as_ref() {
                     if let Some(course) = reg.courses.iter().find(|c| &c.name == course_name) {
@@ -47,7 +48,6 @@ pub fn TopicSelection() -> Element {
                                 option { value: "{chapter.name}", "{chapter.name}" }
                             })}
                         }
-
                         // Topics
                         if let Some(chapter_name) = selected_chapter.read().as_ref() {
                             if let Some(chapter) = course.chapters.iter().find(|ch| &ch.name == chapter_name) {
@@ -60,7 +60,6 @@ pub fn TopicSelection() -> Element {
                                         option { value: "{topic.name}", "{topic.name}" }
                                     })}
                                 }
-
                                 // Problems
                                 if let Some(topic_name) = selected_topic.read().as_ref() {
                                     if let Some(topic) = chapter.topics.iter().find(|t| &t.name == topic_name) {
