@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::backend::document::*;
 use crate::backend::problems::Problem;
 use crate::backend::translations::TRANSLATIONS;
+use crate::backend::{ProblemGenerator, document::*};
 use crate::{Error, Result};
 
 #[derive(Debug)]
@@ -111,10 +111,10 @@ impl DocumentBuilder {
                 WriteSolutions::None => Ok(self.add_answer_to_set(problem)),
                 WriteSolutions::All => self.add_solution_to_set(problem),
                 WriteSolutions::First => {
-                    if added_problem_names.contains(&problem.id.name) {
+                    if added_problem_names.contains(&problem.id) {
                         Ok(self.add_answer_to_set(problem))
                     } else {
-                        added_problem_names.push(problem.id.name.clone());
+                        added_problem_names.push(problem.id.clone());
                         self.add_solution_to_set(problem)
                     }
                 }

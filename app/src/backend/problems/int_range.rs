@@ -13,22 +13,22 @@ use rand::seq::IndexedRandom;
 /// # Examples
 ///
 /// ```
-/// use stencil::backend::IntRange;
+/// use app::backend::IntRange;
 ///
-/// let range = IntRange::with_zero(-2,3);
+/// let range = IntRange::with_zero(-2,3).unwrap();
 /// assert_eq!(range.values(), vec![-2,-1,0,1,2,3]);
 ///
-/// let range = IntRange::without_zero(-2,3);
+/// let range = IntRange::without_zero(-2,3).unwrap();
 /// assert_eq!(range.values(), vec![-2,-1,1,2,3]);
 ///
-/// let range = IntRange::without_ones_and_zero(-2,3);
+/// let range = IntRange::without_ones_and_zero(-2,3).unwrap();
 /// assert_eq!(range.values(), vec![-2,2,3]);
 ///
 /// // with_zero or without_zero will not impact ranges that don't include 0
-/// let range = IntRange::with_zero(5,7);
+/// let range = IntRange::with_zero(5,7).unwrap();
 /// assert_eq!(range.values(), vec![5,6,7]);
 ///
-/// let range = IntRange::without_ones_and_zero(5,7);
+/// let range = IntRange::without_ones_and_zero(5,7).unwrap();
 /// assert_eq!(range.values(), vec![5,6,7]);
 /// ```
 pub struct IntRange {
@@ -56,10 +56,9 @@ impl IntRange {
 
     fn new(min: i32, max: i32, wanted_exclusions: Vec<i32>) -> Result<IntRange> {
         if min > max {
-            return Err(Error::InvalidIntRange { min, max })
+            return Err(Error::InvalidIntRange { min, max });
         }
-        Ok(
-        IntRange {
+        Ok(IntRange {
             min,
             max,
             exclude: Self::get_exclusions_in_range(wanted_exclusions, &min, &max),

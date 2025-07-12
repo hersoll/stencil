@@ -3,11 +3,11 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::{
+    Expr, ExprLit, ItemFn, Lit, Meta, MetaNameValue,
     parse::{Parse, ParseStream, Result},
     parse_macro_input,
     punctuated::Punctuated,
     token::Comma,
-    Expr, ExprLit, ItemFn, Lit, Meta, MetaNameValue,
 };
 
 struct MetaNameValueList {
@@ -126,8 +126,9 @@ pub fn problem(attr: TokenStream, item: TokenStream) -> TokenStream {
             use crate::backend::{PROBLEM_REGISTRY, ProblemType};
             let final_id = #id_expr;
             PROBLEM_REGISTRY.lock().unwrap().insert(
-                final_id,
+                final_id.clone(),
                 ProblemType {
+                    name: final_id,
                     generator: #fn_name,
                     difficulty: #difficulty,
                 },
@@ -139,8 +140,9 @@ pub fn problem(attr: TokenStream, item: TokenStream) -> TokenStream {
             use crate::backend::{PROBLEM_REGISTRY, ProblemType};
             let final_id = #id_expr;
             PROBLEM_REGISTRY.lock().unwrap().insert(
-                final_id,
+                final_id.clone(),
                 ProblemType {
+                    name: final_id,
                     generator: #fn_name,
                     difficulty: #difficulty,
                 },

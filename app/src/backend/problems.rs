@@ -86,29 +86,14 @@ impl Difficulty {
 //#   PROBLEM ENUMS AND STRUCTS   #
 //#################################
 
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct ProblemId {
-    pub name: String,
-    pub identifiers: Vec<i32>,
-    pub combinations: usize,
-}
-
-impl ProblemId {
-    pub fn new<T: Into<String>>(name: T, identifiers: Vec<i32>, combinations: usize) -> ProblemId {
-        ProblemId {
-            name: name.into(),
-            identifiers,
-            combinations,
-        }
-    }
-}
-
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Problem {
+    pub id: String,
     pub question: String,
     pub answer: String,
     pub solution: String,
-    pub id: ProblemId,
+    pub identifiers: Vec<i32>,
+    pub combinations: usize,
 }
 
 impl Problem {
@@ -116,16 +101,22 @@ impl Problem {
         Problem {
             question: question.to_string(),
             answer: answer.to_string(),
-            solution: String::new(),
-            id: ProblemId::default(),
+            ..Default::default()
         }
     }
 }
 
-pub type ProblemGenerator = fn() -> Result<Problem>;
+pub type ProblemGenerator = fn(String) -> Result<Problem>;
 
-#[derive(Debug, Clone, Copy, Eq)]
+#[derive(Debug, PartialEq, Clone)]
+pub struct ProblemId {
+    pub name: String,
+    pub identifiers: Vec<i32>,
+}
+
+#[derive(Debug, Clone, Eq)]
 pub struct ProblemType {
+    pub name: String,
     pub difficulty: u8,
     pub generator: ProblemGenerator,
 }
@@ -149,14 +140,12 @@ mod tests {
         assert_eq!(
             Problem::new("question", "answer"),
             Problem {
+                id: String::new(),
                 question: String::from("question"),
                 answer: String::from("answer"),
                 solution: String::new(),
-                id: ProblemId {
-                    name: String::new(),
-                    identifiers: Vec::new(),
-                    combinations: 0
-                },
+                identifiers: Vec::new(),
+                combinations: 0,
             }
         )
     }

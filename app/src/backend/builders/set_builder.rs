@@ -71,6 +71,8 @@ struct ScoredProblemType<'a> {
     score: u8,
 }
 
+
+
 impl SetBuilder {
     fn choose_problems(
         &self,
@@ -79,14 +81,12 @@ impl SetBuilder {
         rng: &mut ThreadRng,
     ) -> Result<Vec<Problem>> {
         let mut problems = Vec::new();
-        // `ids` is not a registry of ALL chosen ids (those can be found in `problems`),
-        // but rather the ids to avoid when generating a problem to encourage uniqueness.
-        // The difference is that `ids` might be cleared out in `get_unique_problem_or_reset_ids()`
         let mut ids: Vec<ProblemId> = Vec::new();
         let difficulty_range = Difficulty::enum_to_nums(*target_difficulty);
 
+        // Find all problems which match the desired difficulty and give them a score for assured
+        // spread of problems during selection
         let candidates: Vec<&ProblemType> = self.get_valid_problem_types(target_difficulty)?;
-
         let count_per_difficulty_number = Self::get_count_per_difficulty_number(&candidates, n)?;
         let candidates_with_scores: Vec<ScoredProblemType> = candidates
             .into_iter()
@@ -232,15 +232,25 @@ impl SetBuilder {
         problem_type: &ProblemType,
         ids: &mut Vec<ProblemId>,
     ) -> Result<Problem> {
-        let mut problem = (problem_type.generator)()?;
-        let count = ids.iter().filter(|id| id.name == problem.id.name).count();
-        if count >= problem.id.combinations {
-            ids.retain(|id| id.name != problem.id.name);
+        let mut problem = (problem_type.generator)(problem_type.name.clone())?;
+        let mut current_id = ProblemId {
+            name: problem_type.name.clone(),
+            identifiers: problem.identifiers.clone(),
+        };
+
+        let count = ids
+            .iter()
+            .filter(|id| id.name == problem_type.name)
+            .count();
+        if count >= problem.combinations {
+            ids.retain(|id| id.name != problem_type.name);
         }
-        while ids.contains(&problem.id) {
-            problem = (problem_type.generator)()?;
+
+        while ids.contains(&current_id) {
+            problem = (problem_type.generator)(problem_type.name.clone())?;
+            current_id.identifiers = problem.identifiers.clone();
         }
-        ids.push(problem.id.clone());
+        ids.push(current_id.clone());
         Ok(problem)
     }
 }
@@ -248,12 +258,13 @@ impl SetBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    fn mock_problem_generator() -> Result<Problem> {
+    fn mock_problem_generator(_: String) -> Result<Problem> {
         Ok(Problem::new("mock", "mock"))
     }
 
     fn problem_type_generator(difficulty: u8) -> ProblemType {
         ProblemType {
+            name: "test".to_string(),
             difficulty,
             generator: mock_problem_generator,
         }
