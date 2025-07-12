@@ -3,9 +3,12 @@ use std::fs;
 use dioxus::prelude::*;
 
 use crate::{
+    Error,
     backend::{
-        builders::{DocumentBuilder, WriteSolutions}, translations::REGISTRY_TRANSLATIONS, ProblemType, PROBLEM_REGISTRY
-    }, Error
+        PROBLEM_REGISTRY, ProblemType,
+        builders::{DocumentBuilder, WriteSolutions},
+        translations::{COURSE_TRANSLATIONS, REGISTRY_TRANSLATIONS},
+    },
 };
 
 #[server]

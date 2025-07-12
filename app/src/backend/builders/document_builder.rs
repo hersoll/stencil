@@ -17,6 +17,7 @@ pub struct DocumentOptions {
     //Config options
     write_solutions: WriteSolutions,
     file_name: String,
+    color: bool,
     heading: String,
     paper_size: String,
     x_margin: u8,
@@ -54,6 +55,7 @@ impl DocumentBuilder {
         let options = DocumentOptions {
             write_solutions: WriteSolutions::None,
             file_name: String::from("stencil"),
+            color: true,
             heading: String::new(),
             paper_size: "a4".to_string(),
             x_margin: 20,
@@ -80,6 +82,11 @@ impl DocumentBuilder {
 
     pub fn heading<T: Into<String>>(&mut self, heading: T) -> &mut Self {
         self.options.heading = heading.into();
+        self
+    }
+
+    pub fn color(&mut self, color: bool) -> &mut Self {
+        self.options.color = color;
         self
     }
 
@@ -138,12 +145,9 @@ impl DocumentBuilder {
     }
 
     fn build_solution(&self, answer: String, solution: String) -> Result<String> {
-        let translation = GENERAL_TRANSLATIONS
-            .lock()
-            .map_err(|_| Error::RegistryMutexIsPoisoned)?;
         let heading = format!(
             "  #v(0pt)\n  #emph([{}])\n  #v(-6pt)",
-            translation.get_phrase("solution")?
+            GENERAL_TRANSLATIONS.get_phrase("solution")?
         );
         Ok([answer, heading, solution].join("\n"))
     }

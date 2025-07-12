@@ -1,8 +1,6 @@
 use crate::backend::{self, ProblemRegistry};
-use dioxus::{
-    CapturedError,
-    prelude::{server_fn::error::ServerFnErrorErr, *},
-};
+use crate::backend::{Chapter, Course, Topic};
+use dioxus::prelude::{server_fn::error::ServerFnErrorErr, *};
 
 #[component]
 pub fn TopicSelection() -> Element {
@@ -16,62 +14,94 @@ pub fn TopicSelection() -> Element {
     if let Some(Err(e)) = registry_result.read().as_ref() {
         throw_error(e.clone())
     }
-    let mut selected_course = use_signal(|| Option::<String>::None);
-    let mut selected_chapter = use_signal(|| Option::<String>::None);
-    let mut selected_topic = use_signal(|| Option::<String>::None);
+    let mut courses: Signal<Vec<Course>> = use_signal(|| Vec::new());
+    // Load the courses when we get the Registry
+    use_effect(move || {
+        if let Some(Ok(registry)) = registry_result() {
+            courses.set(registry.courses);
+        }
+    });
+    let mut selected_course_name = use_signal(|| Option::<String>::None);
+    let mut chapters: Signal<Vec<Chapter>> = use_signal(|| Vec::new());
+    use_effect(move || {
+        if let Some(course_name) = selected_course_name() {
+            if let Some(course) = courses().iter().find(|course| course.name == course_name) {
+                chapters.set(course.chapters.clone());
+            } else {
+                throw_error(crate::Error::NoCourseWithCourseName { name: course_name });
+            }
+        }
+    });
+    let mut selected_chapter_name = use_signal(|| Option::<String>::None);
+    let mut topics: Signal<Vec<Topic>> = use_signal(|| Vec::new());
+    use_effect(move || {
+        if let Some(chapter_name) = selected_chapter_name() {
+            if let Some(chapter) = chapters()
+                .iter()
+                .find(|chapter| chapter.name == chapter_name)
+            {
+                topics.set(chapter.topics.clone());
+            } else {
+                throw_error(crate::Error::NoChapterWithChapterName { name: chapter_name });
+            }
+        }
+    });
+    let mut selected_topic_name = use_signal(|| Option::<String>::None);
+    let mut problems: Signal<Vec<String>> = use_signal(|| Vec::new());
+    use_effect(move || {
+        if let Some(topic_name) = selected_topic_name() {
+            if let Some(topic) = topics().iter().find(|topic| topic.name == topic_name) {
+                problems.set(topic.problems.keys().map(|key| key.to_string()).collect());
+            } else {
+                throw_error(crate::Error::NoTopicWithTopicName { name: topic_name });
+            }
+        }
+    });
 
     rsx! {
-        if let Some(Ok(reg)) = registry_result.read().as_ref() {
-            div { id: "topic-picker",
-                h1 { "Topic picker" }
+        div { id: "topic-picker",
+            h1 { "Topic picker" }
+            select {
+                onchange: move |event| {
+                    selected_course_name.set(Some(event.value().to_string()));
+                    selected_chapter_name.set(None);
+                    selected_topic_name.set(None);
+                },
+                option { value: "", "Select Course" }
+                {courses.iter().map(|course| rsx! {
+                    option { value: "{course.name}", "{course.name}" }
+                })}
+            }
+            // Chapters
+            if chapters().len() > 0 {
                 select {
                     onchange: move |ev| {
-                        selected_course.set(Some(ev.value().to_string()));
-                        selected_chapter.set(None);
-                        selected_topic.set(None);
+                        selected_chapter_name.set(Some(ev.value().to_string()));
+                        selected_topic_name.set(None);
                     },
-                    option { value: "", "Select Course" }
-                    {reg.courses.iter().map(|course| rsx! {
-                        option { value: "{course.name}", "{course.name}" }
+                    option { value: "", "Select Chapter" }
+                    {chapters.iter().map(|chapter| rsx! {
+                        option { value: "{chapter.name}", "{chapter.name}" }
                     })}
                 }
-                // Chapters
-                if let Some(course_name) = selected_course.read().as_ref() {
-                    if let Some(course) = reg.courses.iter().find(|c| &c.name == course_name) {
-                        select {
-                            onchange: move |ev| {
-                                selected_chapter.set(Some(ev.value().to_string()));
-                                selected_topic.set(None);
-                            },
-                            option { value: "", "Select Chapter" }
-                            {course.chapters.iter().map(|chapter| rsx! {
-                                option { value: "{chapter.name}", "{chapter.name}" }
-                            })}
-                        }
-                        // Topics
-                        if let Some(chapter_name) = selected_chapter.read().as_ref() {
-                            if let Some(chapter) = course.chapters.iter().find(|ch| &ch.name == chapter_name) {
-                                select {
-                                    onchange: move |ev| {
-                                        selected_topic.set(Some(ev.value().to_string()));
-                                    },
-                                    option { value: "", "Select Topic" }
-                                    {chapter.topics.iter().map(|topic| rsx! {
-                                        option { value: "{topic.name}", "{topic.name}" }
-                                    })}
-                                }
-                                // Problems
-                                if let Some(topic_name) = selected_topic.read().as_ref() {
-                                    if let Some(topic) = chapter.topics.iter().find(|t| &t.name == topic_name) {
-                                        ul {
-                                            {topic.problems.iter().map(|problem| rsx! {
-                                                li { "{problem.0}" }
-                                            })}
-                                        }
-                                    }
-                                }
+                // Topics
+                if topics().len() > 0 {
+                    select {
+                        onchange: move |ev| {
+                            selected_topic_name.set(Some(ev.value().to_string()));
+                        },
+                        option { value: "", "Select Topic" }
+                        {topics.iter().map(|topic| rsx! {
+                            option { value: "{topic.name}", "{topic.name}" }
+                        })}
+                    }
+                    // Problems
+                    if problems().len() > 0 {
+                            ul {
+                                {problems.iter().map(|problem| rsx! {
+                                    li { "{problem}" }
+                                })}
                             }
-                        }
                     }
                 }
             }

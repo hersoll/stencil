@@ -62,7 +62,7 @@
                                         "sv": "Bestäm y om du vet x (utan f(x))"
                                     },
                                     "question": {
-                                        "sv": "Du har sambandet ${}$. Bestäm $y$ om du vet att $x = {}$."
+                                        "sv": "Du har sambandet ${expression}$. Bestäm $y$ om du vet att $x = {x}$."
                                     }
                                 },
                                 "without_notation_x": {
@@ -70,7 +70,7 @@
                                         "sv": "Bestäm x om du vet y (utan f(x))"
                                     },
                                     "question": {
-                                        "sv": "Du har sambandet ${}$. Bestäm $x$ om du vet att $y = {}$."
+                                        "sv": "Du har sambandet ${expression}$. Bestäm $x$ om du vet att $y = {y}$."
                                     }
                                 }
                             }

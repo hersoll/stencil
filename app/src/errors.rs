@@ -8,6 +8,9 @@ pub enum Error {
 
     // Registry
     RegistryMutexIsPoisoned,
+    NoSuchKeyExists {
+        key: String,
+    },
     NoSuchProblemInRegistry {
         id: String,
     },
@@ -28,7 +31,18 @@ pub enum Error {
         lang: String,
     },
 
-    // Frontend
+    // Frontend - getting parts of course structure
+    NoCourseWithCourseName {
+        name: String,
+    },
+    NoChapterWithChapterName {
+        name: String,
+    },
+    NoTopicWithTopicName {
+        name: String,
+    },
+
+    // Frontend magic
     WebAPIFailed,
     PDFLoadingFailed,
     PDFDownloadFailed,

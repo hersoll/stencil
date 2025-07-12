@@ -7,11 +7,11 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-pub static GENERAL_TRANSLATIONS: Lazy<Arc<Mutex<Translations>>> = Lazy::new(|| {
+pub static GENERAL_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let data = fs::read_to_string("translations.json").expect("Failed to read translations.json");
     let table: TranslationTable =
         serde_json::from_str(&data).expect("Failed to parse translation JSON");
-    Arc::new(Mutex::new(Translations::new(table, "sv")))
+    Translations::new(table, "sv")
 });
 
 pub static REGISTRY_TRANSLATIONS: Lazy<ProblemRegistry> = Lazy::new(|| {
@@ -20,25 +20,25 @@ pub static REGISTRY_TRANSLATIONS: Lazy<ProblemRegistry> = Lazy::new(|| {
     parsed
 });
 
-pub static COURSE_TRANSLATIONS: Lazy<Arc<Mutex<Translations>>>= Lazy::new(|| {
+pub static COURSE_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let mut table: TranslationTable = HashMap::new();
     for course in REGISTRY_TRANSLATIONS.clone().courses {
         table.insert(course.name, course.desc);
     }
-    Arc::new(Mutex::new(Translations::new(table, "sv")))
+    Translations::new(table, "sv")
 });
 
-pub static CHAPTER_TRANSLATIONS: Lazy<Arc<Mutex<Translations>>>= Lazy::new(|| {
+pub static CHAPTER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let mut table: TranslationTable = HashMap::new();
     for course in REGISTRY_TRANSLATIONS.clone().courses {
         for chapter in course.chapters {
             table.insert(chapter.name, chapter.desc);
         }
     }
-    Arc::new(Mutex::new(Translations::new(table, "sv")))
+    Translations::new(table, "sv")
 });
 
-pub static TOPIC_TRANSLATIONS: Lazy<Arc<Mutex<Translations>>>= Lazy::new(|| {
+pub static TOPIC_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let mut table: TranslationTable = HashMap::new();
     for course in REGISTRY_TRANSLATIONS.clone().courses {
         for chapter in course.chapters {
@@ -47,16 +47,18 @@ pub static TOPIC_TRANSLATIONS: Lazy<Arc<Mutex<Translations>>>= Lazy::new(|| {
             }
         }
     }
-    Arc::new(Mutex::new(Translations::new(table, "sv")))
+    Translations::new(table, "sv")
 });
 
-pub static PROBLEM_TRANSLATIONS: Lazy<HashMap<String, TranslationTable>> = Lazy::new(|| {
-    let mut table: HashMap<String, TranslationTable> = HashMap::new();
+pub static PROBLEM_TRANSLATIONS: Lazy<HashMap<String, Translations>> = Lazy::new(|| {
+    let mut table: HashMap<String, Translations> = HashMap::new();
     for course in REGISTRY_TRANSLATIONS.clone().courses {
         for chapter in course.chapters {
             for topic in chapter.topics {
                 for (name, data) in topic.problems {
-                        table.insert(name, data);
+                    let combined_name = topic.name.clone() + "_" + name.as_str();
+                    let translations = Translations::new(data, "sv");
+                    table.insert(combined_name, translations);
                 }
             }
         }
@@ -71,6 +73,10 @@ pub struct Translations {
     lang: String,
     table: TranslationTable,
 }
+
+// NOTE: To deal with language, have a "global" in the front_end, and pass it on every api call.
+//       Or, when you set the language in the frontend, have an effect that calls backend and sets
+//       it for every TranslationTable
 
 impl Translations {
     pub fn new(table: TranslationTable, lang: &str) -> Translations {
@@ -96,7 +102,7 @@ impl Translations {
     pub fn get_placeholder_phrase(
         &self,
         key: &str,
-        args: HashMap<&str, &str>,
+        args: HashMap<&str, String>,
     ) -> Result<String> {
         if let Some(val) = self
             .table
@@ -116,7 +122,7 @@ impl Translations {
         self.lang = lang.to_string();
     }
 
-    fn fill_args(placeholder_text: &str, args: &HashMap<&str, &str>) -> String {
+    fn fill_args(placeholder_text: &str, args: &HashMap<&str, String>) -> String {
         let mut placeholder_str = placeholder_text.to_string();
         for (key, value) in args {
             let placeholder = format!("{{{}}}", key);

@@ -33,11 +33,11 @@ impl Symbols {
 
 
 fn get_random(symbols: &[Symbol]) -> Result<char> {
-let mut rng = rand::rng();
-        symbols
-            .choose_weighted(&mut rng, |symbol| symbol.weight)
-            .map(|symbol| symbol.char)
-            .map_err(|_| crate::Error::EmptyStatic)
+    let mut rng = rand::rng();
+    symbols
+        .choose_weighted(&mut rng, |symbol| symbol.weight)
+        .map_err(|_| crate::Error::EmptyStatic)
+        .map(|symbol| symbol.char)
 
 }
 
