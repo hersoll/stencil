@@ -16,12 +16,11 @@ pub use registry::PROBLEM_REGISTRY;
 use serde::Deserialize;
 use serde::Serialize;
 
-
 //#################################
 //#       COURSE STRUCTURE        #
 //#################################
 
-#[derive(Debug, Clone,  PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ProblemRegistry {
     pub courses: Vec<Course>,
 }
@@ -32,6 +31,14 @@ pub struct Course {
     pub desc: HashMap<String, String>,
     pub chapters: Vec<Chapter>,
 }
+impl HasDesc for Course {
+    fn name(&self) -> &String {
+        &self.name
+    }
+    fn desc(&self) -> &HashMap<String, String> {
+        &self.desc
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Chapter {
@@ -39,12 +46,43 @@ pub struct Chapter {
     pub desc: HashMap<String, String>,
     pub topics: Vec<Topic>,
 }
+impl HasDesc for Chapter {
+    fn name(&self) -> &String {
+        &self.name
+    }
+    fn desc(&self) -> &HashMap<String, String> {
+        &self.desc
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Topic {
     pub name: String,
     pub desc: HashMap<String, String>,
     pub problems: HashMap<String, HashMap<String, HashMap<String, String>>>,
+}
+impl HasDesc for Topic {
+    fn name(&self) -> &String {
+        &self.name
+    }
+    fn desc(&self) -> &HashMap<String, String> {
+        &self.desc
+    }
+}
+pub trait HasDesc {
+    fn desc(&self) -> &HashMap<String, String>;
+    fn name(&self) -> &String;
+    fn get_desc(&self, lang: String) -> Result<String> {
+        let desc = self
+            .desc()
+            .get(&lang)
+            .ok_or(Error::HasNoDescriptionForLang {
+                name: self.name().clone(),
+                lang,
+            })?
+            .clone();
+        Ok(desc)
+    }
 }
 
 //#################################

@@ -4,7 +4,7 @@ use app::errors;
 use dioxus::prelude::*;
 
 use app::components::{ErrorDisplay, Header, PDFButtons, TopicSelection};
-use app::frontend_types::SetData;
+use app::frontend_types::{Language, SetData};
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
@@ -16,6 +16,7 @@ fn main() {
 #[component]
 fn App() -> Element {
     use_context_provider(|| SetData(Vec::new()));
+    use_context_provider(|| Signal::new(Language("sv".to_string())));
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }

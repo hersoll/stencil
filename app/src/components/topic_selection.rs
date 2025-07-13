@@ -1,9 +1,11 @@
-use crate::backend::{self, ProblemRegistry};
+use crate::backend::{self, HasDesc, ProblemRegistry};
 use crate::backend::{Chapter, Course, Topic};
+use crate::frontend_types::Language;
 use dioxus::prelude::{server_fn::error::ServerFnErrorErr, *};
 
 #[component]
 pub fn TopicSelection() -> Element {
+    let language = use_context::<Signal<Language>>();
     let registry_result: Resource<Result<ProblemRegistry, ServerFnErrorErr>> =
         use_resource(move || async move {
             let reg = backend::load_registry()
@@ -30,6 +32,8 @@ pub fn TopicSelection() -> Element {
             } else {
                 throw_error(crate::Error::NoCourseWithCourseName { name: course_name });
             }
+        } else {
+            chapters.set(Vec::new());
         }
     });
     let mut selected_chapter_name = use_signal(|| Option::<String>::None);
@@ -44,6 +48,8 @@ pub fn TopicSelection() -> Element {
             } else {
                 throw_error(crate::Error::NoChapterWithChapterName { name: chapter_name });
             }
+        } else {
+            topics.set(Vec::new());
         }
     });
     let mut selected_topic_name = use_signal(|| Option::<String>::None);
@@ -55,22 +61,39 @@ pub fn TopicSelection() -> Element {
             } else {
                 throw_error(crate::Error::NoTopicWithTopicName { name: topic_name });
             }
+        } else {
+            problems.set(Vec::new())
         }
     });
 
     rsx! {
         div { id: "topic-picker",
             h1 { "Topic picker" }
-            select {
-                onchange: move |event| {
-                    selected_course_name.set(Some(event.value().to_string()));
-                    selected_chapter_name.set(None);
-                    selected_topic_name.set(None);
-                },
-                option { value: "", "Select Course" }
-                {courses.iter().map(|course| rsx! {
-                    option { value: "{course.name}", "{course.name}" }
-                })}
+
+            if courses().len() > 0 {
+                select {
+                    onchange: move |event| {
+                        selected_course_name.set(Some(event.value().to_string()));
+                        selected_chapter_name.set(None);
+                        selected_topic_name.set(None);
+                    },
+                    option {
+                        value: "",
+                        selected: selected_course_name().is_none(),
+                        disabled: true,
+                        "Select Course"
+                    }
+                    {
+                        courses
+                            .iter()
+                            .map(|course| {
+                                let course_desc = course.get_desc(language().0)?;
+                                rsx! {
+                                    option { value: course.name.clone(), "{course_desc}" }
+                                }
+                            })
+                    }
+                }
             }
             // Chapters
             if chapters().len() > 0 {
@@ -79,10 +102,17 @@ pub fn TopicSelection() -> Element {
                         selected_chapter_name.set(Some(ev.value().to_string()));
                         selected_topic_name.set(None);
                     },
-                    option { value: "", "Select Chapter" }
-                    {chapters.iter().map(|chapter| rsx! {
-                        option { value: "{chapter.name}", "{chapter.name}" }
-                    })}
+                    option {
+                        value: "",
+                        selected: selected_chapter_name().is_none(),
+                        disabled: true,
+                        "Select Chapter"
+                    }
+                    {chapters.iter().map(|chapter| {
+                        let chapter_desc = chapter.get_desc(language().0)?;
+                        rsx! {
+                            option { value: chapter.name.clone(), "{chapter_desc}" }
+                    }})}
                 }
                 // Topics
                 if topics().len() > 0 {
@@ -90,18 +120,26 @@ pub fn TopicSelection() -> Element {
                         onchange: move |ev| {
                             selected_topic_name.set(Some(ev.value().to_string()));
                         },
-                        option { value: "", "Select Topic" }
-                        {topics.iter().map(|topic| rsx! {
-                            option { value: "{topic.name}", "{topic.name}" }
-                        })}
+                        option {
+                            value: "",
+                            selected: selected_topic_name().is_none(),
+                            disabled: true,
+                            "Select Topic"
+                        }
+                        {topics.iter().map(|topic| {
+                            let topic_desc = topic.get_desc(language().0)?;
+                            rsx! {
+                                option { value: topic.name.clone(), "{topic_desc}" }
+                        }})}
                     }
                     // Problems
                     if problems().len() > 0 {
-                            ul {
-                                {problems.iter().map(|problem| rsx! {
-                                    li { "{problem}" }
-                                })}
-                            }
+                        ul {
+                            {problems.iter().map(|problem| {
+                                rsx! {
+                                li { "{problem}" }
+                            }})}
+                        }
                     }
                 }
             }

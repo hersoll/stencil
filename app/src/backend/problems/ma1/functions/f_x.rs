@@ -1,7 +1,10 @@
 use std::collections::HashMap;
 
 use crate::{
-    backend::{translations::PROBLEM_TRANSLATIONS, typst_formatting::equation_solution, IntRange, Problem}, Error, Result
+    Error, Result,
+    backend::{
+        IntRange, Problem, translations::PROBLEM_TRANSLATIONS, typst_formatting::equation_solution,
+    },
 };
 use macros::problem;
 
@@ -16,26 +19,24 @@ fn without_notation_y(id: String) -> Result<Problem> {
     let y = coefficient * x + constant;
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
-    let map = HashMap::from([
-        ("expression", expression),
-        ("x", x.to_string()),
-    ]);
-
-    dbg!(&PROBLEM_TRANSLATIONS.iter());
+    let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
 
     let question = PROBLEM_TRANSLATIONS
         .get(&id)
-        .ok_or(Error::NoSuchKeyExists {key: id.clone()})?
+        .ok_or(Error::NoSuchKeyExists { key: id.clone() })?
         .get_placeholder_phrase("question", map)?;
 
-   let solution = format!("y &= {coefficient}x {constant:+} \\x={x} \\
+    let solution = format!(
+        "y &= {coefficient}x {constant:+} \\x={x} \\
        y &= {coefficient} dot.op gray({x}) {constant:+} \\ \\
        y &= {prod} {constant:+} \\ \\
-       y &= {y} \\",  prod = x*coefficient);
+       y &= {y} \\",
+        prod = x * coefficient
+    );
 
     let problem = Problem {
         id,
-        question, 
+        question,
         answer: format!("$y = {}$", y),
         solution: equation_solution(solution),
         identifiers: vec![coefficient, constant],
@@ -52,28 +53,27 @@ fn without_notation_x(id: String) -> Result<Problem> {
     let y = coefficient * x + constant;
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
-    let map = HashMap::from([
-        ("expression", expression),
-        ("y", y.to_string()),
-    ]);
-
-    dbg!(&PROBLEM_TRANSLATIONS.iter());
+    let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
 
     let question = PROBLEM_TRANSLATIONS
         .get(&id)
-        .ok_or(Error::NoSuchKeyExists {key: id.clone()})?
+        .ok_or(Error::NoSuchKeyExists { key: id.clone() })?
         .get_placeholder_phrase("question", map)?;
 
-    let solution = format!("y &= {coefficient}x {constant:+} \\y={y} \\
+    let solution = format!(
+        "y &= {coefficient}x {constant:+} \\y={y} \\
         {y} &= {coefficient}x {constant:+} \\ {inverse:+} \\
         {lhs} &= {coefficient}x \\ div {coefficient} \\
-        {x} &= x \\", inverse=-constant, lhs = x*coefficient);
+        {x} &= x \\",
+        inverse = -constant,
+        lhs = x * coefficient
+    );
 
     let problem = Problem {
         id,
-        question, 
+        question,
         answer: format!("$x = {}$", x),
-        solution: equation_solution(solution), 
+        solution: equation_solution(solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     };
