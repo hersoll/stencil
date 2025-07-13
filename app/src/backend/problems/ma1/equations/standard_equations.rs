@@ -5,7 +5,7 @@ use crate::backend::typst_formatting;
 use macros::problem;
 
 #[problem(id = "add_sub_only", difficulty = 0)]
-fn only_addition_or_subtraction(id: String) -> Result<Problem> {
+fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::with_zero(0, 9)?.random();
     let (constant, constant_range) = IntRange::without_zero(-answer, 9)?.and_random();
 
@@ -30,7 +30,7 @@ fn only_addition_or_subtraction(id: String) -> Result<Problem> {
 }
 
 #[problem(id = "mult_only", difficulty = 0)]
-fn only_multiplication(id: String) -> Result<Problem> {
+fn only_multiplication(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(2, 5)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(3, 9)?.and_random();
 
@@ -55,7 +55,7 @@ fn only_multiplication(id: String) -> Result<Problem> {
 }
 
 #[problem(id = "up_to_5", difficulty = 1)]
-fn default_equation_positive_up_to_5(id: String) -> Result<Problem> {
+fn default_equation_positive_up_to_5(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 5)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 5)?.and_random();
     let (constant, constant_range) =
@@ -90,7 +90,7 @@ fn default_equation_positive_up_to_5(id: String) -> Result<Problem> {
 }
 
 #[problem(id = "default_positive", difficulty = 2)]
-fn default_equation_positive_answers(id: String) -> Result<Problem> {
+fn default_equation_positive_answers(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 10)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 9)?.and_random();
     let (constant, constant_range) =

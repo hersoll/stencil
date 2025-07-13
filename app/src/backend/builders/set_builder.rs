@@ -5,13 +5,12 @@ use crate::backend::problems::*;
 use std::cmp::Ordering;
 
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
-use serde::Deserialize;
-use serde::Serialize;
 
 #[derive(Debug)]
 pub struct SetBuilder {
     problem_areas: Vec<Vec<ProblemType>>,
     batches: Vec<(Difficulty, u8)>,
+    lang: String,
 }
 
 //#################################
@@ -22,7 +21,13 @@ impl SetBuilder {
         SetBuilder {
             problem_areas: Vec::new(),
             batches: Vec::new(),
+            lang: "sv".to_string()
         }
+    }
+
+    pub fn lang<T: Into<String>>(&mut self, lang: T) -> &mut Self {
+        self.lang = lang.into();
+        self
     }
 
     pub fn area(&mut self, area: Vec<ProblemType>) -> &mut Self {
@@ -127,6 +132,7 @@ impl SetBuilder {
                     let problem = self.get_unique_problem_or_reset_ids(
                         scored_problem_type.problem_type,
                         &mut ids,
+
                     )?;
                     filtered_candidates[*chosen_index].score -= 1;
                     problems.push(problem);
@@ -232,7 +238,7 @@ impl SetBuilder {
         problem_type: &ProblemType,
         ids: &mut Vec<ProblemId>,
     ) -> Result<Problem> {
-        let mut problem = (problem_type.generator)(problem_type.name.clone())?;
+        let mut problem = (problem_type.generator)(problem_type.name.clone(), &self.lang)?;
         let mut current_id = ProblemId {
             name: problem_type.name.clone(),
             identifiers: problem.identifiers.clone(),
@@ -247,7 +253,7 @@ impl SetBuilder {
         }
 
         while ids.contains(&current_id) {
-            problem = (problem_type.generator)(problem_type.name.clone())?;
+            problem = (problem_type.generator)(problem_type.name.clone(), &self.lang)?;
             current_id.identifiers = problem.identifiers.clone();
         }
         ids.push(current_id.clone());
@@ -258,7 +264,7 @@ impl SetBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    fn mock_problem_generator(_: String) -> Result<Problem> {
+    fn mock_problem_generator(_: String, _: &str) -> Result<Problem> {
         Ok(Problem::new("mock", "mock"))
     }
 

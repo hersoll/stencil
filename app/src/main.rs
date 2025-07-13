@@ -16,7 +16,7 @@ fn main() {
 #[component]
 fn App() -> Element {
     use_context_provider(|| SetData(Vec::new()));
-    use_context_provider(|| Signal::new(Language("sv".to_string())));
+    use_context_provider(|| Signal::new(Language("en".to_string())));
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }

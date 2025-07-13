@@ -54,23 +54,28 @@
                     "topics": {
                         "f_x": {
                             "desc": {
-                                "sv": "f(x)"
+                                "sv": "f(x)",
+                                "en": "f(x)"
                             },
                             "problems": {
                                 "without_notation_y": {
                                     "desc": {
-                                        "sv": "Bestäm y om du vet x (utan f(x))"
+                                        "sv": "Bestäm y om du vet x (utan f(x))",
+                                        "en": "Find y if you know x (no f(x))"
                                     },
                                     "question": {
-                                        "sv": "Du har sambandet ${expression}$. Bestäm $y$ om du vet att $x = {x}$."
+                                        "sv": "Du har sambandet ${expression}$. Bestäm $y$ om du vet att $x = {x}$.",
+                                        "en": "Using the formula ${expression}$, find $y$ if you know that $x = {x}$."
                                     }
                                 },
                                 "without_notation_x": {
                                     "desc": {
-                                        "sv": "Bestäm x om du vet y (utan f(x))"
+                                        "sv": "Bestäm x om du vet y (utan f(x))",
+                                        "en": "Find x if you know y (no f(x))"
                                     },
                                     "question": {
-                                        "sv": "Du har sambandet ${expression}$. Bestäm $x$ om du vet att $y = {y}$."
+                                        "sv": "Du har sambandet ${expression}$. Bestäm $x$ om du vet att $y = {y}$.",
+                                        "en": "Using the formula ${expression}$, find $x$ if you know that $y = {y}$."
                                     }
                                 }
                             }

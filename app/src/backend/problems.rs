@@ -76,7 +76,7 @@ impl Problem {
     }
 }
 
-pub type ProblemGenerator = fn(String) -> Result<Problem>;
+pub type ProblemGenerator = fn(String, &str) -> Result<Problem>;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct ProblemId {
@@ -93,7 +93,7 @@ pub struct ProblemType {
 
 impl PartialEq for ProblemType {
     fn eq(&self, other: &Self) -> bool {
-        self.generator as usize == other.generator as usize
+        self.name == other.name
     }
 }
 //#################################

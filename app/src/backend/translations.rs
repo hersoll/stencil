@@ -13,7 +13,7 @@ pub static GENERAL_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let data = fs::read_to_string("translations.json").expect("Failed to read translations.json");
     let table: TranslationTable =
         serde_json::from_str(&data).expect("Failed to parse translation JSON");
-    Translations::new(table, "sv")
+    Translations::new(table)
 });
 
 pub static REGISTRY_TRANSLATIONS: Lazy<ProblemRegistry> = Lazy::new(|| {
@@ -29,7 +29,7 @@ pub static COURSE_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     for course in REGISTRY_TRANSLATIONS.clone().courses {
         table.insert(course.name, course.desc);
     }
-    Translations::new(table, "sv")
+    Translations::new(table)
 });
 
 pub static CHAPTER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
@@ -39,7 +39,7 @@ pub static CHAPTER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
             table.insert(chapter.name, chapter.desc);
         }
     }
-    Translations::new(table, "sv")
+    Translations::new(table)
 });
 
 pub static TOPIC_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
@@ -51,7 +51,7 @@ pub static TOPIC_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
             }
         }
     }
-    Translations::new(table, "sv")
+    Translations::new(table)
 });
 
 pub static PROBLEM_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
@@ -66,7 +66,7 @@ pub static PROBLEM_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
             }
         }
     }
-    Translations::new(table, "sv")
+    Translations::new(table)
 });
 
 pub static QUESTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
@@ -83,7 +83,7 @@ pub static QUESTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
             }
         }
     }
-    Translations::new(table, "sv")
+    Translations::new(table)
 });
 
 pub static ANSWER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
@@ -100,7 +100,7 @@ pub static ANSWER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
             }
         }
     }
-    Translations::new(table, "sv")
+    Translations::new(table)
 });
 
 pub static SOLUTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
@@ -117,14 +117,13 @@ pub static SOLUTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
             }
         }
     }
-    Translations::new(table, "sv")
+    Translations::new(table)
 });
 
 pub type TranslationTable = HashMap<String, HashMap<String, String>>;
 
 #[derive(Debug, Deserialize)]
 pub struct Translations {
-    lang: String,
     table: TranslationTable,
 }
 
@@ -133,43 +132,39 @@ pub struct Translations {
 //       it for every TranslationTable
 
 impl Translations {
-    pub fn new(table: TranslationTable, lang: &str) -> Translations {
+    pub fn new(table: TranslationTable) -> Translations {
         Translations {
-            lang: lang.to_string(),
             table: table,
         }
     }
-    pub fn get_phrase(&self, key: &str) -> Result<String> {
+    pub fn get_phrase(&self, key: &str, lang: &str) -> Result<String> {
         match self
             .table
             .get(key)
-            .and_then(|lang_map| lang_map.get(&self.lang))
+            .and_then(|lang_map| lang_map.get(lang))
             .cloned()
         {
             Some(val) => Ok(val),
             None => Err(Error::InvalidTranslationKey {
                 key: key.to_string(),
-                lang: self.lang.to_string(),
+                lang: lang.to_string(),
             }),
         }
     }
-    pub fn get_placeholder_phrase(&self, key: &str, args: HashMap<&str, String>) -> Result<String> {
+    pub fn get_placeholder_phrase(&self, key: &str, args: HashMap<&str, String>, lang: &str) -> Result<String> {
         if let Some(val) = self
             .table
             .get(key)
-            .and_then(|lang_map| lang_map.get(&self.lang))
+            .and_then(|lang_map| lang_map.get(lang))
             .cloned()
         {
             Ok(Self::fill_args(&val, &args))
         } else {
             Err(Error::InvalidTranslationKey {
                 key: key.to_string(),
-                lang: self.lang.to_string(),
+                lang: lang.to_string(),
             })
         }
-    }
-    pub fn change_language(&mut self, lang: &str) {
-        self.lang = lang.to_string();
     }
 
     fn fill_args(placeholder_text: &str, args: &HashMap<&str, String>) -> String {

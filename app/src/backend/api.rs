@@ -49,12 +49,14 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
 
     let problems = crate::backend::builders::SetBuilder::new()
         .area(problem_types)
+        .lang("en")
         .batch(crate::backend::Difficulty::Intro, 5)
         .batch(crate::backend::Difficulty::Easy, 10)
         .build()?;
 
     let typst_file = DocumentBuilder::new()
         .heading("Equations")
+        .lang("en")
         .write_solutions(WriteSolutions::First)
         .add_problem_set(problems)?
         .build()?;

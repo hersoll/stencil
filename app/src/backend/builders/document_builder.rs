@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::backend::problems::Problem;
 use crate::backend::translations::GENERAL_TRANSLATIONS;
-use crate::backend::{ProblemGenerator, document::*};
-use crate::{Error, Result};
+use crate::backend::document::*;
+use crate::Result;
 
 #[derive(Debug)]
 pub struct DocumentBuilder {
@@ -15,6 +15,7 @@ pub struct DocumentBuilder {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DocumentOptions {
     //Config options
+    lang: String,
     write_solutions: WriteSolutions,
     file_name: String,
     color: bool,
@@ -53,6 +54,7 @@ pub enum WriteSolutions {
 impl DocumentBuilder {
     pub fn new() -> DocumentBuilder {
         let options = DocumentOptions {
+            lang: "sv".to_string(),
             write_solutions: WriteSolutions::None,
             file_name: String::from("stencil"),
             color: true,
@@ -68,6 +70,14 @@ impl DocumentBuilder {
             answer_sets: Vec::new(),
             options,
         }
+    }
+
+    // TODO: Might not need any of these setters if the frontend passes
+    //       a DocumentOptions object
+
+    pub fn lang<T: Into<String>>(&mut self, lang: T) -> &mut Self {
+        self.options.lang = lang.into();
+        self
     }
 
     pub fn file_name<T: Into<String>>(&mut self, file_name: T) -> &mut Self {
@@ -147,7 +157,7 @@ impl DocumentBuilder {
     fn build_solution(&self, answer: String, solution: String) -> Result<String> {
         let heading = format!(
             "  #v(0pt)\n  #emph([{}])\n  #v(-6pt)",
-            GENERAL_TRANSLATIONS.get_phrase("solution")?
+            GENERAL_TRANSLATIONS.get_phrase("solution", &self.options.lang)?
         );
         Ok([answer, heading, solution].join("\n"))
     }
