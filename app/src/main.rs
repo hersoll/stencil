@@ -18,9 +18,11 @@ fn main() {
 #[component]
 fn App() -> Element {
     //use_context_provider(|| Signal::new(SetData(Vec::new())));
-    *TRANSLATIONS.write() = use_server_future(backend::load_translations)?
-        .unwrap()
-        .unwrap();
+    let translations = use_server_future(backend::load_translations)?;
+    if let Some(Err(e)) = translations() {
+        return rsx! { "Error loading translations: {e}"};
+    }
+    *TRANSLATIONS.write() = translations().unwrap().unwrap();
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
