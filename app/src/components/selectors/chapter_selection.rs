@@ -31,6 +31,7 @@ pub fn ChapterSelection(chapters: Signal<Vec<ChapterData>>) -> Element {
         if chapters().len() > 0 {
             select {
                 onchange: move |ev| {
+                    topics.set(Vec::new());
                     selected_chapter_name.set(Some(ev.value().to_string()));
                 },
                 option {

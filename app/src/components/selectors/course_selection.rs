@@ -1,8 +1,8 @@
+use crate::backend::Translations;
 use crate::backend::{self, ChapterData, CourseData, HasDesc, ProblemRegistry};
 use crate::components::selectors::chapter_selection::ChapterSelection;
 use crate::frontend_types::Language;
 use dioxus::prelude::{server_fn::error::ServerFnErrorErr, *};
-use crate::backend::Translations;
 
 #[component]
 pub fn CourseSelection() -> Element {
@@ -50,6 +50,8 @@ pub fn CourseSelection() -> Element {
             if courses().len() > 0 {
                 select {
                     onchange: move |event| {
+                        // Reset chapters when we change course
+                        chapters.set(Vec::new());
                         selected_course_name.set(Some(event.value().to_string()));
                     },
                     option {

@@ -7,7 +7,7 @@ use app::{backend, errors};
 use dioxus::prelude::server_fn::error::ServerFnErrorErr;
 use dioxus::prelude::*;
 
-use app::components::{CourseSelection, ErrorDisplay, Header, PDFButtons};
+use app::components::{CourseSelection, ErrorDisplay, Header, LanguageSwitch, PDFButtons};
 use app::frontend_types::{Language, SetData};
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -22,9 +22,11 @@ fn main() {
 fn App() -> Element {
     use_context_provider(|| Signal::new(SetData(Vec::new())));
     use_context_provider(|| Signal::new(Language::from(DEFAULT_LANGUAGE.to_string())));
-    let translation_fetch_result: Resource<Result<Translations, String>> = 
+    let translation_fetch_result: Resource<Result<Translations, String>> =
         use_server_future(move || async move {
-            let translations = backend::load_translations().await.map_err(|err| err.to_string())?;
+            let translations = backend::load_translations()
+                .await
+                .map_err(|err| err.to_string())?;
             Ok(translations)
         })?;
     // We want this to panic if we don't get our translations
@@ -52,6 +54,7 @@ fn App() -> Element {
                     }
                 }
             },
+            LanguageSwitch {}
             CourseSelection {}
             PDFButtons {}
         }
