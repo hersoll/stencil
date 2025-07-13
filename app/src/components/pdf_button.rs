@@ -1,5 +1,5 @@
 use crate::backend::generate_pdf;
-use crate::{Error, Result};
+use crate::{Error};
 use dioxus::prelude::server_fn::error::ServerFnErrorErr;
 use dioxus::prelude::*;
 use js_sys::Uint8Array;

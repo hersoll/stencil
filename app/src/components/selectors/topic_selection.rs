@@ -1,9 +1,8 @@
-use crate::{backend::*, APP_LANGUAGE};
+use crate::{backend::*, APP_LANGUAGE, TRANSLATIONS};
 use dioxus::prelude::*;
 
 #[component]
 pub fn TopicSelection(topics: Signal<Vec<TopicData>>) -> Element {
-    let translations = use_context::<Translations>();
     let mut selected_topic_name = use_signal(|| Option::<String>::None);
     let mut problems: Signal<Vec<ProblemData>> = use_signal(|| Vec::new());
     use_effect(move || {
@@ -17,7 +16,7 @@ pub fn TopicSelection(topics: Signal<Vec<TopicData>>) -> Element {
             problems.set(Vec::new())
         }
     });
-    let selection_default = translations.get_phrase("topic_selector", APP_LANGUAGE())?;
+    let selection_default = TRANSLATIONS().get_phrase("topic_selector", APP_LANGUAGE())?;
     rsx! {
         // Topics
         if topics().len() > 0 {

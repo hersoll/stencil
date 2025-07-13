@@ -2,7 +2,7 @@
 #![allow(dead_code)]
 
 use app::backend::Translations;
-use app::{backend, errors};
+use app::{backend, errors, TRANSLATIONS};
 use dioxus::prelude::*;
 
 use app::components::{CourseSelection, ErrorDisplay, Header, LanguageSwitch, PDFButtons};
@@ -10,7 +10,6 @@ use app::frontend_types::SetData;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
-const DEFAULT_LANGUAGE: &str = "sv";
 
 fn main() {
     dioxus::launch(App);
@@ -29,8 +28,7 @@ fn App() -> Element {
         })?;
     // We want this to panic if we don't get our translations
     // TODO: Send user to some error page instead of panic
-    let translations = translation_fetch_result().unwrap().unwrap();
-    use_context_provider(|| translations);
+    *TRANSLATIONS.write() = translation_fetch_result().unwrap().unwrap();
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }

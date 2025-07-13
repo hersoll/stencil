@@ -1,11 +1,10 @@
 use crate::{
-    backend::*, components::selectors::topic_selection::TopicSelection, APP_LANGUAGE,
+    backend::*, components::selectors::topic_selection::TopicSelection, APP_LANGUAGE,TRANSLATIONS
 };
 use dioxus::prelude::*;
 
 #[component]
 pub fn ChapterSelection(chapters: Signal<Vec<ChapterData>>) -> Element {
-    let translations = use_context::<Translations>();
     let mut selected_chapter_name = use_signal(|| Option::<String>::None);
     let mut topics: Signal<Vec<TopicData>> = use_signal(|| Vec::new());
     use_effect(move || {
@@ -23,7 +22,7 @@ pub fn ChapterSelection(chapters: Signal<Vec<ChapterData>>) -> Element {
         }
     });
 
-    let selection_default = translations.get_phrase("chapter_selector", APP_LANGUAGE())?;
+    let selection_default = TRANSLATIONS().get_phrase("chapter_selector", APP_LANGUAGE())?;
 
     rsx! {
         // Chapters
