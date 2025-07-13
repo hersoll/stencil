@@ -30,10 +30,23 @@ pub enum Error {
         key: String,
         lang: String,
     },
-    HasNoDescriptionForLang {
+    NoDescriptionForLang {
         name: String,
         lang: String,
     },
+    NoQuestionForLang{
+        name: String,
+        lang: String,
+    },
+    NoAnswerForLang{
+        name: String,
+        lang: String,
+    },
+    NoSolutionForLang{
+        name: String,
+        lang: String,
+    },
+
 
     // Frontend - getting parts of course structure
     NoCourseWithCourseName {

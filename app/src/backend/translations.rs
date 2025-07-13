@@ -1,10 +1,12 @@
-use crate::{backend::{Course, ProblemRegistry, Chapter, Topic}, Error, Result};
+use crate::{
+    backend::{ChapterData, CourseData, ProblemData, ProblemRegistry, TopicData}, Error, Result
+};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::{
     collections::HashMap,
     fs,
-    sync::{Arc, Mutex},
 };
 
 pub static GENERAL_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
@@ -16,10 +18,12 @@ pub static GENERAL_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
 
 pub static REGISTRY_TRANSLATIONS: Lazy<ProblemRegistry> = Lazy::new(|| {
     let json = std::fs::read_to_string("registry.json").expect("Failed to read registry.json");
-    let parsed: crate::backend::ProblemRegistry = serde_json::from_str(&json).expect("Failed to parse registry JSON");
+    let parsed: crate::backend::ProblemRegistry =
+        serde_json::from_str(&json).expect("Failed to parse registry JSON");
     parsed
 });
 
+// TODO: COURSE, CHAPTER, TOPIC, PROBLEM might not be needed??
 pub static COURSE_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let mut table: TranslationTable = HashMap::new();
     for course in REGISTRY_TRANSLATIONS.clone().courses {
@@ -50,20 +54,70 @@ pub static TOPIC_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     Translations::new(table, "sv")
 });
 
-pub static PROBLEM_TRANSLATIONS: Lazy<HashMap<String, Translations>> = Lazy::new(|| {
-    let mut table: HashMap<String, Translations> = HashMap::new();
+pub static PROBLEM_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
+    let mut table: TranslationTable = HashMap::new();
     for course in REGISTRY_TRANSLATIONS.clone().courses {
         for chapter in course.chapters {
             for topic in chapter.topics {
-                for (name, data) in topic.problems {
-                    let combined_name = topic.name.clone() + "_" + name.as_str();
-                    let translations = Translations::new(data, "sv");
-                    table.insert(combined_name, translations);
+                for problem in topic.problems {
+                    let combined_name = topic.name.clone() + "_" + problem.name.as_str();
+                    table.insert(combined_name, problem.desc);
                 }
             }
         }
     }
-    table
+    Translations::new(table, "sv")
+});
+
+pub static QUESTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
+    let mut table: TranslationTable = HashMap::new();
+    for course in REGISTRY_TRANSLATIONS.clone().courses {
+        for chapter in course.chapters {
+            for topic in chapter.topics {
+                for problem in topic.problems {
+                    if !problem.question.is_empty() {
+                        let combined_name = topic.name.clone() + "_" + problem.name.as_str();
+                        table.insert(combined_name, problem.question);
+                    }
+                }
+            }
+        }
+    }
+    Translations::new(table, "sv")
+});
+
+pub static ANSWER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
+    let mut table: TranslationTable = HashMap::new();
+    for course in REGISTRY_TRANSLATIONS.clone().courses {
+        for chapter in course.chapters {
+            for topic in chapter.topics {
+                for problem in topic.problems {
+                    if !problem.answer.is_empty() {
+                        let combined_name = topic.name.clone() + "_" + problem.name.as_str();
+                        table.insert(combined_name, problem.answer);
+                    }
+                }
+            }
+        }
+    }
+    Translations::new(table, "sv")
+});
+
+pub static SOLUTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
+    let mut table: TranslationTable = HashMap::new();
+    for course in REGISTRY_TRANSLATIONS.clone().courses {
+        for chapter in course.chapters {
+            for topic in chapter.topics {
+                for problem in topic.problems {
+                    if !problem.solution.is_empty() {
+                        let combined_name = topic.name.clone() + "_" + problem.name.as_str();
+                        table.insert(combined_name, problem.solution);
+                    }
+                }
+            }
+        }
+    }
+    Translations::new(table, "sv")
 });
 
 pub type TranslationTable = HashMap<String, HashMap<String, String>>;
@@ -99,11 +153,7 @@ impl Translations {
             }),
         }
     }
-    pub fn get_placeholder_phrase(
-        &self,
-        key: &str,
-        args: HashMap<&str, String>,
-    ) -> Result<String> {
+    pub fn get_placeholder_phrase(&self, key: &str, args: HashMap<&str, String>) -> Result<String> {
         if let Some(val) = self
             .table
             .get(key)
@@ -147,7 +197,22 @@ impl Serialize for ProblemRegistry {
                             "topics": chapter.topics.iter().map(|topic| {
                                 (topic.name.clone(), serde_json::json!({
                                     "desc": topic.desc,
-                                    "problems": topic.problems
+                                    "problems": topic.problems.iter().map(|problem| {
+                                        let mut problem_map = serde_json::Map::new();
+                                        problem_map.insert("desc".to_string(), json!(problem.desc));
+
+                                        if problem.question.len() > 0 {
+                                            problem_map.insert("question".to_string(), json!(problem.question));
+                                        }
+                                        if problem.answer.len() > 0 {
+                                            problem_map.insert("answer".to_string(), json!(problem.answer));
+                                        }
+                                        if problem.solution.len() > 0 {
+                                            problem_map.insert("solution".to_string(), json!(problem.solution));
+                                        }
+
+                                        (problem.name.clone(), json!(problem_map))
+                                    }).collect::<std::collections::HashMap<_,_>>()
                                 }))
                             }).collect::<std::collections::HashMap<_, _>>()
                         }))
@@ -155,7 +220,7 @@ impl Serialize for ProblemRegistry {
                 }))
             }).collect::<std::collections::HashMap<_, _>>()
         });
-        
+
         json_structure.serialize(serializer)
     }
 }
@@ -185,36 +250,63 @@ impl<'de> Deserialize<'de> for ProblemRegistry {
         #[derive(Deserialize)]
         struct TopicHelper {
             desc: HashMap<String, String>,
-            problems: HashMap<String, HashMap<String, HashMap<String, String>>>,
+            problems: HashMap<String, ProblemHelper>,
+        }
+
+        #[derive(Deserialize)]
+        struct ProblemHelper {
+            desc: HashMap<String, String>,
+            #[serde(default)]
+            question: HashMap<String, String>,
+            #[serde(default)]
+            answer: HashMap<String, String>,
+            #[serde(default)]
+            solution: HashMap<String, String>,
         }
 
         let helper = CourseDataHelper::deserialize(deserializer)?;
-        
-        let courses = helper.courses
+
+        let courses = helper
+            .courses
             .into_iter()
             .map(|(course_name, course_helper)| {
-                let chapters = course_helper.chapters
+                let chapters = course_helper
+                    .chapters
                     .into_iter()
                     .map(|(chapter_name, chapter_helper)| {
-                        let topics = chapter_helper.topics
+                        let topics = chapter_helper
+                            .topics
                             .into_iter()
                             .map(|(topic_name, topic_helper)| {
-                                Topic {
-                                    name: topic_name,
-                                    desc: topic_helper.desc,
-                                    problems: topic_helper.problems,
+                                let problems = topic_helper
+                                    .problems
+                                    .into_iter()
+                                    .map(|(problem_name, problem_helper)| {
+                                        ProblemData {
+                                            name: problem_name,
+                                            desc: problem_helper.desc,
+                                            question: problem_helper.question,
+                                            answer: problem_helper.answer,
+                                            solution: problem_helper.solution,
+                                        }
+                                    }).collect();
+
+                                TopicData {
+                                name: topic_name,
+                                desc: topic_helper.desc,
+                                problems,
                                 }
                             })
                             .collect();
 
-                        Chapter {
+                        ChapterData {
                             name: chapter_name,
                             desc: chapter_helper.desc,
                             topics,
                         }
                     })
                     .collect();
-                Course {
+                CourseData {
                     name: course_name,
                     desc: course_helper.desc,
                     chapters,

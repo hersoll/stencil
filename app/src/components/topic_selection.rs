@@ -1,5 +1,5 @@
-use crate::backend::{self, HasDesc, ProblemRegistry};
-use crate::backend::{Chapter, Course, Topic};
+use crate::backend::{self, HasDesc, ProblemData, ProblemRegistry};
+use crate::backend::{ChapterData, CourseData, TopicData};
 use crate::frontend_types::Language;
 use dioxus::prelude::{server_fn::error::ServerFnErrorErr, *};
 
@@ -16,7 +16,7 @@ pub fn TopicSelection() -> Element {
     if let Some(Err(e)) = registry_result.read().as_ref() {
         throw_error(e.clone())
     }
-    let mut courses: Signal<Vec<Course>> = use_signal(|| Vec::new());
+    let mut courses: Signal<Vec<CourseData>> = use_signal(|| Vec::new());
     // Load the courses when we get the Registry
     use_effect(move || {
         if let Some(Ok(registry)) = registry_result() {
@@ -24,7 +24,7 @@ pub fn TopicSelection() -> Element {
         }
     });
     let mut selected_course_name = use_signal(|| Option::<String>::None);
-    let mut chapters: Signal<Vec<Chapter>> = use_signal(|| Vec::new());
+    let mut chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
     use_effect(move || {
         if let Some(course_name) = selected_course_name() {
             if let Some(course) = courses().iter().find(|course| course.name == course_name) {
@@ -37,7 +37,7 @@ pub fn TopicSelection() -> Element {
         }
     });
     let mut selected_chapter_name = use_signal(|| Option::<String>::None);
-    let mut topics: Signal<Vec<Topic>> = use_signal(|| Vec::new());
+    let mut topics: Signal<Vec<TopicData>> = use_signal(|| Vec::new());
     use_effect(move || {
         if let Some(chapter_name) = selected_chapter_name() {
             if let Some(chapter) = chapters()
@@ -53,11 +53,11 @@ pub fn TopicSelection() -> Element {
         }
     });
     let mut selected_topic_name = use_signal(|| Option::<String>::None);
-    let mut problems: Signal<Vec<String>> = use_signal(|| Vec::new());
+    let mut problems: Signal<Vec<ProblemData>> = use_signal(|| Vec::new());
     use_effect(move || {
         if let Some(topic_name) = selected_topic_name() {
             if let Some(topic) = topics().iter().find(|topic| topic.name == topic_name) {
-                problems.set(topic.problems.keys().map(|key| key.to_string()).collect());
+                problems.set(topic.problems.clone());
             } else {
                 throw_error(crate::Error::NoTopicWithTopicName { name: topic_name });
             }
@@ -136,8 +136,9 @@ pub fn TopicSelection() -> Element {
                     if problems().len() > 0 {
                         ul {
                             {problems.iter().map(|problem| {
+                                let problem_desc = problem.get_desc(language().0)?;
                                 rsx! {
-                                li { "{problem}" }
+                                li { "{problem_desc}" }
                             }})}
                         }
                     }

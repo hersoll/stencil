@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 
 use crate::{
-    Error, Result,
     backend::{
-        IntRange, Problem, translations::PROBLEM_TRANSLATIONS, typst_formatting::equation_solution,
-    },
+        translations::{PROBLEM_TRANSLATIONS, QUESTION_TRANSLATIONS}, typst_formatting::equation_solution, IntRange, Problem
+    }, Error, Result
 };
 use macros::problem;
 
@@ -21,10 +20,7 @@ fn without_notation_y(id: String) -> Result<Problem> {
     let expression = format!("y = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
 
-    let question = PROBLEM_TRANSLATIONS
-        .get(&id)
-        .ok_or(Error::NoSuchKeyExists { key: id.clone() })?
-        .get_placeholder_phrase("question", map)?;
+    let question = QUESTION_TRANSLATIONS.get_placeholder_phrase(&id, map)?;
 
     let solution = format!(
         "y &= {coefficient}x {constant:+} \\x={x} \\
@@ -55,10 +51,7 @@ fn without_notation_x(id: String) -> Result<Problem> {
     let expression = format!("y = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
 
-    let question = PROBLEM_TRANSLATIONS
-        .get(&id)
-        .ok_or(Error::NoSuchKeyExists { key: id.clone() })?
-        .get_placeholder_phrase("question", map)?;
+    let question = QUESTION_TRANSLATIONS.get_placeholder_phrase(&id, map)?;
 
     let solution = format!(
         "y &= {coefficient}x {constant:+} \\y={y} \\
