@@ -6,6 +6,7 @@ use dioxus::prelude::*;
 #[component]
 pub fn ChapterSelection(chapters: Signal<Vec<ChapterData>>) -> Element {
     let language = use_context::<Signal<Language>>();
+    let translations = use_context::<Translations>();
     let mut selected_chapter_name = use_signal(|| Option::<String>::None);
     let mut topics: Signal<Vec<TopicData>> = use_signal(|| Vec::new());
     use_effect(move || {
@@ -22,6 +23,9 @@ pub fn ChapterSelection(chapters: Signal<Vec<ChapterData>>) -> Element {
             topics.set(Vec::new());
         }
     });
+
+    let selection_default = translations.get_phrase("chapter_selector", &language())?;
+
     rsx! {
         // Chapters
         if chapters().len() > 0 {
@@ -33,13 +37,13 @@ pub fn ChapterSelection(chapters: Signal<Vec<ChapterData>>) -> Element {
                     value: "",
                     selected: selected_chapter_name().is_none(),
                     disabled: true,
-                    "Select Chapter"
+                    "{selection_default}"
                 }
                 {
                     chapters
                         .iter()
                         .map(|chapter| {
-                            let chapter_desc = chapter.get_desc(language().0)?;
+                            let chapter_desc = chapter.get_desc(language())?;
                             rsx! {
                                 option { value: chapter.name.clone(), "{chapter_desc}" }
                             }

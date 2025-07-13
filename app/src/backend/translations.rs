@@ -2,7 +2,7 @@ use crate::{
     backend::ProblemRegistry, Error, Result
 };
 use once_cell::sync::Lazy;
-use serde::{Deserialize};
+use serde::{Serialize, Deserialize};
 use std::{
     collections::HashMap,
     fs,
@@ -122,7 +122,7 @@ pub static SOLUTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
 
 pub type TranslationTable = HashMap<String, HashMap<String, String>>;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone )]
 pub struct Translations {
     table: TranslationTable,
 }

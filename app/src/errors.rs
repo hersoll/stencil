@@ -47,6 +47,8 @@ pub enum Error {
         lang: String,
     },
 
+    // Loading inital resources
+    FailedToLoadTranslations,
 
     // Frontend - getting parts of course structure
     NoCourseWithCourseName {

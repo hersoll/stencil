@@ -1,13 +1,18 @@
 //Remember to eventually remove this (when #[server] is fixed....)
 #![allow(dead_code)]
-use app::errors;
+use std::collections::HashMap;
+
+use app::backend::Translations;
+use app::{backend, errors};
+use dioxus::prelude::server_fn::error::ServerFnErrorErr;
 use dioxus::prelude::*;
 
-use app::components::{ErrorDisplay, Header, PDFButtons, CourseSelection};
+use app::components::{CourseSelection, ErrorDisplay, Header, PDFButtons};
 use app::frontend_types::{Language, SetData};
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
+const DEFAULT_LANGUAGE: &str = "sv";
 
 fn main() {
     dioxus::launch(App);
@@ -15,8 +20,17 @@ fn main() {
 
 #[component]
 fn App() -> Element {
-    use_context_provider(|| SetData(Vec::new()));
-    use_context_provider(|| Signal::new(Language("en".to_string())));
+    use_context_provider(|| Signal::new(SetData(Vec::new())));
+    use_context_provider(|| Signal::new(Language::from(DEFAULT_LANGUAGE.to_string())));
+    let translation_fetch_result: Resource<Result<Translations, String>> = 
+        use_server_future(move || async move {
+            let translations = backend::load_translations().await.map_err(|err| err.to_string())?;
+            Ok(translations)
+        })?;
+    // We want this to panic if we don't get our translations
+    // TODO: Send user to some error page instead of panic
+    let translations = translation_fetch_result().unwrap().unwrap();
+    use_context_provider(|| translations);
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }

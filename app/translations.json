@@ -2,5 +2,21 @@
     "solution": {
         "sv": "Lösning:",
         "en": "Solution:"
+    },
+    "site_heading": {
+        "sv": "Välj uppgifter:",
+        "en": "Choose problems:"
+    },
+    "course_selector": {
+        "sv": "Kurs:",
+        "en": "Course:"
+    },
+    "chapter_selector": {
+        "sv": "Kapitel:",
+        "en": "Chapter:"
+    },
+    "topic_selector": {
+        "sv": "Område:",
+        "en": "Topic:"
     }
 }

@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 #[component]
 pub fn TopicSelection(topics: Signal<Vec<TopicData>>) -> Element {
     let language = use_context::<Signal<Language>>();
+    let translations = use_context::<Translations>();
     let mut selected_topic_name = use_signal(|| Option::<String>::None);
     let mut problems: Signal<Vec<ProblemData>> = use_signal(|| Vec::new());
     use_effect(move || {
@@ -17,6 +18,7 @@ pub fn TopicSelection(topics: Signal<Vec<TopicData>>) -> Element {
             problems.set(Vec::new())
         }
     });
+    let selection_default = translations.get_phrase("topic_selector", &language())?;
     rsx! {
         // Topics
         if topics().len() > 0 {
@@ -28,13 +30,13 @@ pub fn TopicSelection(topics: Signal<Vec<TopicData>>) -> Element {
                     value: "",
                     selected: selected_topic_name().is_none(),
                     disabled: true,
-                    "Select Topic"
+                    "{selection_default}"
                 }
                 {
                     topics
                         .iter()
                         .map(|topic| {
-                            let topic_desc = topic.get_desc(language().0)?;
+                            let topic_desc = topic.get_desc(language())?;
                             rsx! {
                                 option { value: topic.name.clone(), "{topic_desc}" }
                             }
@@ -48,7 +50,7 @@ pub fn TopicSelection(topics: Signal<Vec<TopicData>>) -> Element {
                         problems
                             .iter()
                             .map(|problem| {
-                                let problem_desc = problem.get_desc(language().0)?;
+                                let problem_desc = problem.get_desc(language())?;
                                 rsx! {
                                     li { "{problem_desc}" }
                                 }

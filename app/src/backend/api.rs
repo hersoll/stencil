@@ -3,17 +3,19 @@ use std::fs;
 use dioxus::prelude::*;
 
 use crate::{
-    Error,
     backend::{
-        PROBLEM_REGISTRY, ProblemType,
-        builders::{DocumentBuilder, WriteSolutions},
-        translations::{REGISTRY_TRANSLATIONS},
-    },
+        builders::{DocumentBuilder, WriteSolutions}, translations::{Translations, GENERAL_TRANSLATIONS, REGISTRY_TRANSLATIONS}, ProblemType, PROBLEM_REGISTRY
+    }, Error
 };
 
 #[server]
 pub async fn load_registry() -> Result<super::ProblemRegistry, ServerFnError> {
     Ok(REGISTRY_TRANSLATIONS.clone())
+}
+
+#[server]
+pub async fn load_translations() -> Result<Translations, ServerFnError> {
+    Ok(GENERAL_TRANSLATIONS.clone())
 }
 
 #[server]

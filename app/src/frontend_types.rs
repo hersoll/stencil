@@ -13,5 +13,5 @@ pub struct ProblemSetData {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SetData(pub Vec<ProblemSetData>);
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Language(pub String);
+pub type Language = String;
+
