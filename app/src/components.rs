@@ -1,9 +1,9 @@
 mod error_display;
 mod header;
 mod pdf_button;
-mod topic_selection;
+mod selectors;
 
 pub use error_display::ErrorDisplay;
 pub use header::Header;
 pub use pdf_button::PDFButtons;
-pub use topic_selection::TopicSelection;
+pub use selectors::course_selection::CourseSelection;

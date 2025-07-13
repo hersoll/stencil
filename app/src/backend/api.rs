@@ -7,7 +7,7 @@ use crate::{
     backend::{
         PROBLEM_REGISTRY, ProblemType,
         builders::{DocumentBuilder, WriteSolutions},
-        translations::{COURSE_TRANSLATIONS, REGISTRY_TRANSLATIONS},
+        translations::{REGISTRY_TRANSLATIONS},
     },
 };
 
@@ -18,10 +18,6 @@ pub async fn load_registry() -> Result<super::ProblemRegistry, ServerFnError> {
 
 #[server]
 pub async fn generate_pdf() -> Result<Vec<u8>, ServerFnError> {
-    // Take the sets, parse each Vec of Strings into a Vec of ProblemTypes
-    // Turn them into batches
-    // Create sets
-    // Run them through the document builder with the documentoptions
     let pdf = generate_standard_pdf().await?;
     Ok(pdf)
 }

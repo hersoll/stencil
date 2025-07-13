@@ -3,7 +3,7 @@
 use app::errors;
 use dioxus::prelude::*;
 
-use app::components::{ErrorDisplay, Header, PDFButtons, TopicSelection};
+use app::components::{ErrorDisplay, Header, PDFButtons, CourseSelection};
 use app::frontend_types::{Language, SetData};
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -38,7 +38,7 @@ fn App() -> Element {
                     }
                 }
             },
-            TopicSelection {}
+            CourseSelection {}
             PDFButtons {}
         }
     }

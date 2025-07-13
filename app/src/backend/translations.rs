@@ -23,50 +23,51 @@ pub static REGISTRY_TRANSLATIONS: Lazy<ProblemRegistry> = Lazy::new(|| {
 });
 
 // TODO: COURSE, CHAPTER, TOPIC, PROBLEM might not be needed??
-pub static COURSE_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
-    let mut table: TranslationTable = HashMap::new();
-    for course in REGISTRY_TRANSLATIONS.clone().courses {
-        table.insert(course.name, course.desc);
-    }
-    Translations::new(table)
-});
 
-pub static CHAPTER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
-    let mut table: TranslationTable = HashMap::new();
-    for course in REGISTRY_TRANSLATIONS.clone().courses {
-        for chapter in course.chapters {
-            table.insert(chapter.name, chapter.desc);
-        }
-    }
-    Translations::new(table)
-});
-
-pub static TOPIC_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
-    let mut table: TranslationTable = HashMap::new();
-    for course in REGISTRY_TRANSLATIONS.clone().courses {
-        for chapter in course.chapters {
-            for topic in chapter.topics {
-                table.insert(topic.name, topic.desc);
-            }
-        }
-    }
-    Translations::new(table)
-});
-
-pub static PROBLEM_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
-    let mut table: TranslationTable = HashMap::new();
-    for course in REGISTRY_TRANSLATIONS.clone().courses {
-        for chapter in course.chapters {
-            for topic in chapter.topics {
-                for problem in topic.problems {
-                    let combined_name = topic.name.clone() + "_" + problem.name.as_str();
-                    table.insert(combined_name, problem.desc);
-                }
-            }
-        }
-    }
-    Translations::new(table)
-});
+// pub static COURSE_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
+//     let mut table: TranslationTable = HashMap::new();
+//     for course in REGISTRY_TRANSLATIONS.clone().courses {
+//         table.insert(course.name, course.desc);
+//     }
+//     Translations::new(table)
+// });
+//
+// pub static CHAPTER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
+//     let mut table: TranslationTable = HashMap::new();
+//     for course in REGISTRY_TRANSLATIONS.clone().courses {
+//         for chapter in course.chapters {
+//             table.insert(chapter.name, chapter.desc);
+//         }
+//     }
+//     Translations::new(table)
+// });
+//
+// pub static TOPIC_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
+//     let mut table: TranslationTable = HashMap::new();
+//     for course in REGISTRY_TRANSLATIONS.clone().courses {
+//         for chapter in course.chapters {
+//             for topic in chapter.topics {
+//                 table.insert(topic.name, topic.desc);
+//             }
+//         }
+//     }
+//     Translations::new(table)
+// });
+//
+// pub static PROBLEM_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
+//     let mut table: TranslationTable = HashMap::new();
+//     for course in REGISTRY_TRANSLATIONS.clone().courses {
+//         for chapter in course.chapters {
+//             for topic in chapter.topics {
+//                 for problem in topic.problems {
+//                     let combined_name = topic.name.clone() + "_" + problem.name.as_str();
+//                     table.insert(combined_name, problem.desc);
+//                 }
+//             }
+//         }
+//     }
+//     Translations::new(table)
+// });
 
 pub static QUESTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let mut table: TranslationTable = HashMap::new();
