@@ -1,12 +1,11 @@
+use crate::APP_LANGUAGE;
 use crate::backend::Translations;
 use crate::backend::{self, ChapterData, CourseData, HasDesc, ProblemRegistry};
 use crate::components::selectors::chapter_selection::ChapterSelection;
-use crate::frontend_types::Language;
 use dioxus::prelude::{server_fn::error::ServerFnErrorErr, *};
 
 #[component]
 pub fn CourseSelection() -> Element {
-    let language = use_context::<Signal<Language>>();
     let translations = use_context::<Translations>();
     let registry_result: Resource<Result<ProblemRegistry, ServerFnErrorErr>> =
         use_resource(move || async move {
@@ -40,8 +39,8 @@ pub fn CourseSelection() -> Element {
         }
     });
 
-    let heading = translations.get_phrase("site_heading", &language())?;
-    let selection_default = translations.get_phrase("course_selector", &language())?;
+    let heading = translations.get_phrase("site_heading", APP_LANGUAGE())?;
+    let selection_default = translations.get_phrase("course_selector", APP_LANGUAGE())?;
 
     rsx! {
         div { id: "topic-picker",
@@ -64,7 +63,7 @@ pub fn CourseSelection() -> Element {
                         courses
                             .iter()
                             .map(|course| {
-                                let course_desc = course.get_desc(language())?;
+                                let course_desc = course.get_desc(APP_LANGUAGE())?;
                                 rsx! {
                                     option { value: course.name.clone(), "{course_desc}" }
                                 }

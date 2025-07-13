@@ -64,13 +64,14 @@ impl HasDesc for TopicData {
 pub trait HasDesc {
     fn desc(&self) -> &HashMap<String, String>;
     fn name(&self) -> &String;
-    fn get_desc(&self, lang: String) -> Result<String> {
+    fn get_desc<T: Into<String>>(&self, lang: T) -> Result<String> {
+        let lang_str: String = lang.into();
         let desc = self
             .desc()
-            .get(&lang)
+            .get(&lang_str)
             .ok_or(Error::NoDescriptionForLang {
                 name: self.name().clone(),
-                lang,
+                lang: lang_str,
             })?
             .clone();
         Ok(desc)

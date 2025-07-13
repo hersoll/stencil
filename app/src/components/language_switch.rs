@@ -1,20 +1,18 @@
-use crate::{backend::*, frontend_types::Language};
 use dioxus::prelude::*;
+use crate::APP_LANGUAGE;
 
 #[component]
 pub fn LanguageSwitch() -> Element {
-    let mut language = use_context::<Signal<Language>>();
-    let current_language = language();
     rsx! {
         button {
             onclick: move |_| {
-                if current_language == String::from("sv") {
-                    language.set(String::from("en"));
+                if APP_LANGUAGE == "sv" {
+                    *APP_LANGUAGE.write() = "en";
                 } else {
-                    language.set(String::from("sv"));
+                    *APP_LANGUAGE.write() = "sv";
                 }
             },
-            if current_language == String::from("sv") {
+            if APP_LANGUAGE == "sv" {
                 "English"
             } else {
                 "Svenska"

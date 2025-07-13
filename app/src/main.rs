@@ -1,14 +1,12 @@
 //Remember to eventually remove this (when #[server] is fixed....)
 #![allow(dead_code)]
-use std::collections::HashMap;
 
 use app::backend::Translations;
 use app::{backend, errors};
-use dioxus::prelude::server_fn::error::ServerFnErrorErr;
 use dioxus::prelude::*;
 
 use app::components::{CourseSelection, ErrorDisplay, Header, LanguageSwitch, PDFButtons};
-use app::frontend_types::{Language, SetData};
+use app::frontend_types::SetData;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
@@ -18,10 +16,10 @@ fn main() {
     dioxus::launch(App);
 }
 
+
 #[component]
 fn App() -> Element {
     use_context_provider(|| Signal::new(SetData(Vec::new())));
-    use_context_provider(|| Signal::new(Language::from(DEFAULT_LANGUAGE.to_string())));
     let translation_fetch_result: Resource<Result<Translations, String>> =
         use_server_future(move || async move {
             let translations = backend::load_translations()
