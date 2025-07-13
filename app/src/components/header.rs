@@ -1,8 +1,14 @@
 use dioxus::prelude::*;
 
+use crate::components::LanguageSwitch;
+
 #[component]
 pub fn Header() -> Element {
     rsx! {
-        h1 { id: "header", "Ekvata" }
+        div { id: "header",
+
+            h1 { "Ekvata" }
+            LanguageSwitch {}
+        }
     }
 }

@@ -2,10 +2,10 @@
 #![allow(dead_code)]
 
 use app::backend::Translations;
-use app::{backend, errors, TRANSLATIONS};
+use app::{TRANSLATIONS, backend, errors};
 use dioxus::prelude::*;
 
-use app::components::{CourseSelection, ErrorDisplay, Header, LanguageSwitch, PDFButtons};
+use app::components::{CourseSelection, ErrorDisplay, Header, PDFButtons};
 use app::frontend_types::SetData;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -15,20 +15,12 @@ fn main() {
     dioxus::launch(App);
 }
 
-
 #[component]
 fn App() -> Element {
-    use_context_provider(|| Signal::new(SetData(Vec::new())));
-    let translation_fetch_result: Resource<Result<Translations, String>> =
-        use_server_future(move || async move {
-            let translations = backend::load_translations()
-                .await
-                .map_err(|err| err.to_string())?;
-            Ok(translations)
-        })?;
-    // We want this to panic if we don't get our translations
-    // TODO: Send user to some error page instead of panic
-    *TRANSLATIONS.write() = translation_fetch_result().unwrap().unwrap();
+    //use_context_provider(|| Signal::new(SetData(Vec::new())));
+    *TRANSLATIONS.write() = use_server_future(backend::load_translations)?
+        .unwrap()
+        .unwrap();
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
@@ -50,7 +42,6 @@ fn App() -> Element {
                     }
                 }
             },
-            LanguageSwitch {}
             CourseSelection {}
             PDFButtons {}
         }

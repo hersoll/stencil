@@ -1,22 +1,16 @@
-use dioxus::prelude::*;
 use crate::APP_LANGUAGE;
+use dioxus::prelude::*;
 
 #[component]
 pub fn LanguageSwitch() -> Element {
     rsx! {
         button {
+            id: "language_switch",
             onclick: move |_| {
-                if APP_LANGUAGE == "sv" {
-                    *APP_LANGUAGE.write() = "en";
-                } else {
-                    *APP_LANGUAGE.write() = "sv";
-                }
+                let mut lang = APP_LANGUAGE.write();
+                *lang = if *lang == "sv" { "en" } else { "sv" };
             },
-            if APP_LANGUAGE == "sv" {
-                "English"
-            } else {
-                "Svenska"
-            }
+            if APP_LANGUAGE() == "sv" { "English" } else { "Svenska" }
         }
     }
 }

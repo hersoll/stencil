@@ -1,6 +1,6 @@
-use crate::{APP_LANGUAGE, TRANSLATIONS};
 use crate::backend::{self, ChapterData, CourseData, HasDesc, ProblemRegistry};
 use crate::components::selectors::chapter_selection::ChapterSelection;
+use crate::{APP_LANGUAGE, TRANSLATIONS};
 use dioxus::prelude::{server_fn::error::ServerFnErrorErr, *};
 
 #[component]
@@ -12,17 +12,16 @@ pub fn CourseSelection() -> Element {
                 .map_err(ServerFnErrorErr::from)?;
             Ok(reg)
         });
-    if let Some(Err(e)) = registry_result.read().as_ref() {
-        throw_error(e.clone())
-    }
 
     let mut courses: Signal<Vec<CourseData>> = use_signal(|| Vec::new());
+    let mut selected_course_name = use_signal(|| Option::<String>::None);
     use_effect(move || {
         if let Some(Ok(registry)) = registry_result() {
             courses.set(registry.courses);
+        } else if let Some(Err(e)) = registry_result() {
+            throw_error(e.clone())
         }
     });
-    let mut selected_course_name = use_signal(|| Option::<String>::None);
 
     let mut chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
     use_effect(move || {
@@ -41,13 +40,12 @@ pub fn CourseSelection() -> Element {
     let selection_default = TRANSLATIONS().get_phrase("course_selector", APP_LANGUAGE())?;
 
     rsx! {
-        div { id: "topic-picker",
+        div { id: "topic_picker",
             h1 { "{heading}" }
 
             if courses().len() > 0 {
                 select {
                     onchange: move |event| {
-                        // Reset chapters when we change course
                         chapters.set(Vec::new());
                         selected_course_name.set(Some(event.value().to_string()));
                     },

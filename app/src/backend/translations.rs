@@ -1,12 +1,7 @@
-use crate::{
-    backend::ProblemRegistry, Error, Result
-};
+use crate::{Error, Result, backend::ProblemRegistry};
 use once_cell::sync::Lazy;
-use serde::{Serialize, Deserialize};
-use std::{
-    collections::HashMap,
-    fs,
-};
+use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, fs};
 
 pub static GENERAL_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let data = fs::read_to_string("translations.json").expect("Failed to read translations.json");
@@ -122,9 +117,9 @@ pub static SOLUTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
 
 pub type TranslationTable = HashMap<String, HashMap<String, String>>;
 
-#[derive(Debug, Serialize, Deserialize, Clone )]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Translations {
-    table: TranslationTable,
+    pub table: TranslationTable,
 }
 
 // NOTE: To deal with language, have a "global" in the front_end, and pass it on every api call.
@@ -133,9 +128,7 @@ pub struct Translations {
 
 impl Translations {
     pub fn new(table: TranslationTable) -> Translations {
-        Translations {
-            table: table,
-        }
+        Translations { table: table }
     }
     pub fn get_phrase(&self, key: &str, lang: &str) -> Result<String> {
         match self
@@ -151,7 +144,12 @@ impl Translations {
             }),
         }
     }
-    pub fn get_placeholder_phrase(&self, key: &str, args: HashMap<&str, String>, lang: &str) -> Result<String> {
+    pub fn get_placeholder_phrase(
+        &self,
+        key: &str,
+        args: HashMap<&str, String>,
+        lang: &str,
+    ) -> Result<String> {
         if let Some(val) = self
             .table
             .get(key)
@@ -176,4 +174,3 @@ impl Translations {
         placeholder_str
     }
 }
-
