@@ -1,64 +1,74 @@
 {
-    "courses": {
-        "ma1b": {
+    "courses": [
+        { 
+            "name": "ma1b",
             "desc": {
                 "sv": "Matematik 1b",
                 "en": "Mathematics 1b"
             },
-            "chapters": {
-                "equations": {
+            "chapters": [
+                {
+                    "name": "equations",
                     "desc": {
                         "sv": "Ekvationer",
                         "en": "Equations"
                     },
-                    "topics": {
-                        "standard_equations":{
+                    "topics": [
+                        {
+                            "name": "standard_equations",
                             "desc": {
                                 "sv": "Standardekvationer (ax + b = c)",
                                 "en": "Standard equations (ax + b = c)"
                             },
-                            "problems": {
-                                "mult_only": {
+                            "problems": [
+                                {
+                                    "name": "mult_only", 
                                     "desc": {
                                         "sv": "Endast multiplikation (ax = b)",
                                         "en": "Multiplication only (ax = b)"
                                     }
                                 },
-                                "add_sub_only": {
+                                {
+                                    "name": "add_sub_only",
                                     "desc": {
                                         "sv": "Endast addition och subtraktion (x + a = b)",
                                         "en": "Addition and subtraction only (x + a = b)"
                                     }
                                 },
-                                "up_to_5": {
+                                {
+                                    "name": "up_to_5",
                                     "desc": {
                                         "sv": "Upp till 5:ans multiplikationstabell (5x + 3 = 13)",
                                         "en": "Multiplications up to 5 (5x + 3 = 13)"
                                     }
                                 },
-                                "default_positive": {
+                                {
+                                    "name": "default_positive",
                                     "desc": {
                                         "sv": "Endast positiva svar (9x + 7 = 25)",
                                         "en": "Positive answers only (9x + 7 = 25)"
                                     }
                                 }
-                            }
+                            ]
                         }
-                    }
+                    ]
                 },
-                "functions": {
+                {
+                    "name":"functions",
                     "desc": {
                         "sv": "Funktioner",
                         "en": "Functions"
                     },
-                    "topics": {
-                        "f_x": {
+                    "topics": [
+                        {
+                            "name": "f_x",
                             "desc": {
                                 "sv": "f(x)",
                                 "en": "f(x)"
                             },
-                            "problems": {
-                                "without_notation_y": {
+                            "problems": [
+                                {
+                                    "name": "without_notation_y",
                                     "desc": {
                                         "sv": "Bestäm y om du vet x (utan f(x))",
                                         "en": "Find y if you know x (no f(x))"
@@ -68,7 +78,8 @@
                                         "en": "Using the formula ${expression}$, find $y$ if you know that $x = {x}$."
                                     }
                                 },
-                                "without_notation_x": {
+                                {
+                                    "name": "without_notation_x",
                                     "desc": {
                                         "sv": "Bestäm x om du vet y (utan f(x))",
                                         "en": "Find x if you know y (no f(x))"
@@ -78,11 +89,11 @@
                                         "en": "Using the formula ${expression}$, find $x$ if you know that $y = {y}$."
                                     }
                                 }
-                            }
+                            ]
                         }
-                    }
+                    ]
                 }
-            }
+            ]
         }
-    }
+    ]
 }

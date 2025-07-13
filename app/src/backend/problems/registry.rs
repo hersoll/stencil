@@ -12,7 +12,7 @@ pub static PROBLEM_REGISTRY: Lazy<Mutex<HashMap<String, super::ProblemType>>> =
 //#       COURSE STRUCTURE        #
 //#################################
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ProblemRegistry {
     pub courses: Vec<CourseData>,
 }
@@ -81,8 +81,11 @@ pub trait HasDesc {
 pub struct ProblemData {
     pub name: String,
     pub desc: HashMap<String, String>,
+    #[serde(default)]
     pub question: HashMap<String, String>,
+    #[serde(default)]
     pub answer: HashMap<String, String>,
+    #[serde(default)]
     pub solution: HashMap<String, String>,
 }
 impl ProblemData {
