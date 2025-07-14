@@ -65,6 +65,14 @@ impl IntRange {
         })
     }
 
+    pub fn exclude(&mut self, value: i32) -> &mut Self {
+        self.exclude.append(&mut Self::get_exclusions_in_range(
+            vec![value],
+            &self.min,
+            &self.max,
+        ));
+        self
+    }
     /// Passes on the integers in `exclude` that are part of the range
     ///
     /// This is important since the number of exclusions is part of the `len` calculation. If there

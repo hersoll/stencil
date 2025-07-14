@@ -1,7 +1,7 @@
 use crate::Result;
 use crate::backend::problems::Problem;
-use crate::backend::typst_formatting;
 use crate::backend::{IntRange, solutions};
+use crate::backend::{math_utils, typst_formatting};
 use macros::problem;
 
 #[problem(id = "add_sub_only", difficulty = 0)]
@@ -98,6 +98,41 @@ fn default_equation_positive_answers(id: String, _lang: &str) -> Result<Problem>
         solution,
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
+    };
+    Ok(problem)
+}
+#[problem(id = "rational_positive", difficulty = 3)]
+fn default_equation_positive_rational(id: String, _lang: &str) -> Result<Problem> {
+    let (denominator, denominator_range) = IntRange::without_zero(2, 9)?.and_random();
+    let numerator = IntRange::without_zero(1, denominator * 2 - 1)?
+        .exclude(denominator)
+        .random();
+    let coefficient = denominator;
+    let (constant, constant_range) =
+        IntRange::without_zero((-numerator).max(-10), 10)?.and_random();
+
+    let solution = solutions::linear_equations::positive_rational_answer(
+        coefficient,
+        'x',
+        constant,
+        numerator,
+        denominator,
+    );
+    let (simplified_numerator, simplified_denominator) =
+        math_utils::simplified_fraction(numerator, denominator);
+
+    let problem = Problem {
+        id,
+        question: format!(
+            "${cf}x {co:+} = {rhs}$",
+            cf = coefficient,
+            co = constant,
+            rhs = numerator + constant
+        ),
+        answer: format!("$x = {simplified_numerator}/{simplified_denominator}$"),
+        solution,
+        identifiers: vec![coefficient, constant],
+        combinations: denominator_range.len() * constant_range.len(),
     };
     Ok(problem)
 }

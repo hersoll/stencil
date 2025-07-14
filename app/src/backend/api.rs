@@ -34,7 +34,9 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
     let ids: Vec<&str> = vec![
         "standard_equations_mult_only",
         "standard_equations_add_sub_only",
+        "standard_equations_up_to_5",
         "standard_equations_default_positive",
+        "standard_equations_rational_positive",
         "f_x_without_notation_y",
         "f_x_without_notation_x",
     ];

@@ -1,4 +1,4 @@
-use crate::backend::{problems, typst_formatting};
+use crate::backend::{math_utils::gcd, problems, typst_formatting};
 
 /// Equations of the form 3x + 5 = 14. Zeroes for coefficient or constant is not allowed.
 pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answer: i32) -> String {
@@ -44,17 +44,21 @@ pub fn positive_rational_answer(
 
     let (simplified_numerator, simplified_denominator) =
         problems::math_utils::simplified_fraction(numerator, denominator);
-    let simplified_fraction =
-        if (simplified_numerator, simplified_denominator) != (numerator, denominator) {
-            format!("= {simplified_numerator} / {simplified_denominator}")
-        } else {
-            String::new()
-        };
+    let gcd = gcd(numerator, denominator);
+    let answer_with_simplification = if (simplified_numerator, simplified_denominator)
+        != (numerator, denominator)
+    {
+        format!(
+            r#"({numerator} gray(div {gcd}))/({denominator}gray(div {gcd})) = {simplified_numerator} / {simplified_denominator}"#
+        )
+    } else {
+        format!("{numerator}/{denominator}")
+    };
 
     let solution = format!(
         "{cf}{unknown} {constant:+} &= {rhs} \\ {m_co:+} \\
                 {cf}{unknown} &= {numerator} \\ div {cf} \\
-                    {unknown} &= {numerator}/{denominator} {simplified_fraction} \\",
+                    {unknown} &= {answer_with_simplification} \\",
         cf = coefficient,
         rhs = numerator + constant,
         m_co = -constant,

@@ -1,6 +1,6 @@
 {
     "courses": [
-        { 
+        {
             "name": "ma1b",
             "desc": {
                 "sv": "Matematik 1b",
@@ -22,7 +22,7 @@
                             },
                             "problems": [
                                 {
-                                    "name": "mult_only", 
+                                    "name": "mult_only",
                                     "desc": {
                                         "sv": "Endast multiplikation (ax = b)",
                                         "en": "Multiplication only (ax = b)"
@@ -45,8 +45,15 @@
                                 {
                                     "name": "default_positive",
                                     "desc": {
-                                        "sv": "Endast positiva svar (9x + 7 = 25)",
-                                        "en": "Positive answers only (9x + 7 = 25)"
+                                        "sv": "Positiva heltalssvar",
+                                        "en": "Positive integer answers"
+                                    }
+                                },
+                                {
+                                    "name": "rational_positive",
+                                    "desc": {
+                                        "sv": "Positiva rationella svar",
+                                        "en": "Positive rational answers"
                                     }
                                 }
                             ]
@@ -54,7 +61,7 @@
                     ]
                 },
                 {
-                    "name":"functions",
+                    "name": "functions",
                     "desc": {
                         "sv": "Funktioner",
                         "en": "Functions"
