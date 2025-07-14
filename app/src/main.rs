@@ -1,12 +1,10 @@
 //Remember to eventually remove this (when #[server] is fixed....)
 #![allow(dead_code)]
 
-use app::backend::Translations;
 use app::{TRANSLATIONS, backend, errors};
 use dioxus::prelude::*;
 
 use app::components::{CourseSelection, ErrorDisplay, Header, PDFButtons};
-use app::frontend_types::SetData;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");

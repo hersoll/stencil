@@ -63,3 +63,25 @@ macro_rules! fmt_term_first {
         }
     }};
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn formats_constants_in_expressions() {
+        let expression_1 = format!("x{}", fmt_const!(3));
+        assert_eq!(expression_1, String::from("x+3"));
+        let expression_2 = format!("x{}", fmt_const!(-3));
+        assert_eq!(expression_2, String::from("x-3"));
+        let expression_3 = format!("x{}", fmt_const!(0));
+        assert_eq!(expression_3, String::from("x"));
+    }
+    #[test]
+    fn formats_constants_in_front() {
+        let expression_1 = format!("{}+x", fmt_const_first!(3));
+        assert_eq!(expression_1, String::from("3+x"));
+        let expression_2 = format!("{}+x", fmt_const!(-3));
+        assert_eq!(expression_2, String::from("-3+x"));
+        let expression_3 = format!("{}-x", fmt_const!(0));
+        assert_eq!(expression_3, String::from("-x"));
+    }
+}
