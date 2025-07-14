@@ -45,9 +45,9 @@ pub fn positive_rational_answer(
     let (simplified_numerator, simplified_denominator) =
         problems::math_utils::simplified_fraction(numerator, denominator);
     let gcd = gcd(numerator, denominator);
-    let answer_with_simplification = if (simplified_numerator, simplified_denominator)
-        != (numerator, denominator)
-    {
+    let answer_with_simplification = if gcd == denominator {
+        format!("{}", numerator / denominator)
+    } else if (simplified_numerator, simplified_denominator) != (numerator, denominator) {
         format!(
             r#"({numerator} gray(div {gcd}))/({denominator}gray(div {gcd})) = {simplified_numerator} / {simplified_denominator}"#
         )
