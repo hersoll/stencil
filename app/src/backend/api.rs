@@ -3,9 +3,12 @@ use std::fs;
 use dioxus::prelude::*;
 
 use crate::{
+    Error,
     backend::{
-        builders::{DocumentBuilder, WriteSolutions}, translations::{Translations, GENERAL_TRANSLATIONS, REGISTRY_TRANSLATIONS}, ProblemType, PROBLEM_REGISTRY
-    }, Error
+        PROBLEM_REGISTRY, ProblemType,
+        builders::{DocumentBuilder, WriteSolutions},
+        translations::{GENERAL_TRANSLATIONS, REGISTRY_TRANSLATIONS, Translations},
+    },
 };
 
 #[server]
@@ -47,14 +50,14 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
 
     let problems = crate::backend::builders::SetBuilder::new()
         .area(problem_types)
-        .lang("en")
+        .lang("sv")
         .batch(crate::backend::Difficulty::Intro, 5)
         .batch(crate::backend::Difficulty::Easy, 10)
         .build()?;
 
     let typst_file = DocumentBuilder::new()
         .heading("Equations")
-        .lang("en")
+        .lang("sv")
         .write_solutions(WriteSolutions::First)
         .add_problem_set(problems)?
         .build()?;

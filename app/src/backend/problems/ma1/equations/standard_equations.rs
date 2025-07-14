@@ -1,7 +1,7 @@
 use crate::Result;
-use crate::backend::IntRange;
 use crate::backend::problems::Problem;
 use crate::backend::typst_formatting;
+use crate::backend::{IntRange, solutions};
 use macros::problem;
 
 #[problem(id = "add_sub_only", difficulty = 0)]
@@ -10,10 +10,8 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
     let (constant, constant_range) = IntRange::without_zero(-answer, 9)?.and_random();
 
     let solution = format!(
-        "x {c:+} &= {rhs}\\ {i:+} \\
-              x &= {a}\\",
-        c = constant,
-        a = answer,
+        "x {constant:+} &= {rhs}\\ {i:+} \\
+              x &= {answer}\\",
         rhs = answer + constant,
         i = -constant
     );
@@ -61,17 +59,7 @@ fn default_equation_positive_up_to_5(id: String, _lang: &str) -> Result<Problem>
     let (constant, constant_range) =
         IntRange::without_zero((-coefficient * answer).max(-5), 5)?.and_random();
 
-    let solution = format!(
-        "{cf}x {co:+} = {rhs} \\ {m_co:+} \\
-                            {cf}x = {cf_a} \\ div {cf} \\
-                                x = {a} \\",
-        cf = coefficient,
-        co = constant,
-        rhs = coefficient * answer + constant,
-        m_co = -constant,
-        cf_a = coefficient * answer,
-        a = answer
-    );
+    let solution = solutions::linear_equations::integer_answer(coefficient, 'x', constant, answer);
 
     let problem = Problem {
         id,
@@ -82,7 +70,7 @@ fn default_equation_positive_up_to_5(id: String, _lang: &str) -> Result<Problem>
             rhs = coefficient * answer + constant
         ),
         answer: format!("$x = {}$", answer),
-        solution: typst_formatting::equation_solution(solution),
+        solution,
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     };
@@ -96,17 +84,7 @@ fn default_equation_positive_answers(id: String, _lang: &str) -> Result<Problem>
     let (constant, constant_range) =
         IntRange::without_zero((-coefficient * answer).max(-10), 10)?.and_random();
 
-    let solution = format!(
-        "{cf}x {co:+} &= {rhs} \\ {m_co:+} \\
-                            {cf}x &= {cf_a} \\ div {cf} \\
-                                x &= {a} \\",
-        cf = coefficient,
-        co = constant,
-        rhs = coefficient * answer + constant,
-        m_co = -constant,
-        cf_a = coefficient * answer,
-        a = answer
-    );
+    let solution = solutions::linear_equations::integer_answer(coefficient, 'x', constant, answer);
 
     let problem = Problem {
         id,
@@ -117,7 +95,7 @@ fn default_equation_positive_answers(id: String, _lang: &str) -> Result<Problem>
             rhs = coefficient * answer + constant
         ),
         answer: format!("$x = {}$", answer),
-        solution: typst_formatting::equation_solution(solution),
+        solution,
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     };

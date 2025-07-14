@@ -1,17 +1,17 @@
 use crate::{Error, Result};
-use std::collections::HashMap;
 //#################################
 //#           IMPORTS             #
 //#################################
 pub mod int_range;
 pub mod ma1;
+pub mod math_utils;
 mod registry;
+pub mod solutions;
 mod symbols;
 
 //#################################
 //#          FLATTENING           #
 //#################################
-pub use ma1::*;
 pub use registry::*;
 use serde::Deserialize;
 use serde::Serialize;
