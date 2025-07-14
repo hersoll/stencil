@@ -21,7 +21,7 @@ impl SetBuilder {
         SetBuilder {
             problem_areas: Vec::new(),
             batches: Vec::new(),
-            lang: "sv".to_string()
+            lang: "sv".to_string(),
         }
     }
 
@@ -75,8 +75,6 @@ struct ScoredProblemType<'a> {
     problem_type: &'a ProblemType,
     score: u8,
 }
-
-
 
 impl SetBuilder {
     fn choose_problems(
@@ -132,7 +130,6 @@ impl SetBuilder {
                     let problem = self.get_unique_problem_or_reset_ids(
                         scored_problem_type.problem_type,
                         &mut ids,
-
                     )?;
                     filtered_candidates[*chosen_index].score -= 1;
                     problems.push(problem);
@@ -233,6 +230,11 @@ impl SetBuilder {
     ///
     /// If there are no more possible IDs to generate, the relevant IDs are removed from `ids` for
     /// a fresh start.
+    /// NOTE: The `combinations` field might be smaller than the actual number of combinations.
+    ///       This occurs because in some problems, some numbers depend on the value of other
+    ///       numbers. This will mess up the range calculation. It's not considered an
+    ///       issue, and will only result in a "bug" (possibility of repeated problem)
+    ///       if several (>20) problems are generated from the same **function**.
     fn get_unique_problem_or_reset_ids(
         &self,
         problem_type: &ProblemType,
@@ -244,17 +246,15 @@ impl SetBuilder {
             identifiers: problem.identifiers.clone(),
         };
 
-        let count = ids
-            .iter()
-            .filter(|id| id.name == problem_type.name)
-            .count();
-        if count >= problem.combinations {
-            ids.retain(|id| id.name != problem_type.name);
-        }
+        let count = ids.iter().filter(|id| id.name == problem_type.name).count();
 
         while ids.contains(&current_id) {
             problem = (problem_type.generator)(problem_type.name.clone(), &self.lang)?;
             current_id.identifiers = problem.identifiers.clone();
+
+            if count >= problem.combinations {
+                ids.retain(|id| id.name != problem_type.name);
+            }
         }
         ids.push(current_id.clone());
         Ok(problem)
