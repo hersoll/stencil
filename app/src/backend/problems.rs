@@ -36,7 +36,7 @@ impl Difficulty {
             2 | 3 | 4 => Ok(Difficulty::Easy),
             5 | 6 | 7 => Ok(Difficulty::Medium),
             8 | 9 | 10 => Ok(Difficulty::Hard),
-            _ => Err(Error::InvalidDifficulty {
+            _ => Err(Error::InvalidDifficultyNumber {
                 difficulty: difficulty_number,
             }),
         }

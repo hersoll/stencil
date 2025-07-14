@@ -1,4 +1,6 @@
 use derive_more::From;
+
+use crate::backend::Difficulty;
 pub type Result<T> = core::result::Result<T, Error>;
 
 #[derive(Debug, From)]
@@ -21,8 +23,11 @@ pub enum Error {
         max: i32,
     },
     NoValidProblems,
-    InvalidDifficulty {
+    InvalidDifficultyNumber {
         difficulty: u8,
+    },
+    InvalidDifficultyEnum {
+        expected: Difficulty,
     },
 
     // Translations
@@ -34,15 +39,15 @@ pub enum Error {
         name: String,
         lang: String,
     },
-    NoQuestionForLang{
+    NoQuestionForLang {
         name: String,
         lang: String,
     },
-    NoAnswerForLang{
+    NoAnswerForLang {
         name: String,
         lang: String,
     },
-    NoSolutionForLang{
+    NoSolutionForLang {
         name: String,
         lang: String,
     },

@@ -155,25 +155,34 @@ impl SetBuilder {
     ///
     /// This method is only intended to be called with candidates from a specific `Difficulty`
     fn get_count_per_difficulty_number(candidates: &Vec<&ProblemType>, n: &u8) -> Result<[u8; 3]> {
+        if candidates.len() == 0 {
+            return Err(Error::NoValidProblems);
+        }
+        // Check that no problems from different difficulty buckets slipped through
+        let difficulties: Vec<Difficulty> = candidates
+            .iter()
+            .map(|candidate| Difficulty::num_to_enum(candidate.difficulty))
+            .collect::<Result<_>>()?;
+        if difficulties.iter().any(|&x| x != difficulties[0]) {
+            return Err(Error::InvalidDifficultyEnum {
+                expected: difficulties[0],
+            });
+        }
+
         let mut found_difficulty_numbers: [u8; 3] = [0; 3];
 
-        // To make matching easier, all difficulties are mapped to 0-2
         for candidate in candidates {
             let relative_difficulty: usize = match candidate.difficulty {
                 0 | 2 | 5 | 8 => 0,
                 1 | 3 | 6 | 9 => 1,
                 4 | 7 | 10 => 2,
                 _ => {
-                    return Err(Error::InvalidDifficulty {
+                    return Err(Error::InvalidDifficultyNumber {
                         difficulty: candidate.difficulty,
                     });
                 }
             };
             found_difficulty_numbers[relative_difficulty] += 1;
-        }
-
-        if found_difficulty_numbers.iter().sum::<u8>() == 0 {
-            return Err(Error::NoValidProblems);
         }
 
         let mut easier: u8 = 0;
@@ -200,7 +209,7 @@ impl SetBuilder {
 
             [_, _, _] => {
                 // It's intentional to have one ceil() and one round().
-                // This is ensures that n = 1 works correctly and nets an easier problem
+                // This ensures that n = 1 works correctly and nets an easier problem
                 easier = (*n as f32 * EASY_RATIO).ceil() as u8;
                 medium = (*n as f32 * MEDIUM_RATIO).round() as u8;
                 harder = *n - easier - medium;
