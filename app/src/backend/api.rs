@@ -39,6 +39,10 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
         "standard_equations_rational_positive",
         "f_x_without_notation_y",
         "f_x_without_notation_x",
+        "equations_with_denominators_one_denom_one_variable",
+        "equations_with_denominators_one_denom_and_unit_variable_integers_positive",
+        "equations_with_denominators_unit_variable_and_one_denom_integers_positive",
+        "equations_with_denominators_unit_variable_and_one_denom_integers_with_negatives"
     ];
     let problem_types: Vec<ProblemType> = ids
         .iter()

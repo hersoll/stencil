@@ -57,6 +57,46 @@
                                     }
                                 }
                             ]
+                        },
+                        {
+                            "name": "equations_with_denominators",
+                            "desc": {
+                            "sv": "Ekvationer med nämnare",
+                            "en": "Equations with denominators"
+                            },
+                            "problems": [
+                                {
+                                    "name": "one_denom_one_variable",
+                                    "desc": {
+                                        "sv": "Okänd med nämnare = tal",
+                                        "en": "Unknown with denominator = number"
+                                    }
+                                },
+                                {
+                                    "name": "one_denom_and_unit_variable_integers_positive",
+                                    "desc": {
+                                        "sv": "Okänd med nämnare + Okänd = tal",
+                                        "en": "Unknown with denominator + unknown = number"
+                                    }
+                                },
+                                {
+                                    "name": "unit_variable_and_one_denom_integers_positive",
+                                    "desc": {
+                                        "sv": "Okänd - okänd med nämnare = tal",
+                                        "en": "Unknown - unknown with denominator = number"
+                                    }
+                                },
+                                {
+                                    "name": "unit_variable_and_one_denom_integers_with_negatives",
+                                    "desc": {
+                                        "sv": "Okänd med nämnare - okänd = tal",
+                                        "en": "Unknown with denominator - unknown = number"
+                                    }
+                                }
+
+
+
+                            ]
                         }
                     ]
                 },
