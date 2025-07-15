@@ -37,7 +37,7 @@ pub static PREAMBLE_STR: &str = r#"
       grid(
         columns: (max-eq-width, auto),
         inset: 5pt,
-        align: (left, horizon + center),
+        align: (left, horizon + left),
         grid.vline(x: 1, stroke: (paint: linecolor, thickness: 0.5pt)),
         ..equations.zip(gray-operations).flatten(),
       )

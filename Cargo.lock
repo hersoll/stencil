@@ -38,6 +38,7 @@ dependencies = [
  "gloo",
  "js-sys",
  "macros",
+ "num-traits",
  "once_cell",
  "rand 0.9.1",
  "serde",

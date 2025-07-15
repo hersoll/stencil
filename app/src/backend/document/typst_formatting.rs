@@ -1,3 +1,7 @@
+use std::fmt::Display;
+
+use num_traits::{Signed, Zero};
+
 pub fn to_list_item(s: &String) -> String {
     String::from("+ ") + s
 }
@@ -20,6 +24,36 @@ pub fn page_break() -> String {
 
 pub fn reset_enum() -> String {
     String::from("#item-counter.update(0)\n")
+}
+
+static OPERATOR_SPACE: f32 = 0.25;
+
+pub fn subtract<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
+    if val < T::zero() {
+        format!("+ #h({OPERATOR_SPACE}em) {}", val.abs())
+    } else if val > T::zero() {
+        format!("- #h({OPERATOR_SPACE}em) {}", val)
+    } else {
+        String::new()
+    }
+}
+
+pub fn add<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
+    if val > T::zero() {
+        format!("+ #h({OPERATOR_SPACE}em) {}", val)
+    } else if val < T::zero() {
+        format!("- #h({OPERATOR_SPACE}em) {}", val.abs())
+    } else {
+        String::new()
+    }
+}
+
+pub fn parentheses<T: PartialOrd + Zero+ Display>(val: T) -> String {
+    if val < T::zero() {
+        format!("({val})")
+    } else {
+        format!("{val}")
+    }
 }
 
 /// Formats the solution of an equation, step by step.

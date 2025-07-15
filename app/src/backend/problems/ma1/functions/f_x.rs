@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use crate::{
     Result,
     backend::{
-        IntRange, Problem, translations::QUESTION_TRANSLATIONS, typst_formatting::equation_solution,
+        IntRange, Problem,
+        translations::QUESTION_TRANSLATIONS,
+        typst_formatting::{self, equation_solution},
     },
 };
 use macros::problem;
@@ -53,28 +55,20 @@ fn without_notation_x(id: String, lang: &str) -> Result<Problem> {
     let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
     let question = QUESTION_TRANSLATIONS.get_placeholder_phrase(&id, map, lang)?;
 
-    let solution = format!(
+    let solution = equation_solution(format!(
         "y &= {coefficient}x {constant:+} \\ y={y} \\
-        {y} &= {coefficient}x {constant:+} \\ {inverse:+} \\
+        {y} &= {coefficient}x {constant:+} \\ {sub_constant} \\
         {lhs} &= {coefficient}x \\ div {coefficient} \\
         {answer} &= x \\ ",
-        inverse = -constant,
+        sub_constant = typst_formatting::subtract(constant),
         lhs = answer * coefficient
-    );
-
-    // let solution_steps = vec![
-    //      (format!("y &= {coefficient}x {constant:+}"), Steps::Assign('y', y)),
-    //      (format!("{y} &= {coefficient}x {constant:+}"), Steps::Subtract(constant)),
-    //      (format!("{y_c} &= {coefficient}x", y_c = y - constant), Steps::Divide(coefficient)),
-    //      (format!("{answer} &= x"), Steps::Finished)
-    // ];
-    // let solution = solution_from_steps(solution_steps);
+    ));
 
     let problem = Problem {
         id,
         question,
         answer: format!("$x = {}$", answer),
-        solution: equation_solution(solution),
+        solution,
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     };

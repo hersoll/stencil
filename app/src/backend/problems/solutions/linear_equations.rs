@@ -7,20 +7,13 @@ pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answ
     }
 
     let solution = format!(
-        "{cf}{unknown} {co:+} &= {rhs} \\ {m_co:+} \\
-                {cf}{unknown} &= {cf_a} \\ div {cf_par} \\
-                    {unknown} &= {a} \\",
-        cf = coefficient,
-        cf_par = if coefficient < 0 {
-            format!("({coefficient})")
-        } else {
-            format!("{coefficient}")
-        },
-        co = constant,
+        "{coefficient}{unknown} {constant:+} &= {rhs} \\ {sub_constant} \\
+                {coefficient}{unknown} &= {cf_a} \\ div {cf_par} \\
+                    {unknown} &= {final_answer} \\",
+        cf_par = typst_formatting::parentheses(coefficient),
         rhs = coefficient * final_answer + constant,
-        m_co = -constant,
+        sub_constant = typst_formatting::subtract(constant),
         cf_a = coefficient * final_answer,
-        a = final_answer
     );
     typst_formatting::equation_solution(solution)
 }
@@ -56,12 +49,11 @@ pub fn positive_rational_answer(
     };
 
     let solution = format!(
-        "{cf}{unknown} {constant:+} &= {rhs} \\ {m_co:+} \\
-                {cf}{unknown} &= {numerator} \\ div {cf} \\
+        "{coefficient}{unknown} {constant:+} &= {rhs} \\ {sub_constant} \\
+                {coefficient}{unknown} &= {numerator} \\ div {coefficient} \\
                     {unknown} &= {answer_with_simplification} \\",
-        cf = coefficient,
         rhs = numerator + constant,
-        m_co = -constant,
+        sub_constant = typst_formatting::subtract(constant),
     );
     typst_formatting::equation_solution(solution)
 }

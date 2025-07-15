@@ -10,10 +10,10 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
     let (constant, constant_range) = IntRange::without_zero(-answer, 9)?.and_random();
 
     let solution = format!(
-        "x {constant:+} &= {rhs}\\ {i:+} \\
+        "x {constant:+} &= {rhs}\\ {sub_constant} \\
               x &= {answer}\\",
         rhs = answer + constant,
-        i = -constant
+        sub_constant = typst_formatting::subtract(constant),
     );
 
     let problem = Problem {
