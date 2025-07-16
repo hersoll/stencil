@@ -1,4 +1,12 @@
 {
+    "from": {
+        "sv": "Från",
+        "en": "From"
+    },
+    "to": {
+        "sv": "till",
+        "en": "to"
+    },
     "solution": {
         "sv": "Lösning:",
         "en": "Solution:"
@@ -18,5 +26,25 @@
     "topic_selector": {
         "sv": "Område:",
         "en": "Topic:"
+    },
+    "difficulty": {
+        "sv": "Svårighetsgrad",
+        "en": "Difficulty"
+    },
+    "difficulty_intro": {
+        "sv": "Intro",
+        "en": "Intro"
+    },
+    "difficulty_easy": {
+        "sv": "Grundläggande",
+        "en": "Basic"
+    },
+    "difficulty_medium": {
+        "sv": "Medel",
+        "en": "Medium"
+    },
+    "difficulty_hard": {
+        "sv": "Svår",
+        "en": "Hard"
     }
 }

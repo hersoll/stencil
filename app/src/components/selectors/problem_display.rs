@@ -1,4 +1,6 @@
-use crate::components::selectors::course_selection::CourseSelection;
+use crate::{
+    components::selectors::course_selection::CourseSelection, frontend_types::ProblemSetData,
+};
 use dioxus::prelude::{server_fn::error::ServerFnErrorErr, *};
 
 use crate::{
@@ -7,7 +9,7 @@ use crate::{
 };
 
 #[component]
-pub fn ProblemDisplay() -> Element {
+pub fn ProblemDisplay(set_data: Signal<ProblemSetData>) -> Element {
     let registry_result: Resource<Result<ProblemRegistry, ServerFnErrorErr>> =
         use_resource(move || async move {
             let reg = backend::load_registry()
@@ -55,7 +57,7 @@ pub fn ProblemDisplay() -> Element {
                 } else if active_chapter().is_empty() {
                     div { class: "display_placeholder", "Välj ett kapitel" }
                 } else {
-                    TopicSelection { topics, active_topic }
+                    TopicSelection { topics, active_topic, set_data }
                 }
             }
         }

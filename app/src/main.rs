@@ -3,8 +3,9 @@
 
 use app::{
     TRANSLATIONS, backend,
-    components::{DifficultyPicker, NumberPicker},
+    components::{AddSet, DifficultyPicker, NumberPicker},
     errors,
+    frontend_types::{ProblemSetData, Sets},
 };
 use dioxus::prelude::*;
 
@@ -26,6 +27,9 @@ fn App() -> Element {
     }
     *TRANSLATIONS.write() = translations().unwrap().unwrap();
 
+    let set_data = use_signal(|| ProblemSetData::new());
+    let sets: Signal<Sets> = use_signal(|| Vec::new());
+
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: MAIN_CSS }
@@ -46,11 +50,12 @@ fn App() -> Element {
                     }
                 }
             },
-            ProblemDisplay {}
+            ProblemDisplay { set_data }
             div { class: "set_options",
-                DifficultyPicker {}
-                NumberPicker {}
+                DifficultyPicker { set_data }
+                NumberPicker { set_data }
             }
+            AddSet { set_data, sets }
             PDFButtons {}
         }
     }

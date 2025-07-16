@@ -1,14 +1,24 @@
 use serde::{Deserialize, Serialize};
 
-use crate::backend;
+use crate::backend::{self, Difficulty};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ProblemSetData {
-    ids: Vec<String>,
-    starting_difficulty: backend::Difficulty,
-    ending_difficulty: backend::Difficulty,
-    n: u8,
+    pub ids: Vec<String>,
+    pub starting_difficulty: backend::Difficulty,
+    pub ending_difficulty: backend::Difficulty,
+    pub n: u8,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct SetData(pub Vec<ProblemSetData>);
+impl ProblemSetData {
+    pub fn new() -> ProblemSetData {
+        ProblemSetData {
+            ids: Vec::new(),
+            starting_difficulty: Difficulty::Intro,
+            ending_difficulty: Difficulty::Hard,
+            n: 5,
+        }
+    }
+}
+
+pub type Sets = Vec<ProblemSetData>;

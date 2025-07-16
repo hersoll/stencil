@@ -42,7 +42,7 @@ pub fn positive_rational_answer(
         format!("{}", numerator / denominator)
     } else if (simplified_numerator, simplified_denominator) != (numerator, denominator) {
         format!(
-            r#"({numerator} gray(div {gcd}))/({denominator}gray(div {gcd})) = {simplified_numerator} / {simplified_denominator}"#
+            r#"({numerator} colored(div {gcd}))/({denominator}colored(div {gcd})) = {simplified_numerator} / {simplified_denominator}"#
         )
     } else {
         format!("{numerator}/{denominator}")

@@ -20,7 +20,7 @@ use serde::Serialize;
 //#          DIFFICULTY           #
 //#################################
 
-#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Deserialize, Serialize)]
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Deserialize, Serialize, PartialOrd)]
 pub enum Difficulty {
     Intro,
     #[default]

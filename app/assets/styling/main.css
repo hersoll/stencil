@@ -17,11 +17,12 @@ body {
   padding: 0 1rem;
 
   max-width: 60rem;
+  display: flex;
+  flex-direction: column;
 }
 
 #header {
   margin: 0;
-  max-width: 1000px;
   position: relative;
 }
 
@@ -68,6 +69,7 @@ body {
 }
 
 .problem_display {
+  width: 100%;
   display: flex;
   flex-direction: row;
   height: 20rem;
@@ -159,6 +161,17 @@ body {
       background-color: var(--bg_element_selected_hover_dark);
     }
   }
+}
+
+.set_options {
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.difficulty_picker {
+  display: inline-flex;
+  align-items: baseline;
 }
 
 #error_display {

@@ -27,7 +27,7 @@ fn without_notation_y(id: String, lang: &str) -> Result<Problem> {
 
     let solution = format!(
         "y &= {coefficient}x {constant:+} \\x={x} \\
-       y &= {coefficient} dot.op gray({x}) {constant:+} \\ \\
+       y &= {coefficient} dot.op colored({x}) {constant:+} \\ \\
        y &= {prod} {constant:+} \\ \\
        y &= {y} \\",
         prod = x * coefficient
