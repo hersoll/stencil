@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
+use crate::Result;
+use crate::backend::document::*;
 use crate::backend::problems::Problem;
 use crate::backend::translations::GENERAL_TRANSLATIONS;
-use crate::backend::document::*;
-use crate::Result;
 
 #[derive(Debug)]
 pub struct DocumentBuilder {
@@ -164,15 +164,21 @@ impl DocumentBuilder {
 
     fn sets_to_string(&self, sets: &Vec<Vec<String>>) -> String {
         let mut collection = String::new();
-        for set in sets {
-            let mut set_string: String = set
+        for (i, set) in sets.iter().enumerate() {
+            let mut set_string = String::from("#let problem_set = (");
+            set_string += set
                 .iter()
                 .map(|entry| typst_formatting::to_list_item(entry))
                 .collect::<Vec<String>>()
-                .join("\n");
+                .join("\n")
+                .as_str();
 
-            set_string += &typst_formatting::empty_line();
-            set_string += format!("#v({}mm)\n", self.options.par_spacing).as_str();
+            set_string += ")\n";
+            set_string += &format!("#balanced(2, problem_set,{}mm)\n", self.options.enum_spacing);
+            if i != sets.len() - 1 {
+                set_string += &typst_formatting::empty_line();
+                set_string += format!("#v({}mm)\n", self.options.par_spacing).as_str();
+            }
             collection += &set_string;
         }
         collection
@@ -210,7 +216,7 @@ impl DocumentBuilder {
 
     fn build_page_size(&self) -> String {
         format!(
-            "#set page(paper: \"{}\", margin: (x: {}mm, y: {}mm), columns: 2)",
+            "#set page(paper: \"{}\", margin: (x: {}mm, y: {}mm))",
             self.options.paper_size, self.options.x_margin, self.options.y_margin
         )
     }

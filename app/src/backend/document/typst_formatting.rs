@@ -3,7 +3,7 @@ use std::fmt::Display;
 use num_traits::{Signed, Zero};
 
 pub fn to_list_item(s: &String) -> String {
-    String::from("+ ") + s
+    String::from("block(breakable: false)[") + s + "],"
 }
 
 pub fn to_heading(heading: &String) -> String {
@@ -48,7 +48,7 @@ pub fn add<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
     }
 }
 
-pub fn parentheses<T: PartialOrd + Zero+ Display>(val: T) -> String {
+pub fn parentheses<T: PartialOrd + Zero + Display>(val: T) -> String {
     if val < T::zero() {
         format!("({val})")
     } else {
@@ -84,10 +84,5 @@ pub fn equation_solution(equation_string: String) -> String {
         .collect::<Vec<String>>()
         .join(", ");
 
-    format!(
-        "  #equation-solution(
-({combined_equations}),
-({combined_steps}),
-)"
-    )
+    format!("#equation-solution(({combined_equations}),({combined_steps}),)")
 }

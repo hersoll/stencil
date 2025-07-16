@@ -2,9 +2,53 @@ pub static PREAMBLE_STR: &str = r#"
 #import "@preview/equate:0.3.2": equate, share-align
 #show: equate.with(debug: false)
 
+#show math.equation.where(block: false): box
+
+#let balanced(column_count, items, spacing) = layout(size => {
+  let gutter = 1em
+  let column_width = (size.width - gutter * (column_count - 1)) / column_count
+
+ let heights = items.enumerate().map(((index, item)) => {
+    let single_enum = enum(start: index + 1, item)
+    measure(block(width: column_width, single_enum)).height
+  }) 
+
+  let total_height = heights.sum() + (items.len() - 1) * spacing
+  
+  // Adjust final height until everything fits
+  let column_height = total_height / column_count
+  let final_column_height = column_height + 1pt
+  while final_column_height > column_height {
+    let accumulated_height = 0pt
+    let pretend_columns = 1
+    for height in heights {
+      accumulated_height += height + spacing
+
+      if accumulated_height > column_height and pretend_columns < column_count {
+        accumulated_height = height
+        pretend_columns += 1
+      }
+    }
+    final_column_height = accumulated_height
+    column_height += 2pt
+  }
+
+  block(height: column_height)[
+    #columns(column_count, gutter: gutter, enum(..items))
+  ]
+  // [
+  //   Paper height: #size.height \
+  //   Enums: #heights.sum() \
+  //   Spacing: #((items.len() - 1) * spacing)\
+  //   Total height: #total_height \
+  //   Target height: #column_height \
+  //   Final height: #final_column_height
+  // ]
+})
+
 
 //Colors
-#let gray(x) = text(fill: color.linear-rgb(10%, 10%, 10%), $#x$)
+#let colored(x) = text(fill: color.linear-rgb(10%, 10%, 10%), $#x$)
 #let linecolor = color.linear-rgb(20%, 20%, 20%)
 
 //Enum settings
@@ -31,7 +75,7 @@ pub static PREAMBLE_STR: &str = r#"
       }
     }
 
-    let gray-operations = operations.map(op => if op != $$ { gray(op) } else { op })
+    let color-operations = operations.map(op => if op != $$ { colored(op) } else { op })
 
     share-align({
       grid(
@@ -39,7 +83,7 @@ pub static PREAMBLE_STR: &str = r#"
         inset: 5pt,
         align: (left, horizon + left),
         grid.vline(x: 1, stroke: (paint: linecolor, thickness: 0.5pt)),
-        ..equations.zip(gray-operations).flatten(),
+        ..equations.zip(color-operations).flatten(),
       )
     })
   }
