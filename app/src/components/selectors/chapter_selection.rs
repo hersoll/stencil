@@ -1,5 +1,5 @@
 use crate::{
-    backend::*, components::selectors::topic_selection::TopicSelection, APP_LANGUAGE,TRANSLATIONS
+    APP_LANGUAGE, TRANSLATIONS, backend::*, components::selectors::topic_selection::TopicSelection,
 };
 use dioxus::prelude::*;
 
@@ -7,6 +7,12 @@ use dioxus::prelude::*;
 pub fn ChapterSelection(chapters: Signal<Vec<ChapterData>>) -> Element {
     let mut selected_chapter_name = use_signal(|| Option::<String>::None);
     let mut topics: Signal<Vec<TopicData>> = use_signal(|| Vec::new());
+    // If the chapter list has been reset from above
+    use_effect(move || {
+        if chapters().len() == 0 {
+            selected_chapter_name.set(None);
+        }
+    });
     use_effect(move || {
         if let Some(chapter_name) = selected_chapter_name() {
             if let Some(chapter) = chapters()

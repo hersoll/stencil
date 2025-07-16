@@ -1,10 +1,18 @@
 {
     "courses": [
         {
+            "name": "ma1a",
+            "desc": {
+                "sv": "Nivå 1a",
+                "en": "Level 1a"
+            },
+            "chapters": []
+        },
+        {
             "name": "ma1b",
             "desc": {
-                "sv": "Matematik 1b",
-                "en": "Mathematics 1b"
+                "sv": "Nivå 1b",
+                "en": "Level 1b"
             },
             "chapters": [
                 {
@@ -61,8 +69,8 @@
                         {
                             "name": "equations_with_denominators",
                             "desc": {
-                            "sv": "Ekvationer med nämnare",
-                            "en": "Equations with denominators"
+                                "sv": "Ekvationer med nämnare",
+                                "en": "Equations with denominators"
                             },
                             "problems": [
                                 {
@@ -93,9 +101,6 @@
                                         "en": "Unknown with denominator - unknown = number"
                                     }
                                 }
-
-
-
                             ]
                         }
                     ]
@@ -141,6 +146,70 @@
                     ]
                 }
             ]
+        },
+        {
+            "name": "ma1c",
+            "desc": {
+                "sv": "Nivå 1c",
+                "en": "Level 1c"
+            },
+            "chapters": []
+        },
+        {
+            "name": "ma2a",
+            "desc": {
+                "sv": "Nivå 2a",
+                "en": "Level 2a"
+            },
+            "chapters": []
+        },
+        {
+            "name": "ma2b",
+            "desc": {
+                "sv": "Nivå 2b",
+                "en": "Level 2b"
+            },
+            "chapters": []
+        },
+        {
+            "name": "ma2c",
+            "desc": {
+                "sv": "Nivå 2c",
+                "en": "Level 2c"
+            },
+            "chapters": []
+        },
+        {
+            "name": "ma3b",
+            "desc": {
+                "sv": "Forstättning, nivå 1b",
+                "en": "Continuation, level 1b"
+            },
+            "chapters": []
+        },
+        {
+            "name": "ma3c",
+            "desc": {
+                "sv": "Fortsättning, nivå 1c",
+                "en": "Continuation, level 1c"
+            },
+            "chapters": []
+        },
+        {
+            "name": "ma4",
+            "desc": {
+                "sv": "Forstättning, nivå 2",
+                "en": "Continuation, level 2"
+            },
+            "chapters": []
+        },
+        {
+            "name": "ma5",
+            "desc": {
+                "sv": "Fördjupning",
+                "en": "Advanced"
+            },
+            "chapters": []
         }
     ]
 }

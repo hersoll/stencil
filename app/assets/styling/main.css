@@ -1,10 +1,15 @@
-body {
-  display: flex;
-  flex-direction: column;
+:root {
+  --bg_dark: #0f1116;
+  --bg_element_dark: #262121;
+  --bg_element_hover_dark: #3f444d;
+  --corner_radius: 1rem;
+}
 
-  background-color: #0f1116;
+body {
+  background-color: var(--bg_dark);
   color: #ffffff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16pt;
 
   margin: 0 auto;
   padding: 0 1rem;
@@ -30,6 +35,45 @@ body {
   text-align: center;
 }
 
+.course_buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  margin: 2rem auto 1rem;
+  /* Grid to prepare for more courses */
+  background-color: var(--bg_element_dark);
+  border-radius: var(--corner_radius);
+}
+
+.course_button {
+  background: none;
+  border-radius: var(--corner_radius);
+  color: whitesmoke;
+  border: none;
+  font-size: 1.2rem;
+  padding: 0.3rem 1rem;
+
+  transition: all 0.3s ease;
+}
+.course_button:hover {
+  color: gray;
+}
+.course_button:active {
+  background: var(--bg_element_dark);
+}
+.course_button.selected {
+  background: var(--bg_element_hover_dark);
+}
+
+.picker_div {
+  display: flex;
+  flex-direction: row;
+  height: 20rem;
+  background-color: var(--bg_element_dark);
+  border-radius: var(--corner_radius);
+}
+
 #error_display {
   background-color: darkred;
   color: white;
@@ -41,4 +85,10 @@ body {
   position: absolute;
   right: 1rem;
   top: 1rem;
+}
+
+@media only screen and (max-width: 640px) {
+  body {
+    background-color: lightblue;
+  }
 }

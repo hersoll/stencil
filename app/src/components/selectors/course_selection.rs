@@ -1,7 +1,51 @@
+use crate::Error;
 use crate::backend::{self, ChapterData, CourseData, HasDesc, ProblemRegistry};
 use crate::components::selectors::chapter_selection::ChapterSelection;
 use crate::{APP_LANGUAGE, TRANSLATIONS};
 use dioxus::prelude::{server_fn::error::ServerFnErrorErr, *};
+
+fn course_buttons(
+    names: Vec<&'static str>,
+    group_number: u8,
+    courses: Vec<CourseData>,
+    mut chapters: Signal<Vec<ChapterData>>,
+    mut active_button: Signal<String>,
+) -> Element {
+    let class_string = format!("course_{group_number}");
+    rsx! {
+        div { class: "course_group {class_string}",
+            for course_name in names {
+                {
+                    let selected = if active_button() == course_name.to_string() {
+                        "selected"
+                    } else {
+                        ""
+                    };
+                    let course = courses
+                        .iter()
+                        .find(|c| c.name == course_name)
+                        .ok_or(Error::NoCourseWithCourseName {
+                            name: course_name.to_string(),
+                        })?
+                        .clone();
+                    let course_desc = &course.get_desc(APP_LANGUAGE())?;
+                    rsx! {
+                        button {
+                            key: "{course_name.clone()}",
+                            class: "course_button {selected}",
+                            onclick: move |_| {
+                                chapters.set(course.chapters.clone());
+                                active_button.set(course_name.to_string());
+                            },
+                            "{course_desc}"
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}
 
 #[component]
 pub fn CourseSelection() -> Element {
@@ -14,7 +58,6 @@ pub fn CourseSelection() -> Element {
         });
 
     let mut courses: Signal<Vec<CourseData>> = use_signal(|| Vec::new());
-    let mut selected_course_name = use_signal(|| Option::<String>::None);
     use_effect(move || {
         if let Some(Ok(registry)) = registry_result() {
             courses.set(registry.courses);
@@ -22,52 +65,35 @@ pub fn CourseSelection() -> Element {
             throw_error(e.clone())
         }
     });
+    let active_button: Signal<String> = use_signal(|| String::new());
 
-    let mut chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
-    use_effect(move || {
-        if let Some(course_name) = selected_course_name() {
-            if let Some(course) = courses().iter().find(|course| course.name == course_name) {
-                chapters.set(course.chapters.clone());
-            } else {
-                throw_error(crate::Error::NoCourseWithCourseName { name: course_name });
-            }
-        } else {
-            chapters.set(Vec::new());
-        }
-    });
+    let chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
 
-    let heading = TRANSLATIONS().get_phrase("site_heading", APP_LANGUAGE())?;
-    let selection_default = TRANSLATIONS().get_phrase("course_selector", APP_LANGUAGE())?;
+    //let heading = TRANSLATIONS().get_phrase("site_heading", APP_LANGUAGE())?;
+    //let selection_default = TRANSLATIONS().get_phrase("course_selector", APP_LANGUAGE())?;
 
     rsx! {
-        div { id: "topic_picker",
-            h1 { "{heading}" }
 
             if courses().len() > 0 {
-                select {
-                    onchange: move |event| {
-                        chapters.set(Vec::new());
-                        selected_course_name.set(Some(event.value().to_string()));
-                    },
-                    option {
-                        value: "",
-                        selected: selected_course_name().is_none(),
-                        disabled: true,
-                        "{selection_default}"
-                    }
+                div { class: "course_buttons",
                     {
-                        courses
-                            .iter()
-                            .map(|course| {
-                                let course_desc = course.get_desc(APP_LANGUAGE())?;
-                                rsx! {
-                                    option { value: course.name.clone(), "{course_desc}" }
-                                }
-                            })
+                        course_buttons(
+                            vec!["ma1a", "ma1b", "ma1c"],
+                            1,
+                            courses(),
+                            chapters,
+                            active_button,
+                        )
                     }
+                                //{course_buttons(vec!["ma2a","ma2b","ma2c"], 2, courses(), chapters)}
+                //{course_buttons(vec!["ma3b","ma3c"], 3, courses(), chapters)}
+                //{course_buttons(vec!["ma4"], 4, courses(), chapters)}
+                //{course_buttons(vec!["ma5"], 5, courses(), chapters)}
                 }
             }
-            if selected_course_name().is_some() {
+            div { class: "picker_div",
+
+            if chapters.len() > 0 {
                 ChapterSelection { chapters }
             }
         }

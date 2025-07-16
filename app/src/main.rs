@@ -18,7 +18,7 @@ fn App() -> Element {
     //use_context_provider(|| Signal::new(SetData(Vec::new())));
     let translations = use_server_future(backend::load_translations)?;
     if let Some(Err(e)) = translations() {
-        return rsx! { "Error loading translations: {e}"};
+        return rsx! { "Error loading translations: {e}" };
     }
     *TRANSLATIONS.write() = translations().unwrap().unwrap();
 
