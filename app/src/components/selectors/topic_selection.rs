@@ -1,61 +1,39 @@
-use crate::{backend::*, APP_LANGUAGE, TRANSLATIONS};
+use crate::{APP_LANGUAGE, TRANSLATIONS, backend::*};
 use dioxus::prelude::*;
 
 #[component]
-pub fn TopicSelection(topics: Signal<Vec<TopicData>>) -> Element {
-    let mut selected_topic_name = use_signal(|| Option::<String>::None);
+pub fn TopicSelection(topics: Signal<Vec<TopicData>>, active_topic: Signal<String>) -> Element {
     let mut problems: Signal<Vec<ProblemData>> = use_signal(|| Vec::new());
-    use_effect(move || {
-        if let Some(topic_name) = selected_topic_name() {
-            if let Some(topic) = topics().iter().find(|topic| topic.name == topic_name) {
-                problems.set(topic.problems.clone());
-            } else {
-                throw_error(crate::Error::NoTopicWithTopicName { name: topic_name });
-            }
-        } else {
-            problems.set(Vec::new())
-        }
-    });
-    let selection_default = TRANSLATIONS().get_phrase("topic_selector", APP_LANGUAGE())?;
     rsx! {
-        // Topics
-        if topics().len() > 0 {
-            select {
-                onchange: move |ev| {
-                    selected_topic_name.set(Some(ev.value().to_string()));
-                },
-                option {
-                    value: "",
-                    selected: selected_topic_name().is_none(),
-                    disabled: true,
-                    "{selection_default}"
-                }
-                {
-                    topics
-                        .iter()
-                        .map(|topic| {
-                            let topic_desc = topic.get_desc(APP_LANGUAGE())?;
-                            rsx! {
-                                option { value: topic.name.clone(), "{topic_desc}" }
-                            }
-                        })
-                }
-            }
-            // Problems
-            if problems().len() > 0 {
-                ul {
-                    {
-                        problems
-                            .iter()
-                            .map(|problem| {
-                                let problem_desc = problem.get_desc(APP_LANGUAGE())?;
-                                rsx! {
-                                    li { "{problem_desc}" }
-                                }
-                            })
-                    }
-                }
-            }
+        for topic in topics() {
+            Topic { topic, active_topic, problems }
+        }
+    }
+}
+
+#[component]
+pub fn Topic(
+    topic: TopicData,
+    active_topic: Signal<String>,
+    problems: Signal<Vec<ProblemData>>,
+) -> Element {
+    let mut selected = use_signal(|| false);
+    let topic_desc = &topic.get_desc(APP_LANGUAGE())?;
+    let class = if selected() {
+        "topic selected"
+    } else {
+        "topic"
+    };
+    rsx! {
+        button {
+            key: "{topic.name.clone()}",
+            class,
+            onclick: move |_| {
+                selected.set(!selected());
+                active_topic.set(topic.name.clone());
+                problems.set(topic.problems.clone());
+            },
+            "{topic_desc}"
         }
     }
 }

@@ -1,10 +1,14 @@
 //Remember to eventually remove this (when #[server] is fixed....)
 #![allow(dead_code)]
 
-use app::{TRANSLATIONS, backend, errors};
+use app::{
+    TRANSLATIONS, backend,
+    components::{DifficultyPicker, NumberPicker},
+    errors,
+};
 use dioxus::prelude::*;
 
-use app::components::{CourseSelection, ErrorDisplay, Header, PDFButtons};
+use app::components::{ErrorDisplay, Header, PDFButtons, ProblemDisplay};
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
@@ -42,7 +46,11 @@ fn App() -> Element {
                     }
                 }
             },
-            CourseSelection {}
+            ProblemDisplay {}
+            div { class: "set_options",
+                DifficultyPicker {}
+                NumberPicker {}
+            }
             PDFButtons {}
         }
     }

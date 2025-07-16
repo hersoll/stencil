@@ -16,6 +16,22 @@
             },
             "chapters": [
                 {
+                    "name": "arithmetics",
+                    "desc": {
+                        "sv": "Aritmetik",
+                        "en": "Arithmetics"
+                    },
+                    "topics": []
+                },
+                {
+                    "name": "algebra",
+                    "desc": {
+                        "sv": "Algebraiska uttryck",
+                        "en": "Algebraic expressions"
+                    },
+                    "topics": []
+                },
+                {
                     "name": "equations",
                     "desc": {
                         "sv": "Ekvationer",
@@ -106,6 +122,30 @@
                     ]
                 },
                 {
+                    "name": "powers",
+                    "desc": {
+                        "sv": "Potenser",
+                        "en": "Powers"
+                    },
+                    "topics": []
+                },
+                {
+                    "name": "percentages",
+                    "desc": {
+                        "sv": "Förändringsfaktorer",
+                        "en": "Rates of change"
+                    },
+                    "topics": []
+                },
+                {
+                    "name": "straight_lines",
+                    "desc": {
+                        "sv": "Räta linjens ekvation",
+                        "en": "Slope-intercept form"
+                    },
+                    "topics": []
+                },
+                {
                     "name": "functions",
                     "desc": {
                         "sv": "Funktioner",
@@ -144,6 +184,30 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "economics",
+                    "desc": {
+                        "sv": "Ekonomi",
+                        "en": "Economics"
+                    },
+                    "topics": []
+                },
+                {
+                    "name": "probability",
+                    "desc": {
+                        "sv": "Sannolikhet",
+                        "en": "Probabilities"
+                    },
+                    "topics": []
+                },
+                {
+                    "name": "statistics",
+                    "desc": {
+                        "sv": "Statistik",
+                        "en": "Statistics"
+                    },
+                    "topics": []
                 }
             ]
         },
