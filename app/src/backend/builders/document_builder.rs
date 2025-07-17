@@ -25,6 +25,7 @@ pub struct DocumentOptions {
     y_margin: u8,
     enum_spacing: u8,
     par_spacing: u8,
+    column_lines: bool,
 }
 
 pub struct FinishedFile {
@@ -64,6 +65,7 @@ impl DocumentBuilder {
             y_margin: 20,
             par_spacing: 6,
             enum_spacing: 6,
+            column_lines: true,
         };
         DocumentBuilder {
             question_sets: Vec::new(),
@@ -174,7 +176,10 @@ impl DocumentBuilder {
                 .as_str();
 
             set_string += ")\n";
-            set_string += &format!("#balanced(2, problem_set,{}mm)\n", self.options.enum_spacing);
+            set_string += &format!(
+                "#balanced(2, problem_set,{}mm,{})\n",
+                self.options.enum_spacing, self.options.column_lines
+            );
             if i != sets.len() - 1 {
                 set_string += &typst_formatting::empty_line();
                 set_string += format!("#v({}mm)\n", self.options.par_spacing).as_str();

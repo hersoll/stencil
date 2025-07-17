@@ -42,7 +42,7 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
         "equations_with_denominators_one_denom_one_variable",
         "equations_with_denominators_one_denom_and_unit_variable_integers_positive",
         "equations_with_denominators_unit_variable_and_one_denom_integers_positive",
-        "equations_with_denominators_unit_variable_and_one_denom_integers_with_negatives"
+        "equations_with_denominators_unit_variable_and_one_denom_integers_with_negatives",
     ];
     let problem_types: Vec<ProblemType> = ids
         .iter()
@@ -61,12 +61,6 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
         .batch(crate::backend::Difficulty::Easy, 10)
         .build()?;
 
-    let problems_2 = crate::backend::builders::SetBuilder::new()
-        .area(problem_types.clone())
-        .lang("sv")
-        .batch(crate::backend::Difficulty::Intro, 20)
-        .batch(crate::backend::Difficulty::Easy, 20)
-        .build()?;
     let problems_3 = crate::backend::builders::SetBuilder::new()
         .area(problem_types.clone()) // Don't need to clone in prod
         .lang("sv")
@@ -79,7 +73,6 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
         .lang("sv")
         .write_solutions(WriteSolutions::First)
         .add_problem_set(problems_1)?
-        .add_problem_set(problems_2)?
         .add_problem_set(problems_3)?
         .build()?;
 
