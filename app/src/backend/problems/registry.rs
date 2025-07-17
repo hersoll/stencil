@@ -2,12 +2,19 @@ use crate::{Error, Result};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::Mutex;
+use std::sync::{LazyLock, RwLock};
 
 /// A map between problem names (simple-equations-default) and ProblemTypes
-pub static PROBLEM_REGISTRY: Lazy<Mutex<HashMap<String, super::ProblemType>>> =
-    Lazy::new(|| Mutex::new(HashMap::new()));
+pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, super::ProblemType>>> =
+    LazyLock::new(|| RwLock::new(HashMap::new()));
 
+// Keeps track of course structure
+pub static PROBLEM_REGISTRY: Lazy<ProblemRegistry> = Lazy::new(|| {
+    let json = std::fs::read_to_string("registry.json").expect("Failed to read registry.json");
+    let parsed: crate::backend::ProblemRegistry =
+        serde_json::from_str(&json).expect("Failed to parse registry JSON");
+    parsed
+});
 //#################################
 //#       COURSE STRUCTURE        #
 //#################################
@@ -92,7 +99,7 @@ pub struct ProblemData {
 impl ProblemData {
     pub fn get_question(&self, lang: String) -> Result<String> {
         let question = self
-            .question            
+            .question
             .get(&lang)
             .ok_or(Error::NoQuestionForLang {
                 name: self.name().clone(),
@@ -104,7 +111,7 @@ impl ProblemData {
 
     pub fn get_answer(&self, lang: String) -> Result<String> {
         let answer = self
-            .answer            
+            .answer
             .get(&lang)
             .ok_or(Error::NoAnswerForLang {
                 name: self.name().clone(),
@@ -116,7 +123,7 @@ impl ProblemData {
 
     pub fn get_solution(&self, lang: String) -> Result<String> {
         let solution = self
-            .solution            
+            .solution
             .get(&lang)
             .ok_or(Error::NoSolutionForLang {
                 name: self.name().clone(),
@@ -134,7 +141,6 @@ impl HasDesc for ProblemData {
         &self.desc
     }
 }
-
 
 // OLD SER/DESER. KEEP JUST IN CASE
 // impl Serialize for ProblemRegistry {

@@ -2,8 +2,9 @@
 #![allow(dead_code)]
 
 use app::{
-    TRANSLATIONS, backend,
-    components::{CreateSet, DifficultyPicker, NumberPicker},
+    TRANSLATIONS,
+    backend::{self, ChapterData, CourseData, TopicData},
+    components::{CreateSet, DifficultyPicker, NumberPicker, SetDisplay},
     errors,
     frontend_types::{ProblemSetData, Sets},
 };
@@ -20,15 +21,26 @@ fn main() {
 
 #[component]
 fn App() -> Element {
-    //use_context_provider(|| Signal::new(SetData(Vec::new())));
+    let set_data = use_signal(|| ProblemSetData::new());
+    let sets: Signal<Sets> = use_signal(|| Vec::new());
+
+    let mut courses: Signal<Vec<CourseData>> = use_signal(|| Vec::new());
+    let chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
+    let topics: Signal<Vec<TopicData>> = use_signal(|| Vec::new());
+
+    let active_course = use_signal(|| String::new());
+    let active_chapter = use_signal(|| String::new());
+
     let translations = use_server_future(backend::load_translations)?;
     if let Some(Err(e)) = translations() {
         return rsx! { "Error loading translations: {e}" };
     }
+    let registry = use_server_future(backend::load_registry)?;
+    if let Some(Err(e)) = registry() {
+        return rsx! { "Error loading registry: {e}" };
+    }
     *TRANSLATIONS.write() = translations().unwrap().unwrap();
-
-    let set_data = use_signal(|| ProblemSetData::new());
-    let sets: Signal<Sets> = use_signal(|| Vec::new());
+    courses.set(registry().unwrap().unwrap().courses);
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
@@ -50,13 +62,21 @@ fn App() -> Element {
                     }
                 }
             },
-            ProblemDisplay { set_data }
+            ProblemDisplay {
+                set_data,
+                courses,
+                chapters,
+                topics,
+                active_course,
+                active_chapter,
+            }
             div { class: "set_options",
                 DifficultyPicker { set_data }
                 NumberPicker { set_data }
             }
             CreateSet { set_data, sets }
-            PDFButtons {}
+            SetDisplay { sets }
+            PDFButtons { sets }
         }
     }
 }

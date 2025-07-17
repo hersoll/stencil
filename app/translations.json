@@ -66,5 +66,9 @@
     "number_of_problems": {
         "sv": "Antal",
         "en": "Problems"
+    },
+    "please_create_a_set": {
+        "sv": "Skapa en sektion så dyker den upp här",
+        "en": "Create a set and it will show up here"
     }
 }

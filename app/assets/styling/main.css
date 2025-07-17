@@ -30,6 +30,10 @@ body {
   position: relative;
 }
 
+button {
+  cursor: pointer;
+}
+
 #header h1 {
   margin: 0;
   font-size: 3rem;
@@ -61,14 +65,18 @@ body {
 
   transition: all 0.3s ease;
 
-  &:hover {
-    color: gray;
+  &:hover:enabled {
+    background: var(--bg_element_hover_dark);
   }
   &:active {
     background: var(--bg_element_dark);
   }
   &.selected {
     background: var(--bg_element_selected_dark);
+  }
+  &:disabled {
+    color: gray;
+    cursor: initial;
   }
 }
 
@@ -271,6 +279,25 @@ body {
     cursor: pointer;
     color: gray;
   }
+}
+
+.set_row_placeholder {
+  display: contents;
+}
+.set_row_placeholder > p {
+  background-color: var(--bg_element_dark);
+  color: gray;
+  line-height: 2.5rem;
+  padding-left: 0.75em;
+  margin: 0;
+}
+.set_row_placeholder > p:nth-child(1) {
+  border-top-left-radius: var(--corner_radius);
+  border-bottom-left-radius: var(--corner_radius);
+}
+.set_row_placeholder > p:nth-last-child(1) {
+  border-top-right-radius: var(--corner_radius);
+  border-bottom-right-radius: var(--corner_radius);
 }
 
 #error_display {

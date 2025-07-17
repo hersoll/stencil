@@ -16,3 +16,4 @@ pub use language_switch::LanguageSwitch;
 pub use number_picker::NumberPicker;
 pub use pdf_button::PDFButtons;
 pub use selectors::problem_display::ProblemDisplay;
+pub use set_display::SetDisplay;

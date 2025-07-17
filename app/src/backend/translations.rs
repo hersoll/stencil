@@ -10,7 +10,7 @@ pub static GENERAL_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     Translations::new(table)
 });
 
-pub static REGISTRY_TRANSLATIONS: Lazy<ProblemRegistry> = Lazy::new(|| {
+pub static PROBLEM_REGISTRY: Lazy<ProblemRegistry> = Lazy::new(|| {
     let json = std::fs::read_to_string("registry.json").expect("Failed to read registry.json");
     let parsed: crate::backend::ProblemRegistry =
         serde_json::from_str(&json).expect("Failed to parse registry JSON");
@@ -66,7 +66,7 @@ pub static REGISTRY_TRANSLATIONS: Lazy<ProblemRegistry> = Lazy::new(|| {
 
 pub static QUESTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let mut table: TranslationTable = HashMap::new();
-    for course in REGISTRY_TRANSLATIONS.clone().courses {
+    for course in PROBLEM_REGISTRY.clone().courses {
         for chapter in course.chapters {
             for topic in chapter.topics {
                 for problem in topic.problems {
@@ -83,7 +83,7 @@ pub static QUESTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
 
 pub static ANSWER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let mut table: TranslationTable = HashMap::new();
-    for course in REGISTRY_TRANSLATIONS.clone().courses {
+    for course in PROBLEM_REGISTRY.clone().courses {
         for chapter in course.chapters {
             for topic in chapter.topics {
                 for problem in topic.problems {
@@ -100,7 +100,7 @@ pub static ANSWER_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
 
 pub static SOLUTION_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let mut table: TranslationTable = HashMap::new();
-    for course in REGISTRY_TRANSLATIONS.clone().courses {
+    for course in PROBLEM_REGISTRY.clone().courses {
         for chapter in course.chapters {
             for topic in chapter.topics {
                 for problem in topic.problems {

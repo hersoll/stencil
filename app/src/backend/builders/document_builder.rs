@@ -228,7 +228,7 @@ impl DocumentBuilder {
 
     fn build_enum_spacing(&self) -> String {
         format!(
-            "#set enum(start: 0, spacing: {}mm)",
+            "#set enum(start: 0, spacing: {}mm)\n",
             self.options.enum_spacing
         )
     }

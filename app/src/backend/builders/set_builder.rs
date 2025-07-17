@@ -38,9 +38,14 @@ impl SetBuilder {
         self
     }
 
-    pub fn batch(&mut self, difficulty: Difficulty, n: u8) -> &mut Self {
+    pub fn batch(
+        &mut self,
+        starting_difficulty: Difficulty,
+        ending_difficulty: Difficulty,
+        n: u8,
+    ) -> &mut Self {
         if n > 0 {
-            self.batches.push((difficulty, n));
+            self.batches.push((starting_difficulty, n));
         }
         // else Err
         self

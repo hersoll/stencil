@@ -123,9 +123,9 @@ pub fn problem(attr: TokenStream, item: TokenStream) -> TokenStream {
         #[cfg(not(target_arch = "wasm32"))]
         #[ctor::ctor]
         fn #register_fn_ident() {
-            use crate::backend::{PROBLEM_REGISTRY, ProblemType};
+            use crate::backend::{PROBLEM_MAP, ProblemType};
             let final_id = #id_expr;
-            PROBLEM_REGISTRY.lock().unwrap().insert(
+            PROBLEM_MAP.write().unwrap().insert(
                 final_id.clone(),
                 ProblemType {
                     name: final_id,
@@ -137,9 +137,9 @@ pub fn problem(attr: TokenStream, item: TokenStream) -> TokenStream {
 
         #[cfg(target_arch = "wasm32")]
         pub fn #register_fn_ident() {
-            use crate::backend::{PROBLEM_REGISTRY, ProblemType};
+            use crate::backend::{PROBLEM_MAP, ProblemType};
             let final_id = #id_expr;
-            PROBLEM_REGISTRY.lock().unwrap().insert(
+            PROBLEM_MAP.write().unwrap().insert(
                 final_id.clone(),
                 ProblemType {
                     name: final_id,

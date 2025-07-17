@@ -1,13 +1,22 @@
 use crate::backend::generate_pdf;
-use crate::{Error};
+use crate::frontend_types::Sets;
+use crate::{Error, frontend_types::SendableProblemSetData};
 use dioxus::prelude::server_fn::error::ServerFnErrorErr;
 use dioxus::prelude::*;
 use js_sys::Uint8Array;
 use wasm_bindgen::JsCast;
 use web_sys::{Blob, BlobPropertyBag, HtmlAnchorElement, Url, window};
 
+fn convert_sets(sets: Sets) -> Vec<SendableProblemSetData> {
+    let mut converted: Vec<SendableProblemSetData> = Vec::new();
+    for set in sets {
+        converted.push(SendableProblemSetData::from(set));
+    }
+    converted
+}
+
 #[component]
-pub fn PDFButtons() -> Element {
+pub fn PDFButtons(sets: Signal<Sets>) -> Element {
     let mut generating_pdf = use_signal(|| false);
     let mut pdf_url = use_signal(|| None::<String>);
     let mut generation_error = use_signal(|| None::<String>);
@@ -17,7 +26,9 @@ pub fn PDFButtons() -> Element {
             generating_pdf.set(true);
             generation_error.set(None);
 
-            let bytes = generate_pdf().await.map_err(ServerFnErrorErr::from)?;
+            let bytes = generate_pdf(convert_sets(sets()))
+                .await
+                .map_err(ServerFnErrorErr::from)?;
             // Potential JS Errors in here
             let uint8_array = Uint8Array::from(bytes.as_slice());
             let array = js_sys::Array::new();
