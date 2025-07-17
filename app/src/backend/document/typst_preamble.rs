@@ -4,6 +4,19 @@ pub static PREAMBLE_STR: &str = r#"
 
 #show math.equation.where(block: false): box
 
+#let will_fit(column_height, column_count, heights, spacing) = {
+    let accumulated_height = 0pt
+    let pretend_columns = 1
+    for height in heights {
+      accumulated_height += height + spacing
+
+      if accumulated_height > column_height and pretend_columns < column_count {
+        accumulated_height = height
+        pretend_columns += 1
+      }
+    }
+   accumulated_height <= column_height 
+}
 #let balanced(column_count, items, spacing) = layout(size => {
   let gutter = 1em
   let column_width = (size.width - gutter * (column_count - 1)) / column_count
@@ -15,25 +28,19 @@ pub static PREAMBLE_STR: &str = r#"
 
   let total_height = heights.sum() + (items.len() - 1) * spacing
   
-  // Adjust final height until everything fits
-  let column_height = total_height / column_count
-  let final_column_height = column_height + 1pt
-  while final_column_height > column_height {
-    let accumulated_height = 0pt
-    let pretend_columns = 1
-    for height in heights {
-      accumulated_height += height + spacing
-
-      if accumulated_height > column_height and pretend_columns < column_count {
-        accumulated_height = height
-        pretend_columns += 1
-      }
+  let min_height = total_height / column_count
+  let max_height = total_height
+  // Binary search loop
+  while max_height - min_height > 1pt {
+    let mid_height = (min_height + max_height) / 2
+    if will_fit(mid_height, column_count, heights, spacing) {
+      max_height = mid_height
+    } else {
+      min_height = mid_height
     }
-    final_column_height = accumulated_height
-    column_height += 2pt
-  }
+  } 
 
-  block(height: column_height)[
+  block(height: min_height)[
     #columns(column_count, gutter: gutter, enum(..items))
   ]
   // [
@@ -45,7 +52,6 @@ pub static PREAMBLE_STR: &str = r#"
   //   Final height: #final_column_height
   // ]
 })
-
 
 //Colors
 #let colored(x) = text(fill: color.linear-rgb(10%, 10%, 10%), $#x$)

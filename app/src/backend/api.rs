@@ -54,8 +54,21 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
         })
         .collect::<crate::Result<Vec<ProblemType>>>()?;
 
-    let problems = crate::backend::builders::SetBuilder::new()
-        .area(problem_types)
+    let problems_1 = crate::backend::builders::SetBuilder::new()
+        .area(problem_types.clone()) // Don't need to clone in prod
+        .lang("sv")
+        .batch(crate::backend::Difficulty::Intro, 5)
+        .batch(crate::backend::Difficulty::Easy, 10)
+        .build()?;
+
+    let problems_2 = crate::backend::builders::SetBuilder::new()
+        .area(problem_types.clone())
+        .lang("sv")
+        .batch(crate::backend::Difficulty::Intro, 20)
+        .batch(crate::backend::Difficulty::Easy, 20)
+        .build()?;
+    let problems_3 = crate::backend::builders::SetBuilder::new()
+        .area(problem_types.clone()) // Don't need to clone in prod
         .lang("sv")
         .batch(crate::backend::Difficulty::Intro, 5)
         .batch(crate::backend::Difficulty::Easy, 10)
@@ -65,7 +78,9 @@ async fn generate_standard_pdf() -> crate::Result<Vec<u8>> {
         .heading("Equations")
         .lang("sv")
         .write_solutions(WriteSolutions::First)
-        .add_problem_set(problems)?
+        .add_problem_set(problems_1)?
+        .add_problem_set(problems_2)?
+        .add_problem_set(problems_3)?
         .build()?;
 
     let pdf_path = typst_file.compile()?;
