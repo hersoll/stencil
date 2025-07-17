@@ -50,5 +50,21 @@
     "pick_number": {
         "sv": "Antal uppgifter",
         "en": "Number of problems"
+    },
+    "create_set": {
+        "sv": "Skapa sektion",
+        "en": "Create set"
+    },
+    "create_set_error": {
+        "sv": "Välj ett område innan du skapar en sektion",
+        "en": "Choose a topic before creating a section"
+    },
+    "topics": {
+        "sv": "Områden",
+        "en": "Topics"
+    },
+    "number_of_problems": {
+        "sv": "Antal",
+        "en": "Problems"
     }
 }

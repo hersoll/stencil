@@ -7,7 +7,7 @@ pub fn TopicSelection(
     active_topic: Signal<String>,
     set_data: Signal<ProblemSetData>,
 ) -> Element {
-    let mut problems: Signal<Vec<ProblemData>> = use_signal(|| Vec::new());
+    let problems: Signal<Vec<ProblemData>> = use_signal(|| Vec::new());
     rsx! {
         for topic in topics() {
             Topic {

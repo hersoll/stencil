@@ -3,7 +3,7 @@
 
 use app::{
     TRANSLATIONS, backend,
-    components::{AddSet, DifficultyPicker, NumberPicker},
+    components::{CreateSet, DifficultyPicker, NumberPicker},
     errors,
     frontend_types::{ProblemSetData, Sets},
 };
@@ -55,7 +55,7 @@ fn App() -> Element {
                 DifficultyPicker { set_data }
                 NumberPicker { set_data }
             }
-            AddSet { set_data, sets }
+            CreateSet { set_data, sets }
             PDFButtons {}
         }
     }
