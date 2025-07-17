@@ -181,21 +181,13 @@ body {
   gap: 0.25rem;
 }
 
-.difficulty_picker > select {
-  background-color: var(--bg_element_dark);
-  color: white;
-  border: none;
-  border-radius: var(--corner_radius);
-  padding: 0.3rem 0.4rem;
-  font-size: 1rem;
-}
-
+.difficulty_picker > select,
 .number_picker > input {
   background-color: var(--bg_element_dark);
   color: white;
   border: none;
   border-radius: var(--corner_radius);
-  padding: 0.3rem 1rem;
+  padding: 0.3rem 0.7rem;
   font-size: 1rem;
 }
 
