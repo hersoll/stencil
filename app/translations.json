@@ -46,5 +46,9 @@
     "difficulty_hard": {
         "sv": "Svår",
         "en": "Hard"
+    },
+    "pick_number": {
+        "sv": "Antal uppgifter",
+        "en": "Number of problems"
     }
 }

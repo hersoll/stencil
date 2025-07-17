@@ -5,10 +5,8 @@ use crate::{enum_to_str, i18n_lookup, str_to_enum};
 
 #[component]
 pub fn DifficultyPicker(set_data: Signal<ProblemSetData>) -> Element {
-    let from_str = TRANSLATIONS().get_phrase("from", APP_LANGUAGE())?;
-    let to_str = TRANSLATIONS().get_phrase("to", APP_LANGUAGE())?;
-    let difficulty_str = TRANSLATIONS().get_phrase("difficulty", APP_LANGUAGE())?;
-
+    let to_str = i18n_lookup("to")?;
+    let difficulty_str = i18n_lookup("difficulty")?;
     let difficulties = vec![
         Difficulty::Intro,
         Difficulty::Easy,
@@ -18,8 +16,7 @@ pub fn DifficultyPicker(set_data: Signal<ProblemSetData>) -> Element {
 
     rsx! {
         div { class: "difficulty_picker",
-            h3 { "{difficulty_str}:" }
-            p { "{from_str}" }
+            p { "{difficulty_str}:" }
             select {
                 onchange: move |opt| {
                     let mut set = set_data.write();
