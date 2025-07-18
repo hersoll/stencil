@@ -24,7 +24,7 @@ pub static PREAMBLE_STR: &str = r#"
   while (max_height - min_height).abs > 1pt {
     let available_height = spare_height
     let mid_height = (min_height + max_height) / 2
-    let limit = if mid_height > available_height { available_height } else { mid_height }
+    let limit = calc.min(mid_height, available_height)
     let current_column_height = mid_height
     let accumulated_height = 0pt
     let current_column = 1
