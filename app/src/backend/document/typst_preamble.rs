@@ -4,7 +4,7 @@ pub static PREAMBLE_STR: &str = r#"
 
 #show math.equation.where(block: false): box
 
-#let balanced(column_count, items, spacing, lines, debug: false) = layout(size => {
+#let balanced(column_count, items, spacing, debug: false) = layout(size => {
   let start_height = here().position().y - page.margin.length
   let spare_height = size.height - start_height
   let pre_spacing = 0pt
@@ -62,12 +62,6 @@ pub static PREAMBLE_STR: &str = r#"
   }
   v(pre_spacing)
   block(height: max_height)[
-    #if lines {
-      for i in range(column_count - 1) {
-        let line_x = (i + 1) * (size.width / column_count) - 0.25pt + gutter/4 * i
-        place(dx: line_x, dy: 0pt, line(length: max_height, stroke: 0.5pt + gray, angle: 90deg))
-      }
-    }
     #columns(column_count, gutter: gutter, enum(..items))
   ] 
   if debug {
