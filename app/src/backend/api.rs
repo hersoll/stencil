@@ -34,6 +34,7 @@ async fn generate_standard_pdf(sets: Vec<SendableProblemSetData>) -> crate::Resu
     for set in sets {
         let mut set_builder = SetBuilder::new();
         let mut problem_types: Vec<ProblemType> = Vec::new();
+        // Convert the ID strings to actual problems
         for id in set.ids {
             let topic = courses
                 .iter()

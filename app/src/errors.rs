@@ -8,6 +8,9 @@ pub enum Error {
     // Static arrays
     EmptyStatic,
 
+    // Sent data from frontend with bad formatting
+    NumberOfProblemsIsZero,
+
     // Registry
     RegistryMutexIsPoisoned,
     NoSuchKeyExists {
