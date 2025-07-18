@@ -14,17 +14,33 @@ pub struct DocumentBuilder {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DocumentOptions {
-    //Config options
-    lang: String,
-    write_solutions: WriteSolutions,
-    file_name: String,
-    color: bool,
-    heading: String,
-    paper_size: String,
-    x_margin: u8,
-    y_margin: u8,
-    enum_spacing: u8,
-    par_spacing: u8,
+    pub lang: String,
+    pub write_solutions: WriteSolutions,
+    pub file_name: String,
+    pub color: bool,
+    pub heading: String,
+    pub paper_size: String,
+    pub x_margin: u8,
+    pub y_margin: u8,
+    pub enum_spacing: u8,
+    pub par_spacing: u8,
+}
+
+impl Default for DocumentOptions {
+    fn default() -> Self {
+        DocumentOptions {
+            lang: "sv".to_string(),
+            write_solutions: WriteSolutions::None,
+            file_name: String::from("stencil"),
+            color: true,
+            heading: String::new(),
+            paper_size: "a4".to_string(),
+            x_margin: 20,
+            y_margin: 20,
+            par_spacing: 6,
+            enum_spacing: 6,
+        }
+    }
 }
 
 pub struct FinishedFile {
@@ -52,19 +68,7 @@ pub enum WriteSolutions {
 }
 
 impl DocumentBuilder {
-    pub fn new() -> DocumentBuilder {
-        let options = DocumentOptions {
-            lang: "sv".to_string(),
-            write_solutions: WriteSolutions::None,
-            file_name: String::from("stencil"),
-            color: true,
-            heading: String::new(),
-            paper_size: "a4".to_string(),
-            x_margin: 20,
-            y_margin: 20,
-            par_spacing: 6,
-            enum_spacing: 6,
-        };
+    pub fn new(options: DocumentOptions) -> DocumentBuilder {
         DocumentBuilder {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
@@ -72,54 +76,12 @@ impl DocumentBuilder {
         }
     }
 
-    // TODO: Might not need any of these setters if the frontend passes
-    //       a DocumentOptions object
-
-    pub fn lang<T: Into<String>>(&mut self, lang: T) -> &mut Self {
-        self.options.lang = lang.into();
-        self
-    }
-
-    pub fn file_name<T: Into<String>>(&mut self, file_name: T) -> &mut Self {
-        self.options.file_name = file_name.into();
-        self
-    }
-
     pub fn write_solutions(&mut self, option: WriteSolutions) -> &mut Self {
         self.options.write_solutions = option;
         self
     }
 
-    pub fn heading<T: Into<String>>(&mut self, heading: T) -> &mut Self {
-        self.options.heading = heading.into();
-        self
-    }
-
-    pub fn color(&mut self, color: bool) -> &mut Self {
-        self.options.color = color;
-        self
-    }
-
-    pub fn paper_size<T: Into<String>>(&mut self, size: T) -> &mut Self {
-        self.options.paper_size = size.into();
-        self
-    }
-
-    pub fn enum_spacing<T: Into<u8>>(&mut self, size: T) -> &mut Self {
-        self.options.enum_spacing = size.into();
-        self
-    }
-
-    pub fn x_margin<T: Into<u8>>(&mut self, margin: T) -> &mut Self {
-        self.options.x_margin = margin.into();
-        self
-    }
-
-    pub fn y_margin<T: Into<u8>>(&mut self, margin: T) -> &mut Self {
-        self.options.y_margin = margin.into();
-        self
-    }
-
+    // TODO: Refactor so it checks added problems in entire document
     pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> Result<&mut Self> {
         let mut added_problem_names: Vec<String> = Vec::new();
         let results: Result<Vec<(String, String)>> = problem_set

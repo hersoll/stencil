@@ -6,7 +6,7 @@ use crate::{
     Error,
     backend::{
         PROBLEM_MAP, PROBLEM_REGISTRY, Problem, ProblemType,
-        builders::{DocumentBuilder, SetBuilder, WriteSolutions},
+        builders::{DocumentBuilder, DocumentOptions, SetBuilder, WriteSolutions},
         translations::{GENERAL_TRANSLATIONS, Translations},
     },
     frontend_types::SendableProblemSetData,
@@ -23,13 +23,18 @@ pub async fn load_translations() -> Result<Translations, ServerFnError> {
 }
 
 #[server]
-pub async fn generate_pdf(sets: Vec<SendableProblemSetData>) -> Result<Vec<u8>, ServerFnError> {
-    let pdf = generate_standard_pdf(sets).await?;
+pub async fn generate_pdf(
+    sets: Vec<SendableProblemSetData>,
+    options: DocumentOptions,
+) -> Result<Vec<u8>, ServerFnError> {
+    let pdf = generate_standard_pdf(sets, options).await?;
     Ok(pdf)
 }
 
-async fn generate_standard_pdf(sets: Vec<SendableProblemSetData>) -> crate::Result<Vec<u8>> {
-    println!("{:#?}", sets);
+async fn generate_standard_pdf(
+    sets: Vec<SendableProblemSetData>,
+    options: DocumentOptions,
+) -> crate::Result<Vec<u8>> {
     let mut problem_sets: Vec<Vec<Problem>> = Vec::new();
     let courses = &PROBLEM_REGISTRY.courses;
     for set in sets {
@@ -70,7 +75,7 @@ async fn generate_standard_pdf(sets: Vec<SendableProblemSetData>) -> crate::Resu
         problem_sets.push(set_builder.build()?);
     }
 
-    let mut document_builder = DocumentBuilder::new();
+    let mut document_builder = DocumentBuilder::new(options);
     document_builder.write_solutions(WriteSolutions::First);
     for problem_set in problem_sets {
         document_builder.add_problem_set(problem_set)?;

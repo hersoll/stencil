@@ -2,7 +2,7 @@
 #![allow(dead_code)]
 
 use app::{
-    TRANSLATIONS,
+    DocumentOptions, TRANSLATIONS,
     backend::{self, ChapterData, CourseData, TopicData},
     components::{CreateSet, DifficultyPicker, NumberPicker, SetDisplay},
     errors,
@@ -21,6 +21,8 @@ fn main() {
 
 #[component]
 fn App() -> Element {
+    let options = use_signal(|| DocumentOptions::default());
+
     let set_data = use_signal(|| ProblemSetData::new());
     let sets: Signal<Sets> = use_signal(|| Vec::new());
 
@@ -76,7 +78,7 @@ fn App() -> Element {
             }
             CreateSet { set_data, sets }
             SetDisplay { sets }
-            PDFButtons { sets }
+            PDFButtons { sets, options }
         }
     }
 }

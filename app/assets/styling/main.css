@@ -1,6 +1,7 @@
 :root {
   --bg_dark: #0f1116;
   --bg_element_dark: #262121;
+  --bg_element_extra_dark: #1b191c;
   --bg_element_hover_dark: #35373b;
   --bg_element_selected_dark: #3f444d;
   --bg_element_selected_hover_dark: #666c75;
@@ -176,7 +177,7 @@ button {
 }
 
 .set_options {
-  margin: 2rem 0;
+  margin: 1rem 0;
   display: flex;
   justify-content: center;
   gap: 2rem;
@@ -216,23 +217,27 @@ button {
 }
 
 .create_set_error {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   display: flex;
   justify-content: center;
-  height: 2rem;
+  height: 1rem;
   color: red;
 }
 
 .set_display {
-  display: grid;
-  grid-template-columns: minmax(13rem, 40rem) 13rem 5rem 2rem;
+  display: flex;
+  flex-direction: column;
   column-gap: 0rem;
-  row-gap: 0rem;
   max-width: 100%;
   margin-bottom: 2rem;
+  border-radius: var(--corner_radius);
+  overflow: hidden;
+  transition: border-radius 0.3 ease;
 }
+.set_row,
 .set_display_legend {
-  display: contents;
+  display: grid;
+  grid-template-columns: minmax(13rem, 40rem) 13rem 5rem 4rem;
 }
 .set_display_legend > p {
   font-weight: 600;
@@ -245,26 +250,25 @@ button {
   line-height: 2.5rem;
 }
 .set_row {
-  display: contents;
+  animation: slideIn 0.3s ease-out;
+  transform-origin: top;
 }
-/* Set_display corners */
-.set_row.set_row:nth-child(2) p:nth-child(1) {
-  border-top-left-radius: var(--corner_radius);
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.set_row.set_row:nth-child(2) p:nth-child(4) {
-  border-top-right-radius: var(--corner_radius);
-}
-.set_row.set_row:nth-last-child(1) p:nth-child(4) {
-  border-bottom-right-radius: var(--corner_radius);
-}
-.set_row.set_row:nth-last-child(1) p:nth-child(1) {
-  border-bottom-left-radius: var(--corner_radius);
-}
+
 /* Alternating colors */
-.set_row:nth-child(odd) p {
+.set_row:nth-child(4n + 1) {
   background-color: var(--bg_element_hover_dark);
 }
-.set_row:nth-child(2n + 2) p {
+.set_row:nth-child(4n + 3) {
   background-color: var(--bg_element_dark);
 }
 
@@ -272,13 +276,35 @@ button {
   padding: 0 0.75rem;
 }
 
-.set_row_removal {
+.set_row_controls {
+  display: flex;
+  justify-content: end;
+}
+
+.set_row_removal,
+.set_row_editing {
+  height: 1rem;
   text-align: end;
   padding: 0 0.75rem 0 0;
   &:hover {
     cursor: pointer;
-    color: gray;
+    color: var(--bg_element_selected_hover_dark);
   }
+}
+
+.editing_display {
+  max-height: 0;
+  padding: 0 0.75rem;
+  overflow: hidden;
+  background-color: var(--bg_element_extra_dark);
+  transition:
+    max-height 0.5s ease,
+    padding 0.5s ease;
+}
+
+.editing_display.editing {
+  padding: 1rem 0.75rem;
+  max-height: 8rem;
 }
 
 .set_row_placeholder {

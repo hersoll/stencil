@@ -1,3 +1,4 @@
+use crate::DocumentOptions;
 use crate::backend::generate_pdf;
 use crate::frontend_types::Sets;
 use crate::{Error, frontend_types::SendableProblemSetData};
@@ -16,7 +17,7 @@ fn convert_sets(sets: Sets) -> Vec<SendableProblemSetData> {
 }
 
 #[component]
-pub fn PDFButtons(sets: Signal<Sets>) -> Element {
+pub fn PDFButtons(sets: Signal<Sets>, options: Signal<DocumentOptions>) -> Element {
     let mut generating_pdf = use_signal(|| false);
     let mut pdf_url = use_signal(|| None::<String>);
     let mut generation_error = use_signal(|| None::<String>);
@@ -25,8 +26,7 @@ pub fn PDFButtons(sets: Signal<Sets>) -> Element {
         async move {
             generating_pdf.set(true);
             generation_error.set(None);
-
-            let bytes = generate_pdf(convert_sets(sets()))
+            let bytes = generate_pdf(convert_sets(sets()), options())
                 .await
                 .map_err(ServerFnErrorErr::from)?;
             // Potential JS Errors in here
