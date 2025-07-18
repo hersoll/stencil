@@ -29,6 +29,7 @@ pub async fn generate_pdf(sets: Vec<SendableProblemSetData>) -> Result<Vec<u8>, 
 }
 
 async fn generate_standard_pdf(sets: Vec<SendableProblemSetData>) -> crate::Result<Vec<u8>> {
+    println!("{:#?}", sets);
     let mut problem_sets: Vec<Vec<Problem>> = Vec::new();
     let courses = &PROBLEM_REGISTRY.courses;
     for set in sets {
@@ -47,17 +48,19 @@ async fn generate_standard_pdf(sets: Vec<SendableProblemSetData>) -> crate::Resu
                 .iter()
                 .map(|problem| topic.name.clone() + "_" + &problem.name)
                 .collect();
-            problem_types = problem_names
-                .iter()
-                .map(|name| {
-                    PROBLEM_MAP
-                        .read()
-                        .map_err(|_| Error::RegistryMutexIsPoisoned)?
-                        .get(name)
-                        .cloned()
-                        .ok_or(Error::NoSuchProblemInRegistry { id: id.to_string() })
-                })
-                .collect::<crate::Result<Vec<ProblemType>>>()?;
+            problem_types.append(
+                &mut problem_names
+                    .iter()
+                    .map(|name| {
+                        PROBLEM_MAP
+                            .read()
+                            .map_err(|_| Error::RegistryMutexIsPoisoned)?
+                            .get(name)
+                            .cloned()
+                            .ok_or(Error::NoSuchProblemInRegistry { id: id.to_string() })
+                    })
+                    .collect::<crate::Result<Vec<ProblemType>>>()?,
+            );
         }
         set_builder.area(problem_types).batch(
             set.starting_difficulty,
