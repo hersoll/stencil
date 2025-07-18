@@ -156,10 +156,11 @@ impl DocumentBuilder {
 
     fn build_solution(&self, answer: String, solution: String) -> Result<String> {
         let heading = format!(
-            "  #v(0pt)\n  #emph([{}])\n  #v(-6pt)",
+            "#block(inset: (left: -1.2em))[\n  #emph([{}])\n  #v(-0.5em)",
             GENERAL_TRANSLATIONS.get_phrase("solution", &self.options.lang)?
         );
-        Ok([answer, heading, solution].join("\n"))
+        let closing_bracket = String::from("]");
+        Ok([answer, heading, solution, closing_bracket].join("\n"))
     }
 
     fn sets_to_string(&self, sets: &Vec<Vec<String>>) -> String {
