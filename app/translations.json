@@ -36,8 +36,8 @@
         "en": "Intro"
     },
     "difficulty_easy": {
-        "sv": "Grundläggande",
-        "en": "Basic"
+        "sv": "Lätt",
+        "en": "Easy"
     },
     "difficulty_medium": {
         "sv": "Medel",
@@ -70,5 +70,21 @@
     "please_create_a_set": {
         "sv": "Skapa en sektion så dyker den upp här",
         "en": "Create a set and it will show up here"
+    },
+    "columns": {
+        "sv": "Kolumner",
+        "en": "Columns"
+    },
+    "choose_exclusions": {
+        "sv": "Välj de problem du vill exkludera",
+        "en": "Choose the problems to exclude"
+    },
+    "options": {
+        "sv": "Inställningar",
+        "en": "Options"
+    },
+    "loading": {
+        "sv": "Laddar",
+        "en": "Loading"
     }
 }

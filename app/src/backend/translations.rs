@@ -1,4 +1,4 @@
-use crate::{Error, Result, backend::ProblemRegistry};
+use crate::{backend::{ProblemRegistry, PROBLEM_REGISTRY}, Error, Result};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs};
@@ -8,13 +8,6 @@ pub static GENERAL_TRANSLATIONS: Lazy<Translations> = Lazy::new(|| {
     let table: TranslationTable =
         serde_json::from_str(&data).expect("Failed to parse translation JSON");
     Translations::new(table)
-});
-
-pub static PROBLEM_REGISTRY: Lazy<ProblemRegistry> = Lazy::new(|| {
-    let json = std::fs::read_to_string("registry.json").expect("Failed to read registry.json");
-    let parsed: crate::backend::ProblemRegistry =
-        serde_json::from_str(&json).expect("Failed to parse registry JSON");
-    parsed
 });
 
 // TODO: COURSE, CHAPTER, TOPIC, PROBLEM might not be needed??

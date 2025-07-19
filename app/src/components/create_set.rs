@@ -4,7 +4,11 @@ use dioxus::prelude::*;
 use crate::frontend_types::{ProblemSetData, Sets};
 
 #[component]
-pub fn CreateSet(set_data: Signal<ProblemSetData>, sets: Signal<Sets>) -> Element {
+pub fn CreateSet(
+    set_data: Signal<ProblemSetData>,
+    sets: Signal<Sets>,
+    set_pusher: EventHandler<()>,
+) -> Element {
     // True if you try to add set without adding a problem type
     let mut creation_error = use_signal(|| false);
     use_effect(move || {
@@ -21,7 +25,7 @@ pub fn CreateSet(set_data: Signal<ProblemSetData>, sets: Signal<Sets>) -> Elemen
                         creation_error.set(true);
                     } else {
                         creation_error.set(false);
-                        sets.write().push(set_data());
+                        set_pusher.call(());
                     }
                 },
                 "{i18n_lookup(\"create_set\")?}"

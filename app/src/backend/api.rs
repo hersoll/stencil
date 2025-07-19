@@ -1,11 +1,12 @@
-use std::fs;
+use std::{collections::HashMap, fs};
 
 use dioxus::prelude::*;
 
 use crate::{
     Error,
     backend::{
-        PROBLEM_MAP, PROBLEM_REGISTRY, Problem, ProblemType,
+        Difficulty, HasDesc, PROBLEM_MAP, PROBLEM_REGISTRY, Problem, ProblemData, ProblemType,
+        TopicData,
         builders::{DocumentBuilder, DocumentOptions, SetBuilder, WriteSolutions},
         translations::{GENERAL_TRANSLATIONS, Translations},
     },
@@ -15,6 +16,59 @@ use crate::{
 #[server]
 pub async fn load_registry() -> Result<super::ProblemRegistry, ServerFnError> {
     Ok(PROBLEM_REGISTRY.clone())
+}
+
+/// Finds the description and difficulty for every problem in a certain topic within the difficulty
+/// parameters.
+///
+/// Used for the exclusion display to show all "sub-problems"
+#[server]
+pub async fn get_problems(
+    topics: Vec<String>,
+    starting_difficulty: Difficulty,
+    ending_difficulty: Difficulty,
+    lang: String,
+) -> Result<Vec<(String, String, u8)>, ServerFnError> {
+    let registry_topics: Vec<&TopicData> = PROBLEM_REGISTRY
+        .courses
+        .iter()
+        .flat_map(|course| course.chapters.iter())
+        .flat_map(|chapter| chapter.topics.iter())
+        .filter(|topic| topics.contains(&topic.name))
+        .collect();
+
+    let mut problem_names_and_descs: Vec<(String, String)> = Vec::new();
+    for topic in registry_topics.iter() {
+        for problem in topic.problems.iter() {
+            let desc = problem.get_desc(&lang)?;
+            problem_names_and_descs.push((topic.name.clone() + "_" + &problem.name, desc));
+        }
+    }
+
+    let mut matching_problems = Vec::new();
+    for (problem_name, problem_desc) in problem_names_and_descs.iter() {
+        let problem = PROBLEM_MAP
+            .read()
+            .map_err(|_| Error::RegistryMutexIsPoisoned)?
+            .get(problem_name)
+            .cloned()
+            .ok_or(Error::NoSuchProblemInRegistry {
+                id: problem_name.to_string(),
+            })?;
+        if Difficulty::enums_to_nums(starting_difficulty, ending_difficulty)
+            .contains(&problem.difficulty)
+        {
+            matching_problems.push((
+                problem_name.clone(),
+                problem_desc.clone(),
+                problem.difficulty,
+            ));
+        }
+    }
+
+    // Sort from easy to hard
+    matching_problems.sort_by_key(|tuple| tuple.2);
+    Ok(matching_problems)
 }
 
 #[server]
@@ -37,7 +91,11 @@ async fn generate_standard_pdf(
 ) -> crate::Result<Vec<u8>> {
     let mut problem_sets: Vec<Vec<Problem>> = Vec::new();
     let courses = &PROBLEM_REGISTRY.courses;
+    let mut question_columns: Vec<u8> = Vec::new();
+    let mut answer_columns: Vec<u8> = Vec::new();
     for set in sets {
+        question_columns.push(set.question_columns);
+        answer_columns.push(set.answer_columns);
         let mut set_builder = SetBuilder::new();
         let mut problem_types: Vec<ProblemType> = Vec::new();
         // Convert the ID strings to actual problems
@@ -51,6 +109,10 @@ async fn generate_standard_pdf(
             let problem_names: Vec<String> = topic
                 .problems
                 .iter()
+                .filter(|problem| {
+                    !set.exclusions
+                        .contains(&(topic.name.clone() + "_" + &problem.name))
+                })
                 .map(|problem| topic.name.clone() + "_" + &problem.name)
                 .collect();
             problem_types.append(
@@ -71,11 +133,11 @@ async fn generate_standard_pdf(
             set.starting_difficulty,
             set.ending_difficulty,
             set.n,
-        );
+        )?;
         problem_sets.push(set_builder.build()?);
     }
 
-    let mut document_builder = DocumentBuilder::new(options);
+    let mut document_builder = DocumentBuilder::new(question_columns, answer_columns, options);
     document_builder.write_solutions(WriteSolutions::First);
     for problem_set in problem_sets {
         document_builder.add_problem_set(problem_set)?;

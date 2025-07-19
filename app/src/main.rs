@@ -23,8 +23,8 @@ fn main() {
 fn App() -> Element {
     let options = use_signal(|| DocumentOptions::default());
 
-    let set_data = use_signal(|| ProblemSetData::new());
-    let sets: Signal<Sets> = use_signal(|| Vec::new());
+    let mut set_data = use_signal(|| ProblemSetData::new(0));
+    let mut sets: Signal<Sets> = use_signal(|| Vec::new());
 
     let mut courses: Signal<Vec<CourseData>> = use_signal(|| Vec::new());
     let chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
@@ -43,6 +43,12 @@ fn App() -> Element {
     }
     *TRANSLATIONS.write() = translations().unwrap().unwrap();
     courses.set(registry().unwrap().unwrap().courses);
+
+    let push_set = move || {
+        let set_signal = Signal::new(set_data().clone());
+        sets.push(set_signal);
+        set_data.write().key += 1;
+    };
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
@@ -72,12 +78,12 @@ fn App() -> Element {
                 active_course,
                 active_chapter,
             }
-            div { class: "set_options",
+            div { class: "set_parameters",
                 DifficultyPicker { set_data }
                 NumberPicker { set_data }
             }
-            CreateSet { set_data, sets }
-            SetDisplay { sets }
+            CreateSet { set_data, sets, set_pusher: push_set }
+            SetDisplay { sets, courses }
             PDFButtons { sets, options }
         }
     }

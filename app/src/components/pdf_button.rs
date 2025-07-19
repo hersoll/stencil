@@ -11,7 +11,7 @@ use web_sys::{Blob, BlobPropertyBag, HtmlAnchorElement, Url, window};
 fn convert_sets(sets: Sets) -> Vec<SendableProblemSetData> {
     let mut converted: Vec<SendableProblemSetData> = Vec::new();
     for set in sets {
-        converted.push(SendableProblemSetData::from(set));
+        converted.push(SendableProblemSetData::from(set()));
     }
     converted
 }
