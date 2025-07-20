@@ -288,6 +288,25 @@ select {
 .set_row:nth-child(4n + 1) {
   background-color: var(--bg_element_dark);
 }
+.set_row_placeholder {
+  display: contents;
+
+  & > p {
+    background-color: var(--bg_element_dark);
+    color: gray;
+    line-height: 2.5rem;
+    padding-left: 0.75em;
+    margin: 0;
+    &:nth-child(1) {
+      border-top-left-radius: var(--corner_radius);
+      border-bottom-left-radius: var(--corner_radius);
+    }
+    &:nth-last-child(1) {
+      border-top-right-radius: var(--corner_radius);
+      border-bottom-right-radius: var(--corner_radius);
+    }
+  }
+}
 
 .set_row_topics {
   padding: 0 0.75rem;
@@ -448,27 +467,9 @@ select {
   height: 1.5rem;
   resize: none;
   border: 2px solid gray;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
   font-size: 0.6rem;
-}
-
-.set_row_placeholder {
-  display: contents;
-
-  & > p {
-    background-color: var(--bg_element_dark);
-    color: gray;
-    line-height: 2.5rem;
-    padding-left: 0.75em;
-    margin: 0;
-    &:nth-child(1) {
-      border-top-left-radius: var(--corner_radius);
-      border-bottom-left-radius: var(--corner_radius);
-    }
-    &:nth-last-child(1) {
-      border-top-right-radius: var(--corner_radius);
-      border-bottom-right-radius: var(--corner_radius);
-    }
-  }
 }
 
 #error_display {
@@ -482,6 +483,49 @@ select {
   position: absolute;
   right: 1rem;
   top: 1rem;
+}
+
+.tooltip_container {
+  cursor: default;
+  font-size: 0.8rem;
+  background-color: var(--bg_element_hover_dark);
+  border: 2px var(--bg_element_selected_hover_dark) solid;
+  border-radius: 50%;
+  width: 1.1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  & .tooltip_icon {
+    text-align: center;
+    line-height: 1.1rem;
+  }
+}
+
+.tooltip_text {
+  position: fixed;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+
+  max-width: 25rem;
+  font-size: 0.8rem;
+
+  text-align: center;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  background-color: var(--bg_element_dark);
+  border-radius: 1rem;
+  border: 2px solid var(--bg_element_selected_hover_dark);
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+
+  transition: all 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
 @media only screen and (max-width: 640px) {

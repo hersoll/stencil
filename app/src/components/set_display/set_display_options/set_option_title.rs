@@ -1,6 +1,7 @@
+use crate::i18n_lookup;
 use dioxus::prelude::*;
 
-use crate::frontend_types::ProblemSetData;
+use crate::{components::ToolTip, frontend_types::ProblemSetData};
 
 #[component]
 pub fn SetOptionTitle(set: Signal<ProblemSetData>) -> Element {
@@ -10,8 +11,9 @@ pub fn SetOptionTitle(set: Signal<ProblemSetData>) -> Element {
             textarea {
                 placeholder: "Lämna tom för automatisk titel",
                 value: "{set().options.title}",
-                onchange: move |evt| {set.write().options.title = evt.value()}
+                onchange: move |evt| { set.write().options.title = evt.value() },
             }
+            ToolTip { content: "{i18n_lookup(\"tooltip_set_title\")?}" }
         }
     }
 }

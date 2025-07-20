@@ -4,7 +4,7 @@
 use app::{
     DocumentOptions, TRANSLATIONS,
     backend::{self, ChapterData, CourseData, TopicData},
-    components::{CreateSet, DifficultyPicker, NumberPicker, SetDisplay},
+    components::{CreateSet, DifficultyPicker, NumberPicker, SetDisplay, ToolTipDisplay},
     errors,
     frontend_types::{ProblemSetData, Sets},
 };
@@ -62,6 +62,7 @@ fn App() -> Element {
 
 
         Header {}
+        ToolTipDisplay {  }
         ErrorBoundary {
             handle_error: |error: ErrorContext| {
                 rsx! {

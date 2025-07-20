@@ -86,5 +86,9 @@
     "loading": {
         "sv": "Laddar",
         "en": "Loading"
+    },
+    "tooltip_set_title": {
+        "sv": "Ange vad som ska stå innan sektionen, t.ex. \"Lös ekvationerna:\"<p></p> Du kan stilsätta texten med <br /> *<strong>fet stil</strong>*, <br /> _<em>kursivt</em>_ och <br /> $<em>matematiska uttryck</em>$.",
+        "en": "The text before a problem set, as in \"Solve the equations:\" <p></p> You can style the text <br /> *<strong>bold</strong>*, <br/> _<em>italic</em>_, <br/> or using $<em>math expressions</em>$."
     }
 }

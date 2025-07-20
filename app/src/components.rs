@@ -7,6 +7,7 @@ mod number_picker;
 mod pdf_button;
 mod selectors;
 mod set_display;
+mod tooltip;
 
 pub use create_set::CreateSet;
 pub use difficulty_picker::DifficultyPicker;
@@ -17,3 +18,5 @@ pub use number_picker::NumberPicker;
 pub use pdf_button::PDFButtons;
 pub use selectors::problem_display::ProblemDisplay;
 pub use set_display::SetDisplay;
+pub use tooltip::ToolTip;
+pub use tooltip::ToolTipDisplay;
