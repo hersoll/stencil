@@ -21,7 +21,7 @@ body {
   margin: 0 auto;
   padding: 0 1rem;
 
-  max-width: 45rem;
+  max-width: 55rem;
   display: flex;
   flex-direction: column;
 }
@@ -258,7 +258,7 @@ select {
 .set_row,
 .set_display_legend {
   display: grid;
-  grid-template-columns: minmax(10rem, 24rem) 11rem 6rem 4rem;
+  grid-template-columns: minmax(10rem, 34rem) 11rem 6rem 4rem;
 }
 .set_display_legend > p {
   font-weight: 600;
@@ -377,7 +377,7 @@ select {
     overflow: hidden;
     min-height: 0;
     display: grid;
-    grid-template-columns: 37em 1fr;
+    grid-template-columns: 34em 1fr;
   }
 }
 
