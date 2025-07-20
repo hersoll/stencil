@@ -12,7 +12,6 @@ pub struct ProblemSetData {
     pub ending_difficulty: backend::Difficulty,
     pub n: u8,
     pub question_columns: u8,
-    pub answer_columns: u8,
 }
 
 impl ProblemSetData {
@@ -25,7 +24,6 @@ impl ProblemSetData {
             ending_difficulty: Difficulty::Intro,
             n: 5,
             question_columns: 2,
-            answer_columns: 2,
         }
     }
 }
@@ -41,7 +39,6 @@ pub struct SendableProblemSetData {
     pub ending_difficulty: backend::Difficulty,
     pub n: u8,
     pub question_columns: u8,
-    pub answer_columns: u8,
 }
 
 impl From<ProblemSetData> for SendableProblemSetData {
@@ -53,7 +50,6 @@ impl From<ProblemSetData> for SendableProblemSetData {
             ending_difficulty: data.ending_difficulty,
             n: data.n,
             question_columns: data.question_columns,
-            answer_columns: data.answer_columns,
         }
     }
 }

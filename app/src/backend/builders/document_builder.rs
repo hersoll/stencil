@@ -10,7 +10,7 @@ pub struct DocumentBuilder {
     question_sets: Vec<Vec<String>>,
     answer_sets: Vec<Vec<String>>,
     question_columns: Vec<u8>,
-    answer_columns: Vec<u8>,
+    answer_columns: u8,
     options: DocumentOptions,
 }
 
@@ -26,6 +26,7 @@ pub struct DocumentOptions {
     pub y_margin: u8,
     pub enum_spacing: u8,
     pub par_spacing: u8,
+    pub answer_columns: u8,
 }
 
 impl Default for DocumentOptions {
@@ -41,6 +42,7 @@ impl Default for DocumentOptions {
             y_margin: 20,
             par_spacing: 6,
             enum_spacing: 6,
+            answer_columns: 2,
         }
     }
 }
@@ -72,7 +74,7 @@ pub enum WriteSolutions {
 impl DocumentBuilder {
     pub fn new(
         question_columns: Vec<u8>,
-        answer_columns: Vec<u8>,
+        answer_columns: u8,
         options: DocumentOptions,
     ) -> DocumentBuilder {
         DocumentBuilder {
@@ -133,7 +135,8 @@ impl DocumentBuilder {
         Ok([answer, heading, solution, closing_bracket].join("\n"))
     }
 
-    fn sets_to_string(&self, sets: &Vec<Vec<String>>, columns: &Vec<u8>) -> String {
+    /// Writes the set to columns with equal height
+    fn sets_to_balanced_columns(&self, sets: &Vec<Vec<String>>, columns: &Vec<u8>) -> String {
         let mut collection = String::new();
         for (i, set) in sets.iter().enumerate() {
             let mut set_string = String::from("#let problem_set = (");
@@ -158,11 +161,28 @@ impl DocumentBuilder {
         collection
     }
 
+    ///Writes the set to a flow from one filled the column to the next
+    fn sets_to_columns(&self, sets: &Vec<Vec<String>>, columns: &u8) -> String {
+        let mut collection = format!("#columns({},enum(", columns);
+        sets.iter().for_each(|set| {
+            collection += (set
+                .iter()
+                .map(|entry| typst_formatting::to_list_item(entry))
+                .collect::<Vec<String>>()
+                .join("\n")
+                + "\n")
+                .as_str();
+        });
+        collection += "))";
+        collection
+    }
+
     pub fn build(&self) -> Result<FinishedFile> {
         let preamble = self.build_preamble();
-        let question_string = self.sets_to_string(&self.question_sets, &self.question_columns);
+        let question_string =
+            self.sets_to_balanced_columns(&self.question_sets, &self.question_columns);
         let answer_preamble = typst_formatting::page_break() + &typst_formatting::reset_enum();
-        let answer_string = self.sets_to_string(&self.answer_sets, &self.answer_columns);
+        let answer_string = self.sets_to_columns(&self.answer_sets, &self.answer_columns);
 
         let typst_file_name = file_helpers::to_typst_file_name(&self.options.file_name);
         let typst_file = file_handler::create_typst_file(&typst_file_name)?;

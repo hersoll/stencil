@@ -21,20 +21,6 @@ pub fn SetDisplayOptions(sets: Signal<Sets>, index: usize) -> Element {
                     }
                 },
             }
-            input {
-                class: "answer_columns",
-                r#type: "number",
-                value: "{set().answer_columns}",
-                min: 1,
-                max: 6,
-                oninput: move |evt| {
-                    if let Ok(val) = evt.value().parse::<u8>() {
-                        if val > 0 && val <= 6 {
-                            set.write().answer_columns = val;
-                        }
-                    }
-                },
-            }
         }
     }
 }

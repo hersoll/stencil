@@ -16,11 +16,11 @@ pub static PREAMBLE_STR: &str = r#"
     let single_enum = enum(start: index + 11, item)
     measure(block(width: column_width, single_enum)).height
   })
+  let max_height = calc.max(..heights)
 
   // Calculate pre_spacing ONCE before binary search
-  let first_item_height = heights.at(0)
-  let pre_spacing = if first_item_height > spare_height {
-    spare_height // Push to next page if first item won't fit
+  let pre_spacing = if max_height * 2 > spare_height {
+    spare_height // Push to next page if we can't fit 2 problems
   } else {
     0pt
   }

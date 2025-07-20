@@ -92,10 +92,8 @@ async fn generate_standard_pdf(
     let mut problem_sets: Vec<Vec<Problem>> = Vec::new();
     let courses = &PROBLEM_REGISTRY.courses;
     let mut question_columns: Vec<u8> = Vec::new();
-    let mut answer_columns: Vec<u8> = Vec::new();
     for set in sets {
         question_columns.push(set.question_columns);
-        answer_columns.push(set.answer_columns);
         let mut set_builder = SetBuilder::new();
         let mut problem_types: Vec<ProblemType> = Vec::new();
         // Convert the ID strings to actual problems
@@ -137,7 +135,8 @@ async fn generate_standard_pdf(
         problem_sets.push(set_builder.build()?);
     }
 
-    let mut document_builder = DocumentBuilder::new(question_columns, answer_columns, options);
+    let mut document_builder =
+        DocumentBuilder::new(question_columns, options.answer_columns, options);
     document_builder.write_solutions(WriteSolutions::First);
     for problem_set in problem_sets {
         document_builder.add_problem_set(problem_set)?;
