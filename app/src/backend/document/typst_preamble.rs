@@ -83,7 +83,7 @@ pub static PREAMBLE_STR: &str = r#"
       if can_fit {
         column_heights.push(accumulated_height)
 
-        if column_heights.len() == column_count and column_heights.first() > column_heights.last() {
+        if column_heights.len() == column_count and column_heights.first() >= column_heights.last() {
           break
         }
       }
