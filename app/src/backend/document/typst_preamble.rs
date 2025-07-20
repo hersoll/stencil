@@ -16,25 +16,23 @@ pub static PREAMBLE_STR: &str = r#"
     let single_enum = enum(start: index + 11, item)
     measure(block(width: column_width, single_enum)).height
   })
-  let max_height = calc.max(..heights)
+  let total_height = heights.sum() + (items.len() - 1) * spacing
+  let min_height = total_height / column_count
+  let max_height = total_height
 
-  // Calculate pre_spacing ONCE before binary search
-  let pre_spacing = if max_height * 2 > spare_height {
-    spare_height // Push to next page if we can't fit 2 problems
+  // Push to next page if it's relatively small and we can't fit it on the page
+  // OR if we can't fit at least three rows of a long set
+  let pre_spacing = if (min_height > spare_height and min_height < size.height / 4) or calc.max(..heights) * 3 > spare_height {
+    spare_height
   } else {
     0pt
   }
-
-  // Adjust available height for binary search
+  // Adjust available height if we push to next page
   let effective_spare_height = if pre_spacing > 0pt {
     size.height // If we're pushing to next page, use full page height
   } else {
     spare_height // Otherwise use remaining height on current page
-  }
-
-  let total_height = heights.sum() + (items.len() - 1) * spacing
-  let min_height = total_height / column_count
-  let max_height = total_height
+  }  
   // Binary search loop
   while (max_height - min_height).abs > 1pt {
     let available_height = effective_spare_height
