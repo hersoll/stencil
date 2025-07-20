@@ -427,13 +427,13 @@ select {
   justify-content: space-between;
   cursor: pointer;
   &:hover {
-    color: lightgray;
+    color: gray;
   }
   & > p {
     margin: 0;
   }
   &.excluded > p {
-    color: lightgray;
+    color: gray;
     text-decoration: line-through;
   }
 }
