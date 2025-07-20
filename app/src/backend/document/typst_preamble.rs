@@ -4,8 +4,8 @@ pub static PREAMBLE_STR: &str = r#"
 
 #show math.equation.where(block: false): box
 
-#let balanced(column_count, items, spacing, debug: false) = layout(size => {
-  let start_height = here().position().y - page.margin.length
+#let balanced(column_count, items, spacing, start_pos, debug: false) = layout(size => {
+  let start_height = start_pos - page.margin.length
   let spare_height = size.height - start_height
   let pre_spacing = 0pt
 
@@ -17,12 +17,27 @@ pub static PREAMBLE_STR: &str = r#"
     measure(block(width: column_width, single_enum)).height
   })
 
+  // Calculate pre_spacing ONCE before binary search
+  let first_item_height = heights.at(0)
+  let pre_spacing = if first_item_height > spare_height {
+    spare_height // Push to next page if first item won't fit
+  } else {
+    0pt
+  }
+
+  // Adjust available height for binary search
+  let effective_spare_height = if pre_spacing > 0pt {
+    size.height // If we're pushing to next page, use full page height
+  } else {
+    spare_height // Otherwise use remaining height on current page
+  }
+
   let total_height = heights.sum() + (items.len() - 1) * spacing
   let min_height = total_height / column_count
   let max_height = total_height
   // Binary search loop
   while (max_height - min_height).abs > 1pt {
-    let available_height = spare_height
+    let available_height = effective_spare_height
     let mid_height = (min_height + max_height) / 2
     let limit = calc.min(mid_height, available_height)
     let current_column_height = mid_height
@@ -30,9 +45,7 @@ pub static PREAMBLE_STR: &str = r#"
     let current_column = 1
     let can_fit = true
     for height in heights {
-      if height > limit and current_column_height == mid_height {
-        pre_spacing = limit
-      } else if height > limit {
+      if height > limit and current_column_height == mid_height {} else if height > limit {
         can_fit = false
         min_height = mid_height
         break
@@ -63,7 +76,7 @@ pub static PREAMBLE_STR: &str = r#"
   v(pre_spacing)
   block(height: max_height)[
     #columns(column_count, gutter: gutter, enum(..items))
-  ] 
+  ]
   if debug {
     [
       Paper height: #size.height \

@@ -146,7 +146,7 @@ impl DocumentBuilder {
 
             set_string += ")\n";
             set_string += &format!(
-                "#balanced({}, problem_set,{}mm)\n",
+                "#context{{balanced({}, problem_set,{}mm, here().position().y)}}\n",
                 columns[i], self.options.enum_spacing
             );
             if i != sets.len() - 1 {
