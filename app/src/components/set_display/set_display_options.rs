@@ -12,7 +12,7 @@ pub fn SetDisplayOptions(sets: Signal<Sets>, index: usize) -> Element {
                 r#type: "number",
                 value: "{set().question_columns}",
                 min: 1,
-                max: 6,
+                max: 5,
                 oninput: move |evt| {
                     if let Ok(val) = evt.value().parse::<u8>() {
                         if val > 0 && val <= 6 {
