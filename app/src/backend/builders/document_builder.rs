@@ -4,14 +4,14 @@ use crate::Result;
 use crate::backend::document::*;
 use crate::backend::problems::Problem;
 use crate::backend::translations::GENERAL_TRANSLATIONS;
+use crate::frontend_types::SetRenderingOptions;
 
 #[derive(Debug)]
 pub struct DocumentBuilder {
     question_sets: Vec<Vec<String>>,
     answer_sets: Vec<Vec<String>>,
-    question_columns: Vec<u8>,
-    answer_columns: u8,
     options: DocumentOptions,
+    set_options: Vec<SetRenderingOptions>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -72,16 +72,11 @@ pub enum WriteSolutions {
 }
 
 impl DocumentBuilder {
-    pub fn new(
-        question_columns: Vec<u8>,
-        answer_columns: u8,
-        options: DocumentOptions,
-    ) -> DocumentBuilder {
+    pub fn new(set_options: Vec<SetRenderingOptions>, options: DocumentOptions) -> DocumentBuilder {
         DocumentBuilder {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
-            question_columns,
-            answer_columns,
+            set_options,
             options,
         }
     }
@@ -136,7 +131,11 @@ impl DocumentBuilder {
     }
 
     /// Writes the set to columns with equal height
-    fn sets_to_balanced_columns(&self, sets: &Vec<Vec<String>>, columns: &Vec<u8>) -> String {
+    fn sets_to_balanced_columns(
+        &self,
+        sets: &Vec<Vec<String>>,
+        set_options: &Vec<SetRenderingOptions>,
+    ) -> String {
         let mut collection = String::new();
         for (i, set) in sets.iter().enumerate() {
             let mut set_string = String::from("#let problem_set = (");
@@ -148,9 +147,19 @@ impl DocumentBuilder {
                 .as_str();
 
             set_string += ")\n";
+
             set_string += &format!(
-                "#context{{balanced({}, problem_set,{}mm, here().position().y)}}\n",
-                columns[i], self.options.enum_spacing
+                "#context{{balanced({}, problem_set,{}mm, here().position().y{})}}\n",
+                set_options[i].question_columns,
+                self.options.enum_spacing,
+                if set_options[i].title.is_empty() {
+                    String::new()
+                } else {
+                    format!(
+                        ", title: [{}]",
+                        typst_formatting::reformat_newlines(&set_options[i].title)
+                    )
+                }
             );
             if i != sets.len() - 1 {
                 set_string += &typst_formatting::empty_line();
@@ -179,10 +188,9 @@ impl DocumentBuilder {
 
     pub fn build(&self) -> Result<FinishedFile> {
         let preamble = self.build_preamble();
-        let question_string =
-            self.sets_to_balanced_columns(&self.question_sets, &self.question_columns);
+        let question_string = self.sets_to_balanced_columns(&self.question_sets, &self.set_options);
         let answer_preamble = typst_formatting::page_break() + &typst_formatting::reset_enum();
-        let answer_string = self.sets_to_columns(&self.answer_sets, &self.answer_columns);
+        let answer_string = self.sets_to_columns(&self.answer_sets, &self.options.answer_columns);
 
         let typst_file_name = file_helpers::to_typst_file_name(&self.options.file_name);
         let typst_file = file_handler::create_typst_file(&typst_file_name)?;

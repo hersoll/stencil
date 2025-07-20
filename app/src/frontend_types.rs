@@ -3,6 +3,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::backend::{self, Difficulty, TopicData};
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct SetRenderingOptions {
+    pub question_columns: u8,
+    pub title: String,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct ProblemSetData {
     pub key: usize,
@@ -11,7 +17,7 @@ pub struct ProblemSetData {
     pub starting_difficulty: backend::Difficulty,
     pub ending_difficulty: backend::Difficulty,
     pub n: u8,
-    pub question_columns: u8,
+    pub options: SetRenderingOptions,
 }
 
 impl ProblemSetData {
@@ -23,7 +29,10 @@ impl ProblemSetData {
             starting_difficulty: Difficulty::Intro,
             ending_difficulty: Difficulty::Intro,
             n: 5,
-            question_columns: 2,
+            options: SetRenderingOptions {
+                question_columns: 2,
+                title: String::new(),
+            },
         }
     }
 }
@@ -38,7 +47,7 @@ pub struct SendableProblemSetData {
     pub starting_difficulty: backend::Difficulty,
     pub ending_difficulty: backend::Difficulty,
     pub n: u8,
-    pub question_columns: u8,
+    pub options: SetRenderingOptions,
 }
 
 impl From<ProblemSetData> for SendableProblemSetData {
@@ -49,7 +58,7 @@ impl From<ProblemSetData> for SendableProblemSetData {
             starting_difficulty: data.starting_difficulty,
             ending_difficulty: data.ending_difficulty,
             n: data.n,
-            question_columns: data.question_columns,
+            options: data.options,
         }
     }
 }

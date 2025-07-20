@@ -384,7 +384,7 @@ select {
 .editing_header {
   margin: 0;
   font-weight: 700;
-  padding-bottom: 1.25rem;
+  padding-bottom: 1rem;
   &.options {
     text-align: center;
     border-left: 1px gray solid;
@@ -426,8 +426,29 @@ select {
 .set_options {
   display: flex;
   flex-direction: column;
+  gap: 0.75rem;
   align-items: center;
   border-left: 1px gray solid;
+}
+
+.set_option_heading,
+.set_option_columns {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  & > p {
+    margin: 0;
+  }
+}
+
+.set_option_heading > textarea {
+  background-color: var(--bg_dark);
+  color: white;
+  height: 1.5rem;
+  resize: none;
+  border: 2px solid gray;
+  font-size: 0.6rem;
 }
 
 .set_row_placeholder {

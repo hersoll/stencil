@@ -25,6 +25,9 @@ pub fn page_break() -> String {
 pub fn reset_enum() -> String {
     String::from("#item-counter.update(0)\n")
 }
+pub fn reformat_newlines(input: &str) -> String {
+    input.replace('\n', r" \ ")
+}
 
 static OPERATOR_SPACE: f32 = 0.25;
 

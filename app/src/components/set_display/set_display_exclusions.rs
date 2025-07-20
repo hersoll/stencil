@@ -40,7 +40,8 @@ pub fn ProblemExclusions(sets: Signal<Sets>, index: usize) -> Element {
                     {
                         let excluded = set().exclusions.contains(&name);
                         rsx! {
-                            div { class: if excluded {"exclusion_row excluded"} else {"exclusion_row"},
+                            div {
+                                class: if excluded { "exclusion_row excluded" } else { "exclusion_row" },
                                 onclick: move |_| {
                                     if excluded {
                                         set.write().exclusions.retain(|str| *str != name);

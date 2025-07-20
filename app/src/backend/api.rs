@@ -10,7 +10,7 @@ use crate::{
         builders::{DocumentBuilder, DocumentOptions, SetBuilder, WriteSolutions},
         translations::{GENERAL_TRANSLATIONS, Translations},
     },
-    frontend_types::SendableProblemSetData,
+    frontend_types::{SendableProblemSetData, SetRenderingOptions},
 };
 
 #[server]
@@ -87,13 +87,13 @@ pub async fn generate_pdf(
 
 async fn generate_standard_pdf(
     sets: Vec<SendableProblemSetData>,
-    options: DocumentOptions,
+    document_options: DocumentOptions,
 ) -> crate::Result<Vec<u8>> {
     let mut problem_sets: Vec<Vec<Problem>> = Vec::new();
     let courses = &PROBLEM_REGISTRY.courses;
-    let mut question_columns: Vec<u8> = Vec::new();
+    let mut set_options: Vec<SetRenderingOptions> = Vec::new();
     for set in sets {
-        question_columns.push(set.question_columns);
+        set_options.push(set.options);
         let mut set_builder = SetBuilder::new();
         let mut problem_types: Vec<ProblemType> = Vec::new();
         // Convert the ID strings to actual problems
@@ -135,8 +135,7 @@ async fn generate_standard_pdf(
         problem_sets.push(set_builder.build()?);
     }
 
-    let mut document_builder =
-        DocumentBuilder::new(question_columns, options.answer_columns, options);
+    let mut document_builder = DocumentBuilder::new(set_options, document_options);
     document_builder.write_solutions(WriteSolutions::First);
     for problem_set in problem_sets {
         document_builder.add_problem_set(problem_set)?;
