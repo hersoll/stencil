@@ -131,11 +131,7 @@ impl DocumentBuilder {
     }
 
     /// Writes the set to columns with equal height
-    fn sets_to_balanced_columns(
-        &self,
-        sets: &Vec<Vec<String>>,
-        set_options: &Vec<SetRenderingOptions>,
-    ) -> String {
+    fn sets_to_balanced_columns(&self, sets: &Vec<Vec<String>>) -> String {
         let mut collection = String::new();
         for (i, set) in sets.iter().enumerate() {
             let mut set_string = String::from("#let problem_set = (");
@@ -150,14 +146,14 @@ impl DocumentBuilder {
 
             set_string += &format!(
                 "#context{{balanced({}, problem_set,{}mm, here().position().y{})}}\n",
-                set_options[i].question_columns,
-                self.options.enum_spacing,
-                if set_options[i].title.is_empty() {
+                self.set_options[i].question_columns,
+                self.set_options[i].spacing,
+                if self.set_options[i].title.is_empty() {
                     String::new()
                 } else {
                     format!(
                         ", title: [{}]",
-                        typst_formatting::reformat_newlines(&set_options[i].title)
+                        typst_formatting::reformat_newlines(&self.set_options[i].title)
                     )
                 }
             );
@@ -188,7 +184,7 @@ impl DocumentBuilder {
 
     pub fn build(&self) -> Result<FinishedFile> {
         let preamble = self.build_preamble();
-        let question_string = self.sets_to_balanced_columns(&self.question_sets, &self.set_options);
+        let question_string = self.sets_to_balanced_columns(&self.question_sets);
         let answer_preamble = typst_formatting::page_break() + &typst_formatting::reset_enum();
         let answer_string = self.sets_to_columns(&self.answer_sets, &self.options.answer_columns);
 
@@ -224,9 +220,6 @@ impl DocumentBuilder {
     }
 
     fn build_enum_spacing(&self) -> String {
-        format!(
-            "#set enum(start: 0, spacing: {}mm)\n",
-            self.options.enum_spacing
-        )
+        format!("#set enum(spacing: {}mm)\n", self.options.enum_spacing)
     }
 }

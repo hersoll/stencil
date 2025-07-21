@@ -91,6 +91,10 @@
         "sv": "Ange vad som ska stå innan sektionen, t.ex. \"Lös ekvationerna:\"<p></p> Du kan stilsätta texten med <br /> *<strong>fet stil</strong>*, <br /> _<em>kursivt</em>_ och <br /> $<em>matematiska uttryck</em>$.",
         "en": "The text before a problem set, as in \"Solve the equations:\" <p></p> You can style the text <br /> *<strong>bold</strong>*, <br/> _<em>italic</em>_, <br/> or using $<em>math expressions</em>$."
     },
+    "tooltip_set_spacing": {
+        "sv": "Mellanrummet mellan problem (i millimeter). <br /> Kan t.ex. användas för att ge eleverna skrivyta.",
+        "en": "Spacing between problems (in millimetres). <br /> Can, for example, be used for writing space."
+    },
     "create_pdf": {
         "sv": "Skapa PDF",
         "en": "Create PDF"
@@ -98,5 +102,21 @@
     "download": {
         "sv": "Ladda ned",
         "en": "Download"
+    },
+    "set_option_title": {
+        "sv": "Ingress",
+        "en": "Heading"
+    },
+    "set_option_title_placeholder": {
+        "sv": "Lös ekvationerna:",
+        "en": "Solve the following equations:"
+    },
+    "set_option_columns": {
+        "sv": "Kolumner",
+        "en": "Columns"
+    },
+    "set_option_spacing": {
+        "sv": "Mellanrum",
+        "en": "Spacing"
     }
 }

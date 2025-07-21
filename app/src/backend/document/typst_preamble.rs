@@ -96,6 +96,7 @@ pub static PREAMBLE_STR: &str = r#"
       title
     }
     block(height: current_height)[ // Use current_height, not max_height
+      #set enum(spacing: spacing)
       #columns(column_count, gutter: gutter, enum(..items)) ]
 
     if debug {

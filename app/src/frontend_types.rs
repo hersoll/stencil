@@ -7,6 +7,7 @@ use crate::backend::{self, Difficulty, TopicData};
 pub struct SetRenderingOptions {
     pub question_columns: u8,
     pub title: String,
+    pub spacing: u16,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
@@ -32,6 +33,7 @@ impl ProblemSetData {
             options: SetRenderingOptions {
                 question_columns: 2,
                 title: String::new(),
+                spacing: 6,
             },
         }
     }

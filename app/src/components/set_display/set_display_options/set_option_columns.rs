@@ -1,22 +1,23 @@
 use dioxus::prelude::*;
 
-use crate::frontend_types::ProblemSetData;
+use crate::{frontend_types::ProblemSetData, i18n_lookup};
 
 #[component]
 pub fn SetOptionColumns(set: Signal<ProblemSetData>) -> Element {
+    let min_columns = 1;
+    let max_columns = 5;
     rsx! {
-        div { class: "set_option_columns",
-            p { "Kolumner:" }
+        div {
+            p { "{i18n_lookup(\"set_option_columns\")?}:" }
             input {
                 class: "input",
-                style: "width: 2rem;",
                 r#type: "number",
                 value: "{set().options.question_columns}",
-                min: 1,
-                max: 5,
+                min: min_columns,
+                max: max_columns,
                 oninput: move |evt| {
                     if let Ok(val) = evt.value().parse::<u8>() {
-                        if val > 0 && val <= 6 {
+                        if val >= min_columns && val <= max_columns {
                             set.write().options.question_columns = val;
                         }
                     }

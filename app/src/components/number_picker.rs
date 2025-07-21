@@ -7,7 +7,6 @@ pub fn NumberPicker(set_data: Signal<ProblemSetData>) -> Element {
     let pick_a_number_str = i18n_lookup("pick_number")?;
     rsx! {
         div { class: "number_picker",
-
             p { "{pick_a_number_str}:" }
 
             input {

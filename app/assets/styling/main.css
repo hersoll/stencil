@@ -8,6 +8,9 @@
   --corner_radius: 1rem;
 }
 
+* {
+  box-sizing: border-box;
+}
 html {
   font-size: 22px;
 }
@@ -43,6 +46,7 @@ button {
   text-align: center;
 }
 
+/* DEFAULT COMPONENTS */
 .select {
   appearance: none;
   -webkit-appearance: none;
@@ -89,10 +93,8 @@ button {
   &.transparent {
     line-height: 1.2rem;
     background-color: inherit;
-    width: 3rem;
     margin: auto;
     color: white;
-    border: none;
     border-radius: var(--corner_radius);
     font-size: 1rem;
   }
@@ -125,7 +127,7 @@ button {
 .textarea {
   background-color: var(--bg_element_extra_dark);
   color: white;
-  height: 1.5rem;
+  height: 2.2rem;
   resize: none;
   border: 2px solid var(--bg_element_hover_dark);
   border-radius: 0.5rem;
@@ -404,7 +406,7 @@ button {
     overflow: hidden;
     min-height: 0;
     display: grid;
-    grid-template-columns: 34em 1fr;
+    grid-template-columns: 1fr calc(21em + 1px);
   }
 }
 
@@ -453,19 +455,20 @@ button {
 .set_options {
   display: flex;
   flex-direction: column;
+  padding: 0 0.75rem;
   gap: 0.75rem;
-  align-items: center;
+  align-items: start;
   border-left: 1px gray solid;
-}
+  & > div {
+    display: grid;
+    grid-template-columns: 6rem repeat(4, auto);
+    align-items: center;
+    gap: 0.5rem;
 
-.set_option_heading,
-.set_option_columns {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-
-  & > p {
-    margin: 0;
+    & > p {
+      margin: 0;
+      text-align: end;
+    }
   }
 }
 
@@ -484,17 +487,17 @@ button {
 
 .tooltip_container {
   cursor: default;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   background-color: var(--bg_element_hover_dark);
   border: 2px var(--bg_element_selected_hover_dark) solid;
   border-radius: 50%;
-  width: 1.1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   & .tooltip_icon {
     text-align: center;
     line-height: 1.1rem;
+    padding: 0 0.3rem;
   }
 }
 

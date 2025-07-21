@@ -7,10 +7,10 @@ use crate::{components::ToolTip, frontend_types::ProblemSetData};
 pub fn SetOptionTitle(set: Signal<ProblemSetData>) -> Element {
     rsx! {
         div { class: "set_option_heading",
-            p { "Sektionstext:" }
+            p { "{i18n_lookup(\"set_option_title\")?}:" }
             textarea {
                 class: "textarea",
-                placeholder: "Lämna tom för automatisk titel",
+                placeholder: "{i18n_lookup(\"set_option_title_placeholder\")?}",
                 value: "{set().options.title}",
                 onchange: move |evt| { set.write().options.title = evt.value() },
             }

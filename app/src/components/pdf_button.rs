@@ -78,7 +78,9 @@ pub fn PDFButtons(sets: Signal<Sets>, options: Signal<DocumentOptions>) -> Eleme
     };
 
     rsx! {
-        div { id: "pdf_buttons", style: "display: flex; justify-content: center; padding: 2rem 0; gap: 1rem;",
+        div {
+            id: "pdf_buttons",
+            style: "display: flex; justify-content: center; padding: 2rem 0; gap: 1rem;",
             button {
                 class: "button",
                 onclick: view_pdf,
@@ -91,14 +93,17 @@ pub fn PDFButtons(sets: Signal<Sets>, options: Signal<DocumentOptions>) -> Eleme
                 disabled: pdf_url().is_none(),
                 "{i18n_lookup(\"download\")?}"
             }
-
         }
         if let Some(url) = pdf_url() {
-        div {
-            style: "display: flex; justify-content: center;",
-            iframe {id:"pdf_view", src: "{url}", width: "80%", height: "1000px"}
+            div { style: "display: flex; justify-content: center;",
+                iframe {
+                    id: "pdf_view",
+                    src: "{url}",
+                    width: "80%",
+                    height: "1000px",
+                }
+            }
         }
-        }
-        footer {style: "height: 7rem;"}
+        footer { style: "height: 7rem;" }
     }
 }

@@ -81,11 +81,11 @@ pub async fn generate_pdf(
     sets: Vec<SendableProblemSetData>,
     options: DocumentOptions,
 ) -> Result<Vec<u8>, ServerFnError> {
-    let pdf = generate_standard_pdf(sets, options).await?;
+    let pdf = create_pdf(sets, options).await?;
     Ok(pdf)
 }
 
-async fn generate_standard_pdf(
+async fn create_pdf(
     sets: Vec<SendableProblemSetData>,
     document_options: DocumentOptions,
 ) -> crate::Result<Vec<u8>> {
