@@ -9,6 +9,7 @@ pub fn SetOptionTitle(set: Signal<ProblemSetData>) -> Element {
         div { class: "set_option_heading",
             p { "Sektionstext:" }
             textarea {
+                class: "textarea",
                 placeholder: "Lämna tom för automatisk titel",
                 value: "{set().options.title}",
                 onchange: move |evt| { set.write().options.title = evt.value() },

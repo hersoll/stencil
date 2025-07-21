@@ -1,3 +1,6 @@
+use std::fmt::Display;
+
+use crate::TRANSLATIONS;
 use crate::{Error, Result};
 //#################################
 //#           IMPORTS             #

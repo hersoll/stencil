@@ -4,7 +4,9 @@
 use app::{
     DocumentOptions, TRANSLATIONS,
     backend::{self, ChapterData, CourseData, TopicData},
-    components::{CreateSet, DifficultyPicker, NumberPicker, SetDisplay, ToolTipDisplay},
+    components::{
+        CreateSet, DifficultyPicker, NumberPicker, SetDisplay, SetOptions, ToolTipDisplay,
+    },
     errors,
     frontend_types::{ProblemSetData, Sets},
 };
@@ -62,7 +64,7 @@ fn App() -> Element {
 
 
         Header {}
-        ToolTipDisplay {  }
+        ToolTipDisplay {}
         ErrorBoundary {
             handle_error: |error: ErrorContext| {
                 rsx! {
@@ -79,10 +81,7 @@ fn App() -> Element {
                 active_course,
                 active_chapter,
             }
-            div { class: "set_parameters",
-                DifficultyPicker { set_data }
-                NumberPicker { set_data }
-            }
+            SetOptions { set_data }
             CreateSet { set_data, sets, set_pusher: push_set }
             SetDisplay { sets, courses }
             PDFButtons { sets, options }

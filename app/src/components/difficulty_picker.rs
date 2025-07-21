@@ -18,6 +18,7 @@ pub fn DifficultyPicker(set_data: Signal<ProblemSetData>) -> Element {
         div { class: "difficulty_picker",
             p { "{difficulty_str}:" }
             select {
+                class: "select with_arrow",
                 onchange: move |opt| {
                     let mut set = set_data.write();
                     let chosen_difficulty = str_to_enum(&opt.value());
@@ -34,6 +35,7 @@ pub fn DifficultyPicker(set_data: Signal<ProblemSetData>) -> Element {
             }
             p { "{to_str}" }
             select {
+                class: "select with_arrow",
                 value: "{enum_to_str(&set_data().ending_difficulty)}",
                 onchange: move |opt| {
                     let mut set = set_data.write();

@@ -55,7 +55,7 @@ pub fn SetDisplayRow(sets: Signal<Sets>, index: usize, max_descriptions: usize) 
             }
             div { class: "set_row_difficulties",
                 select {
-                    class: "set_row_starting",
+                    class: "select transparent rtl",
                     value: "{enum_to_str(&set().starting_difficulty)}",
                     onchange: move |opt| {
                         let chosen_difficulty = str_to_enum(&opt.value());
@@ -74,7 +74,7 @@ pub fn SetDisplayRow(sets: Signal<Sets>, index: usize, max_descriptions: usize) 
                 }
                 "{char::from_u32(0x2192).unwrap()}"
                 select {
-                    class: "set_row_ending",
+                    class: "select transparent",
                     value: "{enum_to_str(&set().ending_difficulty)}",
                     onchange: move |opt| {
                         let chosen_difficulty = str_to_enum(&opt.value());
@@ -90,23 +90,22 @@ pub fn SetDisplayRow(sets: Signal<Sets>, index: usize, max_descriptions: usize) 
                     }
                 }
             }
-            div { class: "set_row_number",
-
-                input {
-                    r#type: "number",
-                    value: "{set().n}",
-                    min: 1,
-                    max: 200,
-                    oninput: move |evt| {
-                        if let Ok(val) = evt.value().parse::<u8>() {
-                            if val > 0 && val <= 200 {
-                                set.write().n = val;
-                            }
+            input {
+                class: "input transparent",
+                r#type: "number",
+                value: "{set().n}",
+                min: 1,
+                max: 200,
+                oninput: move |evt| {
+                    if let Ok(val) = evt.value().parse::<u8>() {
+                        if val > 0 && val <= 200 {
+                            set.write().n = val;
                         }
-                    },
-                }
+                    }
+                },
             }
             div { class: "set_row_controls",
+                style: "border-left: 1px gray solid; line-height: 1.2rem;",
                 p {
                     class: "set_row_editing",
                     onclick: move |_| {

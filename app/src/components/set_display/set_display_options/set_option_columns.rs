@@ -8,7 +8,8 @@ pub fn SetOptionColumns(set: Signal<ProblemSetData>) -> Element {
         div { class: "set_option_columns",
             p { "Kolumner:" }
             input {
-                class: "question_columns",
+                class: "input",
+                style: "width: 2rem;",
                 r#type: "number",
                 value: "{set().options.question_columns}",
                 min: 1,

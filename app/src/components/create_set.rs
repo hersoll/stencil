@@ -19,7 +19,7 @@ pub fn CreateSet(
     rsx! {
         div { class: "create_set_button_container",
             button {
-                class: "create_set_button",
+                class: "button",
                 onclick: move |_| {
                     if set_data().ids.is_empty() {
                         creation_error.set(true);

@@ -11,6 +11,7 @@ pub fn NumberPicker(set_data: Signal<ProblemSetData>) -> Element {
             p { "{pick_a_number_str}:" }
 
             input {
+                class: "input",
                 r#type: "number",
                 min: 1,
                 max: 200,
