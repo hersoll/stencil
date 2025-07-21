@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 
+use crate::components::ToolTip;
 use crate::{APP_LANGUAGE, TRANSLATIONS, backend::Difficulty, frontend_types::ProblemSetData};
 use crate::{enum_to_str, i18n_lookup, str_to_enum};
 
@@ -50,6 +51,7 @@ pub fn DifficultyPicker(set_data: Signal<ProblemSetData>) -> Element {
                     }
                 }
             }
+            ToolTip { content: "<p><strong>Intro:</strong> Mjukstartsuppgifter</p><p><strong>Lätt:</strong> Ungefär E-nivå</p><p><strong>Medel:</strong> Ungefär C-nivå</p><p><strong>Svår:</strong> Upp till A-nivå</p><p>Notera att uppgifter i början av kursen är lättare än senare avsnitt och överensstämmer inte nödvändigtvis med betygsstegen lika väl.</p>" }
         }
     }
 }
