@@ -29,7 +29,7 @@ impl ProblemSetData {
             exclusions: Vec::new(),
             starting_difficulty: Difficulty::Intro,
             ending_difficulty: Difficulty::Intro,
-            n: 5,
+            n: 10,
             options: SetRenderingOptions {
                 question_columns: 2,
                 title: String::new(),
