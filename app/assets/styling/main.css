@@ -116,6 +116,10 @@ button {
   &:active {
     background-color: var(--bg_dark);
   }
+  &:disabled {
+    color: var(--bg_element_selected_hover_dark);
+    background-color: var(--bg_element_hover_dark);
+  }
 }
 
 .textarea {
@@ -223,6 +227,14 @@ button {
   }
 }
 
+.chapter_separator {
+  margin: 0;
+  content: '';
+  width: 1px;
+  height: 100%;
+  background-color: gray;
+}
+
 .topics {
   display: flex;
   flex-direction: column;
@@ -268,7 +280,6 @@ button {
   flex-direction: column;
   column-gap: 0rem;
   max-width: 100%;
-  margin-bottom: 2rem;
   border-radius: var(--corner_radius);
   overflow: hidden;
   transition: border-radius 0.3 ease;

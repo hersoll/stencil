@@ -1,7 +1,9 @@
 use crate::DocumentOptions;
 use crate::backend::generate_pdf;
 use crate::frontend_types::Sets;
+use crate::i18n_lookup;
 use crate::{Error, frontend_types::SendableProblemSetData};
+use dioxus::document::eval;
 use dioxus::prelude::server_fn::error::ServerFnErrorErr;
 use dioxus::prelude::*;
 use js_sys::Uint8Array;
@@ -21,6 +23,16 @@ pub fn PDFButtons(sets: Signal<Sets>, options: Signal<DocumentOptions>) -> Eleme
     let mut generating_pdf = use_signal(|| false);
     let mut pdf_url = use_signal(|| None::<String>);
     let mut generation_error = use_signal(|| None::<String>);
+
+    use_effect(move || {
+        if let Some(_) = pdf_url() {
+            spawn(async move {
+                eval(
+                    "document.getElementById('pdf_buttons').scrollIntoView({behavior: 'smooth', block: 'start'});",
+                );
+            });
+        }
+    });
 
     let view_pdf = move |_| {
         async move {
@@ -66,12 +78,27 @@ pub fn PDFButtons(sets: Signal<Sets>, options: Signal<DocumentOptions>) -> Eleme
     };
 
     rsx! {
-        div {
-            button { onclick: view_pdf, disabled: generating_pdf, "Generate PDF" }
-            button { onclick: download_pdf, disabled: pdf_url().is_none(), "Download" }
-            if let Some(url) = pdf_url() {
-                iframe { src: "{url}", width: "100%", height: "800px" }
+        div { id: "pdf_buttons", style: "display: flex; justify-content: center; padding: 2rem 0; gap: 1rem;",
+            button {
+                class: "button",
+                onclick: view_pdf,
+                disabled: generating_pdf,
+                "{i18n_lookup(\"create_pdf\")?}"
             }
+            button {
+                class: "button",
+                onclick: download_pdf,
+                disabled: pdf_url().is_none(),
+                "{i18n_lookup(\"download\")?}"
+            }
+
         }
+        if let Some(url) = pdf_url() {
+        div {
+            style: "display: flex; justify-content: center;",
+            iframe {id:"pdf_view", src: "{url}", width: "80%", height: "1000px"}
+        }
+        }
+        footer {style: "height: 7rem;"}
     }
 }

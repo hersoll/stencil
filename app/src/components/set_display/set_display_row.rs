@@ -104,7 +104,8 @@ pub fn SetDisplayRow(sets: Signal<Sets>, index: usize, max_descriptions: usize) 
                     }
                 },
             }
-            div { class: "set_row_controls",
+            div {
+                class: "set_row_controls",
                 style: "border-left: 1px gray solid; line-height: 1.2rem;",
                 p {
                     class: "set_row_editing",
