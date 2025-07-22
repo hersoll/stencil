@@ -30,9 +30,7 @@ pub fn DifficultyPicker(set_data: Signal<ProblemSetData>) -> Element {
                     }
                 },
                 for difficulty in difficulties.iter() {
-                    option { value: "{difficulty.to_str()}",
-                        "{i18n_lookup(difficulty.to_str())?}"
-                    }
+                    option { value: "{difficulty.to_str()}", "{i18n_lookup(difficulty.to_str())?}" }
                 }
             }
             p { "{to_str}" }

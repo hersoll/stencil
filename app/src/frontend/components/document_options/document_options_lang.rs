@@ -24,7 +24,7 @@ pub fn DocumentOptionsLanguage(options: Signal<DocumentOptions>) -> Element {
                     options.write().lang = evt.value();
                 },
                 for lang in languages {
-                    option {value: lang, "{i18n_lookup(\"language_\".to_string() + lang)?}"}
+                    option { value: lang, "{i18n_lookup(\"language_\".to_string() + lang)?}" }
                 }
             }
         }

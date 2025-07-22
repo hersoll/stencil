@@ -10,6 +10,7 @@ mod selectors;
 mod set_display;
 mod set_options;
 mod tooltip;
+mod toggle;
 
 pub use create_set::CreateSet;
 pub use difficulty_picker::DifficultyPicker;

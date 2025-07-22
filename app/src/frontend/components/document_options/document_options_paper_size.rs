@@ -23,7 +23,7 @@ pub fn DocumentOptionsPaperSize(options: Signal<DocumentOptions>) -> Element {
                     options.write().paper_size = PaperSize::from(&evt.value());
                 },
                 for size in paper_sizes {
-                    option {value: "{size.to_typst()}", "{size.to_str()}"}
+                    option { value: "{size.to_typst()}", "{size.to_str()}" }
                 }
             }
         }

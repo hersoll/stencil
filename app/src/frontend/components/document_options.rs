@@ -1,13 +1,15 @@
 use dioxus::prelude::*;
+mod document_options_color;
 mod document_options_header;
-mod document_options_solutions;
-mod document_options_paper_size;
 mod document_options_lang;
+mod document_options_paper_size;
+mod document_options_solutions;
 
+use document_options_color::DocumentOptionsColor;
 use document_options_header::DocumentOptionsHeader;
-use document_options_solutions::DocumentOptionsWriteSolution;
-use document_options_paper_size::DocumentOptionsPaperSize;
 use document_options_lang::DocumentOptionsLanguage;
+use document_options_paper_size::DocumentOptionsPaperSize;
+use document_options_solutions::DocumentOptionsWriteSolution;
 
 use crate::shared::DocumentOptions;
 
@@ -22,6 +24,7 @@ pub fn DocumentOptionDisplay(options: Signal<DocumentOptions>) -> Element {
                     DocumentOptionsWriteSolution { options }
                     DocumentOptionsPaperSize { options }
                     DocumentOptionsLanguage { options }
+                    DocumentOptionsColor { options }
                 }
             }
         }

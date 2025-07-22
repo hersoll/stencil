@@ -10,7 +10,6 @@ pub static PREAMBLE_STR: &str = r#"
   item-counter.step()
   context box(width: 1.35em, text(weight: "bold")[#item-counter.display())])
 })
-#set enum(spacing: 6mm)
 
 #let balanced(column_count, items, spacing, start_pos, title: [], debug: false) = layout(
   size => {
@@ -121,8 +120,6 @@ pub static PREAMBLE_STR: &str = r#"
   },
 )
 
-//Colors
-#let colored(x) = text(fill: color.linear-rgb(10%, 10%, 10%), $#x$)
 #let linecolor = color.linear-rgb(20%, 20%, 20%)
 
 //Equation solution template

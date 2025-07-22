@@ -123,6 +123,10 @@
         "sv": "Mellanrum",
         "en": "Spacing"
     },
+    "document_option_color": {
+        "sv": "Färg",
+        "en": "Color"
+    },
     "document_option_solutions": {
         "sv": "Lösningar",
         "en": "Solutions"
@@ -142,11 +146,11 @@
     "document_option_paper_size": {
         "sv": "Pappersstorlek",
         "en": "Paper size"
-    }, 
+    },
     "document_option_language": {
         "sv": "Uppgiftsspråk",
         "en": "Problem language"
-    }, 
+    },
     "language_sv": {
         "sv": "Svenska",
         "en": "Swedish"

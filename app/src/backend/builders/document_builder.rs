@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::Result;
 use crate::backend::document::*;
 use crate::backend::problems::Problem;
@@ -156,11 +158,12 @@ impl DocumentBuilder {
     }
 
     fn build_preamble(&self) -> String {
-        //Adjust order of preamble here if required
+        //Adjust order of preamble here if require
         let mut preamble = vec![
-            String::from(typst_preamble::PREAMBLE_STR),
+            self.build_colors(),
             self.build_page_size(),
             self.build_enum_spacing(),
+            String::from(typst_preamble::PREAMBLE_STR),
         ];
 
         if !self.options.heading.is_empty() {
@@ -173,11 +176,59 @@ impl DocumentBuilder {
     fn build_page_size(&self) -> String {
         format!(
             "#set page(paper: \"{}\", margin: (x: {}mm, y: {}mm))",
-            self.options.paper_size.to_typst(), self.options.x_margin, self.options.y_margin
+            self.options.paper_size.to_typst(),
+            self.options.x_margin,
+            self.options.y_margin
+        )
+    }
+
+    fn build_colors(&self) -> String {
+        let colored: Color;
+        // Graphing colors
+        let primary: Color;
+        let secondary: Color;
+        let tertiary: Color;
+        if self.options.color {
+            colored = Color::new(22, 10, 33); // Purple
+            primary = Color::new(9, 3, 18); // Dark purple
+            secondary = colored.clone();
+            tertiary = Color::new(30, 23, 39); // Light purple
+        } else {
+            colored = Color::new(10, 10, 10); // Gray
+            primary = Color::new(0, 0, 0); // Black
+            secondary = Color::new(8, 8, 8); // Gray?
+            tertiary = Color::new(16, 16, 16); // Grayer?
+        };
+
+        format!(
+            "
+#let colored(x) = text(fill: color.linear-rgb({colored}), $#x$)
+#let primary(x) = text(fill: color.linear-rgb({primary}), $#x$)
+#let secondary(x) = text(fill: color.linear-rgb({secondary}), $#x$)
+#let tertiary(x) = text(fill: color.linear-rgb({tertiary}), $#x$)"
         )
     }
 
     fn build_enum_spacing(&self) -> String {
         format!("#set enum(spacing: {}mm)\n", self.options.enum_spacing)
+    }
+}
+
+#[derive(Debug, Clone)]
+struct Color {
+    r: u8,
+    g: u8,
+    b: u8,
+}
+
+impl Color {
+    fn new(r: u8, g: u8, b: u8) -> Color {
+        Color { r, g, b }
+    }
+}
+
+impl Display for Color {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}%, {}%, {}%", self.r, self.g, self.b)
     }
 }
