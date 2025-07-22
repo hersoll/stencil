@@ -1,4 +1,5 @@
-use crate::{backend::{ProblemRegistry, PROBLEM_REGISTRY}, Error, Result};
+use crate::backend::PROBLEM_REGISTRY;
+use crate::{Error, Result};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs};

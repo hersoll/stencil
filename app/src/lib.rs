@@ -1,11 +1,5 @@
 pub mod backend;
-pub mod components;
-pub mod errors;
-pub mod frontend_types;
-mod states;
-mod utils;
+pub mod frontend;
+pub mod shared;
 
-pub use backend::DocumentOptions;
-pub use errors::{Error, Result};
-pub use states::*;
-pub use utils::*;
+pub use shared::errors::{Error, Result};

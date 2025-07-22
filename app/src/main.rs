@@ -1,18 +1,12 @@
 //Remember to eventually remove this (when #[server] is fixed....)
 #![allow(dead_code)]
 
-use app::{
-    DocumentOptions, TRANSLATIONS,
-    backend::{self, ChapterData, CourseData, TopicData},
-    components::{
-        CreateSet, DifficultyPicker, NumberPicker, SetDisplay, SetOptions, ToolTipDisplay,
-    },
-    errors,
-    frontend_types::{ProblemSetData, Sets},
-};
+use app::shared::*;
+use app::frontend::*;
+use app::shared::errors;
 use dioxus::prelude::*;
 
-use app::components::{ErrorDisplay, Header, PDFButtons, ProblemDisplay};
+use app::frontend::{ErrorDisplay, Header, PDFButtons, ProblemDisplay};
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
@@ -35,11 +29,11 @@ fn App() -> Element {
     let active_course = use_signal(|| String::new());
     let active_chapter = use_signal(|| String::new());
 
-    let translations = use_server_future(backend::load_translations)?;
+    let translations = use_server_future(app::backend::load_translations)?;
     if let Some(Err(e)) = translations() {
         return rsx! { "Error loading translations: {e}" };
     }
-    let registry = use_server_future(backend::load_registry)?;
+    let registry = use_server_future(app::backend::load_registry)?;
     if let Some(Err(e)) = registry() {
         return rsx! { "Error loading registry: {e}" };
     }
@@ -84,6 +78,7 @@ fn App() -> Element {
             SetOptions { set_data }
             CreateSet { set_data, sets, set_pusher: push_set }
             SetDisplay { sets, courses }
+            DocumentOptionDisplay { options }
             PDFButtons { sets, options }
         }
     }

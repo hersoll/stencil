@@ -1,7 +1,7 @@
 use crate::Error;
 use crate::Result;
-use crate::backend::Difficulty;
 use crate::backend::problems::*;
+use crate::shared::Difficulty;
 use std::cmp::Ordering;
 
 use rand::{rngs::ThreadRng, seq::IndexedRandom};

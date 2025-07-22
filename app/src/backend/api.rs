@@ -1,21 +1,13 @@
-use std::{collections::HashMap, fs};
+use std::fs;
+use crate::shared::types::HasDesc;
 
 use dioxus::prelude::*;
 
-use crate::{
-    Error,
-    backend::{
-        Difficulty, HasDesc, PROBLEM_MAP, PROBLEM_REGISTRY, Problem, ProblemData, ProblemType,
-        TopicData,
-        builders::{DocumentBuilder, DocumentOptions, SetBuilder, WriteSolutions},
-        translations::{GENERAL_TRANSLATIONS, Translations},
-    },
-    frontend_types::{SendableProblemSetData, SetRenderingOptions},
-};
+use crate::{Error, backend, shared};
 
 #[server]
-pub async fn load_registry() -> Result<super::ProblemRegistry, ServerFnError> {
-    Ok(PROBLEM_REGISTRY.clone())
+pub async fn load_registry() -> Result<shared::ProblemRegistry, ServerFnError> {
+    Ok(backend::PROBLEM_REGISTRY.clone())
 }
 
 /// Finds the description and difficulty for every problem in a certain topic within the difficulty
@@ -25,11 +17,11 @@ pub async fn load_registry() -> Result<super::ProblemRegistry, ServerFnError> {
 #[server]
 pub async fn get_problems(
     topics: Vec<String>,
-    starting_difficulty: Difficulty,
-    ending_difficulty: Difficulty,
+    starting_difficulty: shared::Difficulty,
+    ending_difficulty: shared::Difficulty,
     lang: String,
 ) -> Result<Vec<(String, String, u8)>, ServerFnError> {
-    let registry_topics: Vec<&TopicData> = PROBLEM_REGISTRY
+    let registry_topics: Vec<&shared::TopicData> = backend::PROBLEM_REGISTRY
         .courses
         .iter()
         .flat_map(|course| course.chapters.iter())
@@ -47,7 +39,7 @@ pub async fn get_problems(
 
     let mut matching_problems = Vec::new();
     for (problem_name, problem_desc) in problem_names_and_descs.iter() {
-        let problem = PROBLEM_MAP
+        let problem = backend::PROBLEM_MAP
             .read()
             .map_err(|_| Error::RegistryMutexIsPoisoned)?
             .get(problem_name)
@@ -55,7 +47,7 @@ pub async fn get_problems(
             .ok_or(Error::NoSuchProblemInRegistry {
                 id: problem_name.to_string(),
             })?;
-        if Difficulty::enums_to_nums(starting_difficulty, ending_difficulty)
+        if shared::Difficulty::enums_to_nums(starting_difficulty, ending_difficulty)
             .contains(&problem.difficulty)
         {
             matching_problems.push((
@@ -72,30 +64,30 @@ pub async fn get_problems(
 }
 
 #[server]
-pub async fn load_translations() -> Result<Translations, ServerFnError> {
-    Ok(GENERAL_TRANSLATIONS.clone())
+pub async fn load_translations() -> Result<backend::Translations, ServerFnError> {
+    Ok(backend::translations::GENERAL_TRANSLATIONS.clone())
 }
 
 #[server]
 pub async fn generate_pdf(
-    sets: Vec<SendableProblemSetData>,
-    options: DocumentOptions,
+    sets: Vec<shared::SendableProblemSetData>,
+    options: shared::DocumentOptions,
 ) -> Result<Vec<u8>, ServerFnError> {
     let pdf = create_pdf(sets, options).await?;
     Ok(pdf)
 }
 
 async fn create_pdf(
-    sets: Vec<SendableProblemSetData>,
-    document_options: DocumentOptions,
+    sets: Vec<shared::SendableProblemSetData>,
+    document_options: shared::DocumentOptions,
 ) -> crate::Result<Vec<u8>> {
-    let mut problem_sets: Vec<Vec<Problem>> = Vec::new();
-    let courses = &PROBLEM_REGISTRY.courses;
-    let mut set_options: Vec<SetRenderingOptions> = Vec::new();
+    let mut problem_sets: Vec<Vec<backend::Problem>> = Vec::new();
+    let courses = &backend::PROBLEM_REGISTRY.courses;
+    let mut set_options: Vec<shared::SetRenderingOptions> = Vec::new();
     for set in sets {
         set_options.push(set.options);
-        let mut set_builder = SetBuilder::new();
-        let mut problem_types: Vec<ProblemType> = Vec::new();
+        let mut set_builder = backend::SetBuilder::new();
+        let mut problem_types: Vec<backend::ProblemType> = Vec::new();
         // Convert the ID strings to actual problems
         for id in set.ids {
             let topic = courses
@@ -117,14 +109,14 @@ async fn create_pdf(
                 &mut problem_names
                     .iter()
                     .map(|name| {
-                        PROBLEM_MAP
+                        backend::PROBLEM_MAP
                             .read()
                             .map_err(|_| Error::RegistryMutexIsPoisoned)?
                             .get(name)
                             .cloned()
                             .ok_or(Error::NoSuchProblemInRegistry { id: id.to_string() })
                     })
-                    .collect::<crate::Result<Vec<ProblemType>>>()?,
+                    .collect::<crate::Result<Vec<backend::ProblemType>>>()?,
             );
         }
         set_builder.area(problem_types).batch(
@@ -135,8 +127,7 @@ async fn create_pdf(
         problem_sets.push(set_builder.build()?);
     }
 
-    let mut document_builder = DocumentBuilder::new(set_options, document_options);
-    document_builder.write_solutions(WriteSolutions::First);
+    let mut document_builder = backend::DocumentBuilder::new(set_options, document_options);
     for problem_set in problem_sets {
         document_builder.add_problem_set(problem_set)?;
     }

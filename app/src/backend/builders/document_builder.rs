@@ -1,10 +1,8 @@
-use serde::{Deserialize, Serialize};
-
 use crate::Result;
 use crate::backend::document::*;
 use crate::backend::problems::Problem;
 use crate::backend::translations::GENERAL_TRANSLATIONS;
-use crate::frontend_types::SetRenderingOptions;
+use crate::shared::{DocumentOptions, SetRenderingOptions, WriteSolutions};
 
 #[derive(Debug)]
 pub struct DocumentBuilder {
@@ -12,39 +10,6 @@ pub struct DocumentBuilder {
     answer_sets: Vec<Vec<String>>,
     options: DocumentOptions,
     set_options: Vec<SetRenderingOptions>,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct DocumentOptions {
-    pub lang: String,
-    pub write_solutions: WriteSolutions,
-    pub file_name: String,
-    pub color: bool,
-    pub heading: String,
-    pub paper_size: String,
-    pub x_margin: u8,
-    pub y_margin: u8,
-    pub enum_spacing: u8,
-    pub par_spacing: u8,
-    pub answer_columns: u8,
-}
-
-impl Default for DocumentOptions {
-    fn default() -> Self {
-        DocumentOptions {
-            lang: "sv".to_string(),
-            write_solutions: WriteSolutions::None,
-            file_name: String::from("stencil"),
-            color: true,
-            heading: String::new(),
-            paper_size: "a4".to_string(),
-            x_margin: 20,
-            y_margin: 20,
-            par_spacing: 6,
-            enum_spacing: 6,
-            answer_columns: 2,
-        }
-    }
 }
 
 pub struct FinishedFile {
@@ -62,13 +27,6 @@ impl FinishedFile {
     pub fn compile(&self) -> std::io::Result<String> {
         compile_handler::compile(&self.file_path)
     }
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub enum WriteSolutions {
-    All,
-    None,
-    First,
 }
 
 impl DocumentBuilder {
