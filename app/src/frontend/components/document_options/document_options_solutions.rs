@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::shared::{DocumentOptions, WriteSolutions};
+use crate::frontend::{i18n_lookup, ToolTip};
 
 #[component]
 pub fn DocumentOptionsWriteSolution(options: Signal<DocumentOptions>) -> Element {
@@ -20,17 +21,18 @@ pub fn DocumentOptionsWriteSolution(options: Signal<DocumentOptions>) -> Element
     });
     rsx! {
         div {
-            p { "Lösningar:" }
+            p { "{i18n_lookup(\"document_option_solutions\")?}:" }
             select {
                 value: "{value()}",
                 class: "select with_arrow",
                 onchange: move |evt| {
                     options.write().write_solutions = str_to_solution(&evt.value());
                 },
-                option { value: "all", "Alltid" }
-                option { value: "first", "Första" }
-                option { value: "none", "Aldrig" }
+                option { value: "all", "{i18n_lookup(\"document_option_solutions_all\")?}" }
+                option { value: "first", "{i18n_lookup(\"document_option_solutions_first\")?}" }
+                option { value: "none", "{i18n_lookup(\"document_option_solutions_none\")?}" }
             }
+            ToolTip { content: "{i18n_lookup(\"tooltip_document_solutions\")?}" }
         }
     }
 }

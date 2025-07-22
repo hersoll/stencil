@@ -173,7 +173,7 @@ impl DocumentBuilder {
     fn build_page_size(&self) -> String {
         format!(
             "#set page(paper: \"{}\", margin: (x: {}mm, y: {}mm))",
-            self.options.paper_size, self.options.x_margin, self.options.y_margin
+            self.options.paper_size.to_typst(), self.options.x_margin, self.options.y_margin
         )
     }
 

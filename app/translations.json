@@ -95,6 +95,10 @@
         "sv": "Mellanrummet mellan problem (i millimeter). <br /> Kan t.ex. användas för att ge eleverna skrivyta.",
         "en": "Spacing between problems (in millimetres). <br /> Can, for example, be used for writing space."
     },
+    "tooltip_document_solutions": {
+        "sv": "Fullständiga lösningar eller bara svar i facit? <br/><br/> <strong>Alltid:</strong> Alltid visa lösningar <br/><br/> <strong>Första:</strong> Första uppgiften av varje typ har en lösning, liknande uppgifter har bara svar <br /> <br/><strong>Aldrig:</strong> Endast svar",
+        "en": "Complete solutions or answers only? <br/><br/> <strong>Always:</strong> Always show solutions <br /><br/> <strong>First:</strong> Show solution for first problem of each type, similar problems will only have an answer <br/> <br/><strong>Never:</strong> Only show answers"
+    },
     "create_pdf": {
         "sv": "Skapa PDF",
         "en": "Create PDF"
@@ -118,5 +122,37 @@
     "set_option_spacing": {
         "sv": "Mellanrum",
         "en": "Spacing"
+    },
+    "document_option_solutions": {
+        "sv": "Lösningar",
+        "en": "Solutions"
+    },
+    "document_option_solutions_first": {
+        "sv": "Första",
+        "en": "First"
+    },
+    "document_option_solutions_all": {
+        "sv": "Alltid",
+        "en": "Always"
+    },
+    "document_option_solutions_none": {
+        "sv": "Aldrig",
+        "en": "Never"
+    },
+    "document_option_paper_size": {
+        "sv": "Pappersstorlek",
+        "en": "Paper size"
+    }, 
+    "document_option_language": {
+        "sv": "Uppgiftsspråk",
+        "en": "Problem language"
+    }, 
+    "language_sv": {
+        "sv": "Svenska",
+        "en": "Swedish"
+    },
+    "language_en": {
+        "sv": "Engelska",
+        "en": "English"
     }
 }

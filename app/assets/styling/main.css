@@ -531,6 +531,7 @@ button {
         & > p:first-child {
           text-align: end;
         }
+        border: 1px gray solid;
       }
     }
   }
@@ -558,10 +559,10 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 1.3rem;
   & .tooltip_icon {
     text-align: center;
     line-height: 1.1rem;
-    padding: 0 0.3rem;
   }
 }
 

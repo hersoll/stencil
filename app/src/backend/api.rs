@@ -87,6 +87,7 @@ async fn create_pdf(
     for set in sets {
         set_options.push(set.options);
         let mut set_builder = backend::SetBuilder::new();
+        set_builder.lang(&document_options.lang);
         let mut problem_types: Vec<backend::ProblemType> = Vec::new();
         // Convert the ID strings to actual problems
         for id in set.ids {

@@ -4,6 +4,14 @@ pub static PREAMBLE_STR: &str = r#"
 
 #show math.equation.where(block: false): box
 
+//Enum settings
+#let item-counter = counter("item-counter")
+#set enum(numbering: it => {
+  item-counter.step()
+  context box(width: 1.35em, text(weight: "bold")[#item-counter.display())])
+})
+#set enum(spacing: 6mm)
+
 #let balanced(column_count, items, spacing, start_pos, title: [], debug: false) = layout(
   size => {
     let start_height = start_pos - page.margin.length
@@ -116,17 +124,6 @@ pub static PREAMBLE_STR: &str = r#"
 //Colors
 #let colored(x) = text(fill: color.linear-rgb(10%, 10%, 10%), $#x$)
 #let linecolor = color.linear-rgb(20%, 20%, 20%)
-
-//Enum settings
-#let item-counter = counter("item-counter")
-#set enum(numbering: it => box(width: 1.35em, text(weight: "bold")[#it)]))
-#show enum: it => {
-  if it.start != 0 { return it }
-  let args = it.fields()
-  let items = args.remove("children")
-  context enum(..args, start: item-counter.get().first() + 1, ..items)
-  item-counter.update(i => i + it.children.len())
-}
 
 //Equation solution template
 #let equation-solution(equations, operations) = {

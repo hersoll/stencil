@@ -146,7 +146,7 @@ pub struct DocumentOptions {
     pub file_name: String,
     pub color: bool,
     pub heading: String,
-    pub paper_size: String,
+    pub paper_size: PaperSize,
     pub x_margin: u8,
     pub y_margin: u8,
     pub enum_spacing: u8,
@@ -162,7 +162,7 @@ impl Default for DocumentOptions {
             file_name: String::from("stencil"),
             color: true,
             heading: String::new(),
-            paper_size: "a4".to_string(),
+            paper_size: PaperSize::A4,
             x_margin: 20,
             y_margin: 20,
             par_spacing: 6,
@@ -232,11 +232,19 @@ impl From<ProblemSetData> for SendableProblemSetData {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum PaperSize {
     A4,
     A5,
 }
 impl PaperSize {
+    pub fn from(name: &str) -> PaperSize {
+        match name {
+            "a4" => PaperSize::A4,
+            "a5" => PaperSize::A5,
+            _ => PaperSize::A4,
+        }
+    }
     pub fn to_typst(&self) -> &str {
         match self {
             PaperSize::A4 => "a4",
