@@ -8,8 +8,8 @@ pub fn DocumentOptionsHeading(options: Signal<DocumentOptions>) -> Element {
     rsx! {
         div {
             p { "{i18n_lookup(\"document_option_heading\")?}:" }
-            textarea {
-                class: "textarea",
+            input {
+                class: "input text",
                 oninput: move |evt| {
                     options.write().heading = evt.value();
                 },

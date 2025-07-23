@@ -11,7 +11,7 @@ pub fn SetOptionColumns(set: Signal<ProblemSetData>) -> Element {
         div {
             p { "{i18n_lookup(\"set_option_columns\")?}:" }
             input {
-                class: "input",
+                class: "input number",
                 r#type: "number",
                 value: "{set().options.question_columns}",
                 min: min_columns,

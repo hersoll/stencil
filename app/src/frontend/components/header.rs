@@ -7,7 +7,7 @@ pub fn Header() -> Element {
     rsx! {
         div { id: "header",
 
-            h1 { "Ekvata" }
+            h1 { "Stencil" }
             LanguageSwitch {}
         }
     }

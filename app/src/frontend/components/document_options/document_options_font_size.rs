@@ -11,7 +11,7 @@ pub fn DocumentOptionsFontSize(options: Signal<DocumentOptions>) -> Element {
         div {
             p { "{i18n_lookup(\"document_option_font_size\")?}:" }
             input {
-                class: "input",
+                class: "input number",
                 r#type: "number",
                 value: "{options().font_size}",
                 min: min_size,

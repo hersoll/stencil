@@ -7,6 +7,7 @@ mod document_options_heading;
 mod document_options_lang;
 mod document_options_paper_size;
 mod document_options_solutions;
+mod document_options_spacing;
 
 use document_options_answer_columns::DocumentOptionsAnswerColumns;
 use document_options_color::DocumentOptionsColor;
@@ -16,6 +17,7 @@ use document_options_heading::DocumentOptionsHeading;
 use document_options_lang::DocumentOptionsLanguage;
 use document_options_paper_size::DocumentOptionsPaperSize;
 use document_options_solutions::DocumentOptionsWriteSolution;
+use document_options_spacing::DocumentOptionsParSpacing;
 
 use crate::shared::DocumentOptions;
 
@@ -34,6 +36,7 @@ pub fn DocumentOptionDisplay(options: Signal<DocumentOptions>) -> Element {
                     DocumentOptionsAnswerColumns { options }
                     DocumentOptionsHeading { options }
                     DocumentOptionsFontSize { options }
+                    DocumentOptionsParSpacing { options }
                 }
             }
         }

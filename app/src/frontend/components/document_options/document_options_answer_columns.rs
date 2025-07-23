@@ -11,7 +11,7 @@ pub fn DocumentOptionsAnswerColumns(options: Signal<DocumentOptions>) -> Element
         div {
             p { "{i18n_lookup(\"document_option_answer_columns\")?}:" }
             input {
-                class: "input",
+                class: "input number",
                 r#type: "number",
                 value: "{options().answer_columns}",
                 min: min_columns,

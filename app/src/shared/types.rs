@@ -151,8 +151,7 @@ pub struct DocumentOptions {
     pub paper_size: PaperSize,
     pub x_margin: u8,
     pub y_margin: u8,
-    pub enum_spacing: u8,
-    pub par_spacing: u8,
+    pub par_spacing: Option<u8>,
 }
 
 impl Default for DocumentOptions {
@@ -167,8 +166,7 @@ impl Default for DocumentOptions {
             paper_size: PaperSize::A4,
             x_margin: 20,
             y_margin: 20,
-            par_spacing: 6,
-            enum_spacing: 6,
+            par_spacing: None,
             answer_columns: 2,
         }
     }

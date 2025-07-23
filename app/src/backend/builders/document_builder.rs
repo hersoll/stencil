@@ -122,8 +122,11 @@ impl DocumentBuilder {
                 }
             );
             if i != sets.len() - 1 {
-                set_string += &typst_formatting::empty_line();
-                set_string += format!("#v({}mm)\n", self.options.par_spacing).as_str();
+                if let Some(spacing) = self.options.par_spacing {
+                    set_string += format!("#v({}mm)\n", spacing).as_str();
+                } else {
+                    set_string += &String::from("#v(1.33em)\n");
+                }
             }
             collection += &set_string;
         }

@@ -91,7 +91,7 @@ pub fn SetDisplayRow(sets: Signal<Sets>, index: usize, max_descriptions: usize) 
                 }
             }
             input {
-                class: "input transparent",
+                class: "input transparent number",
                 r#type: "number",
                 value: "{set().n}",
                 min: 1,

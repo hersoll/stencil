@@ -163,6 +163,10 @@
         "sv": "Textstorlek",
         "en": "Font size"
     },
+    "document_option_spacing": {
+        "sv": "Sektionsavstånd",
+        "en": "Set gap"
+    },
     "document_option_language": {
         "sv": "Uppgiftsspråk",
         "en": "Problem language"

@@ -80,7 +80,7 @@ button {
   }
 }
 
-.input {
+.input.number {
   background: none;
   background-color: var(--bg_element_dark);
   border-radius: var(--corner_radius);
@@ -98,6 +98,18 @@ button {
     border-radius: var(--corner_radius);
     font-size: 1rem;
   }
+}
+
+.input.text {
+  background-color: var(--bg_element_extra_dark);
+  color: white;
+  height: 1.6rem;
+  resize: none;
+  border: 2px solid var(--bg_element_hover_dark);
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  max-width: 8rem;
 }
 
 .button {
