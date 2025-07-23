@@ -18,6 +18,8 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
 
     let problem = Problem {
         id,
+        // prefix: "Lös ekvationen",
+        // group-prefix: "Lös ekvationerna"
         question: format!("$x {constant:+} = {}$", answer + constant),
         answer: format!("$x = {answer}$"),
         solution: typst_formatting::equation_solution(solution),

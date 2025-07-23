@@ -1,15 +1,11 @@
-
 use dioxus::prelude::*;
 
-use crate::shared::{DocumentOptions};
 use crate::frontend::i18n_lookup;
+use crate::shared::DocumentOptions;
 
 #[component]
 pub fn DocumentOptionsLanguage(options: Signal<DocumentOptions>) -> Element {
-    let languages = vec![
-        "sv",
-        "en"
-    ];
+    let languages = vec!["sv", "en"];
     let mut value = use_signal(|| String::from("sv"));
     use_effect(move || {
         value.set(options().lang);

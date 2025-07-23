@@ -29,12 +29,12 @@ pub fn DocumentOptionDisplay(options: Signal<DocumentOptions>) -> Element {
             DocumentOptionsHeader { active }
             div { class: if active() { "document_options_panel active" } else { "document_options_panel" },
                 div { class: "wrapper",
-                    DocumentOptionsWriteSolution { options }
-                    DocumentOptionsPaperSize { options }
-                    DocumentOptionsLanguage { options }
-                    DocumentOptionsColor { options }
-                    DocumentOptionsAnswerColumns { options }
                     DocumentOptionsHeading { options }
+                    DocumentOptionsWriteSolution { options }
+                    DocumentOptionsAnswerColumns { options }
+                    DocumentOptionsColor { options }
+                    DocumentOptionsLanguage { options }
+                    DocumentOptionsPaperSize { options }
                     DocumentOptionsFontSize { options }
                     DocumentOptionsParSpacing { options }
                 }
