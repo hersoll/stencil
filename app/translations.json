@@ -127,6 +127,10 @@
         "sv": "Färg",
         "en": "Color"
     },
+    "document_option_answer_columns": {
+        "sv": "Kolumner i facit",
+        "en": "Columns in answer key"
+    },
     "document_option_solutions": {
         "sv": "Lösningar",
         "en": "Solutions"
