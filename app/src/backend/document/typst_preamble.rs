@@ -4,6 +4,8 @@ pub static PREAMBLE_STR: &str = r#"
 
 #show math.equation.where(block: false): box
 
+#set enum(spacing: 1.33em)
+
 //Enum settings
 #let item-counter = counter("item-counter")
 #set enum(numbering: it => {
@@ -11,8 +13,9 @@ pub static PREAMBLE_STR: &str = r#"
   context box(width: 1.35em, text(weight: "bold")[#item-counter.display())])
 })
 
-#let balanced(column_count, items, spacing, start_pos, title: [], debug: false) = layout(
+#let balanced(column_count, items, start_pos, custom_spacing: 1.33em, title: [], debug: false) = layout(
   size => {
+    let spacing = custom_spacing.to-absolute()
     let start_height = start_pos - page.margin.length
     let spare_height = size.height - start_height
 

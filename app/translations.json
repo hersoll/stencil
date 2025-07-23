@@ -92,12 +92,16 @@
         "en": "The text before a problem set, as in \"Solve the equations:\" <p></p> You can style the text <br /> *<strong>bold</strong>*, <br/> _<em>italic</em>_, <br/> or using $<em>math expressions</em>$."
     },
     "tooltip_set_spacing": {
-        "sv": "Mellanrummet mellan problem (i millimeter). <br /> Kan t.ex. användas för att ge eleverna skrivyta.",
-        "en": "Spacing between problems (in millimetres). <br /> Can, for example, be used for writing space."
+        "sv": "Mellanrummet mellan problem (i millimeter). Bestäms automatiskt om inget värde anges. <br /> Kan t.ex. användas för att ge eleverna skrivyta. 40mm brukar då vara ett rimligt värde att utgå ifrån.",
+        "en": "Spacing between problems (in millimetres). Derived automatically if not set. <br /> Can, for example, be used for writing space. 40mm is a reasonable default in that case."
     },
     "tooltip_document_solutions": {
         "sv": "Fullständiga lösningar eller bara svar i facit? <br/><br/> <strong>Alltid:</strong> Alltid visa lösningar <br/><br/> <strong>Första:</strong> Första uppgiften av varje typ har en lösning, liknande uppgifter har bara svar <br /> <br/><strong>Aldrig:</strong> Endast svar",
         "en": "Complete solutions or answers only? <br/><br/> <strong>Always:</strong> Always show solutions <br /><br/> <strong>First:</strong> Show solution for first problem of each type, similar problems will only have an answer <br/> <br/><strong>Never:</strong> Only show answers"
+    },
+    "tooltip_document_heading": {
+        "sv": "Titeln högst upp i dokumentet",
+        "en": "The heading at the start of the document"
     },
     "create_pdf": {
         "sv": "Skapa PDF",
@@ -135,6 +139,10 @@
         "sv": "Lösningar",
         "en": "Solutions"
     },
+    "document_option_heading": {
+        "sv": "Titel",
+        "en": "Heading"
+    },
     "document_option_solutions_first": {
         "sv": "Första",
         "en": "First"
@@ -150,6 +158,10 @@
     "document_option_paper_size": {
         "sv": "Pappersstorlek",
         "en": "Paper size"
+    },
+    "document_option_font_size": {
+        "sv": "Textstorlek",
+        "en": "Font size"
     },
     "document_option_language": {
         "sv": "Uppgiftsspråk",

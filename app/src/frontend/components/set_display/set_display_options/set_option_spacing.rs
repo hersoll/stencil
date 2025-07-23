@@ -15,11 +15,11 @@ pub fn SetOptionSpacing(set: Signal<ProblemSetData>) -> Element {
                 r#type: "number",
                 min: min_spacing,
                 max: max_spacing,
-                value: "{set().options.spacing}",
+                value: if let Some(spacing) = set().options.spacing {"{spacing}"},
                 onchange: move |evt| {
                     if let Ok(val) = evt.value().parse::<u16>() {
                         if val >= min_spacing && val <= max_spacing {
-                            set.write().options.spacing = val;
+                            set.write().options.spacing = Some(val);
                         }
                     }
                 },

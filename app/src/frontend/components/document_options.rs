@@ -1,14 +1,18 @@
 use dioxus::prelude::*;
 mod document_options_answer_columns;
 mod document_options_color;
+mod document_options_font_size;
 mod document_options_header;
+mod document_options_heading;
 mod document_options_lang;
 mod document_options_paper_size;
 mod document_options_solutions;
 
 use document_options_answer_columns::DocumentOptionsAnswerColumns;
 use document_options_color::DocumentOptionsColor;
+use document_options_font_size::DocumentOptionsFontSize;
 use document_options_header::DocumentOptionsHeader;
+use document_options_heading::DocumentOptionsHeading;
 use document_options_lang::DocumentOptionsLanguage;
 use document_options_paper_size::DocumentOptionsPaperSize;
 use document_options_solutions::DocumentOptionsWriteSolution;
@@ -28,6 +32,8 @@ pub fn DocumentOptionDisplay(options: Signal<DocumentOptions>) -> Element {
                     DocumentOptionsLanguage { options }
                     DocumentOptionsColor { options }
                     DocumentOptionsAnswerColumns { options }
+                    DocumentOptionsHeading { options }
+                    DocumentOptionsFontSize { options }
                 }
             }
         }

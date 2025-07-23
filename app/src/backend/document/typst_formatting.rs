@@ -6,8 +6,9 @@ pub fn to_list_item(s: &String) -> String {
     String::from("block(breakable: false)[") + s + "],"
 }
 
-pub fn to_heading(heading: &String) -> String {
-    String::from("= ") + heading
+pub fn to_heading<T: Into<String>>(heading: T) -> String {
+    let heading_str: String = heading.into();
+    format!("#align(center, text(1.5em)[*{}*])", heading_str)
 }
 
 pub fn line_break() -> String {

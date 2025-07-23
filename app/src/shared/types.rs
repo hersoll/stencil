@@ -141,22 +141,24 @@ pub enum WriteSolutions {
 }
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DocumentOptions {
+    pub font_size: u8,
+    pub heading: String,
+    pub answer_columns: u8,
     pub lang: String,
     pub write_solutions: WriteSolutions,
     pub file_name: String,
     pub color: bool,
-    pub heading: String,
     pub paper_size: PaperSize,
     pub x_margin: u8,
     pub y_margin: u8,
     pub enum_spacing: u8,
     pub par_spacing: u8,
-    pub answer_columns: u8,
 }
 
 impl Default for DocumentOptions {
     fn default() -> Self {
         DocumentOptions {
+            font_size: 12,
             lang: "sv".to_string(),
             write_solutions: WriteSolutions::First,
             file_name: String::from("stencil"),
@@ -195,7 +197,7 @@ impl ProblemSetData {
             options: SetRenderingOptions {
                 question_columns: 2,
                 title: String::new(),
-                spacing: 6,
+                spacing: None,
             },
         }
     }
@@ -205,7 +207,7 @@ impl ProblemSetData {
 pub struct SetRenderingOptions {
     pub question_columns: u8,
     pub title: String,
-    pub spacing: u16,
+    pub spacing: Option<u16>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

@@ -105,9 +105,13 @@ impl DocumentBuilder {
             set_string += ")\n";
 
             set_string += &format!(
-                "#context{{balanced({}, problem_set,{}mm, here().position().y{})}}\n",
+                "#context{{balanced({}, problem_set,here().position().y{}{})}}\n",
                 self.set_options[i].question_columns,
-                self.set_options[i].spacing,
+                if let Some(spacing) = self.set_options[i].spacing {
+                    format!(", custom_spacing: {spacing}mm")
+                } else {
+                    String::new()
+                },
                 if self.set_options[i].title.is_empty() {
                     String::new()
                 } else {
@@ -142,6 +146,16 @@ impl DocumentBuilder {
         collection
     }
 
+    fn answer_heading(&self) -> String {
+        let heading: &str;
+        if self.options.lang == "sv" {
+            heading = "Facit";
+        } else {
+            heading = "Answer key";
+        }
+        typst_formatting::to_heading(heading)
+    }
+
     pub fn build(&self) -> Result<FinishedFile> {
         let preamble = self.build_preamble();
         let question_string = self.sets_to_balanced_columns(&self.question_sets);
@@ -153,27 +167,36 @@ impl DocumentBuilder {
         file_handler::write(&typst_file, preamble)?;
         file_handler::write(&typst_file, question_string)?;
         file_handler::write(&typst_file, answer_preamble)?;
+        file_handler::write(&typst_file, self.answer_heading())?;
         file_handler::write(&typst_file, answer_string)?;
         Ok(FinishedFile::new(typst_file_name))
     }
 
     fn build_preamble(&self) -> String {
         //Adjust order of preamble here if require
-        let mut preamble = vec![
-            self.build_colors(),
-            self.build_page_size(),
-            self.build_enum_spacing(),
+        let preamble = vec![
+            self.set_colors(),
+            self.set_page_size(),
+            self.set_font_size(),
             String::from(typst_preamble::PREAMBLE_STR),
+            self.set_heading(),
         ];
 
-        if !self.options.heading.is_empty() {
-            let heading_string = typst_formatting::to_heading(&self.options.heading) + "\n";
-            preamble.push(heading_string);
-        }
-        preamble.join("\n")
+        preamble.join("\n") + "\n" // join only adds \n between items, not at the end
     }
 
-    fn build_page_size(&self) -> String {
+    fn set_heading(&self) -> String {
+        if !self.options.heading.is_empty() {
+            typst_formatting::to_heading(&self.options.heading)
+        } else {
+            String::new()
+        }
+    }
+    fn set_font_size(&self) -> String {
+        format!("#set text(size: {}pt)", self.options.font_size)
+    }
+
+    fn set_page_size(&self) -> String {
         format!(
             "#set page(paper: \"{}\", margin: (x: {}mm, y: {}mm))",
             self.options.paper_size.to_typst(),
@@ -182,7 +205,7 @@ impl DocumentBuilder {
         )
     }
 
-    fn build_colors(&self) -> String {
+    fn set_colors(&self) -> String {
         let colored: Color;
         // Graphing colors
         let primary: Color;
@@ -207,10 +230,6 @@ impl DocumentBuilder {
 #let secondary(x) = text(fill: color.linear-rgb({secondary}), $#x$)
 #let tertiary(x) = text(fill: color.linear-rgb({tertiary}), $#x$)"
         )
-    }
-
-    fn build_enum_spacing(&self) -> String {
-        format!("#set enum(spacing: {}mm)\n", self.options.enum_spacing)
     }
 }
 
