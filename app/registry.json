@@ -47,6 +47,15 @@
                             "problems": [
                                 {
                                     "name": "mult_only",
+                                    "difficulty": 0,
+                                    "prefix": {
+                                        "sv": "Lös ekvationen",
+                                        "en": "Solve the equation"
+                                    },
+                                    "group_prefix": {
+                                        "sv": "Lös ekvationerna",
+                                        "en": "Solve the equations"
+                                    },
                                     "desc": {
                                         "sv": "Endast multiplikation (ax = b)",
                                         "en": "Multiplication only (ax = b)"
@@ -54,6 +63,15 @@
                                 },
                                 {
                                     "name": "add_sub_only",
+                                    "difficulty": 0,
+                                    "prefix": {
+                                        "sv": "Lös ekvationen",
+                                        "en": "Solve the equation"
+                                    },
+                                    "group_prefix": {
+                                        "sv": "Lös ekvationerna",
+                                        "en": "Solve the equations"
+                                    },
                                     "desc": {
                                         "sv": "Endast addition och subtraktion (x + a = b)",
                                         "en": "Addition and subtraction only (x + a = b)"
@@ -61,6 +79,15 @@
                                 },
                                 {
                                     "name": "up_to_5",
+                                    "difficulty": 2,
+                                    "prefix": {
+                                        "sv": "Lös ekvationen",
+                                        "en": "Solve the equation"
+                                    },
+                                    "group_prefix": {
+                                        "sv": "Lös ekvationerna",
+                                        "en": "Solve the equations"
+                                    },
                                     "desc": {
                                         "sv": "Upp till 5:ans multiplikationstabell (5x + 3 = 13)",
                                         "en": "Multiplications up to 5 (5x + 3 = 13)"
@@ -68,6 +95,15 @@
                                 },
                                 {
                                     "name": "default_positive",
+                                    "difficulty": 3,
+                                    "prefix": {
+                                        "sv": "Lös ekvationen",
+                                        "en": "Solve the equation"
+                                    },
+                                    "group_prefix": {
+                                        "sv": "Lös ekvationerna",
+                                        "en": "Solve the equations"
+                                    },
                                     "desc": {
                                         "sv": "Positiva heltalssvar",
                                         "en": "Positive integer answers"
@@ -75,6 +111,15 @@
                                 },
                                 {
                                     "name": "rational_positive",
+                                    "difficulty": 4,
+                                    "prefix": {
+                                        "sv": "Lös ekvationen",
+                                        "en": "Solve the equation"
+                                    },
+                                    "group_prefix": {
+                                        "sv": "Lös ekvationerna",
+                                        "en": "Solve the equations"
+                                    },
                                     "desc": {
                                         "sv": "Positiva rationella svar",
                                         "en": "Positive rational answers"
@@ -91,6 +136,15 @@
                             "problems": [
                                 {
                                     "name": "one_denom_one_variable",
+                                    "difficulty": 0,
+                                    "prefix": {
+                                        "sv": "Lös ekvationen",
+                                        "en": "Solve the equation"
+                                    },
+                                    "group_prefix": {
+                                        "sv": "Lös ekvationerna",
+                                        "en": "Solve the equations"
+                                    },
                                     "desc": {
                                         "sv": "Okänd med nämnare = tal",
                                         "en": "Unknown with denominator = number"
@@ -98,6 +152,7 @@
                                 },
                                 {
                                     "name": "one_denom_and_unit_variable_integers_positive",
+                                    "difficulty":2,
                                     "desc": {
                                         "sv": "Okänd med nämnare + Okänd = tal",
                                         "en": "Unknown with denominator + unknown = number"
@@ -105,6 +160,15 @@
                                 },
                                 {
                                     "name": "unit_variable_and_one_denom_integers_positive",
+                                    "difficulty": 2,
+                                    "prefix": {
+                                        "sv": "Lös ekvationen",
+                                        "en": "Solve the equation"
+                                    },
+                                    "group_prefix": {
+                                        "sv": "Lös ekvationerna",
+                                        "en": "Solve the equations"
+                                    },
                                     "desc": {
                                         "sv": "Okänd - okänd med nämnare = tal",
                                         "en": "Unknown - unknown with denominator = number"
@@ -112,6 +176,15 @@
                                 },
                                 {
                                     "name": "unit_variable_and_one_denom_integers_with_negatives",
+                                    "difficulty": 3,
+                                    "prefix": {
+                                        "sv": "Lös ekvationen",
+                                        "en": "Solve the equation"
+                                    },
+                                    "group_prefix": {
+                                        "sv": "Lös ekvationerna",
+                                        "en": "Solve the equations"
+                                    },
                                     "desc": {
                                         "sv": "Okänd med nämnare - okänd = tal",
                                         "en": "Unknown with denominator - unknown = number"
@@ -161,6 +234,7 @@
                             "problems": [
                                 {
                                     "name": "without_notation_y",
+                                    "difficulty": 0,
                                     "desc": {
                                         "sv": "Bestäm y om du vet x (utan f(x))",
                                         "en": "Find y if you know x (no f(x))"
@@ -172,6 +246,7 @@
                                 },
                                 {
                                     "name": "without_notation_x",
+                                    "difficulty": 0,
                                     "desc": {
                                         "sv": "Bestäm x om du vet y (utan f(x))",
                                         "en": "Find x if you know y (no f(x))"

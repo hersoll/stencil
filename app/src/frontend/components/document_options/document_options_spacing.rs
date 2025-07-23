@@ -13,9 +13,7 @@ pub fn DocumentOptionsParSpacing(options: Signal<DocumentOptions>) -> Element {
             input {
                 class: "input number",
                 r#type: "number",
-                value: if let Some(spacing) = options().par_spacing {
-                    "{spacing}"
-        },
+                value: if let Some(spacing) = options().par_spacing { "{spacing}" },
                 min: min_spacing,
                 max: max_spacing,
                 oninput: move |evt| {
@@ -23,12 +21,12 @@ pub fn DocumentOptionsParSpacing(options: Signal<DocumentOptions>) -> Element {
                         if val >= min_spacing && val <= max_spacing {
                             options.write().par_spacing = Some(val);
                         }
-                    }   else if evt.value().is_empty() {
+                    } else if evt.value().is_empty() {
                         options.write().par_spacing = None;
                     }
                 },
             }
-            p {"mm"}
+            p { "mm" }
         }
     }
 }

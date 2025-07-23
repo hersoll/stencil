@@ -5,6 +5,19 @@ pub type Result<T> = core::result::Result<T, Error>;
 
 #[derive(Debug, From)]
 pub enum Error {
+    // Database
+    FailedToLoadCourses {
+        error: String,
+    },
+    FailedToLoadChapters {
+        error: String,
+    },
+    FailedToLoadTopics {
+        error: String,
+    },
+    FailedToLoadProblems {
+        error: String,
+    },
     // Static arrays
     EmptyStatic,
 

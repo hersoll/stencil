@@ -1,7 +1,8 @@
+use crate::Error;
 use crate::Result;
-use crate::frontend::APP_LANGUAGE;
 use crate::frontend::TRANSLATIONS;
 
 pub fn i18n_lookup<T: Into<String>>(key: T) -> Result<String> {
-    TRANSLATIONS().get_phrase(&key.into(), APP_LANGUAGE())
+    let key_str: String = key.into();
+    TRANSLATIONS().get(&key_str).ok_or(Error::NoSuchKeyExists { key: key_str }).cloned()
 }

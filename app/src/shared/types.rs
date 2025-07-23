@@ -1,133 +1,37 @@
-use std::collections::HashMap;
-
 use crate::{Error, Result};
 use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 
 //#################################
 //#       COURSE STRUCTURE        #
 //#################################
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct ProblemRegistry {
-    pub courses: Vec<CourseData>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct CourseData {
+#[derive(Debug, FromRow, Clone, Serialize, Deserialize, PartialEq)]
+pub struct CourseInfo {
+    pub id: i32,
     pub name: String,
-    pub desc: HashMap<String, String>,
-    pub chapters: Vec<ChapterData>,
+    pub desc: String,
 }
-impl HasDesc for CourseData {
-    fn name(&self) -> &String {
-        &self.name
-    }
-    fn desc(&self) -> &HashMap<String, String> {
-        &self.desc
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct ChapterData {
+#[derive(Debug, FromRow, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ChapterInfo {
+    pub id: i32,
     pub name: String,
-    pub desc: HashMap<String, String>,
-    pub topics: Vec<TopicData>,
-}
-impl HasDesc for ChapterData {
-    fn name(&self) -> &String {
-        &self.name
-    }
-    fn desc(&self) -> &HashMap<String, String> {
-        &self.desc
-    }
+    pub desc: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct TopicData {
+#[derive(Debug, FromRow, Clone, Serialize, Deserialize, PartialEq)]
+pub struct TopicInfo {
+    pub id: i32,
     pub name: String,
-    pub desc: HashMap<String, String>,
-    pub problems: Vec<ProblemData>,
-}
-impl HasDesc for TopicData {
-    fn name(&self) -> &String {
-        &self.name
-    }
-    fn desc(&self) -> &HashMap<String, String> {
-        &self.desc
-    }
-}
-pub trait HasDesc {
-    fn desc(&self) -> &HashMap<String, String>;
-    fn name(&self) -> &String;
-    fn get_desc<T: Into<String>>(&self, lang: T) -> Result<String> {
-        let lang_str: String = lang.into();
-        let desc = self
-            .desc()
-            .get(&lang_str)
-            .ok_or(Error::NoDescriptionForLang {
-                name: self.name().clone(),
-                lang: lang_str,
-            })?
-            .clone();
-        Ok(desc)
-    }
+    pub desc: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct ProblemData {
+#[derive(Debug, FromRow, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ProblemInfo {
+    pub id: i32,
     pub name: String,
-    pub desc: HashMap<String, String>,
-    #[serde(default)]
-    pub question: HashMap<String, String>,
-    #[serde(default)]
-    pub answer: HashMap<String, String>,
-    #[serde(default)]
-    pub solution: HashMap<String, String>,
-}
-impl ProblemData {
-    pub fn get_question(&self, lang: String) -> Result<String> {
-        let question = self
-            .question
-            .get(&lang)
-            .ok_or(Error::NoQuestionForLang {
-                name: self.name().clone(),
-                lang,
-            })?
-            .clone();
-        Ok(question)
-    }
-
-    pub fn get_answer(&self, lang: String) -> Result<String> {
-        let answer = self
-            .answer
-            .get(&lang)
-            .ok_or(Error::NoAnswerForLang {
-                name: self.name().clone(),
-                lang,
-            })?
-            .clone();
-        Ok(answer)
-    }
-
-    pub fn get_solution(&self, lang: String) -> Result<String> {
-        let solution = self
-            .solution
-            .get(&lang)
-            .ok_or(Error::NoSolutionForLang {
-                name: self.name().clone(),
-                lang,
-            })?
-            .clone();
-        Ok(solution)
-    }
-}
-impl HasDesc for ProblemData {
-    fn name(&self) -> &String {
-        &self.name
-    }
-    fn desc(&self) -> &HashMap<String, String> {
-        &self.desc
-    }
+    pub difficulty: i32,
+    pub desc: String,
 }
 
 //###############################
@@ -175,8 +79,8 @@ impl Default for DocumentOptions {
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct ProblemSetData {
     pub key: usize,
-    pub ids: Vec<TopicData>,
-    pub exclusions: Vec<String>,
+    pub topics: Vec<i32>,
+    pub exclusions: Vec<i32>,
     pub starting_difficulty: Difficulty,
     pub ending_difficulty: Difficulty,
     pub n: u8,
@@ -187,7 +91,7 @@ impl ProblemSetData {
     pub fn new(key: usize) -> ProblemSetData {
         ProblemSetData {
             key,
-            ids: Vec::new(),
+            topics: Vec::new(),
             exclusions: Vec::new(),
             starting_difficulty: Difficulty::Intro,
             ending_difficulty: Difficulty::Intro,
@@ -210,9 +114,9 @@ pub struct SetRenderingOptions {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SendableProblemSetData {
-    pub ids: Vec<String>,
+    pub topics: Vec<i32>,
     #[serde(default)]
-    pub exclusions: Vec<String>,
+    pub exclusions: Vec<i32>,
     pub starting_difficulty: Difficulty,
     pub ending_difficulty: Difficulty,
     pub n: u8,
@@ -222,7 +126,7 @@ pub struct SendableProblemSetData {
 impl From<ProblemSetData> for SendableProblemSetData {
     fn from(data: ProblemSetData) -> Self {
         SendableProblemSetData {
-            ids: data.ids.into_iter().map(|topic| topic.name).collect(),
+            topics: data.topics,
             exclusions: data.exclusions,
             starting_difficulty: data.starting_difficulty,
             ending_difficulty: data.ending_difficulty,

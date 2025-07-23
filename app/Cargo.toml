@@ -16,10 +16,13 @@ ctor = "0.4.2"
 wasm-bindgen = "0.2.100"
 wasm-bindgen-futures = "0.4.50"
 gloo = { version = "0.11.0", features = ["file"] }
-web-sys = {version = "0.3.77", features = ["Window", "Document", "HtmlAnchorElement", "Url"]}
-js-sys = "0.3.77"
+web-sys = {version = "0.3.77", features = ["Window", "Document", "HtmlAnchorElement", "Url"], optional = true}
+js-sys = {version = "0.3.77", optional = true}
 derive_more = { version = "2.0.1", features = ["from"] }
 num-traits = "0.2.19"
+sqlx = {version = "0.8.6", features = ["runtime-tokio-rustls", "postgres"]}
+tokio = { version = "1.46.1", features = ["full", "macros"], optional = true}
+dotenv = "0.15.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.3", features = ["wasm_js"] }
@@ -30,11 +33,12 @@ getrandom = "0.3"
 [features]
 default = ["web"]
 # The feature that are only required for the web = ["dioxus/web"] build target should be optional and only enabled in the web = ["dioxus/web"] feature
-web = ["dioxus/web"]
+web = ["dioxus/web", "dep:web-sys", "dep:js-sys"]
 # The feature that are only required for the desktop = ["dioxus/desktop"] build target should be optional and only enabled in the desktop = ["dioxus/desktop"] feature
 desktop = ["dioxus/desktop"]
 # The feature that are only required for the mobile = ["dioxus/mobile"] build target should be optional and only enabled in the mobile = ["dioxus/mobile"] feature
 mobile = ["dioxus/mobile"]
+server = ["dioxus/server", "dep:tokio"]
 
 [profile]
 
@@ -48,3 +52,14 @@ inherits = "dev"
 [profile.android-dev]
 inherits = "dev"
 
+[[bin]]
+name = "populate_db"
+path = "src/bin/populate_db.rs"
+
+[[bin]]
+name = "setup_db"
+path = "src/bin/setup_db.rs"
+
+[[bin]]
+name = "load_i18n"
+path = "src/bin/load_i18n.rs"
