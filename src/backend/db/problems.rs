@@ -1,12 +1,15 @@
 use crate::{
-    Error, Result,
     backend::db::get_pool,
-    shared::{ChapterInfo, CourseInfo, Difficulty, ProblemInfo, TopicInfo},
+    shared::{ChapterInfo, CourseInfo, ProblemInfo, TopicInfo},
+    Error, Result,
 };
 
 pub struct ProblemDatabase;
 
 impl ProblemDatabase {
+    //###############################
+    //#          COURSES            #
+    //###############################
     pub async fn get_all_courses(lang: &str) -> Result<Vec<CourseInfo>> {
         let pool = get_pool();
         sqlx::query_as!(
@@ -26,6 +29,34 @@ impl ProblemDatabase {
             error: e.to_string(),
         })
     }
+
+    pub async fn get_course(id: i32, lang: &str) -> Result<CourseInfo> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            CourseInfo,
+            r#"SELECT id, name, 
+                COALESCE( CASE 
+                            WHEN $1 = 'sv' THEN desc_sv
+                            WHEN $1 = 'en' THEN desc_en  
+                            ELSE desc_sv
+                        END,
+                'No description') as "desc!"
+
+        FROM courses
+        WHERE id = $2"#,
+            lang,
+            id,
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadCourses {
+            error: e.to_string(),
+        })
+    }
+
+    //###############################
+    //#          CHAPTERS           #
+    //###############################
 
     pub async fn get_course_chapters(course_id: i32, lang: &str) -> Result<Vec<ChapterInfo>> {
         let pool = get_pool();
@@ -52,6 +83,58 @@ impl ProblemDatabase {
         })
     }
 
+    pub async fn get_chapter(id: i32, lang: &str) -> Result<ChapterInfo> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            ChapterInfo,
+            r#"SELECT id, name, 
+                COALESCE( CASE 
+                            WHEN $1 = 'sv' THEN desc_sv
+                            WHEN $1 = 'en' THEN desc_en  
+                            ELSE desc_sv
+                        END,
+                'No description') as "desc!"
+
+        FROM chapters
+        WHERE id = $2"#,
+            lang,
+            id,
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadChapters {
+            error: e.to_string(),
+        })
+    }
+
+    pub async fn get_chapters(ids: &Vec<i32>, lang: &str) -> Result<Vec<ChapterInfo>> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            ChapterInfo,
+            r#"SELECT id, name, 
+                COALESCE( CASE 
+                            WHEN $1 = 'sv' THEN desc_sv
+                            WHEN $1 = 'en' THEN desc_en  
+                            ELSE desc_sv
+                        END,
+                'No description') as "desc!"
+
+        FROM chapters
+        WHERE id = ANY($2)"#,
+            lang,
+            ids,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadChapters {
+            error: e.to_string(),
+        })
+    }
+
+    //###############################
+    //#          TOPICS             #
+    //###############################
+
     pub async fn get_chapter_topics(chapter_id: i32, lang: &str) -> Result<Vec<TopicInfo>> {
         let pool = get_pool();
         sqlx::query_as!(
@@ -76,6 +159,58 @@ impl ProblemDatabase {
             error: e.to_string(),
         })
     }
+
+    pub async fn get_topic(id: i32, lang: &str) -> Result<TopicInfo> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            TopicInfo,
+            r#"SELECT id, name, 
+                COALESCE( CASE 
+                            WHEN $1 = 'sv' THEN desc_sv
+                            WHEN $1 = 'en' THEN desc_en  
+                            ELSE desc_sv
+                        END,
+                'No description') as "desc!"
+
+        FROM topics
+        WHERE id = $2"#,
+            lang,
+            id,
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadTopics {
+            error: e.to_string(),
+        })
+    }
+
+    pub async fn get_topics(ids: &Vec<i32>, lang: &str) -> Result<Vec<TopicInfo>> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            TopicInfo,
+            r#"SELECT id, name, 
+                COALESCE( CASE 
+                            WHEN $1 = 'sv' THEN desc_sv
+                            WHEN $1 = 'en' THEN desc_en  
+                            ELSE desc_sv
+                        END,
+                'No description') as "desc!"
+
+        FROM topics
+        WHERE id = ANY($2)"#,
+            lang,
+            &ids,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadTopics {
+            error: e.to_string(),
+        })
+    }
+
+    //###############################
+    //#          PROBLEMS           #
+    //###############################
 
     /// For PDF generation, we need the full names (module+problem) of all the problems
     pub async fn get_problem_names_for_pdf(
@@ -130,11 +265,11 @@ impl ProblemDatabase {
         })
     }
 
-    pub async fn get_valid_problems(
+    pub async fn get_topic_problems_in_difficulty_range(
         topic_ids: Vec<i32>,
         starting_difficulty: i32,
         ending_difficulty: i32,
-        lang: String,
+        lang: &str,
     ) -> Result<Vec<ProblemInfo>> {
         let pool = get_pool();
         sqlx::query_as!(
@@ -161,7 +296,32 @@ impl ProblemDatabase {
         )
         .fetch_all(pool)
         .await
-        .map_err(|e| Error::FailedToLoadTopics {
+        .map_err(|e| Error::FailedToLoadProblems {
+            error: e.to_string(),
+        })
+    }
+
+    pub async fn get_problem(id: i32, lang: &str) -> Result<ProblemInfo> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            ProblemInfo,
+            r#"SELECT id, name, difficulty, 
+
+                COALESCE( CASE 
+                            WHEN $1 = 'sv' THEN desc_sv
+                            WHEN $1 = 'en' THEN desc_en  
+                            ELSE desc_sv
+                        END,
+                'No description') as "desc!"
+
+        FROM problems
+        WHERE id = $2"#,
+            lang,
+            id,
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadProblems {
             error: e.to_string(),
         })
     }

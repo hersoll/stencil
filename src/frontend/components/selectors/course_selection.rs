@@ -1,17 +1,17 @@
-use crate::Error;
 use crate::api::load_course_chapters;
 use crate::frontend::APP_LANGUAGE;
 use crate::shared::{ChapterInfo, CourseInfo, TopicInfo};
+use crate::Error;
 use dioxus::prelude::*;
 
 fn course_buttons(
     names: Vec<&'static str>,
     group_number: u8,
     courses: Vec<CourseInfo>,
-    mut chapters: Signal<Vec<ChapterInfo>>,
+    mut chapters: Signal<Vec<i32>>,
     mut active_course: Signal<i32>,
     mut active_chapter: Signal<i32>,
-    mut topics: Signal<Vec<TopicInfo>>,
+    mut topics: Signal<Vec<i32>>,
 ) -> Element {
     let class_string = format!("course_{group_number}");
     rsx! {
@@ -25,13 +25,7 @@ fn course_buttons(
                             name: course_name.to_string(),
                         })?
                         .clone();
-
-                    let selected = if active_course() == course.id {
-                        "selected"
-                    } else {
-                        ""
-                    };
-
+                    let selected = if active_course() == course.id { "selected" } else { "" };
                     rsx! {
                         button {
                             key: "{course_name.clone()}",
@@ -41,7 +35,7 @@ fn course_buttons(
                                 topics.set(Vec::new());
                                 active_chapter.set(-1);
                                 active_course.set(course.id);
-                                match load_course_chapters(course.id, APP_LANGUAGE().to_string()).await {
+                                match load_course_chapters(course.id, APP_LANGUAGE()).await {
                                     Ok(chapter_info) => chapters.set(chapter_info),
                                     Err(_) => chapters.set(Vec::new()),
                                 }
@@ -59,9 +53,9 @@ fn course_buttons(
 pub fn CourseSelection(
     courses: Signal<Vec<CourseInfo>>,
     mut active_course: Signal<i32>,
-    chapters: Signal<Vec<ChapterInfo>>,
+    chapters: Signal<Vec<i32>>,
     mut active_chapter: Signal<i32>,
-    topics: Signal<Vec<TopicInfo>>,
+    topics: Signal<Vec<i32>>,
 ) -> Element {
     rsx! {
         if courses().len() > 0 {

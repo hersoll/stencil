@@ -15,8 +15,8 @@ use crate::{
 pub fn ProblemDisplay(
     set_data: Signal<ProblemSetData>,
     courses: Signal<Vec<CourseInfo>>,
-    chapters: Signal<Vec<ChapterInfo>>,
-    topics: Signal<Vec<TopicInfo>>,
+    chapters: Signal<Vec<i32>>,
+    topics: Signal<Vec<i32>>,
     active_course: Signal<i32>,
     active_chapter: Signal<i32>,
 ) -> Element {
@@ -40,7 +40,7 @@ pub fn ProblemDisplay(
             div { class: "topics",
                 if active_course() < 0 {
                     div { class: "display_placeholder", "Välj en kurs" }
-                } else if active_chapter() < 0{
+                } else if active_chapter() < 0 {
                     div { class: "display_placeholder", "Välj ett kapitel" }
                 } else {
                     TopicSelection { topics, set_data }

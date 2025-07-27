@@ -4,7 +4,6 @@ use crate::api;
 use crate::frontend::*;
 use crate::frontend::{ErrorDisplay, Header, PDFButtons, ProblemDisplay};
 use crate::shared;
-use crate::shared::CourseInfo;
 use crate::shared::errors;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -13,16 +12,16 @@ const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
 #[component]
 pub fn AppSetup() -> Element {
     rsx! {
-           document::Link { rel: "icon", href: FAVICON }
-           document::Link { rel: "stylesheet", href: MAIN_CSS }
-           document::Link { rel: "preconnect", href: "https://fonts.googleapis.com" }
-           document::Link { rel: "preconnect", href: "https://fonts.gstatic.com" }
-           document::Link {
-               rel: "stylesheet",
-               href: "https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap",
-           }
-           document::Style {
-               "
+        document::Link { rel: "icon", href: FAVICON }
+        document::Link { rel: "stylesheet", href: MAIN_CSS }
+        document::Link { rel: "preconnect", href: "https://fonts.googleapis.com" }
+        document::Link { rel: "preconnect", href: "https://fonts.gstatic.com" }
+        document::Link {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap",
+        }
+        document::Style {
+            "
             .loading-screen {{
                 display: flex;
                 justify-content: center;
@@ -34,7 +33,7 @@ pub fn AppSetup() -> Element {
                 color: white;
             }}
             "
-           }
+        }
         App {}
     }
 }
@@ -48,15 +47,14 @@ pub fn App() -> Element {
     let mut sets: Signal<Sets> = use_signal(|| Vec::new());
 
     let mut courses: Signal<Vec<shared::CourseInfo>> = use_signal(|| Vec::new());
-    let chapters: Signal<Vec<shared::ChapterInfo>> = use_signal(|| Vec::new());
-    let topics: Signal<Vec<shared::TopicInfo>> = use_signal(|| Vec::new());
+    let chapters: Signal<Vec<i32>> = use_signal(|| Vec::new());
+    let topics: Signal<Vec<i32>> = use_signal(|| Vec::new());
 
     let active_course: Signal<i32> = use_signal(|| -1);
     let active_chapter: Signal<i32> = use_signal(|| -1);
 
-    let translations =
-        use_server_future(move || api::load_translations(APP_LANGUAGE().to_string()))?;
-    let course_result = use_server_future(move || api::load_courses(APP_LANGUAGE().to_string()))?;
+    let translations = use_server_future(move || api::load_translations(APP_LANGUAGE()))?;
+    let course_result = use_server_future(move || api::load_courses(APP_LANGUAGE()))?;
     if let Some(Err(e)) = translations() {
         return rsx! { "Error loading translations: {e}" };
     }

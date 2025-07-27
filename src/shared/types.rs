@@ -82,7 +82,7 @@ impl Default for DocumentOptions {
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct ProblemSetData {
     pub key: usize,
-    pub topics: Vec<TopicInfo>,
+    pub topics: Vec<i32>,
     pub exclusions: Vec<i32>,
     pub starting_difficulty: Difficulty,
     pub ending_difficulty: Difficulty,
@@ -128,9 +128,8 @@ pub struct SendableProblemSetData {
 
 impl From<ProblemSetData> for SendableProblemSetData {
     fn from(data: ProblemSetData) -> Self {
-        let topic_ids = data.topics.iter().map(|topic| topic.id).collect();
         SendableProblemSetData {
-            topics: topic_ids,
+            topics: data.topics,
             exclusions: data.exclusions,
             starting_difficulty: data.starting_difficulty,
             ending_difficulty: data.ending_difficulty,

@@ -1,4 +1,4 @@
-use crate::frontend::{Sets, i18n_lookup};
+use crate::frontend::{i18n_lookup, Sets};
 use crate::shared::Difficulty;
 use dioxus::prelude::*;
 
@@ -9,7 +9,7 @@ pub fn ProblemExclusions(sets: Signal<Sets>, index: usize) -> Element {
     let mut set = sets()[index];
     let api_data = use_memo(move || {
         (
-            set().topics.iter().map(|topic| topic.id).collect(),
+            set().topics,
             set().starting_difficulty,
             set().ending_difficulty,
         )
@@ -21,7 +21,7 @@ pub fn ProblemExclusions(sets: Signal<Sets>, index: usize) -> Element {
                 topics,
                 starting_difficulty,
                 ending_difficulty,
-                APP_LANGUAGE().to_string(),
+                APP_LANGUAGE(),
             )
             .await
         }
