@@ -7,22 +7,27 @@ use crate::shared::Difficulty;
 
 #[component]
 pub fn SetDisplayRow(sets: Signal<Sets>, index: usize, max_descriptions: usize) -> Element {
+    // These values will never change and doesn't need to be signals
+    let mut set = sets()[index];
+    let static_topics = set().topics;
+
     let mut editing = use_signal(|| false);
     let mut first_topic_desc = use_signal(|| String::new());
     let mut second_topic_desc = use_signal(|| String::new());
-    let mut set = sets()[index];
-    let _ = use_resource(move || async move {
-        if set().topics.len() > 0 {
-            if let Ok(desc) = load_topic_desc(set().topics[0], APP_LANGUAGE()).await {
+    let _ = use_resource(move || {
+        let topics = static_topics.clone();
+        async move {
+        if topics.len() > 0 {
+            if let Ok(desc) = load_topic_desc(topics[0], APP_LANGUAGE()).await {
                 first_topic_desc.set(desc);
             }
         }
-        if set().topics.len() > 1 {
-            if let Ok(desc) = load_topic_desc(set().topics[1], APP_LANGUAGE()).await {
+        if topics.len() > 1 {
+            if let Ok(desc) = load_topic_desc(topics[1], APP_LANGUAGE()).await {
                 second_topic_desc.set(desc);
             }
         }
-    });
+    }});
     let difficulties = vec![
         Difficulty::Intro,
         Difficulty::Easy,
