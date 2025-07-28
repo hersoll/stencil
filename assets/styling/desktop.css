@@ -1,0 +1,39 @@
+:root {
+  --bg_dark: #0f1116;
+  --bg_element_dark: #262121;
+  --bg_element_extra_dark: #1b191c;
+  --bg_element_hover_dark: #35373b;
+  --bg_element_selected_dark: #3f444d;
+  --bg_element_selected_hover_dark: #666c75;
+  --corner_radius: 1rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  font-size: 22px;
+}
+
+p {
+  margin: 0;
+}
+
+h1 {
+  margin: 0;
+}
+
+body {
+  background-color: var(--bg_dark);
+  color: #ffffff;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+
+  padding: 1rem;
+
+  max-width: 1400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+

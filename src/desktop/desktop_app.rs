@@ -1,12 +1,12 @@
 use dioxus::prelude::*;
 
-const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
+const DESKTOP_CSS: Asset = asset!("/assets/styling/desktop.css");
 
 #[component]
 pub fn DesktopApp() -> Element {
     rsx! {
-        document::Link { rel: "stylesheet", href: MAIN_CSS }
+        document::Link { rel: "stylesheet", href: DESKTOP_CSS }
 
-        h1 { "Hello to the desktop! This is cool!" }
+        h1 { "Stencil editor" }
     }
 }
