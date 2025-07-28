@@ -16,7 +16,7 @@ pub fn ChapterSelection(
         }
     });
     rsx! {
-        if let Some(descs) = chapter_descs() && descs.len() > 0 && chapters().len() > 0 {
+        if let Some(descs) = chapter_descs() && descs.len() == chapters().len() {
             for (i , desc) in descs.iter().enumerate() {
                 {
                     let id = chapters()[i];

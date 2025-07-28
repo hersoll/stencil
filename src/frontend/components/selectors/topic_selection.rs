@@ -12,7 +12,7 @@ pub fn TopicSelection(topics: Signal<Vec<i32>>, set_data: Signal<ProblemSetData>
     });
 
     rsx! {
-        if let Some(descs) = topic_descs() && descs.len() > 0 && topics().len() > 0 {
+        if let Some(descs) = topic_descs() && descs.len() == topics().len() {
             for (i , desc) in descs.iter().enumerate() {
                 Topic { topic: topics()[i], desc, set_data }
             }
