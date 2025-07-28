@@ -23,5 +23,21 @@ fn main() {
 #[cfg(feature = "desktop")]
 fn main() {
     use app::desktop::DesktopApp;
-    dioxus::launch(DesktopApp);
+    use dioxus::desktop::{
+        Config, WindowBuilder,
+        wry::dpi::{PhysicalSize, Size},
+    };
+    dioxus::LaunchBuilder::desktop()
+        .with_cfg(
+            Config::new().with_window(
+                WindowBuilder::new()
+                    .with_title("Stencil Editor")
+                    .with_inner_size(Size::Physical(PhysicalSize {
+                        width: 4200,
+                        height: 2400,
+                    }))
+                    .with_resizable(false),
+            ),
+        )
+        .launch(DesktopApp);
 }
