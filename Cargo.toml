@@ -55,6 +55,7 @@ server = [
     "dep:dotenv",
     "dep:ctor",
     "dep:rand" ]
+desktop = ["dioxus/desktop"]
 
 [profile]
 
@@ -69,4 +70,4 @@ inherits = "dev"
 inherits = "dev"
 
 [package.metadata.rust-analyzer]
-features = ["server", "web"]
+features = ["server", "web", "desktop"]

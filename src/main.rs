@@ -1,7 +1,6 @@
 //Remember to eventually remove this (when #[server] is fixed....)
 #![allow(dead_code)]
 
-use dioxus::prelude::*;
 use tracing_subscriber;
 
 #[cfg(feature = "server")]
@@ -22,4 +21,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 fn main() {
     use app::frontend::AppSetup;
     dioxus::launch(AppSetup)
+}
+
+#[cfg(feature = "desktop")]
+fn main() {
+    use app::editor::DesktopApp;
+    dioxus::launch(DesktopApp);
 }

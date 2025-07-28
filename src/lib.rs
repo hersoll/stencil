@@ -1,10 +1,13 @@
 #[cfg(feature = "server")]
 pub mod backend;
 
-pub mod frontend;
-pub mod shared;
+#[cfg(feature = "desktop")]
+pub mod editor;
 
-pub use shared::errors::{Error, Result};
+pub mod frontend;
+
+pub mod shared;
 pub use shared::api;
+pub use shared::errors::{Error, Result};
 
 pub use macros::problem;
