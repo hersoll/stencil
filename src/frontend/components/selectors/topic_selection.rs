@@ -1,8 +1,4 @@
-use crate::{
-    api::load_topic_descs,
-    frontend::APP_LANGUAGE,
-    shared::{ProblemInfo, ProblemSetData, TopicInfo},
-};
+use crate::{api::load_topic_descs, frontend::APP_LANGUAGE, shared::ProblemSetData};
 use dioxus::prelude::*;
 
 #[component]
@@ -16,8 +12,7 @@ pub fn TopicSelection(topics: Signal<Vec<i32>>, set_data: Signal<ProblemSetData>
     });
 
     rsx! {
-        if let Some(descs) = topic_descs() {
-
+        if let Some(descs) = topic_descs() && descs.len() > 0 && topics().len() > 0 {
             for (i , desc) in descs.iter().enumerate() {
                 Topic { topic: topics()[i], desc, set_data }
             }
