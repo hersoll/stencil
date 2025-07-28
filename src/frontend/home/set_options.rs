@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::frontend::components::{DifficultyPicker, NumberPicker};
+use crate::frontend::home::{DifficultyPicker, NumberPicker};
 use crate::shared::ProblemSetData;
 
 #[component]

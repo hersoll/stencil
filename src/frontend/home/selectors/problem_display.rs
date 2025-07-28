@@ -1,11 +1,11 @@
 use crate::{
-    frontend::components::selectors::course_selection::CourseSelection,
+    frontend::home::selectors::course_selection::CourseSelection,
     shared::types::ProblemSetData,
 };
 use dioxus::prelude::*;
 
 use crate::{
-    frontend::components::selectors::{
+    frontend::home::selectors::{
         chapter_selection::ChapterSelection, topic_selection::TopicSelection,
     },
     shared::CourseInfo,

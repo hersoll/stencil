@@ -4,8 +4,8 @@ mod set_display_header;
 mod set_display_options;
 mod set_display_row;
 
-use crate::frontend::components::set_display::set_display_header::SetDisplayHeader;
-use crate::frontend::components::set_display::set_display_row::SetDisplayRow;
+use crate::frontend::home::set_display::set_display_header::SetDisplayHeader;
+use crate::frontend::home::set_display::set_display_row::SetDisplayRow;
 use crate::frontend::i18n_lookup;
 use crate::shared::CourseInfo;
 use dioxus::prelude::*;

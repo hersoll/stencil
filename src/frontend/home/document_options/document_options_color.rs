@@ -1,4 +1,4 @@
-use crate::frontend::components::toggle::Toggle;
+use crate::frontend::home::toggle::Toggle;
 use dioxus::prelude::*;
 
 use crate::frontend::i18n_lookup;

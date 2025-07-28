@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::api::{load_topic_desc};
-use crate::frontend::components::set_display::set_display_editing_panel::SetDisplayEditingPanel;
+use crate::frontend::home::set_display::set_display_editing_panel::SetDisplayEditingPanel;
 use crate::frontend::{i18n_lookup, Sets, APP_LANGUAGE};
 use crate::shared::Difficulty;
 

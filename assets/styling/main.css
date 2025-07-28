@@ -658,5 +658,30 @@ button {
   }
 }
 
+.page_not_found_container {
+  padding: 6rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  & > p {
+    margin: 0;
+  }
+
+  & .page_not_found_heading {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  & .page_not_found_text {
+    margin-top: 2rem;
+    color: plum;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--bg_element_selected_hover_dark);
+    }
+  }
+}
 @media only screen and (max-width: 640px) {
 }

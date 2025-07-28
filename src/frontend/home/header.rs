@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::frontend::components::LanguageSwitch;
+use crate::frontend::home::LanguageSwitch;
 
 #[component]
 pub fn Header() -> Element {

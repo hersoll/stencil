@@ -1,4 +1,7 @@
-use crate::frontend::Route;
+use crate::{
+    api,
+    frontend::{APP_LANGUAGE, Route, TRANSLATIONS},
+};
 use dioxus::prelude::*;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -36,7 +39,24 @@ pub fn AppSetup() -> Element {
 
 #[component]
 pub fn App() -> Element {
+    let mut translations_loaded = use_signal(|| false);
+    let translations = use_server_future(move || api::load_translations(APP_LANGUAGE()))?;
+    if let Some(Err(e)) = translations() {
+        return rsx! { "Error loading translations: {e}" };
+    }
+    use_effect(move || {
+        if let Some(Ok(translation_data)) = translations() {
+            *TRANSLATIONS.write() = translation_data;
+            translations_loaded.set(true);
+        }
+    });
     rsx! {
-        Router::<Route> {}
+        // Don't render main content until translations are loaded
+        if !translations_loaded() {
+            div { class: "loading-screen", "Loading application..." }
+        } else {
+
+            Router::<Route> {}
+        }
     }
 }

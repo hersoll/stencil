@@ -1,7 +1,7 @@
 use crate::frontend::i18n_lookup;
 use dioxus::prelude::*;
 
-use crate::frontend::components::ToolTip;
+use crate::frontend::home::ToolTip;
 use crate::shared::ProblemSetData;
 
 #[component]

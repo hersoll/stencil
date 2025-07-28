@@ -1,6 +1,6 @@
 use crate::frontend::{
     Sets,
-    components::set_display::{
+    home::set_display::{
         set_display_exclusions::ProblemExclusions, set_display_options::SetDisplayOptions,
     },
     i18n_lookup,
