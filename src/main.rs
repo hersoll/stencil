@@ -33,8 +33,8 @@ fn main() {
                 WindowBuilder::new()
                     .with_title("Stencil Editor")
                     .with_inner_size(Size::Physical(PhysicalSize {
-                        width: 4200,
-                        height: 2400,
+                        width: 2800,
+                        height: 2000,
                     }))
                     .with_resizable(false),
             ),
