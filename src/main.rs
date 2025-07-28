@@ -2,6 +2,7 @@
 #![allow(dead_code)]
 
 use dioxus::prelude::*;
+use tracing_subscriber;
 
 #[cfg(feature = "server")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -10,6 +11,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .await
             .expect("Failed to initialize db");
     });
+
+    tracing_subscriber::fmt::init();
 
     dioxus::launch(app::frontend::AppSetup);
     Ok(())
