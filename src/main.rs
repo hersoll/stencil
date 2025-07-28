@@ -25,6 +25,6 @@ fn main() {
 
 #[cfg(feature = "desktop")]
 fn main() {
-    use app::editor::DesktopApp;
+    use app::desktop::DesktopApp;
     dioxus::launch(DesktopApp);
 }
