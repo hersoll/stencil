@@ -14,6 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     dioxus::launch(app::frontend::AppSetup);
     Ok(())
 }
+
 #[cfg(feature = "web")]
 fn main() {
     use app::frontend::AppSetup;

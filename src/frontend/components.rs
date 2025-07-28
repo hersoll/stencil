@@ -11,6 +11,7 @@ mod set_display;
 mod set_options;
 mod tooltip;
 mod toggle;
+mod home;
 
 pub use create_set::CreateSet;
 pub use difficulty_picker::DifficultyPicker;
@@ -25,3 +26,4 @@ pub use set_display::SetDisplay;
 pub use set_options::SetOptions;
 pub use tooltip::ToolTip;
 pub use tooltip::ToolTipDisplay;
+pub use home::Home;
