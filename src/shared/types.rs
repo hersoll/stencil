@@ -64,7 +64,7 @@ pub struct DocumentOptions {
 impl Default for DocumentOptions {
     fn default() -> Self {
         DocumentOptions {
-            font_size: 12,
+            font_size: 10,
             lang: "sv".to_string(),
             write_solutions: WriteSolutions::First,
             file_name: String::from("stencil"),
@@ -74,7 +74,7 @@ impl Default for DocumentOptions {
             x_margin: 20,
             y_margin: 20,
             par_spacing: None,
-            answer_columns: 2,
+            answer_columns: 3,
         }
     }
 }

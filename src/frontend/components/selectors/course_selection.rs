@@ -1,7 +1,7 @@
+use crate::Error;
 use crate::api::load_course_chapters;
 use crate::frontend::APP_LANGUAGE;
-use crate::shared::{ChapterInfo, CourseInfo, TopicInfo};
-use crate::Error;
+use crate::shared::CourseInfo;
 use dioxus::prelude::*;
 
 fn course_buttons(

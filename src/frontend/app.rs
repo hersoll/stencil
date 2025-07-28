@@ -9,6 +9,7 @@ use crate::shared::errors;
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
 
+// Setting the head before spinning up the rest of the app
 #[component]
 pub fn AppSetup() -> Element {
     rsx! {

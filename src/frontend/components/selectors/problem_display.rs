@@ -8,7 +8,7 @@ use crate::{
     frontend::components::selectors::{
         chapter_selection::ChapterSelection, topic_selection::TopicSelection,
     },
-    shared::{ChapterInfo, CourseInfo, TopicInfo},
+    shared::CourseInfo,
 };
 
 #[component]

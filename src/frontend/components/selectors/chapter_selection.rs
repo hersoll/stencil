@@ -1,7 +1,5 @@
 use crate::api::load_chapter_descs;
 use crate::frontend::APP_LANGUAGE;
-use crate::shared::ChapterInfo;
-use crate::shared::TopicInfo;
 use dioxus::prelude::*;
 
 #[component]
