@@ -1,6 +1,3 @@
-//Remember to eventually remove this (when #[server] is fixed....)
-#![allow(dead_code)]
-
 use tracing_subscriber;
 
 #[cfg(feature = "server")]
