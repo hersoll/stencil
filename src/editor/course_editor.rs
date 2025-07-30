@@ -1,3 +1,8 @@
+mod course_attributes;
+mod course_display;
+use course_attributes::CourseAttributes;
+use course_display::CourseDisplay;
+
 use dioxus::prelude::*;
 
 #[component]
@@ -5,7 +10,7 @@ pub fn CourseEditor() -> Element {
     rsx! {
         div { class: "editor_container",
             div { class: "pane available",
-                div { class: "available_display", style: "height: 760px;" }
+                CourseDisplay {}
                 div {
                     class: "button_containter",
                     style: "display: flex; gap: 1rem;",
@@ -13,28 +18,7 @@ pub fn CourseEditor() -> Element {
                     button { class: "button", "Redigera" }
                 }
             }
-            div { class: "pane attributes",
-                h2 { "Egenskaper" }
-                label {
-                    "Namn"
-                    input { class: "input text", r#type: "text" }
-                }
-                label {
-                    "Beskrivning (sv)"
-                    input { class: "input text", r#type: "text" }
-                }
-                label {
-                    "Beskrivning (en)"
-                    input { class: "input text", r#type: "text" }
-                }
-
-                label {
-                    "Kapitel"
-                    div { class: "available_display", style: "height: 400px;" }
-                }
-
-                button { class: "button", "Spara" }
-            }
+            CourseAttributes {}
         }
     }
 }

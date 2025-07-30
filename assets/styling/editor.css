@@ -239,4 +239,37 @@ label {
   border: 2px solid var(--bg_element_selected_hover_dark);
   border-radius: 1rem;
   margin-bottom: 1rem;
+  overflow: auto;
+}
+
+.available_element {
+  background: none;
+  border: none;
+  display: grid;
+  grid-template-columns: 1rem 4rem 1fr 1fr;
+
+  width: 100%;
+  text-align: start;
+  padding: 0.5rem 0.5rem;
+
+  font-size: 0.6rem;
+  font-weight: 200;
+  color: white;
+  &.header {
+    font-weight: 700;
+    background-color: var(--bg_element_hover_dark);
+  }
+  &.item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    &:hover {
+      background-color: var(--bg_element_hover_dark);
+    }
+    &.selected {
+      background-color: var(--bg_element_selected_dark);
+      &:hover {
+        background-color: var(--bg_element_selected_hover_dark);
+      }
+    }
+  }
 }

@@ -32,6 +32,7 @@ fn main() {
             Config::new().with_window(
                 WindowBuilder::new()
                     .with_title("Stencil Editor")
+                    .with_focused(true)
                     .with_inner_size(Size::Physical(PhysicalSize {
                         width: 2800,
                         height: 2000,
