@@ -1,4 +1,7 @@
-use crate::shared::{self, ChapterInfo, CourseInfo, Difficulty, ProblemInfo, TopicInfo};
+use crate::shared::{
+    self, ChapterData, ChapterInfo, CourseData, CourseInfo, Difficulty, ProblemData, ProblemInfo,
+    TopicData, TopicInfo,
+};
 use dioxus::prelude::*;
 use std::collections::HashMap;
 
@@ -14,6 +17,12 @@ pub async fn load_translations(lang: String) -> Result<HashMap<String, String>, 
 #[server]
 pub async fn load_courses(lang: String) -> Result<Vec<CourseInfo>, ServerFnError> {
     let courses = crate::backend::db::ProblemDatabase::get_all_courses(&lang).await?;
+    Ok(courses)
+}
+
+#[server]
+pub async fn load_all_course_data() -> Result<Vec<CourseData>, ServerFnError> {
+    let courses = crate::backend::db::ProblemDatabase::get_all_course_data().await?;
     Ok(courses)
 }
 
@@ -42,6 +51,12 @@ pub async fn load_course_desc(id: i32, lang: String) -> Result<String, ServerFnE
 pub async fn load_course_chapters(course_id: i32, lang: String) -> Result<Vec<i32>, ServerFnError> {
     let data = crate::backend::db::ProblemDatabase::get_course_chapters(course_id, &lang).await?;
     Ok(data.iter().map(|chapter| chapter.id).collect())
+}
+
+#[server]
+pub async fn load_all_chapter_data() -> Result<Vec<ChapterData>, ServerFnError> {
+    let chapters = crate::backend::db::ProblemDatabase::get_all_chapter_data().await?;
+    Ok(chapters)
 }
 
 #[server]
@@ -88,6 +103,12 @@ pub async fn load_chapter_descs(ids: Vec<i32>, lang: String) -> Result<Vec<Strin
 pub async fn load_chapter_topics(chapter_id: i32, lang: String) -> Result<Vec<i32>, ServerFnError> {
     let data = crate::backend::db::ProblemDatabase::get_chapter_topics(chapter_id, &lang).await?;
     Ok(data.iter().map(|topic| topic.id).collect())
+}
+
+#[server]
+pub async fn load_all_topic_data() -> Result<Vec<TopicData>, ServerFnError> {
+    let topics = crate::backend::db::ProblemDatabase::get_all_topic_data().await?;
+    Ok(topics)
 }
 
 #[server]
@@ -144,6 +165,12 @@ pub async fn load_topic_problems(
 ) -> Result<Vec<ProblemInfo>, ServerFnError> {
     let data = crate::backend::db::ProblemDatabase::get_topic_problems(topic_id, &lang).await?;
     Ok(data)
+}
+
+#[server]
+pub async fn load_all_problem_data() -> Result<Vec<ProblemData>, ServerFnError> {
+    let problems = crate::backend::db::ProblemDatabase::get_all_problem_data().await?;
+    Ok(problems)
 }
 
 #[server]
