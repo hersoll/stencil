@@ -2,7 +2,7 @@
 pub mod backend;
 
 #[cfg(feature = "desktop")]
-pub mod desktop;
+pub mod editor;
 
 //#[cfg(not(feature = "desktop"))]
 pub mod frontend;

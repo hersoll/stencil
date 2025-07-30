@@ -22,10 +22,10 @@ fn main() {
 
 #[cfg(feature = "desktop")]
 fn main() {
-    use app::desktop::DesktopApp;
+    use app::editor::EditorApp;
     use dioxus::desktop::{
-        Config, WindowBuilder,
         wry::dpi::{PhysicalSize, Size},
+        Config, WindowBuilder,
     };
     dioxus::LaunchBuilder::desktop()
         .with_cfg(
@@ -39,5 +39,5 @@ fn main() {
                     .with_resizable(false),
             ),
         )
-        .launch(DesktopApp);
+        .launch(EditorApp);
 }
