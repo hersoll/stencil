@@ -1,6 +1,9 @@
 use crate::{
     backend::db::get_pool,
-    shared::{ChapterInfo, CourseInfo, ProblemInfo, TopicInfo},
+    shared::{
+        ChapterData, ChapterInfo, CourseData, CourseInfo, ProblemData, ProblemInfo, TopicData,
+        TopicInfo,
+    },
     Error, Result,
 };
 
@@ -22,6 +25,20 @@ impl ProblemDatabase {
                 'No description') as "desc!"
             FROM courses ORDER BY name"#,
             lang
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadCourses {
+            error: e.to_string(),
+        })
+    }
+
+    pub async fn get_all_course_data() -> Result<Vec<CourseData>> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            CourseData,
+            r#" SELECT id, name, desc_sv, desc_en
+            FROM courses ORDER BY name"#,
         )
         .fetch_all(pool)
         .await
@@ -57,6 +74,20 @@ impl ProblemDatabase {
     //###############################
     //#          CHAPTERS           #
     //###############################
+
+    pub async fn get_all_chapter_data() -> Result<Vec<ChapterData>> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            ChapterData,
+            r#" SELECT id, name, desc_sv, desc_en
+            FROM chapters ORDER BY name"#,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadChapters {
+            error: e.to_string(),
+        })
+    }
 
     pub async fn get_course_chapters(course_id: i32, lang: &str) -> Result<Vec<ChapterInfo>> {
         let pool = get_pool();
@@ -135,6 +166,20 @@ impl ProblemDatabase {
     //#          TOPICS             #
     //###############################
 
+    pub async fn get_all_topic_data() -> Result<Vec<TopicData>> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            TopicData,
+            r#" SELECT id, name, desc_sv, desc_en
+            FROM topics ORDER BY name"#,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadTopics {
+            error: e.to_string(),
+        })
+    }
+
     pub async fn get_chapter_topics(chapter_id: i32, lang: &str) -> Result<Vec<TopicInfo>> {
         let pool = get_pool();
         sqlx::query_as!(
@@ -211,6 +256,21 @@ impl ProblemDatabase {
     //###############################
     //#          PROBLEMS           #
     //###############################
+
+    pub async fn get_all_problem_data() -> Result<Vec<ProblemData>> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            ProblemData,
+            r#" SELECT id, name, difficulty, desc_sv, desc_en, question_sv, question_en,
+            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module
+            FROM problems ORDER BY difficulty"#,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadProblems {
+            error: e.to_string(),
+        })
+    }
 
     /// For PDF generation, we need the full names (module+problem) of all the problems
     pub async fn get_problem_names_for_pdf(

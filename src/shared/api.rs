@@ -97,6 +97,12 @@ pub async fn load_topic(id: i32, lang: String) -> Result<TopicInfo, ServerFnErro
 }
 
 #[server]
+pub async fn load_topic_by_id(topic_id: i32, lang: String) -> Result<TopicInfo, ServerFnError> {
+    let data = crate::backend::db::ProblemDatabase::get_topic(topic_id, &lang).await?;
+    Ok(data)
+}
+
+#[server]
 pub async fn load_topic_name(id: i32) -> Result<String, ServerFnError> {
     let topic = crate::backend::db::ProblemDatabase::get_topic(id, "sv").await?;
     Ok(topic.name)
@@ -146,12 +152,6 @@ pub async fn load_problem_by_id(
     lang: String,
 ) -> Result<ProblemInfo, ServerFnError> {
     let data = crate::backend::db::ProblemDatabase::get_problem(problem_id, &lang).await?;
-    Ok(data)
-}
-
-#[server]
-pub async fn load_topic_by_id(topic_id: i32, lang: String) -> Result<TopicInfo, ServerFnError> {
-    let data = crate::backend::db::ProblemDatabase::get_topic(topic_id, &lang).await?;
     Ok(data)
 }
 

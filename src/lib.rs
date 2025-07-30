@@ -4,10 +4,11 @@ pub mod backend;
 #[cfg(feature = "desktop")]
 pub mod desktop;
 
+//#[cfg(not(feature = "desktop"))]
 pub mod frontend;
 
 pub mod shared;
 pub use shared::api;
-pub use shared::errors::{Error, Result};
+pub use shared::{clean_error_message, Error, Result};
 
 pub use macros::problem;

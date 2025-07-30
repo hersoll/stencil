@@ -31,7 +31,6 @@ use dioxus::prelude::*;
 use crate::api;
 use crate::frontend::*;
 use crate::shared;
-use crate::shared::errors;
 
 #[component]
 pub fn Home() -> Element {
@@ -70,7 +69,7 @@ pub fn Home() -> Element {
             handle_error: |error: ErrorContext| {
                 rsx! {
                     for e in error.errors() {
-                        ErrorDisplay { message_signal: errors::clean_error_message(format!("{:#?}", e)) }
+                        ErrorDisplay { message_signal: crate::clean_error_message(format!("{:#?}", e)) }
                     }
                 }
             },

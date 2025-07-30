@@ -1,7 +1,4 @@
-use crate::{
-    frontend::home::selectors::course_selection::CourseSelection,
-    shared::types::ProblemSetData,
-};
+use crate::{frontend::home::selectors::course_selection::CourseSelection, shared::ProblemSetData};
 use dioxus::prelude::*;
 
 use crate::{
