@@ -108,6 +108,10 @@ label {
   padding: 0.25rem;
   font-size: 0.9rem;
   max-width: 20rem;
+  &:disabled {
+    background-color: var(--bg_element_hover_dark);
+    cursor: not-allowed;
+  }
 }
 
 .button {
@@ -246,7 +250,6 @@ label {
   background: none;
   border: none;
   display: grid;
-  grid-template-columns: 1rem 4rem 1fr 1fr;
 
   width: 100%;
   text-align: start;
@@ -255,6 +258,13 @@ label {
   font-size: 0.6rem;
   font-weight: 200;
   color: white;
+  &.course {
+    grid-template-columns: 1rem 4rem 1fr 1fr;
+  }
+  &.chapter {
+    grid-template-columns: 1rem 6rem 1fr 1fr;
+  }
+
   &.header {
     font-weight: 700;
     background-color: var(--bg_element_hover_dark);

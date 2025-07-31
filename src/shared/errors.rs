@@ -18,6 +18,10 @@ pub enum Error {
     FailedToLoadProblems {
         error: String,
     },
+    FailedToUpdateRow {
+        error: String,
+    },
+
     // Static arrays
     EmptyStatic,
 

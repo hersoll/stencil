@@ -71,6 +71,53 @@ impl ProblemDatabase {
         })
     }
 
+    pub async fn create_course(course: CourseData) -> Result<CourseData> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            CourseData,
+            r#"INSERT INTO courses (name, desc_sv, desc_en) VALUES ($1, $2, $3) RETURNING id, name, desc_sv, desc_en
+        "#,
+            course.name,
+            course.desc_sv,
+            course.desc_en,
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })
+    }
+
+    pub async fn update_course(course: CourseData) -> Result<CourseData> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            CourseData,
+            r#"UPDATE courses SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 RETURNING id, name, desc_sv, desc_en
+        "#,
+            course.name,
+            course.desc_sv,
+            course.desc_en,
+            course.id
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow { error: e.to_string() })
+    }
+
+    pub async fn delete_course(course: CourseData) -> Result<CourseData> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            CourseData,
+            r#"DELETE FROM courses WHERE id = $1 RETURNING id, name, desc_sv, desc_en"#,
+            course.id
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })
+    }
+
     //###############################
     //#          CHAPTERS           #
     //###############################

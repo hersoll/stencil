@@ -1,29 +1,62 @@
 use dioxus::prelude::*;
 
-use crate::api::{self, load_all_course_data};
+use crate::{api::load_all_course_data, shared::CourseData};
 
 #[component]
-pub fn CourseDisplay() -> Element {
+pub fn CourseDisplay(active_course: Signal<Option<CourseData>>) -> Element {
     let courses_result = use_server_future(move || load_all_course_data())?;
+    let mut selected_course: Signal<Option<CourseData>> = use_signal(move || None);
     rsx! {
-        div { class: "available_display", style: "height: 760px;",
-            div{class: "available_element header",
-            p {"ID"}
-            p {"Namn"}
-            p {"Svenska"}
-            p {"Engelska"}
-        }
-            if let Ok(courses) = courses_result().unwrap() {
-                for course in courses {
-                div {class: "available_element item",
-                    p{"{course.id}"}
-                    p{"{course.name}"}
-                    p{"{course.desc_sv}"}
-                    p{"{course.desc_en}"}
+        div { class: "pane available",
+            div { class: "available_display", style: "height: 760px;",
+                div { class: "available_element course header",
+                    p { "ID" }
+                    p { "Namn" }
+                    p { "Svenska" }
+                    p { "Engelska" }
+                }
+                if let Ok(courses) = courses_result().unwrap() {
+                    for course in courses {
+                        div {
+                            class: "available_element course item",
+                            style: if let Some(selected) = selected_course() { if selected.id == course.id { "background-color: gray;" } else { "" } },
+                            onclick: move |_| selected_course.set(Some(course.clone())),
+                            p { "{course.id}" }
+                            p { "{course.name}" }
+                            p { "{course.desc_sv}" }
+                            p { "{course.desc_en}" }
+                        }
+                    }
+                } else {
+                    p { "Loading..." }
                 }
             }
-            } else {
-                p { "Loading..." }
+            div { class: "button_container", style: "display: flex; gap: 1rem;",
+                button {
+                    class: "button",
+                    onclick: move |_| {
+                        active_course
+                            .set(
+                                Some(CourseData {
+                                    id: 0,
+                                    name: String::new(),
+                                    desc_sv: String::new(),
+                                    desc_en: String::new(),
+                                }),
+                            );
+                        selected_course.set(None);
+                    },
+                    "Skapa ny"
+                }
+                button {
+                    class: "button",
+                    onclick: move |_| {
+                        if let Some(course) = selected_course() {
+                            active_course.set(Some(course))
+                        }
+                    },
+                    "Redigera"
+                }
             }
         }
     }

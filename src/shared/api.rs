@@ -15,6 +15,17 @@ pub async fn load_translations(lang: String) -> Result<HashMap<String, String>, 
 //#          COURSES            #
 //###############################
 #[server]
+pub async fn set_course(course: CourseData) -> Result<CourseData, ServerFnError> {
+    let result: CourseData;
+    if course.id == 0 {
+        result = crate::backend::db::ProblemDatabase::create_course(course).await?;
+    } else {
+        result = crate::backend::db::ProblemDatabase::update_course(course).await?;
+    }
+    Ok(result)
+}
+
+#[server]
 pub async fn load_courses(lang: String) -> Result<Vec<CourseInfo>, ServerFnError> {
     let courses = crate::backend::db::ProblemDatabase::get_all_courses(&lang).await?;
     Ok(courses)

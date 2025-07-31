@@ -5,20 +5,15 @@ use course_display::CourseDisplay;
 
 use dioxus::prelude::*;
 
+use crate::shared::CourseData;
+
 #[component]
 pub fn CourseEditor() -> Element {
+    let active_course: Signal<Option<CourseData>> = use_signal(|| None);
     rsx! {
         div { class: "editor_container",
-            div { class: "pane available",
-                CourseDisplay {}
-                div {
-                    class: "button_containter",
-                    style: "display: flex; gap: 1rem;",
-                    button { class: "button", "Skapa ny" }
-                    button { class: "button", "Redigera" }
-                }
-            }
-            CourseAttributes {}
+            CourseDisplay { active_course }
+            CourseAttributes { active_course }
         }
     }
 }
