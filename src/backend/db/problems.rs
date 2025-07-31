@@ -104,12 +104,12 @@ impl ProblemDatabase {
         .map_err(|e| Error::FailedToUpdateRow { error: e.to_string() })
     }
 
-    pub async fn delete_course(course: CourseData) -> Result<CourseData> {
+    pub async fn delete_course(id: i32) -> Result<CourseData> {
         let pool = get_pool();
         sqlx::query_as!(
             CourseData,
             r#"DELETE FROM courses WHERE id = $1 RETURNING id, name, desc_sv, desc_en"#,
-            course.id
+            id
         )
         .fetch_one(pool)
         .await

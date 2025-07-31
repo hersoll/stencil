@@ -1,19 +1,23 @@
 use dioxus::prelude::*;
 
-use crate::{api::load_all_course_data, shared::CourseData};
+use crate::{api::{self, load_all_course_data}, shared::CourseData};
 
 #[component]
 pub fn CourseDisplay(active_course: Signal<Option<CourseData>>) -> Element {
-    let courses_result = use_server_future(move || load_all_course_data())?;
+    let mut courses_result = use_server_future(move || load_all_course_data())?;
     let mut selected_course: Signal<Option<CourseData>> = use_signal(move || None);
     rsx! {
         div { class: "pane available",
             div { class: "available_display", style: "height: 760px;",
                 div { class: "available_element course header",
+                    style: "position: relative;",
                     p { "ID" }
                     p { "Namn" }
                     p { "Svenska" }
                     p { "Engelska" }
+                    div {class: "update_arrow",
+                    onclick: move |_| courses_result.restart(),
+                    "{char::from_u32(0x27F3).unwrap()}"}
                 }
                 if let Ok(courses) = courses_result().unwrap() {
                     for course in courses {
@@ -56,6 +60,15 @@ pub fn CourseDisplay(active_course: Signal<Option<CourseData>>) -> Element {
                         }
                     },
                     "Redigera"
+                }
+                 button {
+                    class: "button",
+                    onclick: move |_| async move {
+                        if let Some(course) = selected_course() {
+                                api::delete_course(course.id).await;
+                        }
+                    },
+                    "Radera"
                 }
             }
         }

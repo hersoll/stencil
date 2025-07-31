@@ -26,6 +26,12 @@ pub async fn set_course(course: CourseData) -> Result<CourseData, ServerFnError>
 }
 
 #[server]
+pub async fn delete_course(id: i32) -> Result<CourseData, ServerFnError> {
+    let course = crate::backend::db::ProblemDatabase::delete_course(id).await?;
+    Ok(course)
+}
+
+#[server]
 pub async fn load_courses(lang: String) -> Result<Vec<CourseInfo>, ServerFnError> {
     let courses = crate::backend::db::ProblemDatabase::get_all_courses(&lang).await?;
     Ok(courses)

@@ -283,3 +283,15 @@ label {
     }
   }
 }
+
+.update_arrow {
+  cursor: pointer;
+  position: absolute;
+  color: white;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  text-align: center;
+  top: 0;
+  right: 0;
+}
