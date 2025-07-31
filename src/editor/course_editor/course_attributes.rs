@@ -6,7 +6,10 @@ use crate::{
 };
 
 #[component]
-pub fn CourseAttributes(active_course: Signal<Option<CourseData>>) -> Element {
+pub fn CourseAttributes(
+    active_course: Signal<Option<CourseData>>,
+    current_message: Signal<Option<String>>,
+) -> Element {
     let loaded_chapters = use_server_future(move || load_all_chapter_data())?;
     let mut related_chapters: Signal<Vec<i32>> = use_signal(|| Vec::new());
     let chapter_resource = use_resource(move || async move {
@@ -26,9 +29,9 @@ pub fn CourseAttributes(active_course: Signal<Option<CourseData>>) -> Element {
 
     rsx! {
         div { class: "pane attributes",
-            h2 { "Egenskaper" }
+            h2 { "Attributes" }
             label {
-                "Namn"
+                "Name"
                 input {
                     class: "input text",
                     r#type: "text",
@@ -45,7 +48,7 @@ pub fn CourseAttributes(active_course: Signal<Option<CourseData>>) -> Element {
                 }
             }
             label {
-                "Beskrivning (sv)"
+                "Description (sv)"
                 input {
                     class: "input text",
                     r#type: "text",
@@ -62,7 +65,7 @@ pub fn CourseAttributes(active_course: Signal<Option<CourseData>>) -> Element {
                 }
             }
             label {
-                "Beskrivning (en)"
+                "Description (en)"
                 input {
                     class: "input text",
                     r#type: "text",
@@ -80,38 +83,53 @@ pub fn CourseAttributes(active_course: Signal<Option<CourseData>>) -> Element {
             }
 
             label {
-                "Kapitel"
+                "Chapters"
                 div { class: "available_display", style: "height: 400px;",
-                    if let Ok(chapters) = loaded_chapters().unwrap() {
-                        for chapter in chapters {
-                            div {
-                                class: "available_element chapter item",
-                                style: if related_chapters().contains(&chapter.id) { "background-color: gray;" } else { "" },
-                                onclick: move |_| {
-                                    if let Some(pos) = related_chapters().iter().position(|id| *id == chapter.id) {
-                                        related_chapters.remove(pos);
-                                    } else {
-                                        related_chapters.write().push(chapter.id)
+                    match loaded_chapters().unwrap() {
+                        Ok(chapters) => {
+                            rsx! {
+                                for chapter in chapters {
+                                    div {
+                                        class: "available_element chapter item",
+                                        style: if related_chapters().contains(&chapter.id) { "background-color: gray;" } else { "" },
+                                        onclick: move |_| {
+                                            if let Some(pos) = related_chapters().iter().position(|id| *id == chapter.id) {
+                                                related_chapters.remove(pos);
+                                            } else {
+                                                related_chapters.write().push(chapter.id)
+                                            }
+                                        },
+                                        p { "{chapter.id}" }
+                                        p { "{chapter.name}" }
+                                        p { "{chapter.desc_sv}" }
+                                        p { "{chapter.desc_en}" }
                                     }
-                                },
-                                p { "{chapter.id}" }
-                                p { "{chapter.name}" }
-                                p { "{chapter.desc_sv}" }
-                                p { "{chapter.desc_en}" }
+                                }
                             }
+                        }
+                        Err(message) => {
+                            current_message.set(Some(message.to_string()));
+                            rsx! {}
                         }
                     }
                 }
             }
 
-            button { class: "button",
-            onclick: move |_| async move {
-                if let Some(course) = active_course() {
-                    let result = api::set_course(course).await;
-                }
-            },
-            "Spara" }
-
+            button {
+                class: "button",
+                onclick: move |_| async move {
+                    if let Some(course) = active_course() {
+                        match api::set_course(course).await {
+                            Ok(saved) => {
+                                current_message
+                                    .set(Some(format!("Saved course:\n {:#?}", saved)))
+                            }
+                            Err(message) => current_message.set(Some(message.to_string())),
+                        }
+                    }
+                },
+                "Save"
+            }
         }
     }
 }

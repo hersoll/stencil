@@ -10,10 +10,11 @@ use crate::shared::CourseData;
 #[component]
 pub fn CourseEditor() -> Element {
     let active_course: Signal<Option<CourseData>> = use_signal(|| None);
+    let current_message: Signal<Option<String>> = use_signal(|| None);
     rsx! {
         div { class: "editor_container",
-            CourseDisplay { active_course }
-            CourseAttributes { active_course }
+            CourseDisplay { active_course, current_message }
+            CourseAttributes { active_course, current_message }
         }
     }
 }
