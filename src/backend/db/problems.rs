@@ -161,6 +161,37 @@ impl ProblemDatabase {
         })
     }
 
+    pub async fn update_course_chapters(course_id: i32, chapter_ids: Vec<i32>) -> Result<()> {
+        let pool = get_pool();
+        sqlx::query!(
+            r#"DELETE FROM course_chapters WHERE course_id = $1"#,
+            course_id,
+        )
+        .execute(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })?;
+        let mut tx = pool
+            .begin()
+            .await
+            .map_err(|_| Error::FailedToInitializePool)?;
+        for (order, chapter_id) in chapter_ids.iter().enumerate() {
+            sqlx::query!(r#"INSERT INTO course_chapters (course_id, chapter_id, order_index) VALUES ($1, $2, $3)"#, course_id, chapter_id, (order + 1) as i32)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| Error::FailedToUpdateRow {
+                    error: e.to_string(),
+                })?;
+        }
+
+        tx.commit()
+            .await
+            .map_err(|_| Error::FailedToInitializePool)?;
+
+        Ok(())
+    }
+
     pub async fn get_chapter(id: i32, lang: &str) -> Result<ChapterInfo> {
         let pool = get_pool();
         sqlx::query_as!(

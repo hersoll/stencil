@@ -21,6 +21,7 @@ pub enum Error {
     FailedToUpdateRow {
         error: String,
     },
+    FailedToInitializePool,
 
     // Static arrays
     EmptyStatic,
