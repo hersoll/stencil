@@ -1,17 +1,18 @@
-use crate::{frontend::home::selectors::course_selection::CourseSelection, shared::ProblemSetData};
 use dioxus::prelude::*;
 
 use crate::{
     frontend::home::selectors::{
-        chapter_selection::ChapterSelection, topic_selection::TopicSelection,
+        chapter_selection::ChapterSelection, course_selection::CourseSelection,
+        topic_selection::TopicSelection,
     },
-    shared::CourseInfo,
+    shared::ParsedCourseData,
+    shared::ProblemSetData,
 };
 
 #[component]
 pub fn ProblemDisplay(
     set_data: Signal<ProblemSetData>,
-    courses: Signal<Vec<CourseInfo>>,
+    courses: Signal<Vec<ParsedCourseData>>,
     chapters: Signal<Vec<i32>>,
     topics: Signal<Vec<i32>>,
     active_course: Signal<i32>,

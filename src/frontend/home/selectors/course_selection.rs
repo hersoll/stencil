@@ -1,13 +1,12 @@
-use crate::Error;
 use crate::api::load_course_chapters;
-use crate::frontend::APP_LANGUAGE;
-use crate::shared::CourseInfo;
+use crate::shared::ParsedCourseData;
+use crate::Error;
 use dioxus::prelude::*;
 
 fn course_buttons(
     names: Vec<&'static str>,
     group_number: u8,
-    courses: Vec<CourseInfo>,
+    courses: Vec<ParsedCourseData>,
     mut chapters: Signal<Vec<i32>>,
     mut active_course: Signal<i32>,
     mut active_chapter: Signal<i32>,
@@ -35,7 +34,7 @@ fn course_buttons(
                                 topics.set(Vec::new());
                                 active_chapter.set(-1);
                                 active_course.set(course.id);
-                                match load_course_chapters(course.id, APP_LANGUAGE()).await {
+                                match load_course_chapters(course.id).await {
                                     Ok(chapter_info) => chapters.set(chapter_info),
                                     Err(_) => chapters.set(Vec::new()),
                                 }
@@ -51,7 +50,7 @@ fn course_buttons(
 
 #[component]
 pub fn CourseSelection(
-    courses: Signal<Vec<CourseInfo>>,
+    courses: Signal<Vec<ParsedCourseData>>,
     mut active_course: Signal<i32>,
     chapters: Signal<Vec<i32>>,
     mut active_chapter: Signal<i32>,

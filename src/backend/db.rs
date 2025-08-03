@@ -5,7 +5,7 @@ pub use i18n::I18nDatabase;
 pub use problems::ProblemDatabase;
 
 use once_cell::sync::OnceCell;
-use sqlx::{PgPool, postgres::PgPoolOptions};
+use sqlx::{postgres::PgPoolOptions, PgPool};
 
 static DB_POOL: OnceCell<PgPool> = OnceCell::new();
 

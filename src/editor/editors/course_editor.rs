@@ -6,7 +6,7 @@ use crate::{
 };
 
 #[component]
-pub fn CourseAttributes(
+pub fn CourseEditor(
     active_course: Signal<Option<CourseData>>,
     current_message: Signal<Option<String>>,
 ) -> Element {
@@ -14,7 +14,7 @@ pub fn CourseAttributes(
     let mut related_chapters: Signal<Vec<i32>> = use_signal(|| Vec::new());
     let chapter_resource = use_resource(move || async move {
         if let Some(course) = active_course() {
-            let active_data = crate::api::load_course_chapters(course.id, String::from("sv")).await;
+            let active_data = crate::api::load_course_chapters(course.id).await;
             if let Ok(chapters) = active_data {
                 return chapters;
             }
@@ -114,21 +114,31 @@ pub fn CourseAttributes(
                     }
                 }
             }
-
-            button {
-                class: "button",
-                onclick: move |_| async move {
-                    if let Some(course) = active_course() {
-                        match api::set_course(course).await {
-                            Ok(saved) => {
-                                current_message
-                                    .set(Some(format!("Saved course:\n {:#?}", saved)))
+            div {
+                class: "button_container",
+                style: "display: flex; gap: 1rem; justify-content: center;",
+                button {
+                    class: "button",
+                    style: "width: 15rem;",
+                    onclick: move |_| async move {
+                        if let Some(course) = active_course() {
+                            match api::set_course(course).await {
+                                Ok(saved) => {
+                                    current_message.set(Some(format!("Saved course:\n {:#?}", saved)))
+                                }
+                                Err(message) => current_message.set(Some(message.to_string())),
                             }
-                            Err(message) => current_message.set(Some(message.to_string())),
                         }
-                    }
-                },
-                "Save"
+                        active_course.set(None);
+                    },
+                    "Save"
+                }
+                button {
+                    class: "button",
+                    style: "width: 8rem;",
+                    onclick: move |_| active_course.set(None),
+                    "Undo"
+                }
             }
         }
     }

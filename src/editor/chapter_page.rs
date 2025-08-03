@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[component]
-pub fn ChapterEditor() -> Element {
+pub fn ChapterPage() -> Element {
     rsx! {
         p { "Chapter editor" }
     }

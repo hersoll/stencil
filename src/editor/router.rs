@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
 
-use crate::editor::chapter_editor::ChapterEditor;
-use crate::editor::course_editor::CourseEditor;
+use crate::editor::chapter_page::ChapterPage;
+use crate::editor::course_page::CoursePage;
 use crate::editor::landing_page::LandingPage;
 use crate::editor::navbar::NavBar;
-use crate::editor::problem_editor::ProblemEditor;
-use crate::editor::topic_editor::TopicEditor;
+use crate::editor::problem_page::ProblemPage;
+use crate::editor::topic_page::TopicPage;
 
 #[derive(Routable, Clone)]
 pub enum Route {
@@ -13,11 +13,11 @@ pub enum Route {
     #[route("/")]
     LandingPage {},
     #[route("/course")]
-    CourseEditor {},
+    CoursePage {},
     #[route("/chapter")]
-    ChapterEditor {},
+    ChapterPage {},
     #[route("/topic")]
-    TopicEditor {},
+    TopicPage {},
     #[route("/problem")]
-    ProblemEditor {},
+    ProblemPage {},
 }

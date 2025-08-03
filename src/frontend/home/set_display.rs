@@ -7,13 +7,13 @@ mod set_display_row;
 use crate::frontend::home::set_display::set_display_header::SetDisplayHeader;
 use crate::frontend::home::set_display::set_display_row::SetDisplayRow;
 use crate::frontend::i18n_lookup;
-use crate::shared::CourseInfo;
+use crate::shared::ParsedCourseData;
 use dioxus::prelude::*;
 
 use crate::frontend::Sets;
 
 #[component]
-pub fn SetDisplay(sets: Signal<Sets>, courses: Signal<Vec<CourseInfo>>) -> Element {
+pub fn SetDisplay(sets: Signal<Sets>, courses: Signal<Vec<ParsedCourseData>>) -> Element {
     // Descriptions to show in the topic display (first column) before changing to +N
     let max_descriptions = 2;
 

@@ -239,6 +239,7 @@ label {
 
 .available_display {
   width: 100%;
+  height: 100%;
   background-color: var(--bg_element_extra_dark);
   border: 2px solid var(--bg_element_selected_hover_dark);
   border-radius: 1rem;
@@ -259,10 +260,10 @@ label {
   font-weight: 200;
   color: white;
   &.course {
-    grid-template-columns: 1rem 4rem 1fr 1fr;
+    grid-template-columns: 4rem 1fr 1fr;
   }
   &.chapter {
-    grid-template-columns: 1rem 6rem 1fr 1fr;
+    grid-template-columns: 6rem 1fr 1fr;
   }
 
   &.header {

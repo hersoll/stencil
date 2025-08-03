@@ -1,5 +1,6 @@
-use crate::{Error, Result};
 use serde::{Deserialize, Serialize};
+
+use crate::shared::{ParsedChapterData, ParsedCourseData, ParsedProblemData, ParsedTopicData};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "server", derive(sqlx::FromRow))]
@@ -9,6 +10,19 @@ pub struct CourseData {
     pub desc_sv: String,
     pub desc_en: String,
 }
+impl CourseData {
+    pub fn parse(self, lang: &str) -> ParsedCourseData {
+        ParsedCourseData {
+            id: self.id,
+            name: self.name,
+            desc: if lang == "sv" {
+                self.desc_sv
+            } else {
+                self.desc_en
+            },
+        }
+    }
+}
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "server", derive(sqlx::FromRow))]
 pub struct ChapterData {
@@ -16,6 +30,19 @@ pub struct ChapterData {
     pub name: String,
     pub desc_sv: String,
     pub desc_en: String,
+}
+impl ChapterData {
+    pub fn parse(self, lang: &str) -> ParsedChapterData {
+        ParsedChapterData {
+            id: self.id,
+            name: self.name,
+            desc: if lang == "sv" {
+                self.desc_sv
+            } else {
+                self.desc_en
+            },
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -25,6 +52,19 @@ pub struct TopicData {
     pub name: String,
     pub desc_sv: String,
     pub desc_en: String,
+}
+impl TopicData {
+    pub fn parse(self, lang: &str) -> ParsedTopicData {
+        ParsedTopicData {
+            id: self.id,
+            name: self.name,
+            desc: if lang == "sv" {
+                self.desc_sv
+            } else {
+                self.desc_en
+            },
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -43,4 +83,18 @@ pub struct ProblemData {
     pub solution_en: Option<String>,
     pub module: String,
     pub prefix_id: Option<i32>,
+}
+impl ProblemData {
+    pub fn parse(self, lang: &str) -> ParsedProblemData {
+        ParsedProblemData {
+            id: self.id,
+            name: self.name,
+            difficulty: self.difficulty,
+            desc: if lang == "sv" {
+                self.desc_sv
+            } else {
+                self.desc_en
+            },
+        }
+    }
 }

@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[component]
-pub fn TopicEditor() -> Element {
+pub fn TopicPage() -> Element {
     rsx! {
         p { "Topic editor" }
     }

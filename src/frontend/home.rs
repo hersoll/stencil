@@ -39,7 +39,7 @@ pub fn Home() -> Element {
     let mut set_data = use_signal(|| shared::ProblemSetData::new(0));
     let mut sets: Signal<Sets> = use_signal(|| Vec::new());
 
-    let mut courses: Signal<Vec<shared::CourseInfo>> = use_signal(|| Vec::new());
+    let mut courses: Signal<Vec<shared::ParsedCourseData>> = use_signal(|| Vec::new());
     let chapters: Signal<Vec<i32>> = use_signal(|| Vec::new());
     let topics: Signal<Vec<i32>> = use_signal(|| Vec::new());
 

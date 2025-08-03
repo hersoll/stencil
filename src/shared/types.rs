@@ -1,4 +1,7 @@
-use crate::{Error, Result};
+use crate::{
+    shared::{ChapterData, CourseData, ProblemData, TopicData},
+    Error, Result,
+};
 use serde::{Deserialize, Serialize};
 
 //#################################
@@ -7,36 +10,33 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "server", derive(sqlx::FromRow))]
-pub struct CourseInfo {
+pub struct ParsedCourseData {
     pub id: i32,
     pub name: String,
     pub desc: String,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "server", derive(sqlx::FromRow))]
-pub struct ChapterInfo {
+pub struct ParsedChapterData {
     pub id: i32,
     pub name: String,
     pub desc: String,
 }
-
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "server", derive(sqlx::FromRow))]
-pub struct TopicInfo {
+pub struct ParsedTopicData {
     pub id: i32,
     pub name: String,
     pub desc: String,
 }
-
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "server", derive(sqlx::FromRow))]
-pub struct ProblemInfo {
+pub struct ParsedProblemData {
     pub id: i32,
     pub name: String,
     pub difficulty: i32,
     pub desc: String,
 }
-
 //###############################
 //#          API TYPES          #
 //###############################
