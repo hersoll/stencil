@@ -1,32 +1,18 @@
 use dioxus::prelude::*;
 
 use crate::{
-    api::{self, load_all_chapter_data},
-    shared::CourseData,
+    api,
+    editor::displays::ChapterDisplay,
+    shared::{ChapterData, CourseData},
 };
 
 #[component]
 pub fn CourseEditor(
     active_course: Signal<Option<CourseData>>,
+    selected_chapter: Signal<Option<ChapterData>>,
+    used_chapters: Signal<Vec<ChapterData>>,
     current_message: Signal<Option<String>>,
 ) -> Element {
-    let loaded_chapters = use_server_future(move || load_all_chapter_data())?;
-    let mut related_chapters: Signal<Vec<i32>> = use_signal(|| Vec::new());
-    let chapter_resource = use_resource(move || async move {
-        if let Some(course) = active_course() {
-            let active_data = crate::api::load_course_chapters(course.id).await;
-            if let Ok(chapters) = active_data {
-                return chapters;
-            }
-        }
-        Vec::new()
-    });
-    use_effect(move || {
-        if let Some(loaded_chapters) = chapter_resource() {
-            related_chapters.set(loaded_chapters);
-        }
-    });
-
     rsx! {
         div { class: "pane attributes",
             h2 { "Attributes" }
@@ -85,32 +71,10 @@ pub fn CourseEditor(
             label {
                 "Chapters"
                 div { class: "available_display", style: "height: 400px;",
-                    match loaded_chapters().unwrap() {
-                        Ok(chapters) => {
-                            rsx! {
-                                for chapter in chapters {
-                                    div {
-                                        class: "available_element chapter item",
-                                        style: if related_chapters().contains(&chapter.id) { "background-color: gray;" } else { "" },
-                                        onclick: move |_| {
-                                            if let Some(pos) = related_chapters().iter().position(|id| *id == chapter.id) {
-                                                related_chapters.remove(pos);
-                                            } else {
-                                                related_chapters.write().push(chapter.id)
-                                            }
-                                        },
-                                        p { "{chapter.id}" }
-                                        p { "{chapter.name}" }
-                                        p { "{chapter.desc_sv}" }
-                                        p { "{chapter.desc_en}" }
-                                    }
-                                }
-                            }
-                        }
-                        Err(message) => {
-                            current_message.set(Some(message.to_string()));
-                            rsx! {}
-                        }
+                    ChapterDisplay {
+                        chapters: used_chapters,
+                        selected_chapter,
+                        current_message,
                     }
                 }
             }
@@ -130,13 +94,17 @@ pub fn CourseEditor(
                             }
                         }
                         active_course.set(None);
+                        selected_chapter.set(None);
                     },
                     "Save"
                 }
                 button {
                     class: "button",
                     style: "width: 8rem;",
-                    onclick: move |_| active_course.set(None),
+                    onclick: move |_| {
+                        active_course.set(None);
+                        selected_chapter.set(None)
+                    },
                     "Undo"
                 }
             }

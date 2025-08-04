@@ -8,31 +8,40 @@ use crate::shared::{ChapterData, CourseData};
 #[component]
 pub fn CoursePage() -> Element {
     let mut course_future = use_server_future(move || api::load_all_course_data())?;
-    let chapter_future = use_server_future(move || api::load_all_chapter_data())?;
+    let chapter_future = use_server_future(move || api::load_all_chapter_ids())?;
     let mut active_course: Signal<Option<CourseData>> = use_signal(|| None);
     let mut selected_course: Signal<Option<CourseData>> = use_signal(|| None);
-    let selected_chapter: Signal<Option<ChapterData>> = use_signal(|| None);
+    let mut selected_chapter: Signal<Option<ChapterData>> = use_signal(|| None);
     let mut current_message: Signal<Option<String>> = use_signal(|| None);
 
     use_effect(move || {
         if active_course().is_none() {
             selected_course.set(None);
+            selected_chapter.set(None);
         }
     });
 
-    let chapter_resource = use_resource(move || async move {
+    let mut used_chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
+    let mut unused_chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
+
+    let _ = use_resource(move || async move {
         if let Some(course) = active_course() {
-            let active_data = crate::api::load_course_chapters(course.id).await;
-            if let Ok(chapters) = active_data {
-                return chapters;
+            match crate::api::load_course_chapters(course.id).await {
+                Ok(course_chapters) => match chapter_future().unwrap() {
+                    Ok(chapter_ids) => {
+                        let used_ids: Vec<i32> = course_chapters.iter().map(|ch| ch.id).collect();
+                        let mut unused_ids = chapter_ids.clone();
+                        unused_ids.retain(|id| !used_ids.contains(id));
+                        match api::load_chapters(unused_ids).await {
+                            Ok(chapters) => unused_chapters.set(chapters),
+                            Err(e) => current_message.set(Some(e.to_string())),
+                        }
+                        used_chapters.set(course_chapters);
+                    }
+                    Err(e) => current_message.set(Some(e.to_string())),
+                },
+                Err(e) => current_message.set(Some(e.to_string())),
             }
-        }
-        Vec::new()
-    });
-    let mut course_chapters: Signal<Vec<i32>> = use_signal(|| Vec::new());
-    use_effect(move || {
-        if let Some(loaded_chapters) = chapter_resource() {
-            course_chapters.set(loaded_chapters);
         }
     });
 
@@ -45,7 +54,7 @@ pub fn CoursePage() -> Element {
                     } else if active_course().is_some() {
                         ChapterDisplay {
                             selected_chapter,
-                            chapter_future,
+                            chapters: unused_chapters,
                             current_message,
                         }
                     } else {
@@ -112,7 +121,12 @@ pub fn CoursePage() -> Element {
                     }
                 }
             }
-            CourseEditor { active_course, current_message }
+            CourseEditor {
+                active_course,
+                current_message,
+                used_chapters,
+                selected_chapter,
+            }
         }
     }
 }

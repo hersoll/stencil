@@ -27,7 +27,7 @@ pub fn ChapterSelection(
                             class: "chapter {selected_class}",
                             onclick: move |_| async move {
                                 active_chapter.set(id);
-                                match crate::api::load_chapter_topics(id, APP_LANGUAGE()).await {
+                                match crate::api::load_chapter_topics(id).await {
                                     Ok(api_topics) => topics.set(api_topics),
                                     Err(_) => topics.set(Vec::new()),
                                 }

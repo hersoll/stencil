@@ -15,7 +15,6 @@ pub fn CourseDisplay(
             p { "Namn" }
             p { "Svenska" }
             p { "Engelska" }
-            UpdateArrow { future: course_future }
         }
         match course_future().unwrap() {
             Ok(courses) => {

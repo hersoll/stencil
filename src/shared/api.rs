@@ -68,9 +68,21 @@ pub async fn load_course_desc(id: i32, lang: String) -> Result<String, ServerFnE
 //#          CHAPTERS           #
 //###############################
 #[server]
-pub async fn load_course_chapters(course_id: i32) -> Result<Vec<i32>, ServerFnError> {
+pub async fn load_course_chapters(course_id: i32) -> Result<Vec<ChapterData>, ServerFnError> {
+    let data = crate::backend::db::ProblemDatabase::get_course_chapters(course_id).await?;
+    Ok(data)
+}
+#[server]
+pub async fn load_course_chapter_ids(course_id: i32) -> Result<Vec<i32>, ServerFnError> {
     let data = crate::backend::db::ProblemDatabase::get_course_chapters(course_id).await?;
     Ok(data.iter().map(|chapter| chapter.id).collect())
+}
+
+#[server]
+pub async fn load_all_chapter_ids() -> Result<Vec<i32>, ServerFnError> {
+    let data = crate::backend::db::ProblemDatabase::get_all_chapter_data().await?;
+    let ids = data.into_iter().map(|chapter| chapter.id).collect();
+    Ok(ids)
 }
 
 #[server]
@@ -80,9 +92,18 @@ pub async fn load_all_chapter_data() -> Result<Vec<ChapterData>, ServerFnError> 
 }
 
 #[server]
-pub async fn load_chapter(id: i32, lang: String) -> Result<ParsedChapterData, ServerFnError> {
+pub async fn load_parsed_chapter(
+    id: i32,
+    lang: String,
+) -> Result<ParsedChapterData, ServerFnError> {
     let chapter = crate::backend::db::ProblemDatabase::get_chapter(id).await?;
     Ok(chapter.parse(&lang))
+}
+
+#[server]
+pub async fn load_chapters(ids: Vec<i32>) -> Result<Vec<ChapterData>, ServerFnError> {
+    let chapters = crate::backend::db::ProblemDatabase::get_chapters(&ids).await?;
+    Ok(chapters)
 }
 
 #[server]

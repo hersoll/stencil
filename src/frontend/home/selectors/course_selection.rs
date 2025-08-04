@@ -1,4 +1,4 @@
-use crate::api::load_course_chapters;
+use crate::api;
 use crate::shared::ParsedCourseData;
 use crate::Error;
 use dioxus::prelude::*;
@@ -34,7 +34,7 @@ fn course_buttons(
                                 topics.set(Vec::new());
                                 active_chapter.set(-1);
                                 active_course.set(course.id);
-                                match load_course_chapters(course.id).await {
+                                match api::load_course_chapter_ids(course.id).await {
                                     Ok(chapter_info) => chapters.set(chapter_info),
                                     Err(_) => chapters.set(Vec::new()),
                                 }
