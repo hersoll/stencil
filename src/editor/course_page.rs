@@ -14,15 +14,17 @@ pub fn CoursePage() -> Element {
     let mut selected_chapter: Signal<Option<ChapterData>> = use_signal(|| None);
     let mut current_message: Signal<Option<String>> = use_signal(|| None);
 
+    let mut used_chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
+    let mut unused_chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
+
     use_effect(move || {
         if active_course().is_none() {
             selected_course.set(None);
             selected_chapter.set(None);
+            used_chapters.set(Vec::new());
+            unused_chapters.set(Vec::new());
         }
     });
-
-    let mut used_chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
-    let mut unused_chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
 
     let _ = use_resource(move || async move {
         if let Some(course) = active_course() {
@@ -76,6 +78,52 @@ pub fn CoursePage() -> Element {
                                 current_message.set(None);
                             },
                             "OK"
+                        }
+                    } else if active_course().is_some() {
+                        button {
+                            class: "button",
+                            onclick: move |_| {
+                                if let Some(chapter) = selected_chapter() {
+                                    if let Some(index) = used_chapters().iter().position(|ch| ch == &chapter) {
+                                        used_chapters.write().remove(index);
+                                        unused_chapters.write().push(chapter.clone());
+                                    } else if let Some(index) = unused_chapters()
+                                        .iter()
+                                        .position(|ch| ch == &chapter)
+                                    {
+                                        unused_chapters.write().remove(index);
+                                        used_chapters.write().push(chapter.clone());
+                                    } else {
+                                        current_message
+                                            .set(Some(String::from("This button desn't fucking work!")))
+                                    }
+                                }
+                            },
+                            "Move"
+                        }
+                        button {
+                            class: "button",
+                            onclick: move |_| {
+                                if let Some(chapter) = selected_chapter()
+                                    && let Some(index) = used_chapters().iter().position(|ch| ch == &chapter)
+                                {
+                                    used_chapters.write().remove(index);
+                                    used_chapters.write().insert(index - 1, chapter.clone());
+                                }
+                            },
+                            "Up"
+                        }
+                        button {
+                            class: "button",
+                            onclick: move |_| {
+                                if let Some(chapter) = selected_chapter()
+                                    && let Some(index) = used_chapters().iter().position(|ch| ch == &chapter)
+                                {
+                                    used_chapters.write().remove(index);
+                                    used_chapters.write().insert(index + 1, chapter.clone());
+                                }
+                            },
+                            "Down"
                         }
                     } else {
                         button {

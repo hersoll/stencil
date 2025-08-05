@@ -86,15 +86,22 @@ pub fn CourseEditor(
                     style: "width: 15rem;",
                     onclick: move |_| async move {
                         if let Some(course) = active_course() {
-                            match api::set_course(course).await {
+                            match api::set_course(course.clone()).await {
                                 Ok(saved) => {
-                                    current_message.set(Some(format!("Saved course:\n {:#?}", saved)))
+                                    match api::set_course_chapters(course.id, used_chapters().clone())
+                                        .await
+                                    {
+                                        Ok(_) => {
+                                            current_message
+                                                .set(Some(format!("Saved course:\n {:#?}", saved)))
+                                        }
+                                        Err(message) => current_message.set(Some(message.to_string())),
+                                    }
                                 }
                                 Err(message) => current_message.set(Some(message.to_string())),
                             }
                         }
                         active_course.set(None);
-                        selected_chapter.set(None);
                     },
                     "Save"
                 }
@@ -103,7 +110,6 @@ pub fn CourseEditor(
                     style: "width: 8rem;",
                     onclick: move |_| {
                         active_course.set(None);
-                        selected_chapter.set(None)
                     },
                     "Undo"
                 }

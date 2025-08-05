@@ -2,7 +2,7 @@ use crate::shared::{
     self, ChapterData, CourseData, Difficulty, ParsedChapterData, ParsedCourseData,
     ParsedProblemData, ParsedTopicData, ProblemData, TopicData,
 };
-use dioxus::prelude::*;
+use dioxus::prelude::{server_fn::codec::Json, *};
 use std::collections::HashMap;
 
 #[server]
@@ -72,6 +72,17 @@ pub async fn load_course_chapters(course_id: i32) -> Result<Vec<ChapterData>, Se
     let data = crate::backend::db::ProblemDatabase::get_course_chapters(course_id).await?;
     Ok(data)
 }
+
+#[server(input = Json, output = Json)]
+pub async fn set_course_chapters(
+    course_id: i32,
+    chapters: Vec<ChapterData>,
+) -> Result<(), ServerFnError> {
+    let ids: Vec<i32> = chapters.iter().map(|ch| ch.id).collect();
+    let data = crate::backend::db::ProblemDatabase::update_course_chapters(course_id, ids).await?;
+    Ok(data)
+}
+
 #[server]
 pub async fn load_course_chapter_ids(course_id: i32) -> Result<Vec<i32>, ServerFnError> {
     let data = crate::backend::db::ProblemDatabase::get_course_chapters(course_id).await?;
@@ -100,7 +111,7 @@ pub async fn load_parsed_chapter(
     Ok(chapter.parse(&lang))
 }
 
-#[server]
+#[server(input = Json, output = Json)]
 pub async fn load_chapters(ids: Vec<i32>) -> Result<Vec<ChapterData>, ServerFnError> {
     let chapters = crate::backend::db::ProblemDatabase::get_chapters(&ids).await?;
     Ok(chapters)
