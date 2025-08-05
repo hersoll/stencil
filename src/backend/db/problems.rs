@@ -1,7 +1,7 @@
 use crate::{
+    Error, Result,
     backend::db::get_pool,
     shared::{ChapterData, CourseData, ProblemData, TopicData},
-    Error, Result,
 };
 
 pub struct ProblemDatabase;
@@ -87,18 +87,15 @@ impl ProblemDatabase {
         .map_err(|e| Error::FailedToUpdateRow { error: e.to_string() })
     }
 
-    pub async fn delete_course(id: i32) -> Result<CourseData> {
+    pub async fn delete_course(id: i32) -> Result<String> {
         let pool = get_pool();
-        sqlx::query_as!(
-            CourseData,
-            r#"DELETE FROM courses WHERE id = $1 RETURNING id, name, desc_sv, desc_en"#,
-            id
-        )
-        .fetch_one(pool)
-        .await
-        .map_err(|e| Error::FailedToUpdateRow {
-            error: e.to_string(),
-        })
+        let result = sqlx::query!(r#"DELETE FROM courses WHERE id = $1 RETURNING name"#, id)
+            .fetch_one(pool)
+            .await
+            .map_err(|e| Error::FailedToUpdateRow {
+                error: e.to_string(),
+            })?;
+        Ok(result.name)
     }
 
     //###############################
@@ -199,6 +196,49 @@ impl ProblemDatabase {
         })
     }
 
+    pub async fn create_chapter(chapter: ChapterData) -> Result<ChapterData> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            ChapterData,
+            r#"INSERT INTO chapters (name, desc_sv, desc_en) VALUES ($1, $2, $3) RETURNING id, name, desc_sv, desc_en
+        "#,
+            chapter.name,
+            chapter.desc_sv,
+            chapter.desc_en,
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })
+    }
+
+    pub async fn update_chapter(chapter: ChapterData) -> Result<ChapterData> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            ChapterData,
+            r#"UPDATE chapters SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 RETURNING id, name, desc_sv, desc_en
+        "#,
+            chapter.name,
+            chapter.desc_sv,
+            chapter.desc_en,
+            chapter.id
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow { error: e.to_string() })
+    }
+    pub async fn delete_chapter(id: i32) -> Result<String> {
+        let pool = get_pool();
+        let result = sqlx::query!(r#"DELETE FROM chapters WHERE id = $1 RETURNING name"#, id)
+            .fetch_one(pool)
+            .await
+            .map_err(|e| Error::FailedToUpdateRow {
+                error: e.to_string(),
+            })?;
+        Ok(result.name)
+    }
+
     //###############################
     //#          TOPICS             #
     //###############################
@@ -235,6 +275,37 @@ impl ProblemDatabase {
         })
     }
 
+    pub async fn update_chapter_topics(chapter_id: i32, topic_ids: Vec<i32>) -> Result<()> {
+        let pool = get_pool();
+        sqlx::query!(
+            r#"DELETE FROM chapter_topics WHERE chapter_id = $1"#,
+            chapter_id,
+        )
+        .execute(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })?;
+        let mut tx = pool
+            .begin()
+            .await
+            .map_err(|_| Error::FailedToInitializePool)?;
+        for (order, topic_id) in topic_ids.iter().enumerate() {
+            sqlx::query!(r#"INSERT INTO chapter_topics (chapter_id, topic_id, order_index) VALUES ($1, $2, $3)"#, chapter_id, topic_id, (order + 1) as i32)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| Error::FailedToUpdateRow {
+                    error: e.to_string(),
+                })?;
+        }
+
+        tx.commit()
+            .await
+            .map_err(|_| Error::FailedToInitializePool)?;
+
+        Ok(())
+    }
+
     pub async fn get_topic(id: i32) -> Result<TopicData> {
         let pool = get_pool();
         sqlx::query_as!(
@@ -265,6 +336,17 @@ impl ProblemDatabase {
         .map_err(|e| Error::FailedToLoadTopics {
             error: e.to_string(),
         })
+    }
+
+    pub async fn delete_topic(id: i32) -> Result<String> {
+        let pool = get_pool();
+        let result = sqlx::query!(r#"DELETE FROM topics WHERE id = $1 RETURNING name"#, id)
+            .fetch_one(pool)
+            .await
+            .map_err(|e| Error::FailedToUpdateRow {
+                error: e.to_string(),
+            })?;
+        Ok(result.name)
     }
 
     //###############################
@@ -332,6 +414,37 @@ impl ProblemDatabase {
         })
     }
 
+    pub async fn update_topic_problems(topic_id: i32, problem_ids: Vec<i32>) -> Result<()> {
+        let pool = get_pool();
+        sqlx::query!(
+            r#"DELETE FROM topic_problems WHERE topic_id = $1"#,
+            topic_id,
+        )
+        .execute(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })?;
+        let mut tx = pool
+            .begin()
+            .await
+            .map_err(|_| Error::FailedToInitializePool)?;
+        for (order, problem_id) in problem_ids.iter().enumerate() {
+            sqlx::query!(r#"INSERT INTO topic_problems (topic_id, problem_id, order_index) VALUES ($1, $2, $3)"#, topic_id, problem_id, (order + 1) as i32)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| Error::FailedToUpdateRow {
+                    error: e.to_string(),
+                })?;
+        }
+
+        tx.commit()
+            .await
+            .map_err(|_| Error::FailedToInitializePool)?;
+
+        Ok(())
+    }
+
     pub async fn get_topic_problems_in_difficulty_range(
         topic_ids: Vec<i32>,
         starting_difficulty: i32,
@@ -374,5 +487,16 @@ impl ProblemDatabase {
         .map_err(|e| Error::FailedToLoadProblems {
             error: e.to_string(),
         })
+    }
+
+    pub async fn delete_problem(id: i32) -> Result<String> {
+        let pool = get_pool();
+        let result = sqlx::query!(r#"DELETE FROM problems WHERE id = $1 RETURNING name"#, id)
+            .fetch_one(pool)
+            .await
+            .map_err(|e| Error::FailedToUpdateRow {
+                error: e.to_string(),
+            })?;
+        Ok(result.name)
     }
 }

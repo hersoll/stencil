@@ -265,6 +265,9 @@ label {
   &.chapter {
     grid-template-columns: 6rem 1fr 1fr;
   }
+  &.topic {
+    grid-template-columns: 8rem 1fr 1fr;
+  }
 
   &.header {
     font-weight: 700;

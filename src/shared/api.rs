@@ -26,9 +26,9 @@ pub async fn set_course(course: CourseData) -> Result<CourseData, ServerFnError>
 }
 
 #[server]
-pub async fn delete_course(id: i32) -> Result<CourseData, ServerFnError> {
-    let course = crate::backend::db::ProblemDatabase::delete_course(id).await?;
-    Ok(course)
+pub async fn delete_course(id: i32) -> Result<String, ServerFnError> {
+    let name = crate::backend::db::ProblemDatabase::delete_course(id).await?;
+    Ok(name)
 }
 
 #[server]
@@ -67,6 +67,23 @@ pub async fn load_course_desc(id: i32, lang: String) -> Result<String, ServerFnE
 //###############################
 //#          CHAPTERS           #
 //###############################
+#[server]
+pub async fn set_chapter(chapter: ChapterData) -> Result<ChapterData, ServerFnError> {
+    let result: ChapterData;
+    if chapter.id == 0 {
+        result = crate::backend::db::ProblemDatabase::create_chapter(chapter).await?;
+    } else {
+        result = crate::backend::db::ProblemDatabase::update_chapter(chapter).await?;
+    }
+    Ok(result)
+}
+
+#[server]
+pub async fn delete_chapter(id: i32) -> Result<String, ServerFnError> {
+    let name = crate::backend::db::ProblemDatabase::delete_chapter(id).await?;
+    Ok(name)
+}
+
 #[server]
 pub async fn load_course_chapters(course_id: i32) -> Result<Vec<ChapterData>, ServerFnError> {
     let data = crate::backend::db::ProblemDatabase::get_course_chapters(course_id).await?;
@@ -112,7 +129,7 @@ pub async fn load_parsed_chapter(
 }
 
 #[server(input = Json, output = Json)]
-pub async fn load_chapters(ids: Vec<i32>) -> Result<Vec<ChapterData>, ServerFnError> {
+pub async fn load_chapters_by_id(ids: Vec<i32>) -> Result<Vec<ChapterData>, ServerFnError> {
     let chapters = crate::backend::db::ProblemDatabase::get_chapters(&ids).await?;
     Ok(chapters)
 }
@@ -159,7 +176,29 @@ pub async fn load_chapter_descs(ids: Vec<i32>, lang: String) -> Result<Vec<Strin
 //#          TOPICS             #
 //###############################
 #[server]
-pub async fn load_chapter_topics(chapter_id: i32) -> Result<Vec<i32>, ServerFnError> {
+pub async fn delete_topic(id: i32) -> Result<String, ServerFnError> {
+    let name = crate::backend::db::ProblemDatabase::delete_topic(id).await?;
+    Ok(name)
+}
+
+#[server(input = Json, output = Json)]
+pub async fn set_chapter_topics(
+    chapter_id: i32,
+    topics: Vec<TopicData>,
+) -> Result<(), ServerFnError> {
+    let ids: Vec<i32> = topics.iter().map(|to| to.id).collect();
+    let data = crate::backend::db::ProblemDatabase::update_chapter_topics(chapter_id, ids).await?;
+    Ok(data)
+}
+
+#[server]
+pub async fn load_chapter_topics(chapter_id: i32) -> Result<Vec<TopicData>, ServerFnError> {
+    let data = crate::backend::db::ProblemDatabase::get_chapter_topics(chapter_id).await?;
+    Ok(data)
+}
+
+#[server]
+pub async fn load_chapter_topic_ids(chapter_id: i32) -> Result<Vec<i32>, ServerFnError> {
     let data = crate::backend::db::ProblemDatabase::get_chapter_topics(chapter_id).await?;
     Ok(data.iter().map(|topic| topic.id).collect())
 }
@@ -167,6 +206,19 @@ pub async fn load_chapter_topics(chapter_id: i32) -> Result<Vec<i32>, ServerFnEr
 #[server]
 pub async fn load_all_topic_data() -> Result<Vec<TopicData>, ServerFnError> {
     let topics = crate::backend::db::ProblemDatabase::get_all_topic_data().await?;
+    Ok(topics)
+}
+
+#[server]
+pub async fn load_all_topic_ids() -> Result<Vec<i32>, ServerFnError> {
+    let data = crate::backend::db::ProblemDatabase::get_all_topic_data().await?;
+    let ids = data.into_iter().map(|chapter| chapter.id).collect();
+    Ok(ids)
+}
+
+#[server(input = Json, output = Json)]
+pub async fn load_topics_by_id(ids: Vec<i32>) -> Result<Vec<TopicData>, ServerFnError> {
+    let topics = crate::backend::db::ProblemDatabase::get_topics(&ids).await?;
     Ok(topics)
 }
 
@@ -228,7 +280,11 @@ pub async fn load_topic_descs(ids: Vec<i32>, lang: String) -> Result<Vec<String>
 //###############################
 //#          PROBLEMS           #
 //###############################
-
+#[server]
+pub async fn delete_problem(id: i32) -> Result<String, ServerFnError> {
+    let name = crate::backend::db::ProblemDatabase::delete_problem(id).await?;
+    Ok(name)
+}
 #[server]
 pub async fn load_topic_problems(
     topic_id: i32,
@@ -240,6 +296,13 @@ pub async fn load_topic_problems(
         .map(|problem| problem.parse(&lang))
         .collect();
     Ok(problems)
+}
+
+#[server]
+pub async fn load_topic_problem_ids(topic_id: i32) -> Result<Vec<i32>, ServerFnError> {
+    let data = crate::backend::db::ProblemDatabase::get_topic_problems(topic_id).await?;
+    let ids = data.into_iter().map(|problem| problem.id).collect();
+    Ok(ids)
 }
 
 #[server]

@@ -13,6 +13,7 @@ pub fn CoursePage() -> Element {
     let mut selected_course: Signal<Option<CourseData>> = use_signal(|| None);
     let mut selected_chapter: Signal<Option<ChapterData>> = use_signal(|| None);
     let mut current_message: Signal<Option<String>> = use_signal(|| None);
+    let mut courses: Signal<Vec<CourseData>> = use_signal(|| Vec::new());
 
     let mut used_chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
     let mut unused_chapters: Signal<Vec<ChapterData>> = use_signal(|| Vec::new());
@@ -26,6 +27,11 @@ pub fn CoursePage() -> Element {
         }
     });
 
+    use_effect(move || match course_future().unwrap() {
+        Ok(course_vec) => courses.set(course_vec),
+        Err(message) => current_message.set(Some(message.to_string())),
+    });
+
     let _ = use_resource(move || async move {
         if let Some(course) = active_course() {
             match crate::api::load_course_chapters(course.id).await {
@@ -34,7 +40,7 @@ pub fn CoursePage() -> Element {
                         let used_ids: Vec<i32> = course_chapters.iter().map(|ch| ch.id).collect();
                         let mut unused_ids = chapter_ids.clone();
                         unused_ids.retain(|id| !used_ids.contains(id));
-                        match api::load_chapters(unused_ids).await {
+                        match api::load_chapters_by_id(unused_ids).await {
                             Ok(chapters) => unused_chapters.set(chapters),
                             Err(e) => current_message.set(Some(e.to_string())),
                         }
@@ -62,7 +68,7 @@ pub fn CoursePage() -> Element {
                     } else {
                         CourseDisplay {
                             selected_course,
-                            course_future,
+                            courses,
                             current_message,
                         }
                     }
