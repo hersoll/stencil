@@ -176,6 +176,16 @@ pub async fn load_chapter_descs(ids: Vec<i32>, lang: String) -> Result<Vec<Strin
 //#          TOPICS             #
 //###############################
 #[server]
+pub async fn set_topic(topic: TopicData) -> Result<TopicData, ServerFnError> {
+    let result: TopicData;
+    if topic.id == 0 {
+        result = crate::backend::db::ProblemDatabase::create_topic(topic).await?;
+    } else {
+        result = crate::backend::db::ProblemDatabase::update_topic(topic).await?;
+    }
+    Ok(result)
+}
+#[server]
 pub async fn delete_topic(id: i32) -> Result<String, ServerFnError> {
     let name = crate::backend::db::ProblemDatabase::delete_topic(id).await?;
     Ok(name)
@@ -286,16 +296,19 @@ pub async fn delete_problem(id: i32) -> Result<String, ServerFnError> {
     Ok(name)
 }
 #[server]
-pub async fn load_topic_problems(
-    topic_id: i32,
-    lang: String,
-) -> Result<Vec<ParsedProblemData>, ServerFnError> {
+pub async fn load_topic_problems(topic_id: i32) -> Result<Vec<ProblemData>, ServerFnError> {
     let data = crate::backend::db::ProblemDatabase::get_topic_problems(topic_id).await?;
-    let problems = data
-        .into_iter()
-        .map(|problem| problem.parse(&lang))
-        .collect();
-    Ok(problems)
+    Ok(data)
+}
+
+#[server(input = Json, output = Json)]
+pub async fn set_topic_problems(
+    topic_id: i32,
+    problems: Vec<ProblemData>,
+) -> Result<(), ServerFnError> {
+    let ids: Vec<i32> = problems.iter().map(|pr| pr.id).collect();
+    let data = crate::backend::db::ProblemDatabase::update_topic_problems(topic_id, ids).await?;
+    Ok(data)
 }
 
 #[server]
@@ -312,6 +325,13 @@ pub async fn load_all_problem_data() -> Result<Vec<ProblemData>, ServerFnError> 
 }
 
 #[server]
+pub async fn load_all_problem_ids() -> Result<Vec<i32>, ServerFnError> {
+    let data = crate::backend::db::ProblemDatabase::get_all_problem_data().await?;
+    let ids = data.into_iter().map(|problem| problem.id).collect();
+    Ok(ids)
+}
+
+#[server]
 pub async fn load_problem_by_id(
     problem_id: i32,
     lang: String,
@@ -319,6 +339,12 @@ pub async fn load_problem_by_id(
     let data = crate::backend::db::ProblemDatabase::get_problem(problem_id).await?;
     let problem = data.parse(&lang);
     Ok(problem)
+}
+
+#[server(input = Json, output = Json)]
+pub async fn load_problems_by_id(ids: Vec<i32>) -> Result<Vec<ProblemData>, ServerFnError> {
+    let problems = crate::backend::db::ProblemDatabase::get_problems(&ids).await?;
+    Ok(problems)
 }
 
 #[server]

@@ -243,6 +243,39 @@ impl ProblemDatabase {
     //#          TOPICS             #
     //###############################
 
+    pub async fn create_topic(topic: TopicData) -> Result<TopicData> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            TopicData,
+            r#"INSERT INTO topics (name, desc_sv, desc_en) VALUES ($1, $2, $3) RETURNING id, name, desc_sv, desc_en
+        "#,
+            topic.name,
+            topic.desc_sv,
+            topic.desc_en,
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })
+    }
+
+    pub async fn update_topic(topic: TopicData) -> Result<TopicData> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            TopicData,
+            r#"UPDATE chapters SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 RETURNING id, name, desc_sv, desc_en
+        "#,
+            topic.name,
+            topic.desc_sv,
+            topic.desc_en,
+            topic.id
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow { error: e.to_string() })
+    }
+
     pub async fn get_all_topic_data() -> Result<Vec<TopicData>> {
         let pool = get_pool();
         sqlx::query_as!(
@@ -483,6 +516,23 @@ impl ProblemDatabase {
             id,
         )
         .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadProblems {
+            error: e.to_string(),
+        })
+    }
+
+    pub async fn get_problems(ids: &Vec<i32>) -> Result<Vec<ProblemData>> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            ProblemData,
+            r#"SELECT id, name, difficulty,  desc_sv, desc_en, module, 
+            question_sv, question_en, answer_sv, answer_en, solution_sv, solution_en, prefix_id
+                FROM problems
+            WHERE id = ANY($1)"#,
+            ids,
+        )
+        .fetch_all(pool)
         .await
         .map_err(|e| Error::FailedToLoadProblems {
             error: e.to_string(),
