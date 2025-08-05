@@ -12,9 +12,9 @@ pub fn ChapterDisplay(
         div {
             class: "available_element chapter header",
             style: "position: relative;",
-            p { "Namn" }
-            p { "Svenska" }
-            p { "Engelska" }
+            p { "Name" }
+            p { "Swedish" }
+            p { "English" }
         }
         for chapter in chapters() {
             div {

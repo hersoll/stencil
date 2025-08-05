@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{editor::displays::update_arrow::UpdateArrow, shared::CourseData};
+use crate::shared::CourseData;
 
 #[component]
 pub fn CourseDisplay(
@@ -12,9 +12,9 @@ pub fn CourseDisplay(
         div {
             class: "available_element course header",
             style: "position: relative;",
-            p { "Namn" }
-            p { "Svenska" }
-            p { "Engelska" }
+            p { "Name" }
+            p { "Swedish" }
+            p { "English" }
         }
         for course in courses() {
             div {

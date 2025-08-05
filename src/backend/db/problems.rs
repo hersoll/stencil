@@ -186,7 +186,8 @@ impl ProblemDatabase {
         sqlx::query_as!(
             ChapterData,
             r#"SELECT id, name, desc_sv, desc_en FROM chapters
-            WHERE id = ANY($1)"#,
+            WHERE id = ANY($1)
+            ORDER BY name"#,
             ids,
         )
         .fetch_all(pool)
@@ -264,7 +265,7 @@ impl ProblemDatabase {
         let pool = get_pool();
         sqlx::query_as!(
             TopicData,
-            r#"UPDATE chapters SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 RETURNING id, name, desc_sv, desc_en
+            r#"UPDATE topics SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 RETURNING id, name, desc_sv, desc_en
         "#,
             topic.name,
             topic.desc_sv,
@@ -361,7 +362,8 @@ impl ProblemDatabase {
             TopicData,
             r#"SELECT id, name, desc_sv, desc_en 
                 FROM topics
-                WHERE id = ANY($1)"#,
+                WHERE id = ANY($1)
+                ORDER BY name"#,
             &ids,
         )
         .fetch_all(pool)
@@ -529,7 +531,8 @@ impl ProblemDatabase {
             r#"SELECT id, name, difficulty,  desc_sv, desc_en, module, 
             question_sv, question_en, answer_sv, answer_en, solution_sv, solution_en, prefix_id
                 FROM problems
-            WHERE id = ANY($1)"#,
+            WHERE id = ANY($1)
+            ORDER BY module"#,
             ids,
         )
         .fetch_all(pool)

@@ -259,6 +259,11 @@ label {
   font-size: 0.6rem;
   font-weight: 200;
   color: white;
+  & > p {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
   &.course {
     grid-template-columns: 4rem 1fr 1fr;
   }
@@ -267,6 +272,9 @@ label {
   }
   &.topic {
     grid-template-columns: 8rem 1fr 1fr;
+  }
+  &.problem {
+    grid-template-columns: 7rem 8rem 1fr;
   }
 
   &.header {

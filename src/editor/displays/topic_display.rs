@@ -12,9 +12,9 @@ pub fn TopicDisplay(
         div {
             class: "available_element topic header",
             style: "position: relative;",
-            p { "Namn" }
-            p { "Svenska" }
-            p { "Engelska" }
+            p { "Name" }
+            p { "Swedish" }
+            p { "English" }
         }
         for topic in topics() {
             div {
