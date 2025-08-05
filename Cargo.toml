@@ -71,3 +71,4 @@ inherits = "dev"
 
 [package.metadata.rust-analyzer]
 features = ["server", "web", "desktop"]
+
