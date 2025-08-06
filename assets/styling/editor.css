@@ -276,6 +276,9 @@ label {
   &.problem {
     grid-template-columns: 7rem 8rem 1fr;
   }
+  &.prefix {
+    grid-template-columns: 7rem 1fr 1fr;
+  }
 
   &.header {
     font-weight: 700;

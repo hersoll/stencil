@@ -1,6 +1,6 @@
 use crate::shared::{
     self, ChapterData, CourseData, Difficulty, ParsedChapterData, ParsedCourseData,
-    ParsedProblemData, ParsedTopicData, ProblemData, TopicData,
+    ParsedProblemData, ParsedTopicData, PrefixData, ProblemData, TopicData,
 };
 use dioxus::prelude::{server_fn::codec::Json, *};
 use std::collections::HashMap;
@@ -291,6 +291,15 @@ pub async fn load_topic_descs(ids: Vec<i32>, lang: String) -> Result<Vec<String>
 //#          PROBLEMS           #
 //###############################
 #[server]
+pub async fn set_problem(problem: ProblemData) -> Result<i32, ServerFnError> {
+    let result = if problem.id == 0 {
+        crate::backend::db::ProblemDatabase::create_problem(problem).await?
+    } else {
+        crate::backend::db::ProblemDatabase::update_problem(problem).await?
+    };
+    Ok(result)
+}
+#[server]
 pub async fn delete_problem(id: i32) -> Result<String, ServerFnError> {
     let name = crate::backend::db::ProblemDatabase::delete_problem(id).await?;
     Ok(name)
@@ -374,6 +383,23 @@ pub async fn load_valid_problems(
         .collect();
     Ok(problems)
 }
+
+#[server]
+pub async fn load_all_prefix_data() -> Result<Vec<PrefixData>, ServerFnError> {
+    let prefixes = crate::backend::db::ProblemDatabase::get_all_prefix_data().await?;
+    Ok(prefixes)
+}
+
+#[server]
+pub async fn set_prefix(prefix: PrefixData) -> Result<i32, ServerFnError> {
+    let result = if prefix.id == 0 {
+        crate::backend::db::ProblemDatabase::create_prefix(prefix).await?
+    } else {
+        crate::backend::db::ProblemDatabase::update_prefix(prefix).await?
+    };
+    Ok(result)
+}
+// PDF
 
 #[server]
 pub async fn generate_pdf(

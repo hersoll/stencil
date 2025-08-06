@@ -18,6 +18,9 @@ pub enum Error {
     FailedToLoadProblems {
         error: String,
     },
+    FailedToLoadPrefixes {
+        error: String,
+    },
     FailedToUpdateRow {
         error: String,
     },

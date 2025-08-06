@@ -98,3 +98,25 @@ impl ProblemData {
         }
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct PrefixData {
+    pub id: i32,
+    pub name: String,
+    pub text_sv: String,
+    pub text_en: String,
+    pub group_text_sv: String,
+    pub group_text_en: String,
+}
+impl PrefixData {
+    pub fn new() -> Self {
+        Self {
+            id: 0,
+            name: String::new(),
+            text_sv: String::new(),
+            text_en: String::new(),
+            group_text_sv: String::new(),
+            group_text_en: String::new(),
+        }
+    }
+}

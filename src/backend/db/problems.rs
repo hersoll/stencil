@@ -1,7 +1,7 @@
 use crate::{
     Error, Result,
     backend::db::get_pool,
-    shared::{ChapterData, CourseData, ProblemData, TopicData},
+    shared::{ChapterData, CourseData, PrefixData, ProblemData, TopicData},
 };
 
 pub struct ProblemDatabase;
@@ -388,13 +388,69 @@ impl ProblemDatabase {
     //#          PROBLEMS           #
     //###############################
 
+    pub async fn create_problem(problem: ProblemData) -> Result<i32> {
+        let pool = get_pool();
+        let result = sqlx::query!(
+            r#"INSERT INTO problems (name, desc_sv, desc_en, difficulty, module,
+            question_sv, question_en, answer_sv, answer_en, solution_sv, solution_en) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+            RETURNING id 
+        "#,
+            problem.name,
+            problem.desc_sv,
+            problem.desc_en,
+            problem.difficulty,
+            problem.module,
+            problem.question_sv,
+            problem.question_en,
+            problem.answer_sv,
+            problem.answer_en,
+            problem.solution_sv,
+            problem.solution_en
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })?;
+        Ok(result.id)
+    }
+
+    pub async fn update_problem(problem: ProblemData) -> Result<i32> {
+        let pool = get_pool();
+        let result = sqlx::query!(
+            r#"UPDATE problems SET name = $2, difficulty = $12, desc_sv = $3, desc_en = $4, module = $5,
+            question_sv = $6, question_en = $7, answer_sv = $8, answer_en = $9, solution_sv = $10, solution_en = $11
+            WHERE id = $1
+            RETURNING id
+        "#,
+            problem.id,
+            problem.name,
+            problem.desc_sv,
+            problem.desc_en,
+            problem.module,
+            problem.question_sv,
+            problem.question_en,
+            problem.answer_sv,
+            problem.answer_en,
+            problem.solution_sv,
+            problem.solution_en,
+            problem.difficulty,
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })?;
+        Ok(result.id)
+    }
     pub async fn get_all_problem_data() -> Result<Vec<ProblemData>> {
         let pool = get_pool();
         sqlx::query_as!(
             ProblemData,
             r#" SELECT id, name, difficulty, desc_sv, desc_en, question_sv, question_en,
             answer_sv, answer_en, solution_sv, solution_en, prefix_id, module
-            FROM problems ORDER BY difficulty"#,
+            FROM problems ORDER BY module"#,
         )
         .fetch_all(pool)
         .await
@@ -551,5 +607,62 @@ impl ProblemDatabase {
                 error: e.to_string(),
             })?;
         Ok(result.name)
+    }
+
+    // Prefix
+    pub async fn get_all_prefix_data() -> Result<Vec<PrefixData>> {
+        let pool = get_pool();
+        sqlx::query_as!(
+            PrefixData,
+            r#"SELECT id, name, text_sv, text_en, group_text_sv, group_text_en FROM prefixes"#
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(|e| Error::FailedToLoadPrefixes {
+            error: e.to_string(),
+        })
+    }
+
+    pub async fn create_prefix(prefix: PrefixData) -> Result<i32> {
+        let pool = get_pool();
+        let result = sqlx::query!(
+            r#"INSERT INTO prefixes (name, text_sv, text_en, group_text_sv, group_text_en) 
+            VALUES ($1, $2, $3, $4, $5) 
+            RETURNING id 
+        "#,
+            prefix.name,
+            prefix.text_sv,
+            prefix.text_en,
+            prefix.group_text_sv,
+            prefix.group_text_en
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })?;
+        Ok(result.id)
+    }
+
+    pub async fn update_prefix(prefix: PrefixData) -> Result<i32> {
+        let pool = get_pool();
+        let result = sqlx::query!(
+            r#"UPDATE prefixes SET name = $2, text_sv = $3, text_en = $4, group_text_sv = $5, group_text_en = $6 
+            WHERE id = $1
+            RETURNING id
+        "#,
+            prefix.id,
+            prefix.name,
+            prefix.text_sv,
+            prefix.text_en,
+            prefix.group_text_sv,
+            prefix.group_text_en
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(|e| Error::FailedToUpdateRow {
+            error: e.to_string(),
+        })?;
+        Ok(result.id)
     }
 }
