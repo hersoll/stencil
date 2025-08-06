@@ -1,6 +1,6 @@
 use crate::{
-    shared::{ChapterData, CourseData, ProblemData, TopicData},
     Error, Result,
+    shared::{ChapterData, CourseData, ProblemData, TopicData},
 };
 use serde::{Deserialize, Serialize};
 
@@ -36,6 +36,9 @@ pub struct ParsedProblemData {
     pub name: String,
     pub difficulty: i32,
     pub desc: String,
+    pub question: String,
+    pub answer: String,
+    pub solution: String,
 }
 //###############################
 //#          API TYPES          #

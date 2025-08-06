@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
 use crate::{
-    Result,
+    Error, Result,
     backend::{
-        IntRange, Problem,
+        self, IntRange, Problem, replace_placeholders,
         typst_formatting::{self, equation_solution},
     },
 };
@@ -21,8 +21,8 @@ fn without_notation_y(id: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
-
-    let question = String::from("TODO");
+    let strings = backend::get_parsed_problem(&id, lang)?;
+    let question = replace_placeholders(&strings.question, &map);
 
     let solution = format!(
         "y &= {coefficient}x {constant:+} \\x={x} \\
@@ -52,7 +52,8 @@ fn without_notation_x(id: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
-    let question = String::from("TODO");
+    let strings = backend::get_parsed_problem(&id, lang)?;
+    let question = replace_placeholders(&strings.question, &map);
 
     let solution = equation_solution(format!(
         "y &= {coefficient}x {constant:+} \\ y={y} \\

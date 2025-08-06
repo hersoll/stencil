@@ -6,6 +6,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         app::backend::db::init_database()
             .await
             .expect("Failed to initialize db");
+
+        println!("Loading problems to registry...");
+        app::backend::load_problem_data().await;
+        println!("Problems loaded!");
     });
 
     tracing_subscriber::fmt::init();
@@ -24,8 +28,8 @@ fn main() {
 fn main() {
     use app::editor::EditorApp;
     use dioxus::desktop::{
-        wry::dpi::{PhysicalSize, Size},
         Config, WindowBuilder,
+        wry::dpi::{PhysicalSize, Size},
     };
     dioxus::LaunchBuilder::desktop()
         .with_cfg(

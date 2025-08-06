@@ -95,6 +95,21 @@ impl ProblemData {
             } else {
                 self.desc_en
             },
+            question: if lang == "sv" {
+                self.question_sv.unwrap_or_default()
+            } else {
+                self.question_en.unwrap_or_default()
+            },
+            answer: if lang == "sv" {
+                self.answer_sv.unwrap_or_default()
+            } else {
+                self.answer_en.unwrap_or_default()
+            },
+            solution: if lang == "sv" {
+                self.solution_sv.unwrap_or_default()
+            } else {
+                self.solution_en.unwrap_or_default()
+            },
         }
     }
 }
