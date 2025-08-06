@@ -74,3 +74,35 @@ fn without_notation_x(id: String, lang: &str) -> Result<Problem> {
     };
     Ok(problem)
 }
+
+#[problem(id = "find_y_no_negatives", difficulty = 2)]
+fn find_y_no_negatives(id: String, lang: &str) -> Result<Problem> {
+    let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
+    let x = IntRange::without_zero(1, 5)?.random();
+    let (constant, constant_range) =
+        IntRange::without_zero((-x * coefficient).max(-10), 10)?.and_random();
+    let y = coefficient * x + constant;
+
+    let expression = format!("f(x) = {}x {:+}", coefficient, constant);
+    let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
+    let strings = backend::get_parsed_problem(&id, lang)?;
+    let question = replace_placeholders(&strings.question, &map);
+
+    let solution = format!(
+        "f(x) &= {coefficient}x {constant:+} \\x={x} \\
+       f(colored({x})) &= {coefficient} dot.op colored({x}) {constant:+} \\ \\
+       f({x}) &= {prod} {constant:+} \\ \\
+       f({x}) &= {y} \\",
+        prod = x * coefficient
+    );
+
+    let problem = Problem {
+        id,
+        question,
+        answer: format!("$f({x}) = {y}$"),
+        solution: equation_solution(solution),
+        identifiers: vec![coefficient, constant],
+        combinations: coefficient_range.len() * constant_range.len(),
+    };
+    Ok(problem)
+}
