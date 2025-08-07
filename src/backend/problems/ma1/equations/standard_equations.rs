@@ -13,7 +13,7 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
         "x {constant:+} &= {rhs}\\ {sub_constant} \\
               x &= {answer}\\",
         rhs = answer + constant,
-        sub_constant = typst_formatting::subtract(constant),
+        sub_constant = typst_formatting::step_subtract(constant),
     );
 
     let problem = Problem {

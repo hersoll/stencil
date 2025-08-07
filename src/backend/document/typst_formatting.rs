@@ -30,9 +30,27 @@ pub fn reformat_newlines(input: &str) -> String {
     input.replace('\n', r" \ ")
 }
 
+
+
+pub fn add<T: PartialOrd + Zero + Signed + Display>(first: T, second: T) -> String {
+    format!("{} + {}", parentheses(first), parentheses(second))
+}
+
+pub fn subtract<T: PartialOrd + Zero + Signed + Display>(first: T, second: T) -> String {
+    format!("{} - {}", parentheses(first), parentheses(second))
+}
+
+pub fn multiply<T: PartialOrd + Zero + Signed + Display>(first: T, second: T) -> String {
+    format!("{} dot.op {}", parentheses(first), parentheses(second))
+}
+
+pub fn divide<T: PartialOrd + Zero + Signed + Display>(first: T, second: T) -> String {
+    format!("({})/({})", parentheses(first), parentheses(second))
+}
+
 static OPERATOR_SPACE: f32 = 0.25;
 
-pub fn subtract<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
+pub fn step_subtract<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
     if val < T::zero() {
         format!("+ #h({OPERATOR_SPACE}em) {}", val.abs())
     } else if val > T::zero() {
@@ -42,7 +60,7 @@ pub fn subtract<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
     }
 }
 
-pub fn add<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
+pub fn step_add<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
     if val > T::zero() {
         format!("+ #h({OPERATOR_SPACE}em) {}", val)
     } else if val < T::zero() {
@@ -50,6 +68,14 @@ pub fn add<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
     } else {
         String::new()
     }
+}
+
+pub fn step_divide<T: PartialOrd + Zero + Display>(val: T) -> String {
+    format!("div {}", parentheses(val))
+}
+
+pub fn step_multiply<T: PartialOrd + Zero + Display>(val: T) -> String {
+    format!("dot.op {}", parentheses(val))
 }
 
 pub fn parentheses<T: PartialOrd + Zero + Display>(val: T) -> String {

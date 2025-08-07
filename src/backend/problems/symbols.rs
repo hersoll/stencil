@@ -11,24 +11,19 @@ impl Symbol {
     }
 }
 
-/// Other modules interact with the symbols throught the methods on this struct
-pub struct Symbols;
-impl Symbols {
+/// Get a random unknown - the x in 3x + 1 = 10 or (2x + 1) - (x + 2)
+pub fn get_unknown() -> Result<char> {
+    get_random(&UNKNOWNS)
+}
 
-    /// Get a random unknown - the x in 3x + 1 = 10 or (2x + 1) - (x + 2)
-    pub fn get_unknown() -> Result<char> {
-        get_random(&UNKNOWNS)
-    }
+/// Get a random function name - the f in f(x).
+pub fn get_function_name() -> Result<char> {
+    get_random(&FUNCTION_NAMES)
+}
 
-    /// Get a random function name - the f in f(x).
-    pub fn get_function_name() -> Result<char> {
-        get_random(&FUNCTION_NAMES)
-    }
-
-    /// Get a random **function** variable, i.e. the x in f(x).
-    pub fn get_variable() -> Result<char> {
-        get_random(&VARIABLES)
-    }
+/// Get a random **function** variable, i.e. the x in f(x).
+pub fn get_variable() -> Result<char> {
+    get_random(&VARIABLES)
 }
 
 
