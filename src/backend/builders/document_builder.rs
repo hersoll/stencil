@@ -12,6 +12,7 @@ pub struct DocumentBuilder {
     question_sets: Vec<Vec<String>>,
     answer_sets: Vec<Vec<String>>,
     problem_names: Vec<String>,
+    group_prefixes: Vec<Option<String>>,
     options: DocumentOptions,
     set_options: Vec<SetRenderingOptions>,
     i18n_strings: HashMap<String, String>,
@@ -45,6 +46,7 @@ impl DocumentBuilder {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
             problem_names: Vec::new(),
+            group_prefixes: Vec::new(),
             set_options,
             options,
             i18n_strings,
@@ -74,15 +76,16 @@ impl DocumentBuilder {
                 }
             })
             .collect();
-        let (question_set, answer_set): (Vec<String>, Vec<String>) = results?.into_iter().unzip();
-        self.question_sets
-            .push(self.append_prefixes(question_set, &ids)?);
+        let (mut question_set, answer_set): (Vec<String>, Vec<String>) =
+            results?.into_iter().unzip();
+        question_set = self.append_prefixes(question_set, &ids)?;
+        self.question_sets.push(question_set);
         self.answer_sets.push(answer_set);
         Ok(self)
     }
 
     fn append_prefixes(
-        &self,
+        &mut self,
         mut question_set: Vec<String>,
         problem_ids: &Vec<String>,
     ) -> Result<Vec<String>> {
@@ -100,15 +103,28 @@ impl DocumentBuilder {
         let prefix_reg = PREFIX_DATA
             .read()
             .map_err(|_| Error::RegistryMutexIsPoisoned)?;
-        prefix_ids.into_iter().enumerate().for_each(|(i, id_opt)| {
-            if let Some(id) = id_opt {
-                let prefix_fetch = prefix_reg.get(&id);
-                if let Some(prefix) = prefix_fetch {
-                    let prefix_text = prefix.clone().parse(&self.options.lang).text;
-                    question_set[i] = prefix_text + " " + &question_set[i];
-                }
+        if let Some(first_id) = prefix_ids[0]
+            && prefix_ids.iter().all(|&id| id == prefix_ids[0])
+        {
+            let prefix_fetch = prefix_reg.get(&first_id);
+            if let Some(prefix) = prefix_fetch {
+                let prefix_text = prefix.clone().parse(&self.options.lang).group_text;
+                self.group_prefixes.push(Some(prefix_text + ":"));
+            } else {
+                self.group_prefixes.push(None);
             }
-        });
+        } else {
+            self.group_prefixes.push(None);
+            prefix_ids.into_iter().enumerate().for_each(|(i, id_opt)| {
+                if let Some(id) = id_opt {
+                    let prefix_fetch = prefix_reg.get(&id);
+                    if let Some(prefix) = prefix_fetch {
+                        let prefix_text = prefix.clone().parse(&self.options.lang).text;
+                        question_set[i] = prefix_text + " " + &question_set[i];
+                    }
+                }
+            });
+        }
         Ok(question_set)
     }
 
@@ -125,7 +141,7 @@ impl DocumentBuilder {
 
     fn build_solution(&self, answer: String, solution: String) -> Result<String> {
         let heading = format!(
-            "#block(inset: (left: -1.2em))[\n  #emph([{}])\n  #v(-0.5em)",
+            "#block(inset: (left: -1.2em))[\n#set text(size: 0.8em)\n #emph([{}])\n  #v(-0.5em)",
             self.i18n_strings
                 .get("solution")
                 .ok_or(Error::NoSuchKeyExists {
@@ -136,11 +152,12 @@ impl DocumentBuilder {
         Ok([answer, heading, solution, closing_bracket].join("\n"))
     }
 
-    /// Writes the set to columns with equal height
+    /// Writes the sets to columns with equal height
     fn sets_to_balanced_columns(&self, sets: &Vec<Vec<String>>) -> String {
         let mut collection = String::new();
         for (i, set) in sets.iter().enumerate() {
-            let mut set_string = String::from("#let problem_set = (");
+            let mut set_string = self.group_prefixes[i].clone().unwrap_or_default();
+            set_string += "\n#let problem_set = (";
             set_string += set
                 .iter()
                 .map(|entry| typst_formatting::to_list_item(entry))
