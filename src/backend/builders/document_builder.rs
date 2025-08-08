@@ -11,6 +11,7 @@ use crate::{Error, Result};
 pub struct DocumentBuilder {
     question_sets: Vec<Vec<String>>,
     answer_sets: Vec<Vec<String>>,
+    problem_names: Vec<String>,
     options: DocumentOptions,
     set_options: Vec<SetRenderingOptions>,
     i18n_strings: HashMap<String, String>,
@@ -43,6 +44,7 @@ impl DocumentBuilder {
         Ok(DocumentBuilder {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
+            problem_names: Vec::new(),
             set_options,
             options,
             i18n_strings,
@@ -54,19 +56,17 @@ impl DocumentBuilder {
         self
     }
 
-    // TODO: Refactor so it checks added problems in entire document
     pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> Result<&mut Self> {
-        let mut added_problem_names: Vec<String> = Vec::new();
         let results: Result<Vec<(String, String)>> = problem_set
             .into_iter()
             .map(|problem| match self.options.write_solutions {
                 WriteSolutions::None => Ok(self.add_answer_to_set(problem)),
                 WriteSolutions::All => self.add_solution_to_set(problem),
                 WriteSolutions::First => {
-                    if added_problem_names.contains(&problem.id) {
+                    if self.problem_names.contains(&problem.id) {
                         Ok(self.add_answer_to_set(problem))
                     } else {
-                        added_problem_names.push(problem.id.clone());
+                        self.problem_names.push(problem.id.clone());
                         self.add_solution_to_set(problem)
                     }
                 }
