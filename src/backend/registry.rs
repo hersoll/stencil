@@ -3,13 +3,16 @@ use std::sync::{LazyLock, RwLock};
 
 use crate::Error;
 use crate::Result;
-use crate::shared::{ParsedProblemData, ProblemData};
+use crate::shared::{ParsedPrefixData, ParsedProblemData, PrefixData, ProblemData};
 
 /// A map between problem names (simple-equations-default) and ProblemTypes
 pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, super::ProblemType>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
 pub static PROBLEM_DATA: LazyLock<RwLock<HashMap<String, ProblemData>>> =
+    LazyLock::new(|| RwLock::new(HashMap::new()));
+
+pub static PREFIX_DATA: LazyLock<RwLock<HashMap<i32, PrefixData>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
 pub async fn load_problem_data() -> Result<()> {
@@ -19,6 +22,17 @@ pub async fn load_problem_data() -> Result<()> {
             .write()
             .map_err(|_| Error::RegistryMutexIsPoisoned)?
             .insert(problem.module.clone() + "_" + &problem.name, problem);
+    }
+    Ok(())
+}
+
+pub async fn load_prefix_data() -> Result<()> {
+    let prefixes = crate::backend::db::ProblemDatabase::get_all_prefix_data().await?;
+    for prefix in prefixes {
+        PREFIX_DATA
+            .write()
+            .map_err(|_| Error::RegistryMutexIsPoisoned)?
+            .insert(prefix.id, prefix);
     }
     Ok(())
 }
@@ -33,6 +47,16 @@ pub fn get_parsed_problem(full_name: &str, lang: &str) -> Result<ParsedProblemDa
             id: full_name.to_string(),
         })?;
     Ok(problem.parse(lang))
+}
+
+pub fn get_parsed_prefix(id: &i32, lang: &str) -> Result<ParsedPrefixData> {
+    let prefix = PREFIX_DATA
+        .read()
+        .map_err(|_| Error::RegistryMutexIsPoisoned)?
+        .get(id)
+        .cloned()
+        .ok_or(Error::NoSuchProblemInRegistry { id: id.to_string() })?;
+    Ok(prefix.parse(lang))
 }
 
 pub fn replace_placeholders(template: &str, values: &HashMap<&str, String>) -> String {

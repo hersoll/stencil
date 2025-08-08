@@ -10,6 +10,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Loading problems to registry...");
         app::backend::load_problem_data().await;
         println!("Problems loaded!");
+        println!("Loading prefixes to registry...");
+        app::backend::load_prefix_data().await;
+        println!("Prefixes loaded!");
     });
 
     tracing_subscriber::fmt::init();

@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::fmt::Display;
 
 use crate::backend::db::I18nDatabase;
-use crate::backend::document::*;
 use crate::backend::problems::Problem;
+use crate::backend::{PREFIX_DATA, PROBLEM_DATA, document::*};
 use crate::shared::{DocumentOptions, SetRenderingOptions, WriteSolutions};
 use crate::{Error, Result};
 
@@ -57,6 +57,8 @@ impl DocumentBuilder {
     }
 
     pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> Result<&mut Self> {
+        // Save the IDs to use when appending prefixes
+        let ids: Vec<String> = problem_set.iter().map(|pr| pr.id.clone()).collect();
         let results: Result<Vec<(String, String)>> = problem_set
             .into_iter()
             .map(|problem| match self.options.write_solutions {
@@ -73,9 +75,41 @@ impl DocumentBuilder {
             })
             .collect();
         let (question_set, answer_set): (Vec<String>, Vec<String>) = results?.into_iter().unzip();
-        self.question_sets.push(question_set);
+        self.question_sets
+            .push(self.append_prefixes(question_set, &ids)?);
         self.answer_sets.push(answer_set);
         Ok(self)
+    }
+
+    fn append_prefixes(
+        &self,
+        mut question_set: Vec<String>,
+        problem_ids: &Vec<String>,
+    ) -> Result<Vec<String>> {
+        let problem_reg = PROBLEM_DATA
+            .read()
+            .map_err(|_| Error::RegistryMutexIsPoisoned)?;
+        let prefix_ids: Vec<Option<i32>> = problem_ids
+            .iter()
+            .map(|id| match problem_reg.get(id) {
+                Some(problem) => problem.prefix_id,
+                None => None,
+            })
+            .collect();
+
+        let prefix_reg = PREFIX_DATA
+            .read()
+            .map_err(|_| Error::RegistryMutexIsPoisoned)?;
+        prefix_ids.into_iter().enumerate().for_each(|(i, id_opt)| {
+            if let Some(id) = id_opt {
+                let prefix_fetch = prefix_reg.get(&id);
+                if let Some(prefix) = prefix_fetch {
+                    let prefix_text = prefix.clone().parse(&self.options.lang).text;
+                    question_set[i] = prefix_text + " " + &question_set[i];
+                }
+            }
+        });
+        Ok(question_set)
     }
 
     fn add_answer_to_set(&self, problem: Problem) -> (String, String) {

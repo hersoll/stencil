@@ -40,6 +40,14 @@ pub struct ParsedProblemData {
     pub answer: String,
     pub solution: String,
 }
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "server", derive(sqlx::FromRow))]
+pub struct ParsedPrefixData {
+    pub id: i32,
+    pub name: String,
+    pub text: String,
+    pub group_text: String,
+}
 //###############################
 //#          API TYPES          #
 //###############################
