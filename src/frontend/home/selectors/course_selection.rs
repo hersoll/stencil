@@ -29,7 +29,6 @@ fn course_buttons(
                         button {
                             key: "{course_name.clone()}",
                             class: "course {selected}",
-                            disabled: course_name != "ma1b",
                             onclick: move |_| async move {
                                 topics.set(Vec::new());
                                 active_chapter.set(-1);
