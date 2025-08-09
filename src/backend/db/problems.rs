@@ -392,8 +392,8 @@ impl ProblemDatabase {
         let pool = get_pool();
         let result = sqlx::query!(
             r#"INSERT INTO problems (name, desc_sv, desc_en, difficulty, module,
-            question_sv, question_en, answer_sv, answer_en, solution_sv, solution_en) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+            question_sv, question_en, answer_sv, answer_en, solution_sv, solution_en, prefix_id) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
             RETURNING id 
         "#,
             problem.name,
@@ -406,7 +406,8 @@ impl ProblemDatabase {
             problem.answer_sv,
             problem.answer_en,
             problem.solution_sv,
-            problem.solution_en
+            problem.solution_en,
+            problem.prefix_id,
         )
         .fetch_one(pool)
         .await
@@ -420,7 +421,7 @@ impl ProblemDatabase {
         let pool = get_pool();
         let result = sqlx::query!(
             r#"UPDATE problems SET name = $2, difficulty = $12, desc_sv = $3, desc_en = $4, module = $5,
-            question_sv = $6, question_en = $7, answer_sv = $8, answer_en = $9, solution_sv = $10, solution_en = $11
+            question_sv = $6, question_en = $7, answer_sv = $8, answer_en = $9, solution_sv = $10, solution_en = $11, prefix_id = $13
             WHERE id = $1
             RETURNING id
         "#,
@@ -436,6 +437,7 @@ impl ProblemDatabase {
             problem.solution_sv,
             problem.solution_en,
             problem.difficulty,
+            problem.prefix_id,
         )
         .fetch_one(pool)
         .await

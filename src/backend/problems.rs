@@ -1,4 +1,4 @@
-use crate::{Error, Result};
+use crate::Result;
 //#################################
 //#           IMPORTS             #
 //#################################
@@ -6,6 +6,8 @@ pub mod int_range;
 pub mod ma1;
 pub mod math_utils;
 pub mod solutions;
+mod expressions;
+mod numbers;
 mod symbols;
 
 //#################################

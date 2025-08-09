@@ -1,6 +1,5 @@
-use std::fmt::Display;
-
 use num_traits::{Signed, Zero};
+use std::fmt::Display;
 
 pub fn to_list_item(s: &String) -> String {
     String::from("block(breakable: false)[") + s + "],"
@@ -29,8 +28,6 @@ pub fn reset_enum() -> String {
 pub fn reformat_newlines(input: &str) -> String {
     input.replace('\n', r" \ ")
 }
-
-
 
 pub fn add<T: PartialOrd + Zero + Signed + Display>(first: T, second: T) -> String {
     format!("{} + {}", parentheses(first), parentheses(second))

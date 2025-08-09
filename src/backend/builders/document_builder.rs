@@ -76,9 +76,9 @@ impl DocumentBuilder {
                 }
             })
             .collect();
-        let (mut question_set, answer_set): (Vec<String>, Vec<String>) =
+        let (mut question_set, mut answer_set): (Vec<String>, Vec<String>) =
             results?.into_iter().unzip();
-        question_set = self.append_prefixes(question_set, &ids)?;
+        (question_set, answer_set) = self.append_prefixes(question_set, answer_set, &ids)?;
         self.question_sets.push(question_set);
         self.answer_sets.push(answer_set);
         Ok(self)
@@ -87,8 +87,9 @@ impl DocumentBuilder {
     fn append_prefixes(
         &mut self,
         mut question_set: Vec<String>,
+        mut answer_set: Vec<String>,
         problem_ids: &Vec<String>,
-    ) -> Result<Vec<String>> {
+    ) -> Result<(Vec<String>, Vec<String>)> {
         let problem_reg = PROBLEM_DATA
             .read()
             .map_err(|_| Error::RegistryMutexIsPoisoned)?;
@@ -125,7 +126,7 @@ impl DocumentBuilder {
                 }
             });
         }
-        Ok(question_set)
+        Ok((question_set, answer_set))
     }
 
     fn add_answer_to_set(&self, problem: Problem) -> (String, String) {
