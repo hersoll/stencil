@@ -6,8 +6,7 @@ pub mod int_range;
 pub mod ma1;
 pub mod math_utils;
 pub mod solutions;
-mod expressions;
-mod numbers;
+mod types;
 mod symbols;
 
 //#################################
