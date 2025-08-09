@@ -1,7 +1,7 @@
 use crate::Result;
-use crate::backend::problems::expressions::{Expression, Term};
 use crate::backend::problems::symbols;
 use crate::backend::{IntRange, Problem};
+use crate::backend::problems::types::{Term, Expression};
 use macros::problem;
 
 #[problem(id = "one_variable_and_constants_no_negatives", difficulty = 0)]
