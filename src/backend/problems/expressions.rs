@@ -129,6 +129,49 @@ pub struct Term {
     variables: Variables,
 }
 
+impl Display for Term {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if f.sign_plus() {
+            if self.coefficient == 1 {
+                if self.variables.list.is_empty() {
+                    write!(f, "+1")?;
+                } else {
+                    write!(f, "+{}", self.variables)?;
+                }
+            } else if self.coefficient == -1 {
+                if self.variables.list.is_empty() {
+                    write!(f, "-1")?;
+                } else {
+                    write!(f, "-{}", self.variables)?;
+                }
+            } else if self.coefficient == 0 {
+                write!(f, "")?;
+            } else {
+                write!(f, "{:+}{}", self.coefficient, self.variables)?;
+            }
+        } else {
+            if self.coefficient == 1 {
+                if self.variables.list.is_empty() {
+                    write!(f, "1")?;
+                } else {
+                    write!(f, "{}", self.variables)?;
+                }
+            } else if self.coefficient == -1 {
+                if self.variables.list.is_empty() {
+                    write!(f, "-1")?;
+                } else {
+                    write!(f, "-{}", self.variables)?;
+                }
+            } else if self.coefficient == 0 {
+                write!(f, "")?;
+            } else {
+                write!(f, "{}{}", self.coefficient, self.variables)?;
+            }
+        }
+        Ok(())
+    }
+}
+
 impl<T> From<(i32, T)> for Term
 where
     T: Into<Variable>,
@@ -217,20 +260,28 @@ impl From<Vec<Term>> for Expression {
     }
 }
 
+impl From<Vec<&Term>> for Expression {
+    fn from(value: Vec<&Term>) -> Self {
+        Expression {
+            terms: value.iter().map(|&t| t.clone()).collect(),
+        }
+    }
+}
+
 impl Expression {
     fn new() -> Self {
         Self { terms: Vec::new() }
     }
 
-    pub fn simplify(self) -> Self {
+    pub fn simplify(&self) -> Self {
         let mut result = Expression::new();
-        for term in self.terms {
+        for term in &self.terms {
             match result
                 .terms
                 .iter()
                 .position(|t| t.variables == term.variables)
             {
-                Some(index) => result.terms[index] += term,
+                Some(index) => result.terms[index] += term.clone(),
                 None => result.terms.push(term.clone()),
             }
         }
@@ -290,25 +341,12 @@ impl Display for Expression {
         let mut first_value_written = false;
         for term in &self.terms {
             if !first_value_written {
-                first_value_written = true;
-                if term.coefficient == 1 {
-                    write!(f, "{}", term.variables)?;
-                } else if term.coefficient == -1 {
-                    write!(f, "-{}", term.variables)?;
-                } else if term.coefficient == 0 {
-                    first_value_written = false;
-                } else {
-                    write!(f, "{}{}", term.coefficient, term.variables)?;
+                if term.coefficient != 0 {
+                    first_value_written = true;
+                    write!(f, "{term} ")?;
                 }
             } else {
-                if term.coefficient == 1 {
-                    write!(f, "+{}", term.variables)?;
-                } else if term.coefficient == -1 {
-                    write!(f, "-{}", term.variables)?;
-                } else if term.coefficient == 0 {
-                } else {
-                    write!(f, "{:+}{}", term.coefficient, term.variables)?;
-                }
+                write!(f, "{term:+} ")?;
             }
         }
         Ok(())
