@@ -1,7 +1,7 @@
-use crate::Result;
 use crate::backend::problems::symbols;
+use crate::backend::problems::types::{Expression, Term};
 use crate::backend::{IntRange, Problem};
-use crate::backend::problems::types::{Term, Expression};
+use crate::Result;
 use macros::problem;
 
 #[problem(id = "one_variable_and_constants_no_negatives", difficulty = 0)]
@@ -79,5 +79,62 @@ fn one_variable_and_constants(id: String, _lang: &str) -> Result<Problem> {
         solution,
         identifiers: vec![first_coef, first_const],
         combinations: first_coef_range.len() * first_const_range.len(),
+    })
+}
+
+#[problem(id = "two_variables_and_constants", difficulty = 2)]
+fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
+    let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
+    let (first_coef_a, first_coef_a_range) = IntRange::with_zero(-9, 9)?.and_random();
+    let first_coef_b = IntRange::with_zero(-9, 9)?.random();
+    let (second_coef_a, second_coef_a_range) = IntRange::with_zero(-9, 9)?.and_random();
+    let second_coef_b = IntRange::with_zero(-9, 9)?.random();
+    let first_const = IntRange::with_zero(6, 6)?.random();
+    let second_const = IntRange::with_zero(-6, 6)?.random();
+    let mut first_term_a: Term = (first_coef_a, first_unknown).into();
+    let mut first_term_b: Term = (first_coef_b, first_unknown).into();
+    let second_term_a: Term = (second_coef_a, second_unknown).into();
+    let second_term_b: Term = (second_coef_b, second_unknown).into();
+    let mut first_const_term: Term = first_const.into();
+    let mut second_const_term: Term = second_const.into();
+    let original_expression: Expression = Expression::random_order(vec![
+        &first_term_a,
+        &first_term_b,
+        &second_term_a,
+        &second_term_b,
+        &first_const_term,
+        &second_const_term,
+    ]);
+    let simplified_expression = original_expression.simplify();
+    first_term_a.colored = true;
+    first_term_b.colored = true;
+    first_const_term.colored = true;
+    second_const_term.colored = true;
+    let sorted_expression: Expression = vec![
+        &first_term_a,
+        &first_term_b,
+        &second_term_a,
+        &second_term_b,
+        &first_const_term,
+        &second_const_term,
+    ]
+    .into();
+
+    let question = format!("${original_expression}$");
+    let answer = format!("${simplified_expression}$");
+
+    let solution = format!(
+        "$ &{original_expression} = \\
+        = &{sorted_expression} = \\
+        = &{simplified_expression} $",
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer,
+        solution,
+        identifiers: vec![first_coef_a, second_coef_a],
+        combinations: first_coef_a_range.len() * second_coef_a_range.len(),
     })
 }

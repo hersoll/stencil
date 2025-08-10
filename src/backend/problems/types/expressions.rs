@@ -1,3 +1,4 @@
+use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
 use crate::backend::problems::types::terms::Term;
@@ -22,8 +23,14 @@ impl From<Vec<&Term>> for Expression {
 }
 
 impl Expression {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self { terms: Vec::new() }
+    }
+
+    pub fn random_order(terms: Vec<&Term>) -> Self {
+        let mut owned_terms: Vec<Term> = terms.iter().map(|&t| t.clone()).collect();
+        owned_terms.shuffle(&mut rng());
+        Self { terms: owned_terms }
     }
 
     pub fn simplify(&self) -> Self {

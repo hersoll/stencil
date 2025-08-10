@@ -16,7 +16,7 @@ pub fn get_unknown() -> Result<char> {
     get_random(&UNKNOWNS)
 }
 
-pub fn get_two_unknowns(n: usize) -> Result<(char, char)> {
+pub fn get_two_unknowns() -> Result<(char, char)> {
     let mut rng = rand::rng();
     [
         ('a', 'b'),
@@ -31,7 +31,7 @@ pub fn get_two_unknowns(n: usize) -> Result<(char, char)> {
     .copied()
 }
 
-pub fn get_three_unknowns(n: usize) -> Result<(char, char, char)> {
+pub fn get_three_unknowns() -> Result<(char, char, char)> {
     let mut rng = rand::rng();
     [
         ('a', 'b', 'c'),
