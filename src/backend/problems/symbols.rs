@@ -1,5 +1,5 @@
-use rand::{self, seq::IndexedRandom};
 use crate::Result;
+use rand::{self, seq::IndexedRandom};
 struct Symbol {
     char: char,
     weight: u8,
@@ -16,6 +16,34 @@ pub fn get_unknown() -> Result<char> {
     get_random(&UNKNOWNS)
 }
 
+pub fn get_two_unknowns(n: usize) -> Result<(char, char)> {
+    let mut rng = rand::rng();
+    [
+        ('a', 'b'),
+        ('j', 'k'),
+        ('m', 'n'),
+        ('p', 'q'),
+        ('t', 'u'),
+        ('x', 'y'),
+    ]
+    .choose(&mut rng)
+    .ok_or(crate::Error::EmptyStatic)
+    .copied()
+}
+
+pub fn get_three_unknowns(n: usize) -> Result<(char, char, char)> {
+    let mut rng = rand::rng();
+    [
+        ('a', 'b', 'c'),
+        ('p', 'q', 'r'),
+        ('t', 'u', 'v'),
+        ('x', 'y', 'z'),
+    ]
+    .choose(&mut rng)
+    .ok_or(crate::Error::EmptyStatic)
+    .copied()
+}
+
 /// Get a random function name - the f in f(x).
 pub fn get_function_name() -> Result<char> {
     get_random(&FUNCTION_NAMES)
@@ -26,14 +54,12 @@ pub fn get_variable() -> Result<char> {
     get_random(&VARIABLES)
 }
 
-
 fn get_random(symbols: &[Symbol]) -> Result<char> {
     let mut rng = rand::rng();
     symbols
         .choose_weighted(&mut rng, |symbol| symbol.weight)
         .map_err(|_| crate::Error::EmptyStatic)
         .map(|symbol| symbol.char)
-
 }
 
 /// UNKNOWNS are used in equations and expressions - y is fine here
@@ -62,7 +88,4 @@ static FUNCTION_NAMES: [Symbol; 5] = [
     Symbol::new('v', 5),
 ];
 
-static VARIABLES: [Symbol; 2] = [
-    Symbol::new('x', 7),
-    Symbol::new('t', 1),
-];
+static VARIABLES: [Symbol; 2] = [Symbol::new('x', 7), Symbol::new('t', 1)];
