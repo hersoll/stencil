@@ -7,10 +7,14 @@ use crate::backend::problems::types::variables::Variables;
 pub struct Term {
     pub coefficient: i32,
     pub variables: Variables,
+    pub colored: bool,
 }
 
 impl Display for Term {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.colored {
+            write!(f, "colored(")?;
+        }
         if f.sign_plus() {
             if self.coefficient == 1 {
                 if self.variables.list.is_empty() {
@@ -48,6 +52,9 @@ impl Display for Term {
                 write!(f, "{}{}", self.coefficient, self.variables)?;
             }
         }
+        if self.colored {
+            write!(f, ")")?;
+        }
         Ok(())
     }
 }
@@ -60,6 +67,7 @@ where
         Self {
             coefficient: value.0,
             variables: Variables::from(value.1),
+            colored: false,
         }
     }
 }
@@ -68,6 +76,7 @@ impl From<i32> for Term {
         Self {
             coefficient: value,
             variables: Variables::new(),
+            colored: false,
         }
     }
 }
@@ -78,6 +87,7 @@ impl std::ops::Neg for Term {
         Self {
             coefficient: -self.coefficient,
             variables: self.variables,
+            colored: self.colored,
         }
     }
 }
@@ -89,6 +99,7 @@ impl std::ops::Add for Term {
         Self {
             coefficient: self.coefficient + rhs.coefficient,
             variables: self.variables,
+            colored: self.colored,
         }
     }
 }
@@ -105,6 +116,7 @@ impl std::ops::Sub for Term {
         Self {
             coefficient: self.coefficient - rhs.coefficient,
             variables: self.variables,
+            colored: self.colored,
         }
     }
 }
@@ -120,6 +132,7 @@ impl std::ops::Mul for Term {
         Self {
             coefficient: self.coefficient * rhs.coefficient,
             variables: self.variables * rhs.variables,
+            colored: self.colored,
         }
     }
 }
@@ -135,6 +148,7 @@ impl std::ops::Mul<Term> for i32 {
         Term {
             coefficient: rhs.coefficient * self,
             variables: rhs.variables.clone(),
+            colored: rhs.colored,
         }
     }
 }
