@@ -89,14 +89,16 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
     let first_coef_b = IntRange::with_zero(-9, 9)?.random();
     let (second_coef_a, second_coef_a_range) = IntRange::with_zero(-9, 9)?.and_random();
     let second_coef_b = IntRange::with_zero(-9, 9)?.random();
-    let first_const = IntRange::with_zero(6, 6)?.random();
-    let second_const = IntRange::with_zero(-6, 6)?.random();
+    let first_const = IntRange::with_zero(-9, 9)?.random();
+    let second_const = IntRange::with_zero(-9, 9)?.random();
+
     let mut first_term_a: Term = (first_coef_a, first_unknown).into();
     let mut first_term_b: Term = (first_coef_b, first_unknown).into();
     let second_term_a: Term = (second_coef_a, second_unknown).into();
     let second_term_b: Term = (second_coef_b, second_unknown).into();
     let mut first_const_term: Term = first_const.into();
     let mut second_const_term: Term = second_const.into();
+
     let original_expression: Expression = Expression::random_order(vec![
         &first_term_a,
         &first_term_b,
@@ -110,15 +112,11 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
     first_term_b.colored = true;
     first_const_term.colored = true;
     second_const_term.colored = true;
-    let sorted_expression: Expression = vec![
-        &first_term_a,
-        &first_term_b,
-        &second_term_a,
-        &second_term_b,
-        &first_const_term,
-        &second_const_term,
-    ]
-    .into();
+    let first_terms: Expression = vec![&first_term_a, &first_term_b].into();
+    let second_terms: Expression = vec![&second_term_a, &second_term_b].into();
+    let const_terms: Expression = vec![&first_const_term, &second_const_term].into();
+    let sorted_expression: Expression =
+        first_terms.sorted() + second_terms.sorted() + const_terms.sorted();
 
     let question = format!("${original_expression}$");
     let answer = format!("${simplified_expression}$");

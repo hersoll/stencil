@@ -1,6 +1,6 @@
-use std::{collections::HashSet, fmt::Display};
+use std::{cmp::Ordering, collections::HashSet, fmt::Display};
 
-#[derive(Clone, Debug, Copy)]
+#[derive(Clone, Debug, Copy, Eq, PartialOrd)]
 pub struct Variable {
     pub symbol: char,
     pub exponent: i32,
@@ -36,6 +36,11 @@ impl PartialEq for Variable {
         self.symbol == other.symbol
     }
 }
+impl Ord for Variable {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.symbol.cmp(&other.symbol)
+    }
+}
 impl std::ops::Neg for Variable {
     type Output = Self;
     fn neg(self) -> Self::Output {
@@ -46,7 +51,7 @@ impl std::ops::Neg for Variable {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq)]
 pub struct Variables {
     pub list: Vec<Variable>,
 }
@@ -80,9 +85,9 @@ where
     T: Into<Variable>,
 {
     fn from(list: Vec<T>) -> Self {
-        Self {
-            list: list.into_iter().map(|v| v.into()).collect(),
-        }
+        let mut variables: Vec<Variable> = list.into_iter().map(|v| v.into()).collect();
+        variables.sort_by_key(|v| v.symbol);
+        Self { list: variables }
     }
 }
 impl PartialEq for Variables {
@@ -102,11 +107,13 @@ impl std::ops::Mul for Variables {
                 None => final_variables.push(var),
             }
         }
+        final_variables.sort_by_key(|v| v.symbol);
         Self {
             list: final_variables,
         }
     }
 }
+
 impl std::ops::Div for Variables {
     type Output = Self;
     fn div(self, rhs: Self) -> Self::Output {
@@ -117,8 +124,34 @@ impl std::ops::Div for Variables {
                 None => final_variables.push(-var),
             }
         }
+        final_variables.sort_by_key(|v| v.symbol);
         Self {
             list: final_variables,
         }
+    }
+}
+
+impl Ord for Variables {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.list.len() == 0 && other.list.len() == 0 {
+            Ordering::Equal
+        } else if self.list.len() == 0 {
+            Ordering::Greater
+        } else if other.list.len() == 0 {
+            Ordering::Less
+        } else {
+            let total_exponent_first: i32 = self.list.iter().map(|v| v.exponent).sum();
+            let total_exponent_second: i32 = other.list.iter().map(|v| v.exponent).sum();
+
+            total_exponent_first
+                .cmp(&total_exponent_second)
+                .then_with(|| self.list.cmp(&other.list))
+        }
+    }
+}
+
+impl PartialOrd for Variables {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }

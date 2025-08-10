@@ -45,7 +45,48 @@ impl Expression {
                 None => result.terms.push(term.clone()),
             }
         }
-        result
+        result.sorted()
+    }
+
+    pub fn sort(&mut self) {
+        if self.terms.len() < 2 {
+        } else if self.terms.len() == 2 {
+            // If we have 3y - 2x or -2x^2 + z we want them in variable order
+            if self.terms[0].variables.list.len() > 0 && self.terms[1].variables.list.len() > 0 {
+                self.sort_by_variables();
+            } else {
+                // If we have 3x^2 - 5 or 6 - y we want the positive first
+                self.place_positive_first();
+            }
+        } else {
+            self.sort_by_variables();
+        }
+    }
+
+    pub fn sorted(mut self) -> Self {
+        self.sort();
+        self
+    }
+
+    fn place_positive_first(&mut self) {
+        assert_eq!(self.terms.len(), 2);
+        match (self.terms[0].coefficient > 0, self.terms[1].coefficient > 1) {
+            (true, false) => {}
+            (false, true) => {
+                let temp = self.terms[0].clone();
+                self.terms[0] = self.terms[1].clone();
+                self.terms[1] = temp.clone();
+            }
+            (_, _) => self.sort_by_variables(),
+        }
+    }
+
+    fn sort_by_variables(&mut self) {
+        self.terms.sort_by(|a, b| {
+            a.variables
+                .cmp(&b.variables)
+                .then_with(|| b.coefficient.cmp(&a.coefficient))
+        });
     }
 }
 

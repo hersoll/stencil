@@ -12,7 +12,7 @@ pub struct Term {
 
 impl Display for Term {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.colored {
+        if self.colored && self.coefficient != 0 {
             write!(f, "colored(")?;
         }
         if f.sign_plus() {
@@ -29,7 +29,7 @@ impl Display for Term {
                     write!(f, "-{}", self.variables)?;
                 }
             } else if self.coefficient == 0 {
-                write!(f, "")?;
+                write!(f, " ")?;
             } else {
                 write!(f, "{:+}{}", self.coefficient, self.variables)?;
             }
@@ -52,7 +52,7 @@ impl Display for Term {
                 write!(f, "{}{}", self.coefficient, self.variables)?;
             }
         }
-        if self.colored {
+        if self.colored && self.coefficient != 0 {
             write!(f, ")")?;
         }
         Ok(())
