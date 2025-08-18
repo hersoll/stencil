@@ -1,6 +1,6 @@
 use std::{cmp::Ordering, collections::HashSet, fmt::Display};
 
-#[derive(Clone, Debug, Copy, Eq, PartialOrd)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, PartialOrd)]
 pub struct Variable {
     pub symbol: char,
     pub exponent: i32,
@@ -31,11 +31,6 @@ impl From<(char, i32)> for Variable {
     }
 }
 
-impl PartialEq for Variable {
-    fn eq(&self, other: &Self) -> bool {
-        self.symbol == other.symbol
-    }
-}
 impl Ord for Variable {
     fn cmp(&self, other: &Self) -> Ordering {
         self.symbol.cmp(&other.symbol)
@@ -92,8 +87,9 @@ where
 }
 impl PartialEq for Variables {
     fn eq(&self, other: &Self) -> bool {
-        let set1: HashSet<char> = self.list.iter().map(|v| &v.symbol).cloned().collect();
-        let set2: HashSet<char> = other.list.iter().map(|v| &v.symbol).cloned().collect();
+        let set1: HashSet<(char, i32)> = self.list.iter().map(|v| (v.symbol, v.exponent)).collect();
+        let set2: HashSet<(char, i32)> =
+            other.list.iter().map(|v| (v.symbol, v.exponent)).collect();
         set1 == set2
     }
 }
@@ -102,7 +98,7 @@ impl std::ops::Mul for Variables {
     fn mul(self, rhs: Self) -> Self::Output {
         let mut final_variables = self.list.clone();
         for var in rhs.list {
-            match final_variables.iter().position(|v| v == &var) {
+            match final_variables.iter().position(|v| v.symbol == var.symbol) {
                 Some(index) => final_variables[index].exponent += var.exponent,
                 None => final_variables.push(var),
             }
@@ -119,7 +115,7 @@ impl std::ops::Div for Variables {
     fn div(self, rhs: Self) -> Self::Output {
         let mut final_variables = self.list.clone();
         for var in rhs.list {
-            match final_variables.iter().position(|v| v == &var) {
+            match final_variables.iter().position(|v| v.symbol == var.symbol) {
                 Some(index) => final_variables[index].exponent -= var.exponent,
                 None => final_variables.push(-var),
             }
@@ -143,8 +139,8 @@ impl Ord for Variables {
             let total_exponent_first: i32 = self.list.iter().map(|v| v.exponent).sum();
             let total_exponent_second: i32 = other.list.iter().map(|v| v.exponent).sum();
 
-            total_exponent_first
-                .cmp(&total_exponent_second)
+            total_exponent_second
+                .cmp(&total_exponent_first)
                 .then_with(|| self.list.cmp(&other.list))
         }
     }

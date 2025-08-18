@@ -25,8 +25,18 @@ impl ProblemDatabase {
     }
 
     pub async fn get_all_course_data() -> Result<Vec<CourseData>> {
-        let pool = get_pool();
-        println!("Acquring connection...");
+        println!("Starting load_all_course_data");
+
+        // Step 1: Get the pool
+        let pool = {
+            println!("Acquiring database pool...");
+            let p = get_pool();
+            println!("Pool acquired: {} active, {} idle", p.size(), p.num_idle());
+            p
+        };
+
+        // Step 3: Run the query
+        println!("Running query...");
         let rows = sqlx::query_as!(
             CourseData,
             r#" SELECT id, name, desc_sv, desc_en
@@ -34,11 +44,11 @@ impl ProblemDatabase {
         )
         .fetch_all(pool)
         .await
-        .map_err(|e| Error::FailedToLoadCourses {
-            error: e.to_string(),
-        });
-        println!("Finished query");
-        rows
+        .map_err(|_| Error::FailedToInitializePool)?;
+        println!("Query finished, rows returned: {}", rows.len());
+
+        println!("load_all_course_data finished");
+        Ok(rows)
     }
 
     pub async fn get_course(id: i32) -> Result<CourseData> {

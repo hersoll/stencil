@@ -14,7 +14,7 @@ pub async fn init_database() -> Result<(), Box<dyn std::error::Error>> {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     println!("Connecting to database...");
     let pool = PgPoolOptions::new()
-        .max_connections(200)
+        .max_connections(20)
         .after_connect(|conn, _meta| {
             Box::pin(async move {
                 // Ensure UTF-8 encoding
@@ -27,14 +27,15 @@ pub async fn init_database() -> Result<(), Box<dyn std::error::Error>> {
         .connect(&database_url)
         .await?;
 
-    // Test the connection
-    sqlx::query("SELECT 1").execute(&pool).await?;
-    println!("Database connected successfully!");
-
     // Store the pool globally
     DB_POOL
         .set(pool)
         .map_err(|_| "Failed to set database pool")?;
+
+    // Test the connection
+    let pool = get_pool();
+    let _ = sqlx::query("SELECT 1").execute(pool).await?;
+    println!("Database connected successfully!");
 
     Ok(())
 }
