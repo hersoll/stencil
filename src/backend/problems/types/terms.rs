@@ -40,7 +40,7 @@ impl Display for Term {
                     write!(f, "-{}", self.variables)?;
                 }
             } else if self.coefficient == 0 {
-                write!(f, " ")?;
+                write!(f, "")?;
             } else {
                 write!(f, "{:+}{}", self.coefficient, self.variables)?;
             }
@@ -83,14 +83,15 @@ where
     }
 }
 
-impl<T> From<(T, i32)> for Term
+impl<T> From<T> for Term
 where
     T: Into<Variable>,
 {
-    fn from(value: (T, i32)) -> Self {
+    fn from(value: T) -> Self {
+        let variable: Variable = value.into();
         Self {
-            coefficient: value.1,
-            variables: Variables::from(value.0),
+            coefficient: 1,
+            variables: Variables::from(variable),
             colored: false,
         }
     }
@@ -215,5 +216,40 @@ impl std::ops::Mul<Term> for i32 {
 impl std::ops::MulAssign<i32> for Term {
     fn mul_assign(&mut self, rhs: i32) {
         self.coefficient *= rhs;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn term_creation() {
+        let t1: Term = (3, 'x').into();
+        let t2: Term = ('x', 3).into();
+        let t3: Term = 6.into();
+
+        assert_eq!(t1.to_string(), "3x");
+        assert_eq!(t2.to_string(), "x^3");
+        assert_eq!(t3.to_string(), "6");
+    }
+
+    #[test]
+    fn term_displays() {
+        let t_a: Term = (1, 'a').into();
+        let t_one: Term = 1.into();
+        let t_m_one: Term = (-1).into();
+        let t_zero: Term = 0.into();
+        let mut t_color: Term = (-3, 'x').into();
+        t_color.colored = true;
+        assert_eq!(format!("{t_a}"), "a");
+        assert_eq!(format!("{t_a:+}"), "+a");
+        assert_eq!(format!("{t_one}"), "1");
+        assert_eq!(format!("{t_one:+}"), "+1");
+        assert_eq!(format!("{t_m_one}"), "-1");
+        assert_eq!(format!("{t_m_one:+}"), "-1");
+        assert_eq!(format!("{t_zero}"), "");
+        assert_eq!(format!("{t_zero:+}"), "");
+        assert_eq!(format!("{t_color}"), "colored(-3x)");
     }
 }

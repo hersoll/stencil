@@ -85,7 +85,7 @@ impl Expression {
     }
 
     fn sort_by_variables(&mut self) {
-        self.terms.sort_by(|a, b| a.variables.cmp(&b.variables));
+        self.terms.sort_by(|a, b| b.variables.cmp(&a.variables));
     }
 }
 
