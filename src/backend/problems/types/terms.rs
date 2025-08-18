@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use num_traits::Zero;
+
 use crate::backend::problems::types::variables::Variable;
 use crate::backend::problems::types::variables::Variables;
 
@@ -10,6 +12,15 @@ pub struct Term {
     pub colored: bool,
 }
 
+impl Term {
+    pub fn abs(&self) -> Self {
+        Self {
+            coefficient: self.coefficient.abs(),
+            variables: self.variables.clone(),
+            colored: self.colored,
+        }
+    }
+}
 impl Display for Term {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if self.colored && self.coefficient != 0 {
@@ -86,6 +97,19 @@ where
     }
 }
 
+impl<T> From<(T, i32)> for Term
+where
+    T: Into<Variable>,
+{
+    fn from(value: (T, i32)) -> Self {
+        Self {
+            coefficient: value.1,
+            variables: Variables::from(value.0),
+            colored: false,
+        }
+    }
+}
+
 impl From<i32> for Term {
     fn from(value: i32) -> Self {
         Self {
@@ -93,6 +117,41 @@ impl From<i32> for Term {
             variables: Variables::new(),
             colored: false,
         }
+    }
+}
+
+// NOTE: The Ord/Eq is not meant for sorting or anything like that.
+// It's primarily to determine whether a Term is negative or positive for the typst_formatting::step_...
+
+impl Ord for Term {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.coefficient.cmp(&other.coefficient)
+    }
+}
+
+impl PartialOrd for Term {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Term {
+    fn eq(&self, other: &Self) -> bool {
+        self.coefficient == other.coefficient
+    }
+}
+impl Eq for Term {}
+
+impl Zero for Term {
+    fn zero() -> Self {
+        Self {
+            coefficient: 0,
+            colored: false,
+            variables: Variables::new(),
+        }
+    }
+    fn is_zero(&self) -> bool {
+        self.coefficient == 0
     }
 }
 

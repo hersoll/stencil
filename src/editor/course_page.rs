@@ -75,7 +75,7 @@ pub fn CoursePage() -> Element {
                 }
                 div {
                     class: "button_container",
-                    style: "display: flex; gap: 1rem;",
+                    style: "display: flex; flex-wrap: wrap; gap: 1rem;",
                     if current_message().is_some() {
                         button {
                             class: "button",
@@ -171,6 +171,17 @@ pub fn CoursePage() -> Element {
                                 }
                             },
                             "Delete"
+                        }
+                        button {
+                            class: "button",
+                            onclick: move |_| async move {
+                                if let Some(course) = selected_course() {
+                                    let mut new_course = course.clone();
+                                    new_course.id = 0;
+                                    active_course.set(Some(new_course));
+                                }
+                            },
+                            "Copy"
                         }
                     }
                 }

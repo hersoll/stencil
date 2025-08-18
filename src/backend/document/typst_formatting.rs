@@ -1,6 +1,8 @@
 use num_traits::{Signed, Zero};
 use std::fmt::Display;
 
+use crate::backend::Term;
+
 pub fn to_list_item(s: &String) -> String {
     String::from("block(breakable: false)[") + s + "],"
 }
@@ -29,25 +31,9 @@ pub fn reformat_newlines(input: &str) -> String {
     input.replace('\n', r" \ ")
 }
 
-pub fn add<T: PartialOrd + Zero + Signed + Display>(first: T, second: T) -> String {
-    format!("{} + {}", parentheses(first), parentheses(second))
-}
-
-pub fn subtract<T: PartialOrd + Zero + Signed + Display>(first: T, second: T) -> String {
-    format!("{} - {}", parentheses(first), parentheses(second))
-}
-
-pub fn multiply<T: PartialOrd + Zero + Signed + Display>(first: T, second: T) -> String {
-    format!("{} dot.op {}", parentheses(first), parentheses(second))
-}
-
-pub fn divide<T: PartialOrd + Zero + Signed + Display>(first: T, second: T) -> String {
-    format!("({})/({})", parentheses(first), parentheses(second))
-}
-
 static OPERATOR_SPACE: f32 = 0.25;
 
-pub fn step_subtract<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
+pub fn subtract_number<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
     if val < T::zero() {
         format!("+ #h({OPERATOR_SPACE}em) {}", val.abs())
     } else if val > T::zero() {
@@ -57,7 +43,17 @@ pub fn step_subtract<T: PartialOrd + Zero + Signed + Display>(val: T) -> String 
     }
 }
 
-pub fn step_add<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
+pub fn subtract_term(term: &Term) -> String {
+    if term < &Term::zero() {
+        format!("+ #h({OPERATOR_SPACE}em) {}", term.abs())
+    } else if term > &Term::zero() {
+        format!("- #h({OPERATOR_SPACE}em) {}", term)
+    } else {
+        String::new()
+    }
+}
+
+pub fn add_number<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
     if val > T::zero() {
         format!("+ #h({OPERATOR_SPACE}em) {}", val)
     } else if val < T::zero() {
@@ -67,11 +63,21 @@ pub fn step_add<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
     }
 }
 
-pub fn step_divide<T: PartialOrd + Zero + Display>(val: T) -> String {
+pub fn add_term(term: &Term) -> String {
+    if term > &Term::zero() {
+        format!("+ #h({OPERATOR_SPACE}em) {}", term)
+    } else if term < &Term::zero() {
+        format!("- #h({OPERATOR_SPACE}em) {}", term.abs())
+    } else {
+        String::new()
+    }
+}
+
+pub fn divide_number<T: PartialOrd + Zero + Display>(val: T) -> String {
     format!("div {}", parentheses(val))
 }
 
-pub fn step_multiply<T: PartialOrd + Zero + Display>(val: T) -> String {
+pub fn multiply_number<T: PartialOrd + Zero + Display>(val: T) -> String {
     format!("dot.op {}", parentheses(val))
 }
 

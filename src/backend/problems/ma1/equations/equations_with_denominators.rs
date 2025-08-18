@@ -1,6 +1,6 @@
-use crate::Result;
 use crate::backend::typst_formatting::{self, equation_solution};
 use crate::backend::{IntRange, Problem};
+use crate::Result;
 use macros::problem;
 
 /// x/3 = 4
