@@ -71,6 +71,21 @@ where
         }
     }
 }
+
+impl<T> From<(i32, T, i32)> for Term
+where
+    T: Into<Variable> + Clone,
+{
+    fn from(value: (i32, T, i32)) -> Self {
+        let variables = vec![value.1; value.2 as usize];
+        Self {
+            coefficient: value.0,
+            variables: Variables::from(variables),
+            colored: false,
+        }
+    }
+}
+
 impl From<i32> for Term {
     fn from(value: i32) -> Self {
         Self {

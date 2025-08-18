@@ -48,6 +48,7 @@ impl Expression {
         result.sorted()
     }
 
+    /// Sorts the expression in-place
     pub fn sort(&mut self) {
         if self.terms.len() < 2 {
         } else if self.terms.len() == 2 {
@@ -63,9 +64,11 @@ impl Expression {
         }
     }
 
-    pub fn sorted(mut self) -> Self {
-        self.sort();
-        self
+    /// Returns a sorted clone of the expression
+    pub fn sorted(&self) -> Self {
+        let mut cloned = self.clone();
+        cloned.sort();
+        cloned
     }
 
     fn place_positive_first(&mut self) {

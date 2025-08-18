@@ -2,6 +2,8 @@ use tracing_subscriber;
 
 #[cfg(feature = "server")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    tracing_subscriber::fmt::init();
+
     tokio::runtime::Runtime::new().unwrap().block_on(async {
         app::backend::db::init_database()
             .await
@@ -14,8 +16,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         app::backend::load_prefix_data().await;
         println!("Prefixes loaded!");
     });
-
-    tracing_subscriber::fmt::init();
 
     dioxus::launch(app::frontend::AppSetup);
     Ok(())

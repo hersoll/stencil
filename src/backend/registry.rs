@@ -49,11 +49,11 @@ pub fn get_parsed_problem(full_name: &str, lang: &str) -> Result<ParsedProblemDa
     Ok(problem.parse(lang))
 }
 
-pub fn get_parsed_prefix(id: &i32, lang: &str) -> Result<ParsedPrefixData> {
+pub fn get_parsed_prefix(id: i32, lang: &str) -> Result<ParsedPrefixData> {
     let prefix = PREFIX_DATA
         .read()
         .map_err(|_| Error::RegistryMutexIsPoisoned)?
-        .get(id)
+        .get(&id)
         .cloned()
         .ok_or(Error::NoSuchProblemInRegistry { id: id.to_string() })?;
     Ok(prefix.parse(lang))

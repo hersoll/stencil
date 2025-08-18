@@ -26,7 +26,8 @@ impl ProblemDatabase {
 
     pub async fn get_all_course_data() -> Result<Vec<CourseData>> {
         let pool = get_pool();
-        sqlx::query_as!(
+        println!("Acquring connection...");
+        let rows = sqlx::query_as!(
             CourseData,
             r#" SELECT id, name, desc_sv, desc_en
             FROM courses ORDER BY name"#,
@@ -35,7 +36,9 @@ impl ProblemDatabase {
         .await
         .map_err(|e| Error::FailedToLoadCourses {
             error: e.to_string(),
-        })
+        });
+        println!("Finished query");
+        rows
     }
 
     pub async fn get_course(id: i32) -> Result<CourseData> {
