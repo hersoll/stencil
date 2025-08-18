@@ -2,8 +2,13 @@ use std::collections::HashMap;
 
 use crate::{
     backend::{
-        self, problems::symbols, replace_placeholders, typst_formatting::{self, equation_solution}, IntRange, Problem
-    }, Result
+        self,
+        problems::symbols,
+        replace_placeholders,
+        typst_formatting::{self, equation_solution},
+        IntRange, Problem,
+    },
+    Result,
 };
 use macros::problem;
 
@@ -58,7 +63,7 @@ fn without_notation_x(id: String, lang: &str) -> Result<Problem> {
         {y} &= {coefficient}x {constant:+} \\ {sub_constant} \\
         {lhs} &= {coefficient}x \\ div {coefficient} \\
         {answer} &= x \\ ",
-        sub_constant = typst_formatting::step_subtract(constant),
+        sub_constant = typst_formatting::subtract_number(constant),
         lhs = answer * coefficient
     ));
 
@@ -123,8 +128,8 @@ fn find_x_where_f_x(id: String, lang: &str) -> Result<Problem> {
        colored({y}) &= {coefficient}x {constant:+} \\ {sub_con}\\
               {y_c} &= {coefficient}x \\ {div_coef}\\
        {x} &= x \\",
-        sub_con = typst_formatting::step_subtract(constant),
-        div_coef = typst_formatting::step_divide(coefficient),
+        sub_con = typst_formatting::subtract_number(constant),
+        div_coef = typst_formatting::divide_number(coefficient),
         y_c = y - constant
     );
 
@@ -143,18 +148,18 @@ fn find_x_where_f_x(id: String, lang: &str) -> Result<Problem> {
 fn equation_f_x_equals(id: String, lang: &str) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_ones_and_zero(-10, 10)?.and_random();
     let x = IntRange::with_zero(-7, 7)?.random();
-    let (constant, constant_range) =
-        IntRange::without_zero(-10, 10)?.and_random();
+    let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
     let y = coefficient * x + constant;
     let f_name = symbols::get_function_name()?;
     let var = symbols::get_variable()?;
 
     let expression = format!("{f_name}({var}) = {coefficient}{var} {constant:+}");
     let map = HashMap::from([
-        ("expression", expression), 
-        ("y", y.to_string()), 
-        ("var", var.to_string()), 
-        ("f", f_name.to_string())]);
+        ("expression", expression),
+        ("y", y.to_string()),
+        ("var", var.to_string()),
+        ("f", f_name.to_string()),
+    ]);
     let strings = backend::get_parsed_problem(&id, lang)?;
     let question = replace_placeholders(&strings.question, &map);
 
@@ -163,8 +168,8 @@ fn equation_f_x_equals(id: String, lang: &str) -> Result<Problem> {
        colored({y}) &= {coefficient}{var} {constant:+} \\ {sub_con}\\
               {y_c} &= {coefficient}{var} \\ {div_coef}\\
        {x} &= {var} \\",
-        sub_con = typst_formatting::step_subtract(constant),
-        div_coef = typst_formatting::step_divide(coefficient),
+        sub_con = typst_formatting::subtract_number(constant),
+        div_coef = typst_formatting::divide_number(coefficient),
         y_c = y - constant
     );
 
@@ -183,30 +188,30 @@ fn equation_f_x_equals(id: String, lang: &str) -> Result<Problem> {
 fn find_y(id: String, lang: &str) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_ones_and_zero(-10, 10)?.and_random();
     let x = IntRange::with_zero(-7, 7)?.random();
-    let (constant, constant_range) =
-        IntRange::without_zero(-10, 10)?.and_random();
+    let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
     let y = coefficient * x + constant;
     let f_name = symbols::get_function_name()?;
     let var = symbols::get_variable()?;
 
     let expression = format!("{f_name}({var}) = {coefficient}{var} {constant:+}");
     let map = HashMap::from([
-        ("expression", expression), 
-        ("x", x.to_string()), 
-        ("var", var.to_string()), 
-        ("f", f_name.to_string())]);    
+        ("expression", expression),
+        ("x", x.to_string()),
+        ("var", var.to_string()),
+        ("f", f_name.to_string()),
+    ]);
     let strings = backend::get_parsed_problem(&id, lang)?;
     let question = replace_placeholders(&strings.question, &map);
 
-   let solution = format!(
+    let solution = format!(
         "{f_name}({var}) &= {coefficient}{var} {constant:+} \\{var}={x} \\
            {f_name}(colored({x})) &= {par_coef} dot.op colored({par_x}) {constant:+} \\ \\
            {f_name}({x}) &= {prod} {constant:+} \\ \\
            {f_name}({x}) &= {y} \\",
         prod = x * coefficient,
-       par_coef = typst_formatting::parentheses(coefficient),
-       par_x = typst_formatting::parentheses(x),
-    ); 
+        par_coef = typst_formatting::parentheses(coefficient),
+        par_x = typst_formatting::parentheses(x),
+    );
 
     let problem = Problem {
         id,

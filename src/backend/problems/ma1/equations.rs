@@ -1,2 +1,3 @@
-mod standard_equations;
 mod equations_with_denominators;
+mod equations_with_multiple_variable_terms;
+mod standard_equations;

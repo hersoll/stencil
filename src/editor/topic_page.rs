@@ -75,7 +75,7 @@ pub fn TopicPage() -> Element {
                 }
                 div {
                     class: "button_container",
-                    style: "display: flex; gap: 1rem;",
+                    style: "display: flex; flex-wrap: wrap; gap: 1rem;",
                     if current_message().is_some() {
                         button {
                             class: "button",
@@ -171,6 +171,17 @@ pub fn TopicPage() -> Element {
                                 }
                             },
                             "Delete"
+                        }
+                        button {
+                            class: "button",
+                            onclick: move |_| async move {
+                                if let Some(topic) = selected_topic() {
+                                    let mut new_topic = topic.clone();
+                                    new_topic.id = 0;
+                                    active_topic.set(Some(new_topic));
+                                }
+                            },
+                            "Copy"
                         }
                     }
                 }

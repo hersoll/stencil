@@ -1,7 +1,7 @@
-use crate::Result;
 use crate::backend::problems::Problem;
-use crate::backend::{IntRange, solutions};
 use crate::backend::{math_utils, typst_formatting};
+use crate::backend::{solutions, IntRange};
+use crate::Result;
 use macros::problem;
 
 #[problem(id = "add_sub_only", difficulty = 0)]
@@ -13,7 +13,7 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
         "x {constant:+} &= {rhs}\\ {sub_constant} \\
               x &= {answer}\\",
         rhs = answer + constant,
-        sub_constant = typst_formatting::step_subtract(constant),
+        sub_constant = typst_formatting::subtract_number(constant),
     );
 
     let problem = Problem {

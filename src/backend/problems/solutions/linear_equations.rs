@@ -12,7 +12,7 @@ pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answ
                     {unknown} &= {final_answer} \\",
         cf_par = typst_formatting::parentheses(coefficient),
         rhs = coefficient * final_answer + constant,
-        sub_constant = typst_formatting::step_subtract(constant),
+        sub_constant = typst_formatting::subtract_number(constant),
         cf_a = coefficient * final_answer,
     );
     typst_formatting::equation_solution(solution)
@@ -53,7 +53,7 @@ pub fn positive_rational_answer(
                 {coefficient}{unknown} &= {numerator} \\ div {coefficient} \\
                     {unknown} &= {answer_with_simplification} \\",
         rhs = numerator + constant,
-        sub_constant = typst_formatting::step_subtract(constant),
+        sub_constant = typst_formatting::subtract_number(constant),
     );
     typst_formatting::equation_solution(solution)
 }

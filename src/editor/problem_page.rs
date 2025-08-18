@@ -69,7 +69,7 @@ pub fn ProblemPage() -> Element {
                 }
                 div {
                     class: "button_container",
-                    style: "display: flex; gap: 1rem;",
+                    style: "display: flex; flex-wrap: wrap; gap: 1rem;",
                     if current_message().is_some() {
                         button {
                             class: "button",
@@ -150,6 +150,17 @@ pub fn ProblemPage() -> Element {
                                 }
                             },
                             "Delete"
+                        }
+                        button {
+                            class: "button",
+                            onclick: move |_| async move {
+                                if let Some(problem) = selected_problem() {
+                                    let mut new_problem = problem.clone();
+                                    new_problem.id = 0;
+                                    active_problem.set(Some(new_problem));
+                                }
+                            },
+                            "Copy"
                         }
                     }
                 }

@@ -6,8 +6,10 @@ pub mod int_range;
 pub mod ma1;
 pub mod math_utils;
 pub mod solutions;
-mod types;
 mod symbols;
+mod types;
+
+pub use types::*;
 
 //#################################
 //#   PROBLEM ENUMS AND STRUCTS   #
