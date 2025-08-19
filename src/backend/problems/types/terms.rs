@@ -213,6 +213,16 @@ impl std::ops::Mul<Term> for i32 {
         }
     }
 }
+impl std::ops::Mul<i32> for Term {
+    type Output = Term;
+    fn mul(self, rhs: i32) -> Self::Output {
+        Term {
+            coefficient: self.coefficient * rhs,
+            variables: self.variables.clone(),
+            colored: self.colored,
+        }
+    }
+}
 impl std::ops::MulAssign<i32> for Term {
     fn mul_assign(&mut self, rhs: i32) {
         self.coefficient *= rhs;
@@ -251,5 +261,65 @@ mod tests {
         assert_eq!(format!("{t_zero}"), "");
         assert_eq!(format!("{t_zero:+}"), "");
         assert_eq!(format!("{t_color}"), "colored(-3x)");
+    }
+
+    #[test]
+    fn term_addition() {
+        let t1: Term = (3, ('x', 2)).into();
+        let t2: Term = (2, ('x', 2)).into();
+        assert_eq!((t1 + t2).to_string(), "5x^2");
+        // += assignment
+        let mut t3: Term = ('x', 4).into();
+        let t4: Term = (4, ('x', 4)).into();
+        t3 += t4;
+        assert_eq!(t3.to_string(), "5x^4");
+    }
+
+    #[test]
+    #[should_panic]
+    fn cant_add_different_terms() {
+        let t1: Term = (3, ('x', 2)).into();
+        let t2: Term = (2, 'x').into();
+        assert_eq!((t1 + t2).to_string(), "throws");
+    }
+
+    #[test]
+    fn term_subtraction() {
+        let t1: Term = (3, ('x', 2)).into();
+        let t2: Term = (2, ('x', 2)).into();
+        assert_eq!((t1 - t2).to_string(), "x^2");
+        // -= assignment
+        let mut t3: Term = ('x', 4).into();
+        let t4: Term = (4, ('x', 4)).into();
+        t3 -= t4;
+        assert_eq!(t3.to_string(), "-3x^4");
+    }
+
+    #[test]
+    #[should_panic]
+    fn cant_subtract_different_terms() {
+        let t1: Term = (3, ('x', 2)).into();
+        let t2: Term = (2, 'x').into();
+        assert_eq!((t1 - t2).to_string(), "throws");
+    }
+
+    #[test]
+    fn term_multiplication() {
+        // Term and number
+        let t1: Term = (12, ('x', 4)).into();
+        let factor = 3;
+        assert_eq!((factor * t1.clone()).to_string(), "36x^4");
+        assert_eq!((t1 * factor).to_string(), "36x^4");
+        // Term and term
+        let mut t2: Term = (3, 'x').into();
+        let t3: Term = (2, ('x', 2)).into();
+        let t4: Term = ('a', 2).into();
+        let t5: Term = 'y'.into();
+        assert_eq!((t2.clone() * t3.clone()).to_string(), "6x^3");
+        assert_eq!((t2.clone() * t4.clone()).to_string(), "3a^2 x");
+        assert_eq!((t2.clone() * t5.clone()).to_string(), "3x y");
+        t2 *= t3.clone();
+        assert_eq!(t2.to_string(), "6x^3");
+        assert_eq!((t2 * t3 * t4 * t5).to_string(), "12a^2 x^5 y");
     }
 }

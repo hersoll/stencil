@@ -160,12 +160,66 @@ impl Display for Expression {
             if !first_value_written {
                 if term.coefficient != 0 {
                     first_value_written = true;
-                    write!(f, "{term} ")?;
+                    write!(f, "{term}")?;
                 }
             } else {
-                write!(f, "{term:+} ")?;
+                write!(f, "{term:+}")?;
             }
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn expression_creation() {
+        let t1: Term = (3, 'x').into();
+        let t2: Term = (2, ('x', 2)).into();
+        let t3: Term = (-3, 'x').into();
+        let t4: Term = 'a'.into();
+        let ref_expression: Expression = vec![&t1, &t2, &t3, &t4].into();
+        let expression: Expression = vec![t2, t1, t4, t3].into();
+        assert_eq!(ref_expression.to_string(), "3x+2x^2-3x+a");
+        assert_eq!(expression.to_string(), "2x^2+3x+a-3x");
+    }
+
+    #[test]
+    fn expression_addition() {
+        let t1: Term = (2, 'x').into();
+        let t2: Term = (-3, ('x', 2)).into();
+        let t3: Term = (4, 'a').into();
+        let exp: Expression = vec![t1, t2, t3].into();
+        let t1: Term = ('x', 2).into();
+        let t2: Term = (3, 'x').into();
+        let t3: Term = ('a', 2).into();
+        let exp_2: Expression = vec![t1, t2, t3].into();
+        assert_eq!((exp + exp_2).to_string(), "5x-2x^2+4a+a^2");
+    }
+
+    #[test]
+    fn expression_subtraction() {
+        let t1: Term = (2, 'x').into();
+        let t2: Term = (-3, ('x', 2)).into();
+        let t3: Term = (4, 'a').into();
+        let exp: Expression = vec![t1, t2, t3].into();
+        let t1: Term = ('x', 2).into();
+        let t2: Term = (3, 'x').into();
+        let t3: Term = ('a', 2).into();
+        let exp_2: Expression = vec![t1, t2, t3].into();
+        assert_eq!((exp - exp_2).to_string(), "-x-4x^2+4a-a^2");
+    }
+
+    #[test]
+    fn expression_multiplication() {
+        let t1: Term = 'x'.into();
+        let t2: Term = (2, ('y', 2)).into();
+        let t3: Term = (-3).into();
+        let exp_1: Expression = vec![&t1, &t2].into();
+        let exp_2: Expression = vec![t1, t2, t3].into();
+        assert_eq!((3 * exp_2.clone()).to_string(), "3x+6y^2-9");
+        assert_eq!((exp_1 * exp_2).to_string(), "4y^4+4x y^2+x^2-6y^2-3x");
     }
 }
