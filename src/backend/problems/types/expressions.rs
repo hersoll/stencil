@@ -45,7 +45,8 @@ impl Expression {
                 None => result.terms.push(term.clone()),
             }
         }
-        result.sorted()
+        result.sort();
+        result
     }
 
     /// Sorts the expression in-place
