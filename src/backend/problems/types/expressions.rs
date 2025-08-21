@@ -158,7 +158,7 @@ impl Display for Expression {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut first_value_written = false;
         for term in &self.terms {
-            if !first_value_written {
+            if !f.sign_plus() && !first_value_written {
                 if term.coefficient != 0 {
                     first_value_written = true;
                     write!(f, "{term}")?;
@@ -185,6 +185,17 @@ mod tests {
         let expression: Expression = vec![t2, t1, t4, t3].into();
         assert_eq!(ref_expression.to_string(), "3x+2x^2-3x+a");
         assert_eq!(expression.to_string(), "2x^2+3x+a-3x");
+    }
+
+    #[test]
+    fn expression_display() {
+        let t1: Term = (3, 'x').into();
+        let t2: Term = (2, ('x', 2)).into();
+        let t3: Term = (-3, 'x').into();
+        let t4: Term = 'a'.into();
+        let expression: Expression = vec![t1, t2, t3, t4].into();
+        assert_eq!(format!("{expression}"), "3x+2x^2-3x+a");
+        assert_eq!(format!("{expression:+}"), "+3x+2x^2-3x+a");
     }
 
     #[test]
