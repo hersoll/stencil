@@ -35,7 +35,7 @@ impl From<(char, i32)> for Variable {
 
 impl Ord for Variable {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.symbol.cmp(&other.symbol)
+        other.symbol.cmp(&self.symbol)
     }
 }
 impl std::ops::Neg for Variable {
