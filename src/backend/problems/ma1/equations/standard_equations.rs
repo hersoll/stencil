@@ -1,7 +1,7 @@
-use crate::backend::problems::Problem;
-use crate::backend::{math_utils, typst_formatting};
-use crate::backend::{solutions, IntRange};
 use crate::Result;
+use crate::backend::problems::Problem;
+use crate::backend::{IntRange, solutions};
+use crate::backend::{math_utils, typst_formatting};
 use macros::problem;
 
 #[problem(id = "add_sub_only", difficulty = 0)]
@@ -54,7 +54,7 @@ fn only_multiplication(id: String, _lang: &str) -> Result<Problem> {
     Ok(problem)
 }
 
-#[problem(id = "up_to_5", difficulty = 2)]
+#[problem(id = "up_to_5", difficulty = 1)]
 fn default_equation_positive_up_to_5(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 5)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 5)?.and_random();
@@ -79,7 +79,7 @@ fn default_equation_positive_up_to_5(id: String, _lang: &str) -> Result<Problem>
     Ok(problem)
 }
 
-#[problem(id = "default_positive", difficulty = 3)]
+#[problem(id = "default_positive", difficulty = 2)]
 fn default_equation_positive_answers(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 10)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 9)?.and_random();

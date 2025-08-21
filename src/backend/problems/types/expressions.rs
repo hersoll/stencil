@@ -133,7 +133,7 @@ impl std::ops::Mul for Expression {
                 result.terms.push(lhs_term.clone() * rhs_term);
             }
         }
-        result.simplify()
+        result
     }
 }
 impl std::ops::Mul<Expression> for i32 {
@@ -221,6 +221,8 @@ mod tests {
         let exp_1: Expression = vec![&t1, &t2].into();
         let exp_2: Expression = vec![t1, t2, t3].into();
         assert_eq!((3 * exp_2.clone()).to_string(), "3x+6y^2-9");
-        assert_eq!((exp_1 * exp_2).to_string(), "4y^4+4x y^2+x^2-6y^2-3x");
+        let mult_exp = exp_1 * exp_2;
+        assert_eq!(mult_exp.to_string(), "x^2+2x y^2-3x+2x y^2+4y^4-6y^2");
+        assert_eq!(mult_exp.simplify().to_string(), "4y^4+4x y^2+x^2-6y^2-3x");
     }
 }
