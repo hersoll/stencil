@@ -199,6 +199,35 @@ mod tests {
     }
 
     #[test]
+    fn two_term_sorting() {
+        let t_x = Term::from((-3, 'x'));
+        let t_y = Term::from((2, 'y'));
+        let t_const = Term::from(4);
+        let x_y_expression: Expression = vec![&t_x, &t_y].into();
+        assert_eq!(x_y_expression.to_string(), "-3x+2y");
+        assert_eq!(x_y_expression.sorted().to_string(), "-3x+2y");
+        let x_const_expression: Expression = vec![&t_x, &t_const].into();
+        assert_eq!(x_const_expression.sorted().to_string(), "4-3x");
+        let y_const_expression: Expression = vec![&t_y, &t_const].into();
+        assert_eq!(y_const_expression.sorted().to_string(), "2y+4");
+        let t_const = Term::from(-4);
+        let x_const_expression: Expression = vec![&t_x, &t_const].into();
+        assert_eq!(x_const_expression.sorted().to_string(), "-3x-4");
+    }
+
+    #[test]
+    fn multiple_term_sorting() {
+        let t_x = Term::from((-3, 'x'));
+        let t_x_2 = Term::from((2, ('x', 2)));
+        let t_const = Term::from(4);
+        let expression: Expression = vec![&t_x, &t_x_2, &t_const].into();
+        assert_eq!(expression.sorted().to_string(), "2x^2-3x+4");
+        let t_y_3: Term = ('y', 3).into();
+        let expression: Expression = vec![&t_x, &t_x_2, &t_const, &t_y_3].into();
+        assert_eq!(expression.sorted().to_string(), "y^3+2x^2-3x+4");
+    }
+
+    #[test]
     fn expression_addition() {
         let t1: Term = (2, 'x').into();
         let t2: Term = (-3, ('x', 2)).into();

@@ -1,14 +1,13 @@
 use std::collections::HashMap;
 
 use crate::{
+    Result,
     backend::{
-        self,
+        self, IntRange, Problem,
         problems::symbols,
         replace_placeholders,
         typst_formatting::{self, equation_solution},
-        IntRange, Problem,
     },
-    Result,
 };
 use macros::problem;
 
