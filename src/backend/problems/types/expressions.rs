@@ -121,11 +121,11 @@ impl Expression {
             for (j, var) in term.variables.list.iter().enumerate() {
                 match replacements.iter().find(|pair| pair.0 == var.symbol) {
                     Some(pair) => {
-                        // Prevent double cdot
-                        s = s.trim_end_matches(" dot.op ").to_string();
+                        // Prevent double dot
+                        s = s.trim_end_matches(" dot ").to_string();
                         write!(
                             &mut s,
-                            " colored(dot.op {}){}{}",
+                            " dot colored({}){}{}",
                             typst_formatting::parentheses(pair.1),
                             if var.exponent > 1 {
                                 format!("^{}", var.exponent)
@@ -133,7 +133,7 @@ impl Expression {
                                 String::new()
                             },
                             if j < term.variables.list.len() - 1 {
-                                " dot.op "
+                                " dot "
                             } else {
                                 ""
                             }
@@ -306,7 +306,11 @@ mod tests {
         let exp: Expression = vec![&t1, &t2, &t3].into();
         assert_eq!(
             exp.show_evaluation(vec![('x', -1)]),
-            "2 colored(dot.op (-1))-3 colored(dot.op (-1))^2+4a^3 colored(dot.op (-1))^3 dot.op y^4"
+            "2 dot colored((-1))-3 dot colored((-1))^2+4a^3 dot colored((-1))^3 dot y^4"
+        );
+        assert_eq!(
+            exp.show_evaluation(vec![('x', 4)]),
+            "2 dot colored(4)-3 dot colored(4)^2+4a^3 dot colored(4)^3 dot y^4"
         );
     }
 

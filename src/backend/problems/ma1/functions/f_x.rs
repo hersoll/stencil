@@ -28,7 +28,7 @@ fn without_notation_y(id: String, lang: &str) -> Result<Problem> {
 
     let solution = format!(
         "y &= {coefficient}x {constant:+} \\x={x} \\
-       y &= {coefficient} dot.op colored({x}) {constant:+} \\ \\
+       y &= {coefficient} dot colored({x}) {constant:+} \\ \\
        y &= {prod} {constant:+} \\ \\
        y &= {y} \\",
         prod = x * coefficient
@@ -92,7 +92,7 @@ fn find_y_no_negatives(id: String, lang: &str) -> Result<Problem> {
 
     let solution = format!(
         "f(x) &= {coefficient}x {constant:+} \\x={x} \\
-       f(colored({x})) &= {coefficient} dot.op colored({x}) {constant:+} \\ \\
+       f(colored({x})) &= {coefficient} dot colored({x}) {constant:+} \\ \\
        f({x}) &= {prod} {constant:+} \\ \\
        f({x}) &= {y} \\",
         prod = x * coefficient
@@ -204,7 +204,7 @@ fn find_y(id: String, lang: &str) -> Result<Problem> {
 
     let solution = format!(
         "{f_name}({var}) &= {coefficient}{var} {constant:+} \\{var}={x} \\
-           {f_name}(colored({x})) &= {par_coef} dot.op colored({par_x}) {constant:+} \\ \\
+           {f_name}(colored({x})) &= {par_coef} dot colored({par_x}) {constant:+} \\ \\
            {f_name}({x}) &= {prod} {constant:+} \\ \\
            {f_name}({x}) &= {y} \\",
         prod = x * coefficient,

@@ -78,7 +78,7 @@ pub fn divide_number<T: PartialOrd + Zero + Display>(val: T) -> String {
 }
 
 pub fn multiply_number<T: PartialOrd + Zero + Display>(val: T) -> String {
-    format!("dot.op {}", parentheses(val))
+    format!("dot {}", parentheses(val))
 }
 
 pub fn parentheses<T: PartialOrd + Zero + Display>(val: T) -> String {
