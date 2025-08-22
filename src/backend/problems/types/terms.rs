@@ -107,6 +107,16 @@ impl From<i32> for Term {
     }
 }
 
+impl From<(i32, Variables)> for Term {
+    fn from(value: (i32, Variables)) -> Self {
+        Term {
+            coefficient: value.0,
+            variables: value.1,
+            colored: false,
+        }
+    }
+}
+
 // NOTE: The Ord/Eq is not meant for sorting or anything like that.
 // It's primarily to determine whether a Term is negative or positive for the typst_formatting::step_...
 

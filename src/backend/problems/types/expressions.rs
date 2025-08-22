@@ -1,7 +1,7 @@
 use rand::{rng, seq::SliceRandom};
-use std::fmt::Display;
+use std::{fmt::Display, mem::replace};
 
-use crate::backend::problems::types::terms::Term;
+use crate::backend::{Variables, problems::types::terms::Term, typst_formatting};
 
 #[derive(Debug, Clone)]
 pub struct Expression {
@@ -87,6 +87,64 @@ impl Expression {
 
     fn sort_by_variables(&mut self) {
         self.terms.sort_by(|a, b| b.variables.cmp(&a.variables));
+    }
+
+    fn evaluate(&self, replacements: Vec<(char, i32)>) -> Expression {
+        let mut new_expression = Expression::new();
+        self.terms.iter().for_each(|term| {
+            let mut coefficient = term.coefficient;
+            let mut variables = Variables::new();
+            term.variables.list.iter().for_each(|v| {
+                match replacements.iter().find(|pair| pair.0 == v.symbol) {
+                    Some(pair) => coefficient *= pair.1.pow(v.exponent as u32),
+                    None => variables.list.push(v.clone()),
+                }
+            });
+
+            new_expression
+                .terms
+                .push(Term::from((coefficient, variables)));
+        });
+        new_expression.simplify()
+    }
+
+    fn show_evaluation(&self, replacements: Vec<(char, i32)>) -> String {
+        use std::fmt::Write;
+
+        let mut s = String::new();
+        for (i, term) in self.terms.iter().enumerate() {
+            if i == 0 {
+                write!(&mut s, "{}", term.coefficient).unwrap();
+            } else {
+                write!(&mut s, "{:+}", term.coefficient).unwrap();
+            }
+            for (j, var) in term.variables.list.iter().enumerate() {
+                match replacements.iter().find(|pair| pair.0 == var.symbol) {
+                    Some(pair) => {
+                        // Prevent double cdot
+                        s = s.trim_end_matches(" dot.op ").to_string();
+                        write!(
+                            &mut s,
+                            " colored(dot.op {}){}{}",
+                            typst_formatting::parentheses(pair.1),
+                            if var.exponent > 1 {
+                                format!("^{}", var.exponent)
+                            } else {
+                                String::new()
+                            },
+                            if j < term.variables.list.len() - 1 {
+                                " dot.op "
+                            } else {
+                                ""
+                            }
+                        )
+                        .unwrap()
+                    }
+                    None => write!(&mut s, "{var}").unwrap(),
+                }
+            }
+        }
+        s
     }
 }
 
@@ -225,6 +283,31 @@ mod tests {
         let t_y_3: Term = ('y', 3).into();
         let expression: Expression = vec![&t_x, &t_x_2, &t_const, &t_y_3].into();
         assert_eq!(expression.sorted().to_string(), "y^3+2x^2-3x+4");
+    }
+
+    #[test]
+    fn expression_evaluation() {
+        let t1: Term = (2, 'x').into();
+        let t2: Term = (-3, ('x', 2)).into();
+        let t3: Term = (4, 'a').into();
+        let exp: Expression = vec![&t1, &t2, &t3].into();
+        let partial_evaluation = exp.evaluate(vec![('x', -1)]);
+        assert_eq!(partial_evaluation.to_string(), "4a-5");
+        let full_evaluation = exp.evaluate(vec![('a', -2), ('x', 5)]);
+        assert_eq!(full_evaluation.to_string(), "-73");
+    }
+
+    #[test]
+    fn expression_evaluation_display() {
+        let t1: Term = (2, 'x').into();
+        let t2: Term = (-3, ('x', 2)).into();
+        let vars = Variables::from(vec![('a', 3), ('x', 3), ('y', 4)]);
+        let t3: Term = (4, vars).into();
+        let exp: Expression = vec![&t1, &t2, &t3].into();
+        assert_eq!(
+            exp.show_evaluation(vec![('x', -1)]),
+            "2 colored(dot.op (-1))-3 colored(dot.op (-1))^2+4a^3 colored(dot.op (-1))^3 dot.op y^4"
+        );
     }
 
     #[test]
