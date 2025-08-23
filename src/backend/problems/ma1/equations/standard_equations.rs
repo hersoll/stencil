@@ -61,7 +61,7 @@ fn only_multiplication(id: String, _lang: &str) -> Result<Problem> {
 /// 4x + 1 = 13
 /// Difficulty: 1
 #[problem]
-fn default_equation_positive_up_to_5(id: String, _lang: &str) -> Result<Problem> {
+fn positive_up_to_5(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 5)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 5)?.and_random();
     let (constant, constant_range) =
@@ -88,7 +88,7 @@ fn default_equation_positive_up_to_5(id: String, _lang: &str) -> Result<Problem>
 /// 6x + 8 = 20
 /// Difficulty: 2
 #[problem]
-fn default_equation_positive_answers(id: String, _lang: &str) -> Result<Problem> {
+fn positive_answers(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 10)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 9)?.and_random();
     let (constant, constant_range) =
@@ -115,7 +115,7 @@ fn default_equation_positive_answers(id: String, _lang: &str) -> Result<Problem>
 /// 6x + 8 = 19
 /// Difficulty: 3
 #[problem]
-fn default_equation_positive_rational(id: String, _lang: &str) -> Result<Problem> {
+fn positive_rational(id: String, _lang: &str) -> Result<Problem> {
     let (denominator, denominator_range) = IntRange::without_zero(2, 9)?.and_random();
     let numerator = IntRange::without_zero(1, denominator * 2 - 1)?
         .exclude(denominator)

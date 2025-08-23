@@ -24,7 +24,7 @@ impl Term {
 impl Display for Term {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if self.colored && self.coefficient != 0 {
-            write!(f, "colored(")?;
+            write!(f, " colored(")?;
         }
         if f.sign_plus() {
             if self.coefficient == 1 {

@@ -1,12 +1,12 @@
+use crate::Result;
 use crate::backend::typst_formatting::{self, equation_solution};
 use crate::backend::{IntRange, Problem};
-use crate::Result;
 use macros::problem;
 
 /// x/3 = 4
 /// Difficulty: 0
 #[problem]
-fn one_denominator_one_variable(id: String, _lang: &str) -> Result<Problem> {
+fn one_denom_one_variable(id: String, _lang: &str) -> Result<Problem> {
     let (denominator, denominator_range) = IntRange::without_zero(2, 10)?.and_random();
     let rhs = IntRange::without_zero(1, 10)?.random();
     let final_answer = denominator * rhs;
