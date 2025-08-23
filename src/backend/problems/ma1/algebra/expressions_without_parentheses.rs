@@ -4,7 +4,9 @@ use crate::backend::problems::types::{Expression, Term};
 use crate::backend::{IntRange, Problem};
 use macros::problem;
 
-#[problem(id = "one_variable_and_constants_no_negatives", difficulty = 0)]
+/// 3x + 4 + 2x + 1
+/// Difficulty: 0
+#[problem]
 fn one_variable_and_constants_no_negatives(id: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let (first_coef, first_coef_range) = IntRange::without_zero(1, 6)?.and_random();
@@ -43,7 +45,9 @@ fn one_variable_and_constants_no_negatives(id: String, _lang: &str) -> Result<Pr
     })
 }
 
-#[problem(id = "one_variable_and_constants", difficulty = 1)]
+/// 3x - 5 - 5x + 2
+/// Difficulty: 1
+#[problem]
 fn one_variable_and_constants(id: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let (first_coef, first_coef_range) = IntRange::without_zero(-6, 6)?.and_random();
@@ -82,7 +86,9 @@ fn one_variable_and_constants(id: String, _lang: &str) -> Result<Problem> {
     })
 }
 
-#[problem(id = "two_variables_and_constants", difficulty = 2)]
+/// 2x - 3y + 3x - 8y + 1 
+/// Difficulty: 2
+#[problem]
 fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
     let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
     let (first_coef_a, first_coef_a_range) = IntRange::with_zero(-9, 9)?.and_random();
@@ -137,7 +143,9 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
     })
 }
 
-#[problem(id = "one_variable_different_exponents", difficulty = 3)]
+/// x^2 + 2x + 3x^2 - 4x
+/// Difficulty: 3
+#[problem]
 fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let (first_coef, first_coef_range) = IntRange::with_zero(-9, 9)?.and_random();

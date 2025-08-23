@@ -1,5 +1,7 @@
 use crate::{
-    backend::{self, db::ProblemDatabase}, shared, Error
+    Error,
+    backend::{self, ProblemType, db::ProblemDatabase},
+    shared,
 };
 use std::fs;
 
@@ -13,16 +15,35 @@ pub async fn create_pdf(
         set_options.push(set.options);
         let mut set_builder = backend::SetBuilder::new();
         set_builder.lang(&document_options.lang);
-        let problem_names = ProblemDatabase::get_problem_names_for_pdf(set.topics, set.exclusions).await?;
-        let problem_types: Vec<backend::ProblemType> = problem_names.iter()
+        let problem_names =
+            ProblemDatabase::get_problem_names_for_pdf(set.topics, set.exclusions).await?;
+        let problem_types: crate::Result<Vec<backend::ProblemType>> = problem_names
+            .iter()
             .map(|name| {
-                        backend::PROBLEM_MAP
-                            .read()
-                            .map_err(|_| Error::RegistryMutexIsPoisoned)?
-                            .get(name)
-                            .cloned()
-                            .ok_or(Error::NoSuchProblemInRegistry { id: name.to_string() })
-            }).collect::<crate::Result<Vec<backend::ProblemType>>>()?;
+                let generator = backend::PROBLEM_MAP
+                    .read()
+                    .expect("Mutex is poisoned")
+                    .get(name)
+                    .cloned()
+                    .ok_or(Error::NoSuchProblemInRegistry {
+                        id: name.to_string(),
+                    })?;
+                let problem = backend::PROBLEM_DATA
+                    .read()
+                    .expect("Mutex is poisoned")
+                    .get(name)
+                    .cloned()
+                    .ok_or(Error::NoSuchProblemInRegistry {
+                        id: name.to_string(),
+                    })?;
+                Ok(backend::ProblemType {
+                    name: name.clone(),
+                    difficulty: problem.difficulty as u8,
+                    generator,
+                })
+            })
+            .collect();
+        let problem_types = problem_types?;
         set_builder.area(problem_types).batch(
             set.starting_difficulty,
             set.ending_difficulty,

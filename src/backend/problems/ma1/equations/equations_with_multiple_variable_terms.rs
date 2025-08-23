@@ -5,7 +5,9 @@ use crate::backend::{IntRange, Problem};
 use crate::Result;
 use macros::problem;
 
-#[problem(id = "two_positive_coefs_lhs_greater", difficulty = 1)]
+/// 4x + 1 = 2x - 3
+/// Difficulty: 1
+#[problem]
 fn two_positive_coefs_lhs_greater(id: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = IntRange::without_zero(1, 6)?.random();

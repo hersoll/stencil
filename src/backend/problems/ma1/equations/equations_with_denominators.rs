@@ -4,7 +4,8 @@ use crate::Result;
 use macros::problem;
 
 /// x/3 = 4
-#[problem(id = "one_denom_one_variable", difficulty = 0)]
+/// Difficulty: 0
+#[problem]
 fn one_denominator_one_variable(id: String, _lang: &str) -> Result<Problem> {
     let (denominator, denominator_range) = IntRange::without_zero(2, 10)?.and_random();
     let rhs = IntRange::without_zero(1, 10)?.random();
@@ -29,7 +30,8 @@ fn one_denominator_one_variable(id: String, _lang: &str) -> Result<Problem> {
 }
 
 /// x/5 + x = 12
-#[problem(id = "one_denom_and_unit_variable_integers_positive", difficulty = 2)]
+/// Difficulty: 2
+#[problem]
 fn one_denom_and_unit_variable_integers_positive(id: String, _lang: &str) -> Result<Problem> {
     let (denominator, denominator_range) = IntRange::without_zero(3, 5)?.and_random();
     // n is the multiple of the denominator + 1, will show up in both the question and answer
@@ -59,7 +61,8 @@ fn one_denom_and_unit_variable_integers_positive(id: String, _lang: &str) -> Res
     })
 }
 /// x - x/3 = 8
-#[problem(id = "unit_variable_and_one_denom_integers_positive", difficulty = 2)]
+/// Difficulty: 2
+#[problem]
 fn unit_variable_and_one_denom_integers_positive(id: String, _lang: &str) -> Result<Problem> {
     let (denominator, denominator_range) = IntRange::without_zero(3, 5)?.and_random();
     // n is the multiple of the denominator - 1, will show up in both the question and answer
@@ -90,10 +93,8 @@ fn unit_variable_and_one_denom_integers_positive(id: String, _lang: &str) -> Res
 }
 
 /// x/4 - x = 9
-#[problem(
-    id = "unit_variable_and_one_denom_integers_with_negatives",
-    difficulty = 3
-)]
+/// Difficulty: 3
+#[problem]
 fn unit_variable_and_one_denom_integers_with_negatives(id: String, _lang: &str) -> Result<Problem> {
     let (denominator, denominator_range) = IntRange::without_zero(3, 5)?.and_random();
     // n is a multiple, will show up in both the question and answer

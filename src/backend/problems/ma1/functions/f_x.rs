@@ -14,7 +14,9 @@ use macros::problem;
 // In this module, problems in the form of f(3) is known as "calculating y"
 // and problems like f(x) = 3 are known as "calculating x"
 
-#[problem(id = "without_notation_y", difficulty = 0)]
+/// y = 3x + 1, x = 3
+/// Difficulty: 0
+#[problem]
 fn without_notation_y(id: String, lang: &str) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
     let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
@@ -45,7 +47,9 @@ fn without_notation_y(id: String, lang: &str) -> Result<Problem> {
     Ok(problem)
 }
 
-#[problem(id = "without_notation_x", difficulty = 1)]
+/// y = 2x + 2, y = 2
+/// Difficulty: 1
+#[problem]
 fn without_notation_x(id: String, lang: &str) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
     let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
@@ -77,7 +81,9 @@ fn without_notation_x(id: String, lang: &str) -> Result<Problem> {
     Ok(problem)
 }
 
-#[problem(id = "find_y_no_negatives", difficulty = 2)]
+/// f(3), no negatives
+/// Difficulty: 2
+#[problem]
 fn find_y_no_negatives(id: String, lang: &str) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
     let x = IntRange::without_zero(1, 5)?.random();
@@ -109,7 +115,9 @@ fn find_y_no_negatives(id: String, lang: &str) -> Result<Problem> {
     Ok(problem)
 }
 
-#[problem(id = "find_x_where_f_x", difficulty = 2)]
+/// Find x where f(x) = 2 
+/// Difficulty: 3
+#[problem]
 fn find_x_where_f_x(id: String, lang: &str) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
     let x = IntRange::without_zero(1, 5)?.random();
@@ -143,7 +151,9 @@ fn find_x_where_f_x(id: String, lang: &str) -> Result<Problem> {
     Ok(problem)
 }
 
-#[problem(id = "equation_f_x_equals", difficulty = 3)]
+/// Solve the equation f(x) = 4
+/// Difficulty: 3
+#[problem]
 fn equation_f_x_equals(id: String, lang: &str) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_ones_and_zero(-10, 10)?.and_random();
     let x = IntRange::with_zero(-7, 7)?.random();
@@ -183,7 +193,9 @@ fn equation_f_x_equals(id: String, lang: &str) -> Result<Problem> {
     Ok(problem)
 }
 
-#[problem(id = "find_y", difficulty = 3)]
+/// f(-3) 
+/// Difficulty: 3
+#[problem]
 fn find_y(id: String, lang: &str) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_ones_and_zero(-10, 10)?.and_random();
     let x = IntRange::with_zero(-7, 7)?.random();

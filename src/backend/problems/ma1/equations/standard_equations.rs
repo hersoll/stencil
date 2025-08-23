@@ -4,7 +4,9 @@ use crate::backend::{IntRange, solutions};
 use crate::backend::{math_utils, typst_formatting};
 use macros::problem;
 
-#[problem(id = "add_sub_only", difficulty = 0)]
+/// x + 3 = 12
+/// Difficulty: 0
+#[problem]
 fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::with_zero(0, 9)?.random();
     let (constant, constant_range) = IntRange::without_zero(-answer, 9)?.and_random();
@@ -29,7 +31,9 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
     Ok(problem)
 }
 
-#[problem(id = "mult_only", difficulty = 0)]
+/// 3x = 12
+/// Difficulty: 0
+#[problem]
 fn only_multiplication(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(2, 5)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(3, 9)?.and_random();
@@ -54,7 +58,9 @@ fn only_multiplication(id: String, _lang: &str) -> Result<Problem> {
     Ok(problem)
 }
 
-#[problem(id = "up_to_5", difficulty = 1)]
+/// 4x + 1 = 13
+/// Difficulty: 1
+#[problem]
 fn default_equation_positive_up_to_5(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 5)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 5)?.and_random();
@@ -79,7 +85,9 @@ fn default_equation_positive_up_to_5(id: String, _lang: &str) -> Result<Problem>
     Ok(problem)
 }
 
-#[problem(id = "default_positive", difficulty = 2)]
+/// 6x + 8 = 20
+/// Difficulty: 2
+#[problem]
 fn default_equation_positive_answers(id: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 10)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 9)?.and_random();
@@ -103,7 +111,10 @@ fn default_equation_positive_answers(id: String, _lang: &str) -> Result<Problem>
     };
     Ok(problem)
 }
-#[problem(id = "rational_positive", difficulty = 4)]
+
+/// 6x + 8 = 19
+/// Difficulty: 3
+#[problem]
 fn default_equation_positive_rational(id: String, _lang: &str) -> Result<Problem> {
     let (denominator, denominator_range) = IntRange::without_zero(2, 9)?.and_random();
     let numerator = IntRange::without_zero(1, denominator * 2 - 1)?

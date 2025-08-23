@@ -5,8 +5,8 @@ use crate::Error;
 use crate::Result;
 use crate::shared::{ParsedPrefixData, ParsedProblemData, PrefixData, ProblemData};
 
-/// A map between problem names (simple-equations-default) and ProblemTypes
-pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, super::ProblemType>>> =
+/// A map between problem names (simple_equations_default) and their functions
+pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, super::ProblemGenerator>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
 pub static PROBLEM_DATA: LazyLock<RwLock<HashMap<String, ProblemData>>> =

@@ -41,8 +41,8 @@ fn main() {
                     .with_title("Stencil Editor")
                     .with_focused(true)
                     .with_inner_size(Size::Physical(PhysicalSize {
-                        width: 2800,
-                        height: 2000,
+                        width: 3000,
+                        height: 2200,
                     }))
                     .with_resizable(false),
             ),
