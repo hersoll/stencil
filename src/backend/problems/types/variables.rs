@@ -86,7 +86,11 @@ where
     T: Into<Variable>,
 {
     fn from(list: Vec<T>) -> Self {
-        let mut variables: Vec<Variable> = list.into_iter().map(|v| v.into()).collect();
+        let mut variables: Vec<Variable> = list
+            .into_iter()
+            .map(|v| v.into())
+            .filter(|v| v.exponent != 0)
+            .collect();
         variables.sort_by_key(|v| v.symbol);
         Self { list: variables }
     }

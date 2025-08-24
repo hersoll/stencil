@@ -2,8 +2,10 @@ use std::collections::HashMap;
 
 use crate::backend::problems::symbols;
 use crate::backend::problems::types::{Expression, Term};
-use crate::backend::{IntRange, Number, PI, PROBLEM_DATA, Problem, replace_placeholders};
-use crate::{Result, backend};
+use crate::backend::{
+    replace_placeholders, IntRange, Number, Problem, Variables, PI, PROBLEM_DATA,
+};
+use crate::{backend, Result};
 use macros::problem;
 
 /// 3x + 4 + 2x + 1
@@ -146,7 +148,7 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
 }
 
 /// Evaluate 3x - 1 when x = -3
-/// Difficulty: 2
+/// Difficulty: 1
 #[problem]
 fn evaluate_simple(id: String, lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -166,13 +168,13 @@ fn evaluate_simple(id: String, lang: &str) -> Result<Problem> {
     let strings = backend::get_parsed_problem(&id, lang)?;
     let question = backend::replace_placeholders(&strings.question, &map);
     let replacements = vec![(unknown, value)];
-    let answer = expression.evaluate(replacements.clone());
+    let answer = expression.evaluate(&replacements);
 
     let solution = format!(
         "$&{expression} = \\
         = &{} = \\
         = &{}{constant:+} = {answer}$",
-        expression.show_evaluation(replacements),
+        expression.show_replacements(&replacements),
         coef * value,
     );
 
@@ -186,6 +188,52 @@ fn evaluate_simple(id: String, lang: &str) -> Result<Problem> {
     })
 }
 
+/// Evaluate 3x - 2y + 1 when x = -3 and y = 2
+/// Difficulty: 2
+#[problem]
+fn evaluate_intermediate(id: String, lang: &str) -> Result<Problem> {
+    let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
+    let (coef, coef_range) = IntRange::without_ones_and_zero(-9, 9)?.and_random();
+    let (coef_2, coef_2_range) = IntRange::without_ones_and_zero(-9, 9)?.and_random();
+    let constant = IntRange::without_zero(-9, 9)?.random();
+    let value_x = IntRange::without_zero(-5, 5)?.random();
+    let value_y = IntRange::without_zero(-5, -1)?.random();
+
+    let first_term: Term = (coef, first_unknown).into();
+    let second_term: Term = (coef_2, second_unknown).into();
+    let const_term: Term = constant.into();
+
+    let expression: Expression = vec![&first_term, &second_term, &const_term].into();
+    let map = HashMap::from([
+        ("expression", expression.to_string()),
+        ("unknown_a", first_unknown.to_string()),
+        ("unknown_b", second_unknown.to_string()),
+        ("value_x", value_x.to_string()),
+        ("value_y", value_y.to_string()),
+    ]);
+    let strings = backend::get_parsed_problem(&id, lang)?;
+    let question = backend::replace_placeholders(&strings.question, &map);
+    let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
+    let answer = expression.evaluate(&replacements);
+
+    let solution = format!(
+        "$&{expression} = \\
+        = &{} = \\
+        = &{}{:+}{constant:+} = {answer}$",
+        expression.show_replacements(&replacements),
+        coef * value_x,
+        coef_2 * value_y,
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef, coef_2],
+        combinations: coef_range.len() * coef_2_range.len(),
+    })
+}
 /// x^2 + 2x + 3x^2 - 4x
 /// Difficulty: 3
 #[problem]
@@ -226,5 +274,62 @@ fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> 
         solution,
         identifiers: vec![first_coef, first_exp],
         combinations: first_coef_range.len() * first_exp_range.len(),
+    })
+}
+
+/// Evaluate 3x2 + 2xy^2 + 3x if x = -3 and y = 2
+/// Difficulty: 5
+#[problem]
+fn evaluate_advanced(id: String, lang: &str) -> Result<Problem> {
+    let mut total_terms = 2;
+    let mut exp_combinations: Vec<(i32, i32)> = Vec::new();
+    let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
+    let mut expression = Expression::new();
+    while total_terms > 0 {
+        let coef = IntRange::without_ones_and_zero(-4, 4)?.random();
+        let first_exponent = IntRange::with_zero(1, 2)?.random();
+        let second_exponent = IntRange::with_zero(1, 2)?.random();
+        if exp_combinations.contains(&(first_exponent, second_exponent)) {
+            continue;
+        }
+        exp_combinations.push((first_exponent, second_exponent));
+        let vars: Variables = vec![
+            (first_unknown, first_exponent),
+            (second_unknown, second_exponent),
+        ]
+        .into();
+        expression += Term::from((coef, vars));
+        total_terms -= 1;
+    }
+    let value_x = IntRange::without_zero(-2, -1)?.random();
+    let value_y = IntRange::without_zero(-2, -1)?.random();
+
+    let map = HashMap::from([
+        ("expression", expression.to_string()),
+        ("unknown_a", first_unknown.to_string()),
+        ("unknown_b", second_unknown.to_string()),
+        ("value_x", value_x.to_string()),
+        ("value_y", value_y.to_string()),
+    ]);
+    let strings = backend::get_parsed_problem(&id, lang)?;
+    let question = backend::replace_placeholders(&strings.question, &map);
+    let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
+    let answer = expression.evaluate(&replacements);
+
+    let solution = format!(
+        "$&{expression} = \\
+        = &{} = \\
+        = &{} = {answer}$",
+        expression.show_replacements(&replacements),
+        expression.show_evaluation(&replacements)
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![1],
+        combinations: 1,
     })
 }

@@ -1,7 +1,7 @@
 use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
-use crate::backend::{Variables, problems::types::terms::Term, typst_formatting};
+use crate::backend::{problems::types::terms::Term, typst_formatting, Variables};
 
 #[derive(Debug, Clone)]
 pub struct Expression {
@@ -92,26 +92,15 @@ impl Expression {
         self.terms.sort_by(|a, b| b.variables.cmp(&a.variables));
     }
 
-    pub fn evaluate(&self, replacements: Vec<(char, i32)>) -> Expression {
+    pub fn evaluate(&self, replacements: &Vec<(char, i32)>) -> Expression {
         let mut new_expression = Expression::new();
         self.terms.iter().for_each(|term| {
-            let mut coefficient = term.coefficient.clone();
-            let mut variables = Variables::new();
-            term.variables.list.iter().for_each(|v| {
-                match replacements.iter().find(|pair| pair.0 == v.symbol) {
-                    Some(pair) => coefficient *= pair.1.pow(v.exponent as u32).into(),
-                    None => variables.list.push(v.clone()),
-                }
-            });
-
-            new_expression
-                .terms
-                .push(Term::from((coefficient, variables)));
+            new_expression.terms.push(term.evaluate(replacements));
         });
         new_expression.simplify()
     }
 
-    pub fn show_evaluation(&self, replacements: Vec<(char, i32)>) -> String {
+    pub fn show_replacements(&self, replacements: &Vec<(char, i32)>) -> String {
         use std::fmt::Write;
 
         let mut s = String::new();
@@ -149,6 +138,20 @@ impl Expression {
         }
         s
     }
+
+    pub fn show_evaluation(&self, replacements: &Vec<(char, i32)>) -> String {
+        use std::fmt::Write;
+
+        let mut s = String::new();
+        for (i, term) in self.terms.iter().enumerate() {
+            if i == 0 {
+                write!(&mut s, "{}", term.evaluate(replacements)).unwrap();
+            } else {
+                write!(&mut s, "{:+}", term.evaluate(replacements)).unwrap();
+            }
+        }
+        s
+    }
 }
 
 impl std::ops::Add for Expression {
@@ -166,6 +169,24 @@ impl std::ops::Add for Expression {
             }
         }
         Self { terms: result }
+    }
+}
+
+impl std::ops::Add<Term> for Expression {
+    type Output = Self;
+    fn add(self, rhs: Term) -> Self::Output {
+        let mut result = self.terms.clone();
+        match self.terms.iter().position(|t| t.variables == rhs.variables) {
+            Some(index) => result[index] = result[index].clone() + rhs,
+            None => result.push(rhs),
+        }
+        Self { terms: result }
+    }
+}
+
+impl std::ops::AddAssign<Term> for Expression {
+    fn add_assign(&mut self, rhs: Term) {
+        *self = self.clone() + rhs;
     }
 }
 impl std::ops::Sub for Expression {
@@ -218,14 +239,18 @@ impl std::ops::MulAssign<i32> for Expression {
 impl Display for Expression {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut first_value_written = false;
-        for term in &self.terms {
-            if !f.sign_plus() && !first_value_written {
-                if term.coefficient != 0.into() {
-                    first_value_written = true;
-                    write!(f, "{term}")?;
+        if self.terms.len() == 1 && self.terms[0].coefficient == 0.into() {
+            write!(f, "0")?;
+        } else {
+            for term in &self.terms {
+                if !f.sign_plus() && !first_value_written {
+                    if term.coefficient != 0.into() {
+                        first_value_written = true;
+                        write!(f, "{term}")?;
+                    }
+                } else {
+                    write!(f, "{term:+}")?;
                 }
-            } else {
-                write!(f, "{term:+}")?;
             }
         }
         Ok(())
@@ -308,11 +333,11 @@ mod tests {
         let t3: Term = (4, vars).into();
         let exp: Expression = vec![&t1, &t2, &t3].into();
         assert_eq!(
-            exp.show_evaluation(vec![('x', -1)]),
+            exp.show_replacements(vec![('x', -1)]),
             "2 dot colored((-1))-3 dot colored((-1))^2+4a^3 dot colored((-1))^3 dot y^4"
         );
         assert_eq!(
-            exp.show_evaluation(vec![('x', 4)]),
+            exp.show_replacements(vec![('x', 4)]),
             "2 dot colored(4)-3 dot colored(4)^2+4a^3 dot colored(4)^3 dot y^4"
         );
     }

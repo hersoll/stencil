@@ -2,9 +2,9 @@ use std::fmt::Display;
 
 use num_traits::Zero;
 
-use crate::backend::Number;
 use crate::backend::problems::types::variables::Variable;
 use crate::backend::problems::types::variables::Variables;
+use crate::backend::Number;
 
 #[derive(Clone, Debug)]
 pub struct Term {
@@ -20,6 +20,21 @@ impl Term {
             variables: self.variables.clone(),
             colored: self.colored,
         }
+    }
+
+    pub fn evaluate(&self, replacements: &Vec<(char, i32)>) -> Term {
+        let mut new_term = Term {
+            coefficient: self.coefficient.clone(),
+            variables: Variables::new(),
+            colored: self.colored,
+        };
+        self.variables.list.iter().for_each(|v| {
+            match replacements.iter().find(|pair| pair.0 == v.symbol) {
+                Some(pair) => new_term.coefficient *= pair.1.pow(v.exponent as u32).into(),
+                None => new_term.variables.list.push(v.clone()),
+            }
+        });
+        new_term
     }
 }
 impl Display for Term {
@@ -110,20 +125,6 @@ impl From<(char, i32)> for Term {
     }
 }
 
-impl<T, U> From<(T, U)> for Term
-where
-    T: Into<Number>,
-    U: Into<Variable>,
-{
-    fn from(value: (T, U)) -> Self {
-        Self {
-            coefficient: value.0.into(),
-            variables: Variables::from(value.1),
-            colored: false,
-        }
-    }
-}
-
 impl From<char> for Term {
     fn from(value: char) -> Self {
         let variable: Variable = value.into();
@@ -143,6 +144,20 @@ where
         Term {
             coefficient: value.0.into(),
             variables: value.1,
+            colored: false,
+        }
+    }
+}
+
+impl<T, U> From<(T, U)> for Term
+where
+    T: Into<Number>,
+    U: Into<Variable>,
+{
+    fn from(value: (T, U)) -> Self {
+        Self {
+            coefficient: value.0.into(),
+            variables: Variables::from(value.1),
             colored: false,
         }
     }
