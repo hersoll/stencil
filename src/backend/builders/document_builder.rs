@@ -87,7 +87,7 @@ impl DocumentBuilder {
     fn append_prefixes(
         &mut self,
         mut question_set: Vec<String>,
-        mut answer_set: Vec<String>,
+        answer_set: Vec<String>,
         problem_ids: &Vec<String>,
     ) -> Result<(Vec<String>, Vec<String>)> {
         let problem_reg = PROBLEM_DATA
@@ -142,7 +142,7 @@ impl DocumentBuilder {
 
     fn build_solution(&self, answer: String, solution: String) -> Result<String> {
         let heading = format!(
-            "#block(inset: (left: -1.2em))[\n#set text(size: 0.8em)\n #emph([{}])\n  #v(-0.5em)",
+            "#block(inset: (left: -1.2em))[\n#set text(size: 0.8em)\n #emph([{}])\n\n ",
             self.i18n_strings
                 .get("solution")
                 .ok_or(Error::NoSuchKeyExists {

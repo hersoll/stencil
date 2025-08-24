@@ -1,7 +1,9 @@
-use crate::Result;
+use std::collections::HashMap;
+
 use crate::backend::problems::symbols;
 use crate::backend::problems::types::{Expression, Term};
-use crate::backend::{IntRange, Number, PI, Problem};
+use crate::backend::{IntRange, Number, PI, PROBLEM_DATA, Problem, replace_placeholders};
+use crate::{Result, backend};
 use macros::problem;
 
 /// 3x + 4 + 2x + 1
@@ -30,9 +32,9 @@ fn one_variable_and_constants_no_negatives(id: String, _lang: &str) -> Result<Pr
     let answer = format!("${simplified_expression}$");
 
     let solution = format!(
-        "$ &{original_expression} = \\
+        "$&{original_expression} = \\
         = &colored({first_term}{second_term:+}) {first_const_term:+}{second_const_term:+} = \\
-        = &{simplified_expression} $",
+        = &{simplified_expression}$",
     );
 
     Ok(Problem {
@@ -71,9 +73,9 @@ fn one_variable_and_constants(id: String, _lang: &str) -> Result<Problem> {
     let answer = format!("${simplified_expression}$");
 
     let solution = format!(
-        "$ &{original_expression} = \\
+        "$&{original_expression} = \\
         = &colored({first_term}{second_term:+}) {first_const_term:+}{second_const_term:+} = \\
-        = &{simplified_expression} $",
+        = &{simplified_expression}$",
     );
 
     Ok(Problem {
@@ -128,9 +130,9 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
     let answer = format!("${simplified_expression}$");
 
     let solution = format!(
-        "$ &{original_expression} = \\
+        "$&{original_expression} = \\
         = &{sorted_expression} = \\
-        = &{simplified_expression} $",
+        = &{simplified_expression}$",
     );
 
     Ok(Problem {
@@ -140,6 +142,47 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
         solution,
         identifiers: vec![first_coef_a, second_coef_a],
         combinations: first_coef_a_range.len() * second_coef_a_range.len(),
+    })
+}
+
+/// Evaluate 3x - 1 when x = -3
+/// Difficulty: 2
+#[problem]
+fn evaluate_simple(id: String, lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let (coef, coef_range) = IntRange::without_ones_and_zero(-9, 9)?.and_random();
+    let constant = IntRange::without_zero(-9, 9)?.random();
+    let (value, value_range) = IntRange::without_zero(-5, 5)?.and_random();
+
+    let first_term: Term = (coef, unknown).into();
+    let const_term: Term = constant.into();
+
+    let expression: Expression = vec![&first_term, &const_term].into();
+    let map = HashMap::from([
+        ("expression", expression.to_string()),
+        ("unknown", unknown.to_string()),
+        ("value", value.to_string()),
+    ]);
+    let strings = backend::get_parsed_problem(&id, lang)?;
+    let question = backend::replace_placeholders(&strings.question, &map);
+    let replacements = vec![(unknown, value)];
+    let answer = expression.evaluate(replacements.clone());
+
+    let solution = format!(
+        "$&{expression} = \\
+        = &{} = \\
+        = &{}{constant:+} = {answer}$",
+        expression.show_evaluation(replacements),
+        coef * value,
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef, value],
+        combinations: coef_range.len() * value_range.len(),
     })
 }
 
@@ -171,9 +214,9 @@ fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> 
     let answer = format!("${simplified_expression}$");
 
     let solution = format!(
-        "$ &{original_expression} = \\
+        "$&{original_expression} = \\
         = &{sorted_expression} = \\
-        = &{simplified_expression} $",
+        = &{simplified_expression}$",
     );
 
     Ok(Problem {
@@ -183,27 +226,5 @@ fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> 
         solution,
         identifiers: vec![first_coef, first_exp],
         combinations: first_coef_range.len() * first_exp_range.len(),
-    })
-}
-
-#[problem]
-fn decimal_test(id: String, _lang: &str) -> Result<Problem> {
-    let first_term = Number::from((3, 5));
-    let second_term = Number::from((1, 2));
-    let third_term = Number::from((1, 7));
-    let actual_term_a: Term = (first_term, 'x').into();
-    let actual_term_b: Term = (second_term, 'x').into();
-    let actual_term_c: Term = (third_term, 'x').into();
-    let question = format!("${actual_term_a} + {actual_term_b} + {actual_term_c}$");
-    let answer = format!("${}$", actual_term_a + actual_term_b + actual_term_c);
-    let solution = String::from("Hello!");
-
-    Ok(Problem {
-        id,
-        question,
-        answer,
-        solution,
-        identifiers: vec![1],
-        combinations: 1,
     })
 }

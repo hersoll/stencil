@@ -92,7 +92,7 @@ impl Expression {
         self.terms.sort_by(|a, b| b.variables.cmp(&a.variables));
     }
 
-    fn evaluate(&self, replacements: Vec<(char, i32)>) -> Expression {
+    pub fn evaluate(&self, replacements: Vec<(char, i32)>) -> Expression {
         let mut new_expression = Expression::new();
         self.terms.iter().for_each(|term| {
             let mut coefficient = term.coefficient.clone();
@@ -111,7 +111,7 @@ impl Expression {
         new_expression.simplify()
     }
 
-    fn show_evaluation(&self, replacements: Vec<(char, i32)>) -> String {
+    pub fn show_evaluation(&self, replacements: Vec<(char, i32)>) -> String {
         use std::fmt::Write;
 
         let mut s = String::new();
