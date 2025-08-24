@@ -47,8 +47,9 @@ impl Display for Term {
             write!(f, "")?;
         } else {
             match self.coefficient {
-                Number::Integer(val) => write!(f, "{val}{}", self.variables)?,
-                Number::Decimal(val) => write!(f, "{val}{}", self.variables)?,
+                Number::Integer(_) | Number::Decimal(_) => {
+                    write!(f, "{}{}", self.coefficient, self.variables)?
+                }
                 Number::Fraction(num, denom) => write!(f, "({num}{})/{denom}", self.variables)?,
                 Number::Irrational(_, s) => write!(f, "{s}")?,
             };
@@ -262,6 +263,8 @@ impl std::ops::MulAssign<i32> for Term {
 
 #[cfg(test)]
 mod tests {
+    use crate::backend::PI;
+
     use super::*;
 
     #[test]
@@ -304,8 +307,15 @@ mod tests {
         // += assignment
         let mut t3: Term = ('x', 4).into();
         let t4: Term = (4, ('x', 4)).into();
-        t3 += t4;
+        t3 += t4.clone();
         assert_eq!(t3.to_string(), "5x^4");
+
+        let t5: Term = ((2, 3), ('x', 4)).into();
+        assert_eq!((t4 + t5).to_string(), "(14x^4)/3");
+
+        let t6: Term = (1.3, 'x').into();
+        let t7: Term = (PI, 'x').into();
+        assert_eq!((t6 + t7).to_string(), "num(\"4.442\")x");
     }
 
     #[test]
