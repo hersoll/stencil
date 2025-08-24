@@ -144,7 +144,7 @@ pub static PREAMBLE_STR: &str = r#"
     share-align({
       grid(
         columns: (max-eq-width, auto),
-        inset: 5pt,
+        inset: 0.5em,
         align: (left, horizon + left),
         grid.vline(x: 1, stroke: (paint: linecolor, thickness: 0.5pt)),
         ..equations.zip(color-operations).flatten(),

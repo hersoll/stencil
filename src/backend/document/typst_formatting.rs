@@ -117,5 +117,5 @@ pub fn equation_solution(equation_string: String) -> String {
         .collect::<Vec<String>>()
         .join(", ");
 
-    format!("#equation-solution(({combined_equations}),({combined_steps}),)")
+    format!("#v(-0.5em)\n#equation-solution(({combined_equations}),({combined_steps}),)")
 }
