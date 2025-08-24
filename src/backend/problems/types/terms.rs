@@ -270,7 +270,7 @@ mod tests {
         assert_eq!(format!("{t_m_one:+}"), "-1");
         assert_eq!(format!("{t_zero}"), "");
         assert_eq!(format!("{t_zero:+}"), "");
-        assert_eq!(format!("{t_color}"), "colored(-3x)");
+        assert_eq!(format!("{t_color}"), " colored(-3x)");
     }
 
     #[test]

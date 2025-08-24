@@ -1,7 +1,7 @@
 use crate::Result;
 use crate::backend::problems::symbols;
 use crate::backend::problems::types::{Expression, Term};
-use crate::backend::{IntRange, Problem};
+use crate::backend::{IntRange, Number, PI, Problem};
 use macros::problem;
 
 /// 3x + 4 + 2x + 1
@@ -86,7 +86,7 @@ fn one_variable_and_constants(id: String, _lang: &str) -> Result<Problem> {
     })
 }
 
-/// 2x - 3y + 3x - 8y + 1 
+/// 2x - 3y + 3x - 8y + 1
 /// Difficulty: 2
 #[problem]
 fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
@@ -183,5 +183,24 @@ fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> 
         solution,
         identifiers: vec![first_coef, first_exp],
         combinations: first_coef_range.len() * first_exp_range.len(),
+    })
+}
+
+#[problem]
+fn decimal_test(id: String, _lang: &str) -> Result<Problem> {
+    let first_term = Number::from(1.001);
+    let second_term = PI;
+    let third_term = Number::from(10);
+    let question = format!("${first_term} + {second_term} + {third_term}$");
+    let answer = format!("${}$", &first_term + &second_term + &third_term);
+    let solution = String::from("Hello!");
+
+    Ok(Problem {
+        id,
+        question,
+        answer,
+        solution,
+        identifiers: vec![1],
+        combinations: 1,
     })
 }
