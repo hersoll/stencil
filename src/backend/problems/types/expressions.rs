@@ -1,5 +1,5 @@
 use rand::{rng, seq::SliceRandom};
-use std::{fmt::Display, mem::replace};
+use std::fmt::Display;
 
 use crate::backend::{Variables, problems::types::terms::Term, typst_formatting};
 
@@ -74,7 +74,10 @@ impl Expression {
 
     fn place_positive_first(&mut self) {
         assert_eq!(self.terms.len(), 2);
-        match (self.terms[0].coefficient > 0, self.terms[1].coefficient > 1) {
+        match (
+            self.terms[0].coefficient > 0.into(),
+            self.terms[1].coefficient > 1.into(),
+        ) {
             (true, false) => {}
             (false, true) => {
                 let temp = self.terms[0].clone();
@@ -92,11 +95,11 @@ impl Expression {
     fn evaluate(&self, replacements: Vec<(char, i32)>) -> Expression {
         let mut new_expression = Expression::new();
         self.terms.iter().for_each(|term| {
-            let mut coefficient = term.coefficient;
+            let mut coefficient = term.coefficient.clone();
             let mut variables = Variables::new();
             term.variables.list.iter().for_each(|v| {
                 match replacements.iter().find(|pair| pair.0 == v.symbol) {
-                    Some(pair) => coefficient *= pair.1.pow(v.exponent as u32),
+                    Some(pair) => coefficient *= pair.1.pow(v.exponent as u32).into(),
                     None => variables.list.push(v.clone()),
                 }
             });
@@ -217,7 +220,7 @@ impl Display for Expression {
         let mut first_value_written = false;
         for term in &self.terms {
             if !f.sign_plus() && !first_value_written {
-                if term.coefficient != 0 {
+                if term.coefficient != 0.into() {
                     first_value_written = true;
                     write!(f, "{term}")?;
                 }

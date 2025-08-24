@@ -2,12 +2,13 @@ use std::fmt::Display;
 
 use num_traits::Zero;
 
+use crate::backend::Number;
 use crate::backend::problems::types::variables::Variable;
 use crate::backend::problems::types::variables::Variables;
 
 #[derive(Clone, Debug)]
 pub struct Term {
-    pub coefficient: i32,
+    pub coefficient: Number,
     pub variables: Variables,
     pub colored: bool,
 }
@@ -23,94 +24,114 @@ impl Term {
 }
 impl Display for Term {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.colored && self.coefficient != 0 {
+        if self.colored && self.coefficient != 0.into() {
             write!(f, " colored(")?;
         }
-        if f.sign_plus() {
-            if self.coefficient == 1 {
-                if self.variables.list.is_empty() {
-                    write!(f, "+1")?;
-                } else {
-                    write!(f, "+{}", self.variables)?;
-                }
-            } else if self.coefficient == -1 {
-                if self.variables.list.is_empty() {
-                    write!(f, "-1")?;
-                } else {
-                    write!(f, "-{}", self.variables)?;
-                }
-            } else if self.coefficient == 0 {
-                write!(f, "")?;
-            } else {
-                write!(f, "{:+}{}", self.coefficient, self.variables)?;
-            }
-        } else {
-            if self.coefficient == 1 {
-                if self.variables.list.is_empty() {
-                    write!(f, "1")?;
-                } else {
-                    write!(f, "{}", self.variables)?;
-                }
-            } else if self.coefficient == -1 {
-                if self.variables.list.is_empty() {
-                    write!(f, "-1")?;
-                } else {
-                    write!(f, "-{}", self.variables)?;
-                }
-            } else if self.coefficient == 0 {
-                write!(f, "")?;
-            } else {
-                write!(f, "{}{}", self.coefficient, self.variables)?;
-            }
+        if f.sign_plus() && self.coefficient.value() > 0.0 {
+            write!(f, "+")?;
         }
-        if self.colored && self.coefficient != 0 {
+
+        if self.coefficient.value() == 1.0 {
+            if self.variables.list.is_empty() {
+                write!(f, "1")?;
+            } else {
+                write!(f, "{}", self.variables)?;
+            }
+        } else if self.coefficient.value() == -1.0 {
+            if self.variables.list.is_empty() {
+                write!(f, "-1")?;
+            } else {
+                write!(f, "-{}", self.variables)?;
+            }
+        } else if self.coefficient.value() == 0.0 {
+            write!(f, "")?;
+        } else {
+            match self.coefficient {
+                Number::Integer(val) => write!(f, "{val}{}", self.variables)?,
+                Number::Decimal(val) => write!(f, "{val}{}", self.variables)?,
+                Number::Fraction(num, denom) => write!(f, "({num}{})/{denom}", self.variables)?,
+                Number::Irrational(_, s) => write!(f, "{s}")?,
+            };
+        }
+        if self.colored && self.coefficient != 0.into() {
             write!(f, ")")?;
         }
         Ok(())
     }
 }
 
-impl<T> From<(i32, T)> for Term
-where
-    T: Into<Variable>,
-{
-    fn from(value: (i32, T)) -> Self {
-        Self {
-            coefficient: value.0,
-            variables: Variables::from(value.1),
-            colored: false,
-        }
-    }
-}
-
-impl<T> From<T> for Term
-where
-    T: Into<Variable>,
-{
-    fn from(value: T) -> Self {
-        let variable: Variable = value.into();
-        Self {
-            coefficient: 1,
-            variables: Variables::from(variable),
-            colored: false,
-        }
-    }
-}
-
 impl From<i32> for Term {
     fn from(value: i32) -> Self {
         Self {
-            coefficient: value,
+            coefficient: value.into(),
             variables: Variables::new(),
             colored: false,
         }
     }
 }
 
-impl From<(i32, Variables)> for Term {
-    fn from(value: (i32, Variables)) -> Self {
+impl From<(i32, i32)> for Term {
+    fn from(value: (i32, i32)) -> Self {
+        Self {
+            coefficient: value.into(),
+            variables: Variables::new(),
+            colored: false,
+        }
+    }
+}
+
+impl From<f64> for Term {
+    fn from(value: f64) -> Self {
+        Self {
+            coefficient: value.into(),
+            variables: Variables::new(),
+            colored: false,
+        }
+    }
+}
+
+impl From<(char, i32)> for Term {
+    fn from(value: (char, i32)) -> Self {
+        Self {
+            coefficient: 1.into(),
+            variables: Variables::from((value.0, value.1)),
+            colored: false,
+        }
+    }
+}
+
+impl<T, U> From<(T, U)> for Term
+where
+    T: Into<Number>,
+    U: Into<Variable>,
+{
+    fn from(value: (T, U)) -> Self {
+        Self {
+            coefficient: value.0.into(),
+            variables: Variables::from(value.1),
+            colored: false,
+        }
+    }
+}
+
+impl From<char> for Term {
+    fn from(value: char) -> Self {
+        let variable: Variable = value.into();
+        Self {
+            coefficient: 1.into(),
+            variables: Variables::from(variable),
+            colored: false,
+        }
+    }
+}
+
+impl<T> From<(T, Variables)> for Term
+where
+    T: Into<Number>,
+{
+    fn from(value: (T, Variables)) -> Self {
         Term {
-            coefficient: value.0,
+            coefficient: value.0.into(),
             variables: value.1,
             colored: false,
         }
@@ -142,13 +163,13 @@ impl Eq for Term {}
 impl Zero for Term {
     fn zero() -> Self {
         Self {
-            coefficient: 0,
+            coefficient: 0.into(),
             colored: false,
             variables: Variables::new(),
         }
     }
     fn is_zero(&self) -> bool {
-        self.coefficient == 0
+        self.coefficient == 0.into()
     }
 }
 
@@ -168,7 +189,7 @@ impl std::ops::Add for Term {
     fn add(self, rhs: Self) -> Self::Output {
         assert_eq!(self.variables, rhs.variables);
         Self {
-            coefficient: self.coefficient + rhs.coefficient,
+            coefficient: self.coefficient + &rhs.coefficient,
             variables: self.variables,
             colored: self.colored,
         }
@@ -185,7 +206,7 @@ impl std::ops::Sub for Term {
     fn sub(self, rhs: Self) -> Self::Output {
         assert_eq!(self.variables, rhs.variables);
         Self {
-            coefficient: self.coefficient - rhs.coefficient,
+            coefficient: self.coefficient - &rhs.coefficient,
             variables: self.variables,
             colored: self.colored,
         }
@@ -201,7 +222,7 @@ impl std::ops::Mul for Term {
     type Output = Term;
     fn mul(self, rhs: Self) -> Self::Output {
         Self {
-            coefficient: self.coefficient * rhs.coefficient,
+            coefficient: self.coefficient * &rhs.coefficient,
             variables: self.variables * rhs.variables,
             colored: self.colored,
         }
@@ -209,7 +230,7 @@ impl std::ops::Mul for Term {
 }
 impl std::ops::MulAssign for Term {
     fn mul_assign(&mut self, rhs: Self) {
-        self.coefficient = self.coefficient * rhs.coefficient;
+        self.coefficient = &self.coefficient * &rhs.coefficient;
         self.variables = self.variables.clone() * rhs.variables;
     }
 }
@@ -217,7 +238,7 @@ impl std::ops::Mul<Term> for i32 {
     type Output = Term;
     fn mul(self, rhs: Term) -> Self::Output {
         Term {
-            coefficient: rhs.coefficient * self,
+            coefficient: rhs.coefficient * &self.into(),
             variables: rhs.variables.clone(),
             colored: rhs.colored,
         }
@@ -227,7 +248,7 @@ impl std::ops::Mul<i32> for Term {
     type Output = Term;
     fn mul(self, rhs: i32) -> Self::Output {
         Term {
-            coefficient: self.coefficient * rhs,
+            coefficient: self.coefficient * &rhs.into(),
             variables: self.variables.clone(),
             colored: self.colored,
         }
@@ -235,7 +256,7 @@ impl std::ops::Mul<i32> for Term {
 }
 impl std::ops::MulAssign<i32> for Term {
     fn mul_assign(&mut self, rhs: i32) {
-        self.coefficient *= rhs;
+        self.coefficient *= rhs.into();
     }
 }
 
@@ -261,6 +282,7 @@ mod tests {
         let t_m_one: Term = (-1).into();
         let t_zero: Term = 0.into();
         let mut t_color: Term = (-3, 'x').into();
+        let fractional_term: Term = ((3, 5), 'x').into();
         t_color.colored = true;
         assert_eq!(format!("{t_a}"), "a");
         assert_eq!(format!("{t_a:+}"), "+a");
@@ -271,6 +293,7 @@ mod tests {
         assert_eq!(format!("{t_zero}"), "");
         assert_eq!(format!("{t_zero:+}"), "");
         assert_eq!(format!("{t_color}"), " colored(-3x)");
+        assert_eq!(format!("{fractional_term}"), "(3x)/5");
     }
 
     #[test]

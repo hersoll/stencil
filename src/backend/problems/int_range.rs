@@ -2,35 +2,6 @@ use crate::{Error, Result};
 use rand::seq::IndexedRandom;
 
 /// Range of integers where both limits are inclusive.
-///
-/// Has the ability to exclude specific values from the range, and these exclusions are accounted
-/// for when using `len()`, `values()`, etc.
-/// There is currently no support for excluding custom numbers. Use `without_zero()`,
-/// `without_ones()` and `without_ones_and_zero()` for exclusions. If your range happens to not
-/// include a number, calling a method that excludes it is still valid and will not impact the
-/// output or performance.
-///
-/// # Examples
-///
-/// ```
-/// use app::backend::IntRange;
-///
-/// let range = IntRange::with_zero(-2,3).unwrap();
-/// assert_eq!(range.values(), vec![-2,-1,0,1,2,3]);
-///
-/// let range = IntRange::without_zero(-2,3).unwrap();
-/// assert_eq!(range.values(), vec![-2,-1,1,2,3]);
-///
-/// let range = IntRange::without_ones_and_zero(-2,3).unwrap();
-/// assert_eq!(range.values(), vec![-2,2,3]);
-///
-/// // with_zero or without_zero will not impact ranges that don't include 0
-/// let range = IntRange::with_zero(5,7).unwrap();
-/// assert_eq!(range.values(), vec![5,6,7]);
-///
-/// let range = IntRange::without_ones_and_zero(5,7).unwrap();
-/// assert_eq!(range.values(), vec![5,6,7]);
-/// ```
 pub struct IntRange {
     min: i32,
     max: i32,
