@@ -50,8 +50,17 @@ impl Display for Term {
                 Number::Integer(_) | Number::Decimal(_) => {
                     write!(f, "{}{}", self.coefficient, self.variables)?
                 }
-                Number::Fraction(num, denom) => write!(f, "({num}{})/{denom}", self.variables)?,
-                Number::Irrational(_, s) => write!(f, "{s}")?,
+                Number::Fraction(num, denom) => write!(
+                    f,
+                    "({}{})/{denom}",
+                    if num != 1 {
+                        num.to_string()
+                    } else {
+                        String::new()
+                    },
+                    self.variables
+                )?,
+                Number::Irrational(_, s) => write!(f, "{s} {}", self.variables)?,
             };
         }
         if self.colored && self.coefficient != 0.into() {

@@ -188,11 +188,14 @@ fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> 
 
 #[problem]
 fn decimal_test(id: String, _lang: &str) -> Result<Problem> {
-    let first_term = Number::from(1.001);
-    let second_term = PI;
-    let third_term = Number::from(10);
-    let question = format!("${first_term} + {second_term} + {third_term}$");
-    let answer = format!("${}$", &first_term + &second_term + &third_term);
+    let first_term = Number::from((3, 5));
+    let second_term = Number::from((1, 2));
+    let third_term = Number::from((1, 7));
+    let actual_term_a: Term = (first_term, 'x').into();
+    let actual_term_b: Term = (second_term, 'x').into();
+    let actual_term_c: Term = (third_term, 'x').into();
+    let question = format!("${actual_term_a} + {actual_term_b} + {actual_term_c}$");
+    let answer = format!("${}$", actual_term_a + actual_term_b + actual_term_c);
     let solution = String::from("Hello!");
 
     Ok(Problem {

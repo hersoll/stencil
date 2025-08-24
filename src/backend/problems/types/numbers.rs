@@ -27,7 +27,6 @@ impl From<(i32, i32)> for Number {
 }
 impl From<f64> for Number {
     fn from(value: f64) -> Self {
-        println!("Called with value {value}");
         Self::Decimal((value * DECIMAL_FACTOR as f64).round() as i32)
     }
 }
