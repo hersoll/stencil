@@ -1,11 +1,17 @@
 use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
-use crate::backend::{problems::types::terms::Term, typst_formatting, Variables};
+use crate::backend::{problems::types::terms::Term, typst_formatting};
 
 #[derive(Debug, Clone)]
 pub struct Expression {
     terms: Vec<Term>,
+}
+
+impl From<Term> for Expression {
+    fn from(value: Term) -> Self {
+        Expression { terms: vec![value] }
+    }
 }
 
 impl From<Vec<Term>> for Expression {
@@ -222,6 +228,13 @@ impl std::ops::Mul<Expression> for Expression {
         result
     }
 }
+impl std::ops::Mul<Expression> for Term {
+    type Output = Expression;
+    fn mul(self, rhs: Expression) -> Self::Output {
+        let lhs: Expression = self.into();
+        lhs * rhs
+    }
+}
 impl std::ops::Mul<Expression> for i32 {
     type Output = Expression;
     fn mul(self, rhs: Expression) -> Self::Output {
@@ -264,6 +277,7 @@ impl Display for Expression {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::backend::Variables;
 
     #[test]
     fn expression_creation() {
