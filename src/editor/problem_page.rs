@@ -51,8 +51,14 @@ pub fn ProblemPage() -> Element {
         }
     });
 
+    let additional_width = if active_problem().is_none() {
+        "grid-template-columns: 100% 0%;"
+    } else {
+        ""
+    };
+
     rsx! {
-        div { class: "editor_container",
+        div { class: "editor_container", style: "{additional_width}",
             div { class: "pane available",
                 div { class: "available_display", style: "height: 760px;",
                     if let Some(message) = current_message() {
@@ -165,7 +171,13 @@ pub fn ProblemPage() -> Element {
                     }
                 }
             }
-            ProblemEditor { active_problem, current_message, used_prefix }
+            if active_problem().is_some() {
+                ProblemEditor {
+                    active_problem,
+                    current_message,
+                    used_prefix,
+                }
+            }
         }
     }
 }
