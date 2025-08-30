@@ -2,9 +2,10 @@ use std::fmt::Display;
 
 use num_traits::Zero;
 
+use crate::backend::IntRange;
+use crate::backend::Number;
 use crate::backend::problems::types::variables::Variable;
 use crate::backend::problems::types::variables::Variables;
-use crate::backend::Number;
 
 #[derive(Clone, Debug)]
 pub struct Term {
@@ -35,6 +36,17 @@ impl Term {
             }
         });
         new_term
+    }
+
+    pub fn assert_one_positive(term1: &mut Term, term2: &mut Term) {
+        if *term1 < Term::zero() && *term2 < Term::zero() {
+            let random = IntRange::with_zero(0, 1).unwrap().random();
+            if random == 0 {
+                *term1 = -term1.clone();
+            } else {
+                *term2 = -term2.clone();
+            }
+        }
     }
 }
 impl Display for Term {
