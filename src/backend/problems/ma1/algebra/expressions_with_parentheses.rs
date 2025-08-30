@@ -1,7 +1,7 @@
-use macros::problem;
-use crate::backend::problems::symbols;
-use crate::backend::{typst_formatting, Expression, IntRange, Problem, Term};
 use crate::Result;
+use crate::backend::problems::symbols;
+use crate::backend::{Expression, IntRange, Problem, Term, typst_formatting};
+use macros::problem;
 
 /// 3(x+1)
 /// Difficulty: 0
@@ -19,7 +19,7 @@ fn positive_integer_mult(id: String, _lang: &str) -> Result<Problem> {
     let answer = (factor * exp.clone()).simplify();
     let solution = format!(
         "${factor}({exp}) = colored({factor} dot) {unknown} {sign} colored({factor} dot) {abs_const} = {answer}$",
-        sign = if constant > 0 {"+"} else {"-"},
+        sign = if constant > 0 { "+" } else { "-" },
         abs_const = constant.abs()
     );
 
@@ -29,7 +29,7 @@ fn positive_integer_mult(id: String, _lang: &str) -> Result<Problem> {
         answer: format!("${answer}$"),
         solution,
         identifiers: vec![factor, constant],
-        combinations: f_range.len() * c_range.len()
+        combinations: f_range.len() * c_range.len(),
     })
 }
 
@@ -61,6 +61,536 @@ fn negative_integer_mult(id: String, _lang: &str) -> Result<Problem> {
         answer: format!("${simplified}$"),
         solution,
         identifiers: vec![factor, constant],
-        combinations: f_range.len() * c_range.len()
+        combinations: f_range.len() * c_range.len(),
+    })
+}
+
+/// 3(2a-4)
+/// Difficulty: 2
+#[problem]
+fn with_coefficient_on_variable(id: String, _lang: &str) -> Result<Problem> {
+    let (factor, f_range) = IntRange::without_zero(2, 5)?.and_random();
+    let unknown = symbols::get_unknown()?;
+    let coef = IntRange::without_zero(2, 5)?.random();
+    let (constant, c_range) = IntRange::without_zero(-7, 7)?.and_random();
+
+    let t1: Term = (coef, unknown).into();
+    let t2: Term = constant.into();
+    let exp: Expression = vec![&t1, &t2].into();
+
+    let question = format!("${factor}({exp})$");
+    let answer = (factor * exp.clone()).simplify();
+    let solution = format!(
+        "${factor}({exp}) = colored({factor} dot) {t1} {sign} colored({factor} dot) {abs_const} = {answer}$",
+        sign = if constant > 0 { "+" } else { "-" },
+        abs_const = constant.abs()
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![factor, constant],
+        combinations: f_range.len() * c_range.len(),
+    })
+}
+
+/// x(x+1)
+/// Difficulty: 2
+#[problem]
+fn multiply_by_variable(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let (constant, c_range) = IntRange::without_zero(-7, 7)?.and_random();
+
+    let factor: Term = unknown.into();
+    let t1: Term = unknown.into();
+    let t2: Term = constant.into();
+    let exp: Expression = vec![&t1, &t2].into();
+
+    let question = format!("${factor}({exp})$");
+    let answer = (factor.clone() * exp.clone()).simplify();
+    let solution = format!(
+        "${factor}({exp}) = colored({factor} dot) {t1} {sign} colored({factor} dot) {abs_const} = {answer}$",
+        sign = if constant > 0 { "+" } else { "-" },
+        abs_const = constant.abs()
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![constant],
+        combinations: c_range.len(),
+    })
+}
+
+/// (2x + 1) + (3x - 4)
+/// Difficulty: 2
+#[problem]
+fn add_parentheses(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
+    let coef_1 = coef_range.random();
+    let const_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let const_2 = coef_range.random();
+
+    let mut term_var_1: Term = (coef_1, unknown).into();
+    let mut term_const_1: Term = const_1.into();
+    let mut term_var_2: Term = (coef_2, unknown).into();
+    let mut term_const_2: Term = const_2.into();
+    Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
+    Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
+    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    exp_1.sort();
+    exp_2.sort();
+
+    let question = format!("$({exp_1}) + ({exp_2})$");
+    let answer = (exp_1.clone() + exp_2.clone()).simplify();
+    let solution = format!(
+        "$&({exp_1}) + ({exp_2}) = {exp_1} + {exp_2} = \\ 
+            = &{term_var_1} {term_var_2:+} {term_const_1:+}{term_const_2:+} = {answer}$",
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef_1, const_1],
+        combinations: coef_range.len() * coef_range.len(),
+    })
+}
+
+/// (2x + 1) - (3x - 4)
+/// Difficulty: 3
+#[problem]
+fn subtract_parentheses(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
+    let coef_1 = coef_range.random();
+    let const_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let const_2 = coef_range.random();
+
+    let mut term_var_1: Term = (coef_1, unknown).into();
+    let mut term_const_1: Term = const_1.into();
+    let mut term_var_2: Term = (coef_2, unknown).into();
+    let mut term_const_2: Term = const_2.into();
+    Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
+    Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
+
+    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    exp_1.sort();
+    exp_2.sort();
+
+    let question = format!("$({exp_1}) - ({exp_2})$");
+    let answer = (exp_1.clone() - exp_2.clone()).simplify();
+    let solution = format!(
+        "$&({exp_1}) - ({exp_2}) = {exp_1} {exp_2_m:+} = \\ 
+            = &{term_var_1} {term_var_2_m:+} {term_const_1:+}{term_const_2_m:+} = {answer}$",
+        exp_2_m = -&exp_2,
+        term_var_2_m = -term_var_2,
+        term_const_2_m = -term_const_2,
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef_1, const_1],
+        combinations: coef_range.len() * coef_range.len(),
+    })
+}
+
+/// -4(3 - 4x)
+/// Difficulty: 2
+#[problem]
+fn negative_factor_and_coef(id: String, _lang: &str) -> Result<Problem> {
+    let (factor, f_range) = IntRange::without_zero(-8, -2)?.and_random();
+    let unknown = symbols::get_unknown()?;
+    let coef = IntRange::without_zero(-5, -2)?.random();
+    let (constant, c_range) = IntRange::without_zero(2, 9)?.and_random();
+
+    let t1: Term = constant.into();
+    let t2: Term = (coef, unknown).into();
+    let exp: Expression = vec![&t1, &t2].into();
+
+    let question = format!("${factor}({exp})$");
+    let answer = factor * exp.clone();
+    let simplified = answer.simplify();
+    let solution = format!(
+        "$&{factor}({exp}) = colored({factor_p} dot) {t1_p} + colored({factor_p} dot) {t2_p} =\\
+            =&{answer} = {simplified}$",
+        factor_p = typst_formatting::parentheses(factor),
+        t1_p = typst_formatting::parentheses(t1),
+        t2_p = typst_formatting::parentheses(t2),
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${simplified}$"),
+        solution,
+        identifiers: vec![factor, constant],
+        combinations: f_range.len() * c_range.len(),
+    })
+}
+
+/// 3 - (2x - 1)
+/// Difficulty: 3
+#[problem]
+fn const_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
+    let (initial, i_range) = IntRange::without_zero(2, 5)?.and_random();
+    let unknown = symbols::get_unknown()?;
+    let coef = IntRange::without_zero(2, 6)?.random();
+    let (constant, c_range) = IntRange::without_zero(-7, -1)?.and_random();
+
+    let t1: Term = initial.into();
+    let t2: Term = (coef, unknown).into();
+    let t3: Term = constant.into();
+
+    let exp_1: Expression = t1.into();
+    let exp_2: Expression = vec![&t2, &t3].into();
+
+    let question = format!("${exp_1}-({exp_2})$");
+    let answer = (exp_1.clone() - exp_2.clone()).simplify();
+    let solution = format!(
+        "$&{exp_1}-({exp_2}) = {exp_1} {t2_m:+} {t3_m:+} = \\
+            = &{answer}$",
+        t2_m = -&t2,
+        t3_m = -&t3,
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![initial, constant],
+        combinations: i_range.len() * c_range.len(),
+    })
+}
+
+/// 2x - (7x - 1)
+/// Difficulty: 3
+#[problem]
+fn var_term_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
+    let (initial, i_range) = IntRange::without_zero(1, 4)?.and_random();
+    let unknown = symbols::get_unknown()?;
+    let coef = IntRange::without_zero(5, 10)?.random();
+    let (constant, c_range) = IntRange::without_zero(-7, -1)?.and_random();
+
+    let t1: Term = (initial, unknown).into();
+    let t2: Term = (coef, unknown).into();
+    let t3: Term = constant.into();
+
+    let exp_1: Expression = t1.into();
+    let exp_2: Expression = vec![&t2, &t3].into();
+
+    let question = format!("${exp_1}-({exp_2})$");
+    let answer = exp_1.clone() - exp_2.clone();
+    let simplified = answer.simplify();
+    let solution = format!(
+        "$&{exp_1}-({exp_2}) = {exp_1} {t2_m:+} {t3_m:+} = \\
+            = &{answer} = {simplified}$",
+        t2_m = -&t2,
+        t3_m = -&t3,
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${simplified}$"),
+        solution,
+        identifiers: vec![initial, constant],
+        combinations: i_range.len() * c_range.len(),
+    })
+}
+
+/// 4(2x + 1) + 2(3x - 4)
+/// Difficulty: 3
+#[problem]
+fn multiply_and_add(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
+    let factor_range = IntRange::without_zero(2, 5)?;
+    let factor_1 = factor_range.random();
+    let factor_2 = factor_range.random();
+    let coef_1 = coef_range.random();
+    let const_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let const_2 = coef_range.random();
+
+    let mut term_var_1: Term = (coef_1, unknown).into();
+    let mut term_const_1: Term = const_1.into();
+    let mut term_var_2: Term = (coef_2, unknown).into();
+    let mut term_const_2: Term = const_2.into();
+    Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
+    Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
+    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    exp_1.sort();
+    exp_2.sort();
+    let mult_1 = factor_1 * exp_1.clone();
+    let mult_2 = factor_2 * exp_2.clone();
+
+    let question = format!("${factor_1}({exp_1}) + {factor_2}({exp_2})$");
+    let answer = (mult_1.clone() + mult_2.clone()).simplify();
+    let solution = format!(
+        "$&{factor_1}({exp_1}) + {factor_2}({exp_2}) = \\ = &{mult_1} {mult_2:+} = {answer}$",
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef_1, const_1],
+        combinations: coef_range.len() * coef_range.len(),
+    })
+}
+
+/// 4(2x + 1) - (3x - 4)
+/// Difficulty: 3
+#[problem]
+fn multiply_first_and_subtract(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
+    let factor_range = IntRange::without_zero(2, 5)?;
+    let factor_1 = factor_range.random();
+    let coef_1 = coef_range.random();
+    let const_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let const_2 = coef_range.random();
+
+    let mut term_var_1: Term = (coef_1, unknown).into();
+    let mut term_const_1: Term = const_1.into();
+    let mut term_var_2: Term = (coef_2, unknown).into();
+    let mut term_const_2: Term = const_2.into();
+    Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
+    Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
+
+    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    exp_1.sort();
+    exp_2.sort();
+    let mult_1 = factor_1 * exp_1.clone();
+
+    let question = format!("${factor_1}({exp_1}) - ({exp_2})$");
+    let answer = (mult_1.clone() - exp_2.clone()).simplify();
+    let solution = format!(
+        "$&{factor_1}({exp_1}) - ({exp_2}) = \\ = &{mult_1} {exp_2_m:+} = {answer}$",
+        exp_2_m = -&exp_2,
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef_1, const_1],
+        combinations: coef_range.len() * coef_range.len(),
+    })
+}
+
+/// 4(2x + 1) - 2(3x - 4)
+/// Difficulty: 4
+#[problem]
+fn multiply_and_subtract(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
+    let factor_range = IntRange::without_zero(2, 5)?;
+    let factor_1 = factor_range.random();
+    let factor_2 = factor_range.random();
+    let coef_1 = coef_range.random();
+    let const_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let const_2 = coef_range.random();
+
+    let mut term_var_1: Term = (coef_1, unknown).into();
+    let mut term_const_1: Term = const_1.into();
+    let mut term_var_2: Term = (coef_2, unknown).into();
+    let mut term_const_2: Term = const_2.into();
+    Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
+    Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
+
+    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    exp_1.sort();
+    exp_2.sort();
+    let mult_1 = factor_1 * exp_1.clone();
+    let mult_2 = -factor_2 * exp_2.clone();
+
+    let question = format!("${factor_1}({exp_1}) - {factor_2}({exp_2})$");
+    let answer = (mult_1.clone() + mult_2.clone()).simplify();
+    let solution = format!(
+        "$&{factor_1}({exp_1}) - {factor_2}({exp_2}) = \\ = &{mult_1} {mult_2:+} = {answer}$",
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef_1, const_1],
+        combinations: coef_range.len() * coef_range.len(),
+    })
+}
+
+/// 3x(1 - 2x)
+/// Difficulty: 5
+#[problem]
+fn multiply_by_variable_term(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let constant = IntRange::without_zero(2, 7)?.random();
+    let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
+    let coef_1 = coef_range.random().abs();
+    let coef_2 = coef_range.random();
+
+    let factor: Term = (coef_1, unknown).into();
+    let t1: Term = (coef_2, unknown).into();
+    let t2: Term = constant.into();
+    let mut exp: Expression = vec![&t1, &t2].into();
+    exp.sort();
+
+    let question = format!("${factor}({exp})$");
+    let answer = (factor.clone() * exp.clone()).simplify();
+    let solution = format!(
+        "$&{factor}({exp}) = colored({factor} dot) {t2} - colored({factor} dot) {t1_abs} = \\ =&{answer}$",
+        t1_abs = t1.abs()
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef_1, coef_2],
+        combinations: coef_range.len() * coef_range.len(),
+    })
+}
+
+/// x(3x + 1) - 3(2 + x)
+/// Difficulty: 6
+#[problem]
+fn one_variable_one_constant(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
+    let mut t1: Term = (coef_range.random(), unknown).into();
+    let mut t3: Term = (coef_range.random(), unknown).into();
+    let mut t2: Term = coef_range.random().into();
+    let mut t4: Term = coef_range.random().into();
+    Term::assert_one_positive(&mut t1, &mut t2);
+    Term::assert_one_positive(&mut t3, &mut t4);
+
+    let factor: Term = coef_range.random().into();
+    let v_factor: Term = unknown.into();
+
+    let mut exp_1: Expression = vec![&t1, &t2].into();
+    let mut exp_2: Expression = vec![&t3, &t4].into();
+    exp_1.sort();
+    exp_2.sort();
+    let mult_1 = v_factor.clone() * exp_1.clone();
+    let mult_2 = factor.clone() * exp_2.clone();
+
+    let question = format!("${v_factor}({exp_1}) {factor:+}({exp_2})$");
+    let answer = (mult_1.clone() + mult_2.clone()).simplify();
+    let solution = format!(
+        "$&{v_factor}({exp_1}) {factor:+}({exp_2}) = \\
+         =&{mult_1}{mult_2:+} = {answer}$"
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![2],
+        combinations: 1,
+    })
+}
+
+/// 3(3x + 1) - x(2 + x)
+/// Difficulty: 6
+#[problem]
+fn one_constant_one_variable(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
+    let mut t1: Term = (coef_range.random(), unknown).into();
+    let mut t3: Term = (coef_range.random(), unknown).into();
+    let mut t2: Term = coef_range.random().into();
+    let mut t4: Term = coef_range.random().into();
+    Term::assert_one_positive(&mut t1, &mut t2);
+    Term::assert_one_positive(&mut t3, &mut t4);
+
+    let factor: Term = coef_range.random().into();
+    let v_factor: Term = unknown.into();
+
+    let mut exp_1: Expression = vec![&t1, &t2].into();
+    let mut exp_2: Expression = vec![&t3, &t4].into();
+    exp_1.sort();
+    exp_2.sort();
+    let mult_1 = factor.clone() * exp_1.clone();
+    let mult_2 = v_factor.clone() * exp_2.clone();
+
+    let question = format!("${factor}({exp_1}) {v_factor:+}({exp_2})$");
+    let answer = (mult_1.clone() + mult_2.clone()).simplify();
+    let solution = format!(
+        "$&{factor}({exp_1}) {v_factor:+}({exp_2}) = \\
+         =&{mult_1}{mult_2:+} = {answer}$"
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![2],
+        combinations: 1,
+    })
+}
+
+/// 3x(3x + 1) - 2x(2 + x)
+/// Difficulty: 7
+#[problem]
+fn multiply_both_by_variable_terms(id: String, _lang: &str) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
+    let mut t1: Term = (coef_range.random(), unknown).into();
+    let mut t3: Term = (coef_range.random(), unknown).into();
+    let mut t2: Term = coef_range.random().into();
+    let mut t4: Term = coef_range.random().into();
+    Term::assert_one_positive(&mut t1, &mut t2);
+    Term::assert_one_positive(&mut t3, &mut t4);
+    let factor_1: Term = (coef_range.random(), unknown).into();
+    let factor_2: Term = (coef_range.random(), unknown).into();
+
+    let mut exp_1: Expression = vec![&t1, &t2].into();
+    let mut exp_2: Expression = vec![&t3, &t4].into();
+    exp_1.sort();
+    exp_2.sort();
+    let mult_1 = factor_1.clone() * exp_1.clone();
+    let mult_2 = factor_2.clone() * exp_2.clone();
+
+    let question = format!("${factor_1}({exp_1}) {factor_2:+}({exp_2})$");
+    let answer = (mult_1.clone() + mult_2.clone()).simplify();
+    let solution = format!(
+        "$&{factor_1}({exp_1}) {factor_2:+}({exp_2}) = \\
+         =&{mult_1}{mult_2:+} = {answer}$"
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![2],
+        combinations: 1,
     })
 }
