@@ -27,6 +27,10 @@ impl Expression {
         Self { terms: Vec::new() }
     }
 
+    pub fn push(&mut self, term: Term) {
+        self.terms.push(term);
+    }
+
     pub fn random_order(terms: Vec<&Term>) -> Self {
         let mut owned_terms: Vec<Term> = terms.iter().map(|&t| t.clone()).collect();
         owned_terms.shuffle(&mut rng());
@@ -206,7 +210,7 @@ impl std::ops::Sub for Expression {
         Self { terms: result }
     }
 }
-impl std::ops::Mul for Expression {
+impl std::ops::Mul<Expression> for Expression {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
         let mut result = Expression::new();
@@ -319,9 +323,9 @@ mod tests {
         let t2: Term = (-3, ('x', 2)).into();
         let t3: Term = (4, 'a').into();
         let exp: Expression = vec![&t1, &t2, &t3].into();
-        let partial_evaluation = exp.evaluate(vec![('x', -1)]);
+        let partial_evaluation = exp.evaluate(&vec![('x', -1)]);
         assert_eq!(partial_evaluation.to_string(), "4a-5");
-        let full_evaluation = exp.evaluate(vec![('a', -2), ('x', 5)]);
+        let full_evaluation = exp.evaluate(&vec![('a', -2), ('x', 5)]);
         assert_eq!(full_evaluation.to_string(), "-73");
     }
 
@@ -333,11 +337,11 @@ mod tests {
         let t3: Term = (4, vars).into();
         let exp: Expression = vec![&t1, &t2, &t3].into();
         assert_eq!(
-            exp.show_replacements(vec![('x', -1)]),
+            exp.show_replacements(&vec![('x', -1)]),
             "2 dot colored((-1))-3 dot colored((-1))^2+4a^3 dot colored((-1))^3 dot y^4"
         );
         assert_eq!(
-            exp.show_replacements(vec![('x', 4)]),
+            exp.show_replacements(&vec![('x', 4)]),
             "2 dot colored(4)-3 dot colored(4)^2+4a^3 dot colored(4)^3 dot y^4"
         );
     }

@@ -146,12 +146,14 @@ impl Ord for Variables {
         } else if other.list.len() == 0 {
             Ordering::Greater
         } else {
-            let total_exponent_first: i32 = self.list.iter().map(|v| v.exponent).sum();
-            let total_exponent_second: i32 = other.list.iter().map(|v| v.exponent).sum();
+            let total_exponent_first: i32 = self.list.iter().map(|v| v.exponent.abs()).sum();
+            let total_exponent_second: i32 = other.list.iter().map(|v| v.exponent.abs()).sum();
+            let variable_list_first: String = self.list.iter().map(|v| v.symbol.to_string().repeat(v.exponent.abs() as usize)).collect();
+            let variable_list_second: String = other.list.iter().map(|v| v.symbol.to_string().repeat(v.exponent.abs() as usize)).collect();
 
             total_exponent_first
                 .cmp(&total_exponent_second)
-                .then_with(|| self.list.cmp(&other.list))
+                .then_with(|| variable_list_second.cmp(&variable_list_first))
         }
     }
 }
