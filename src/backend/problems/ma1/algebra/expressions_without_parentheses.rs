@@ -7,6 +7,7 @@ use crate::backend::{
 };
 use crate::{backend, Result};
 use macros::problem;
+use rand::seq::IndexedRandom;
 
 /// 3x + 4 + 2x + 1
 /// Difficulty: 0
@@ -275,6 +276,44 @@ fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> 
         identifiers: vec![first_coef, first_exp],
         combinations: first_coef_range.len() * first_exp_range.len(),
     })
+}
+
+/// 3x - xy + 4x + 4xy - y^2
+/// Difficulty: 5
+#[problem]
+fn simplify_variable_combinations(id: String, _lang: &str) -> Result<Problem> {
+    let mut rng = rand::rng();
+    let total_terms = 5; 
+    let variable_combinations: Vec<(i32, i32)>  = vec![(1,0), (2,0), (2,0), (1,1),(1,1), (0,1), (0,2), (0,2)];
+    let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
+    let mut expression = Expression::new();
+    let mut i = 0;
+    while i < total_terms {
+        let coef = IntRange::without_zero(-6, 6)?.random();
+        let (first_exponent, second_exponent) = variable_combinations.choose(&mut rng).unwrap();
+        let vars: Variables = vec![(first_unknown, *first_exponent), (second_unknown, *second_exponent)].into();
+        let term: Term = (coef, vars).into();
+        expression.push(term);
+        i += 1;
+    }
+    let sorted = expression.sorted();
+    let simplified = expression.simplify();
+
+    let solution = format!(
+        "$&{expression} = \\
+        = &{sorted} = \\
+        = &{simplified}$",
+    );
+
+    Ok(Problem {
+        id,
+        question: format!("${expression}$"),
+        answer: format!("${simplified}$"),
+        solution,
+        identifiers: vec![1],
+        combinations: 1,
+    })
+
 }
 
 /// Evaluate 3x2 + 2xy^2 + 3x if x = -3 and y = 2
