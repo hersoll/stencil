@@ -208,6 +208,17 @@ impl std::ops::Neg for Term {
         }
     }
 }
+
+impl std::ops::Neg for &Term {
+    type Output = Term;
+    fn neg(self) -> Self::Output {
+        Term {
+            coefficient: -self.coefficient.clone(),
+            variables: self.variables.clone(),
+            colored: self.colored,
+        }
+    }
+}
 // Do not add terms manually, only meant to be used inside Expression implementation
 impl std::ops::Add for Term {
     type Output = Self;

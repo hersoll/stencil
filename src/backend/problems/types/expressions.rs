@@ -63,13 +63,7 @@ impl Expression {
     pub fn sort(&mut self) {
         if self.terms.len() < 2 {
         } else if self.terms.len() == 2 {
-            // If we have 3y - 2x or -2x^2 + z we want them in variable order
-            if self.terms[0].variables.list.len() > 0 && self.terms[1].variables.list.len() > 0 {
-                self.sort_by_variables();
-            } else {
-                // If we have 3x^2 - 5 or 6 - y we want the positive first
-                self.place_positive_first();
-            }
+            self.place_positive_first();
         } else {
             self.sort_by_variables();
         }
@@ -250,6 +244,28 @@ impl std::ops::MulAssign<i32> for Expression {
         for term in &mut self.terms {
             *term *= rhs;
         }
+    }
+}
+
+impl std::ops::Neg for &Expression {
+    type Output = Expression;
+    fn neg(self) -> Self::Output {
+        let mut new_exp = Expression::new();
+        for term in &self.terms {
+            new_exp.push(-term);
+        }
+        new_exp
+    }
+}
+
+impl std::ops::Neg for Expression {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        let mut new_exp = Expression::new();
+        for term in self.terms {
+            new_exp.push(-term);
+        }
+        new_exp
     }
 }
 
