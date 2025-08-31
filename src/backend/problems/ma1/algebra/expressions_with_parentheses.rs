@@ -594,3 +594,108 @@ fn multiply_both_by_variable_terms(id: String, _lang: &str) -> Result<Problem> {
         combinations: 1,
     })
 }
+
+/// 2x(1 + y) - 3(x + y)
+/// Difficulty: 8
+#[problem]
+fn mixing_variables(id: String, _lang: &str) -> Result<Problem> {
+    let (unknown1, unknown2) = symbols::get_two_unknowns()?;
+    let num_range = IntRange::without_zero(-5, 5)?;
+    let factor1 = num_range.positive();
+    let factor2 = num_range.negative();
+    let constant = num_range.random();
+    let coef1 = num_range.random();
+    let coef2 = num_range.random();
+    let coef3 = num_range.random();
+
+    let factor1_term: Term = (factor1, unknown1).into();
+    let factor2_term: Term = (factor2, unknown2).into();
+    let mut term1: Term = constant.into();
+    let mut term2: Term = (coef1, unknown2).into();
+    let mut term3: Term = (coef2, unknown1).into();
+    let mut term4: Term = (coef3, unknown2).into();
+    Term::assert_one_positive(&mut term1, &mut term2);
+    Term::assert_one_positive(&mut term3, &mut term4);
+
+    let mut exp1: Expression = vec![&term1, &term2].into();
+    let mut exp2: Expression = vec![&term3, &term4].into();
+    exp1.sort();
+    exp2.sort();
+
+    let question = format!("${factor1_term}({exp1}) {factor2_term:+}({exp2})$");
+    let mult1 = factor1_term.clone() * exp1.clone();
+    let mult2 = factor2_term.clone() * exp2.clone();
+    let answer = (mult1.clone() + mult2.clone()).simplify();
+    let solution = format!(
+        "$&{factor1_term}({exp1}) {factor2_term:+}({exp2}) = \\
+         =&{mult1} {mult2:+} = \\
+         =& {answer}$"
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![factor1, factor2],
+        combinations: num_range.len(),
+    })
+}
+
+/// x^2(1 - y) + 3x(y - 1) - y(3x + 1)
+/// Difficulty: 9
+#[problem]
+fn mixing_variables_and_exponents(id: String, _lang: &str) -> Result<Problem> {
+    let (unknown1, unknown2) = symbols::get_two_unknowns()?;
+    let num_range = IntRange::without_zero(-5, 5)?;
+    let factor1 = num_range.positive();
+    let factor2 = num_range.random();
+    let factor3 = num_range.random();
+    let constant = num_range.random();
+    let coef1 = num_range.random();
+    let coef2 = num_range.random();
+    let coef3 = num_range.random();
+    let coef4 = num_range.random();
+    let coef5 = num_range.random();
+
+    let factor1_term: Term = (factor1, (unknown1, 2)).into();
+    let factor2_term: Term = (factor2, unknown1).into();
+    let factor3_term: Term = (factor3, unknown2).into();
+    let mut term1: Term = constant.into();
+    let mut term2: Term = (coef1, unknown2).into();
+    let mut term3: Term = (coef2, unknown2).into();
+    let mut term4: Term = (coef3, unknown1).into();
+    let mut term5: Term = (coef4, unknown1).into();
+    let mut term6: Term = coef5.into();
+    Term::assert_one_positive(&mut term1, &mut term2);
+    Term::assert_one_positive(&mut term3, &mut term4);
+    Term::assert_one_positive(&mut term5, &mut term6);
+
+    let mut exp1: Expression = vec![&term1, &term2].into();
+    let mut exp2: Expression = vec![&term3, &term4].into();
+    let mut exp3: Expression = vec![&term5, &term6].into();
+    exp1.sort();
+    exp2.sort();
+    exp3.sort();
+
+    let question =
+        format!("${factor1_term}({exp1}) {factor2_term:+}({exp2}) {factor3_term:+}({exp3})$");
+    let mult1 = factor1_term.clone() * exp1.clone();
+    let mult2 = factor2_term.clone() * exp2.clone();
+    let mult3 = factor3_term.clone() * exp3.clone();
+    let answer = (mult1.clone() + mult2.clone() + mult3.clone()).simplify();
+    let solution = format!(
+        "$&{factor1_term}({exp1}) {factor2_term:+}({exp2}) {factor3_term:+}({exp3}) = \\
+         =&{mult1} {mult2:+} {mult3:+}=\\
+        =&{answer}$"
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![factor1, factor2, factor3],
+        combinations: num_range.len() * 2,
+    })
+}
