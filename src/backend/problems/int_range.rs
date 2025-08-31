@@ -76,6 +76,29 @@ impl IntRange {
         *values.choose(&mut rng).unwrap()
     }
 
+    pub fn positive(&self) -> i32 {
+        assert!(
+            self.len() > 0,
+            "Trying to access a random number from an empty range."
+        );
+        assert!(self.max > 0, "Trying to get a positive number from a range with no positives.");
+        let values: Vec<i32> = self.values().iter().filter(|x| **x > 0).map(|&x| x).collect();
+        let mut rng = rand::rng();
+        *values.choose(&mut rng).unwrap()
+    }
+
+    pub fn negative(&self) -> i32 {
+        assert!(
+            self.len() > 0,
+            "Trying to access a random number from an empty range."
+        );
+        assert!(self.min < 0, "Trying to get a negative number from a range with no negatives.");
+        let values: Vec<i32> = self.values().iter().filter(|x| **x < 0).map(|&x| x).collect();
+        let mut rng = rand::rng();
+        *values.choose(&mut rng).unwrap()
+    }
+
+
     /// Returns a random value alongside the range in a tuple
     ///
     /// Useful for when you want to generate a random value immediately, but also need the range
