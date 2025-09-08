@@ -44,6 +44,7 @@ pub fn DifficultyPicker(set_data: Signal<ProblemSetData>) -> Element {
                 },
                 for difficulty in difficulties {
                     option {
+                        selected: difficulty == set_data().ending_difficulty,
                         value: "{difficulty.to_str()}",
                         disabled: difficulty < set_data().starting_difficulty,
                         "{i18n_lookup(difficulty.to_str())?}"

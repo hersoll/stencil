@@ -55,7 +55,6 @@ pub fn Home() -> Element {
             *courses.write() = course_data;
         }
     });
-
     let push_set = move || {
         let set_signal = Signal::new(set_data().clone());
         sets.push(set_signal);

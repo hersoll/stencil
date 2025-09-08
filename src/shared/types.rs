@@ -1,6 +1,5 @@
 use crate::{
     Error, Result,
-    shared::{ChapterData, CourseData, ProblemData, TopicData},
 };
 use serde::{Deserialize, Serialize};
 
@@ -108,7 +107,7 @@ impl ProblemSetData {
             topics: Vec::new(),
             exclusions: Vec::new(),
             starting_difficulty: Difficulty::Intro,
-            ending_difficulty: Difficulty::Intro,
+            ending_difficulty: Difficulty::Hard,
             n: 10,
             options: SetRenderingOptions {
                 question_columns: 2,
