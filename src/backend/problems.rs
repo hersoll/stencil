@@ -4,6 +4,7 @@ use crate::Result;
 //#################################
 pub mod int_range;
 pub mod ma1;
+pub mod ma2;
 pub mod math_utils;
 pub mod solutions;
 mod symbols;
