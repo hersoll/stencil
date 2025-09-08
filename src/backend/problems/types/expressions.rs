@@ -5,7 +5,7 @@ use crate::backend::{problems::types::terms::Term, typst_formatting};
 
 #[derive(Debug, Clone)]
 pub struct Expression {
-    terms: Vec<Term>,
+    pub terms: Vec<Term>,
 }
 
 impl From<Term> for Expression {

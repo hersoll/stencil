@@ -1,6 +1,6 @@
 use crate::Result;
 use crate::backend::problems::symbols;
-use crate::backend::{Expression, IntRange, Problem, Term, typst_formatting};
+use crate::backend::{typst_formatting, Expression, IntRange, Number, Problem, Term};
 use macros::problem;
 
 /// 3(x+1)
@@ -462,8 +462,10 @@ fn multiply_by_variable_term(id: String, _lang: &str) -> Result<Problem> {
     let question = format!("${factor}({exp})$");
     let answer = (factor.clone() * exp.clone()).simplify();
     let solution = format!(
-        "$&{factor}({exp}) = colored({factor} dot) {t2} - colored({factor} dot) {t1_abs} = \\ =&{answer}$",
-        t1_abs = t1.abs()
+        "$&{factor}({exp}) = colored({factor} dot) {e1} {sign} colored({factor} dot) {e2_abs} = \\ =&{answer}$",
+        e1 = exp.terms[0],
+        e2_abs = exp.terms[1].abs(),
+        sign = if exp.terms[1].coefficient > Number::from(0) {"+"} else {"-"}
     );
 
     Ok(Problem {
