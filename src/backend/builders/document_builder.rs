@@ -189,7 +189,7 @@ impl DocumentBuilder {
                 if let Some(spacing) = self.options.par_spacing {
                     set_string += format!("#v({}mm)\n", spacing).as_str();
                 } else {
-                    set_string += &String::from("#v(1.33em)\n");
+                    set_string += &String::from("#v(1.8em)\n");
                 }
             }
             collection += &set_string;
