@@ -34,10 +34,10 @@ fn simple_division(id: String, _lang: &str) -> Result<Problem> {
     let (exp1, exp1_range) = IntRange::without_zero(4, 10)?.and_random();
     let exp2 = IntRange::without_zero(2, exp1 - 2)?.random();
     let total_exp = exp1 - exp2;
-    let question = format!("$ {base}^{exp1} / {base}^{exp2} $");
+    let question = format!("$display({base}^{exp1} / {base}^{exp2})$");
     let answer = format!("${base}^{total_exp}$");
     let solution = format!(
-        "$ {base}^{exp1} / {base}^{exp2} = {base}^({exp1} - {exp2}) = {base}^{total_exp} $"
+        "$display({base}^{exp1} / {base}^{exp2} = {base}^({exp1} - {exp2}) = {base}^{total_exp})$"
     );
 
     Ok(Problem {
