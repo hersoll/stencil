@@ -3,10 +3,7 @@ use std::collections::HashMap;
 use crate::{
     Result,
     backend::{
-        self, IntRange, Problem,
-        problems::symbols,
-        replace_placeholders,
-        typst_formatting::{self, equation_solution},
+        self, Expression, IntRange, Problem, Term, problems::symbols, replace_placeholders, typst_formatting::{self, equation_solution}
     },
 };
 use macros::problem;
@@ -234,3 +231,102 @@ fn find_y(id: String, lang: &str) -> Result<Problem> {
     };
     Ok(problem)
 }
+
+
+
+/// f(x) = 2x + 4. Bestäm f(a+1) 
+/// Difficulty: 6
+#[problem]
+fn insert_algebra_positive(id: String, lang: &str) -> Result<Problem> {
+    let (function_coefficient, function_coefficient_range) = IntRange::without_ones_and_zero(2, 6)?.and_random();
+    let (algebra_coefficient, algebra_coefficient_range) = IntRange::without_zero(1, 6)?.and_random();
+    let function_constant = IntRange::without_zero(1, 8)?.random();
+    let algebra_constant = IntRange::without_zero(1, 8)?.random();
+    let f_name = symbols::get_function_name()?;
+    let var = 'x';
+    let algebra_symbol = symbols::get_unknown_with_exclusions(['x', 'y'])?;
+
+    let function_term1: Term = (function_coefficient, var).into();
+    let function_term2: Term = function_constant.into();
+    let function_expression: Expression = vec!(function_term1, function_term2).into();
+    let algebra_term1: Term = (algebra_coefficient, algebra_symbol).into();
+    let algebra_term2: Term = algebra_constant.into();
+    let algebra_expression: Expression = vec!(algebra_term1, algebra_term2).into();
+
+    let function_string = format!("{f_name}({var}) = {function_expression}");
+    let algebra_string = format!("{f_name}({algebra_expression})");
+    let map = HashMap::from([
+        ("function", function_string),
+        ("algebra", algebra_string),
+    ]);
+    let strings = backend::get_parsed_problem(&id, lang)?;
+    let question = replace_placeholders(&strings.question, &map);
+    let answer = function_coefficient * algebra_expression.clone() + function_constant;
+
+    let solution = format!(
+        "$ {f_name}({var}) &= {function_expression} \\
+        {f_name}(colored({algebra_expression})) &= {function_coefficient}(colored({algebra_expression})) {function_constant:+} \\
+        {f_name}({algebra_expression}) &= {mult_algebra} {function_constant:+} \\
+        {f_name}({algebra_expression}) &= {answer} $",
+        mult_algebra = function_coefficient * algebra_expression.clone(),
+    );
+
+    let problem = Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![function_coefficient,  algebra_coefficient],
+        combinations: function_coefficient_range.len() * algebra_coefficient_range.len(),
+    };
+    Ok(problem)
+}
+
+
+#[problem]
+fn insert_algebra_negative(id: String, lang: &str) -> Result<Problem> {
+    let (function_coefficient, function_coefficient_range) = IntRange::without_ones_and_zero(-6, -2)?.and_random();
+    let (algebra_coefficient, algebra_coefficient_range) = IntRange::without_zero(1, 6)?.and_random();
+    let function_constant = IntRange::without_zero(1, 8)?.random();
+    let algebra_constant = IntRange::without_zero(-8, 8)?.random();
+    let f_name = symbols::get_function_name()?;
+    let var = 'x';
+    let algebra_symbol = symbols::get_unknown_with_exclusions(['x', 'y'])?;
+
+    let function_term1: Term = (function_coefficient, var).into();
+    let function_term2: Term = function_constant.into();
+    let mut function_expression: Expression = vec!(function_term1, function_term2).into();
+    function_expression = function_expression.simplify();
+    let algebra_term1: Term = (algebra_coefficient, algebra_symbol).into();
+    let algebra_term2: Term = algebra_constant.into();
+    let algebra_expression: Expression = vec!(algebra_term1, algebra_term2).into();
+
+    let function_string = format!("{f_name}({var}) = {function_expression}");
+    let algebra_string = format!("{f_name}({algebra_expression})");
+    let map = HashMap::from([
+        ("function", function_string),
+        ("algebra", algebra_string),
+    ]);
+    let strings = backend::get_parsed_problem(&id, lang)?;
+    let question = replace_placeholders(&strings.question, &map);
+    let answer = (function_coefficient * algebra_expression.clone() + function_constant).simplify();
+
+    let solution = format!(
+        "$ {f_name}({var}) &= {function_expression} \\
+        {f_name}(colored({algebra_expression})) &= {function_constant} {function_coefficient:+}(colored({algebra_expression}))\\
+        {f_name}({algebra_expression}) &= {function_constant}{mult_algebra:+} \\
+        {f_name}({algebra_expression}) &= {answer} $",
+        mult_algebra = function_coefficient * algebra_expression.clone(),
+    );
+
+    let problem = Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![function_coefficient,  algebra_coefficient],
+        combinations: function_coefficient_range.len() * algebra_coefficient_range.len(),
+    };
+    Ok(problem)
+}
+
