@@ -1,4 +1,5 @@
 use crate::Result;
+use crate::Error;
 use rand::{self, seq::IndexedRandom};
 struct Symbol {
     char: char,
@@ -14,6 +15,19 @@ impl Symbol {
 /// Get a random unknown - the x in 3x + 1 = 10 or (2x + 1) - (x + 2)
 pub fn get_unknown() -> Result<char> {
     get_random(&UNKNOWNS)
+}
+
+pub fn get_unknown_with_exclusions<T: Into<Vec<char>>>(exclusions_primitive: T) -> Result<char> {
+    let exclusions: Vec<char> = exclusions_primitive.into();
+    if exclusions.len() == UNKNOWNS.len() {
+        return Err(Error::TooManyExclusions);
+    }
+    while let Ok(chosen_char) = get_random(&UNKNOWNS) {
+       if !exclusions.contains(&chosen_char) {
+            return Ok(chosen_char);
+        }
+    } 
+    Err(Error::TooManyExclusions)
 }
 
 pub fn get_two_unknowns() -> Result<(char, char)> {

@@ -79,6 +79,8 @@ pub enum Error {
     // Loading inital resources
     FailedToLoadTranslations,
 
+    TooManyExclusions,
+
     // Frontend - getting parts of course structure
     NoCourseWithCourseName {
         name: String,
