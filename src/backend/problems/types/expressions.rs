@@ -80,7 +80,7 @@ impl Expression {
         assert_eq!(self.terms.len(), 2);
         match (
             self.terms[0].coefficient > 0.into(),
-            self.terms[1].coefficient > 1.into(),
+            self.terms[1].coefficient > 0.into(),
         ) {
             (true, false) => {}
             (false, true) => {
@@ -188,9 +188,24 @@ impl std::ops::Add<Term> for Expression {
     }
 }
 
+impl std::ops::Add<i32> for Expression {
+    type Output = Self;
+    fn add(self, rhs: i32) -> Self::Output {
+        let term_rhs: Term = rhs.into();
+        self + term_rhs
+    }
+}
+
 impl std::ops::AddAssign<Term> for Expression {
     fn add_assign(&mut self, rhs: Term) {
         *self = self.clone() + rhs;
+    }
+}
+
+impl std::ops::AddAssign<i32> for Expression {
+    fn add_assign(&mut self, rhs: i32) {
+        let term_rhs: Term = rhs.into();
+        *self = self.clone() + term_rhs;
     }
 }
 impl std::ops::Sub for Expression {
