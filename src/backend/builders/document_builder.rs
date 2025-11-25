@@ -78,21 +78,25 @@ impl DocumentBuilder {
             .collect();
         let (mut question_set, mut answer_set): (Vec<String>, Vec<String>) =
             results?.into_iter().unzip();
-        (question_set, answer_set) = self.append_prefixes(question_set, answer_set, &ids)?;
+        (question_set, answer_set) = self.handle_prefixes(question_set, answer_set, &ids)?;
         self.question_sets.push(question_set);
         self.answer_sets.push(answer_set);
         Ok(self)
     }
 
-    fn append_prefixes(
+    /// If all problems share prefix, a group prefix will be designated to the set.
+    /// Otherwise, problems may be grouped together into nested enums if they share
+    /// a prefix with adjacent problems
+    fn handle_prefixes(
         &mut self,
         mut question_set: Vec<String>,
-        answer_set: Vec<String>,
+        mut answer_set: Vec<String>,
         problem_ids: &Vec<String>,
     ) -> Result<(Vec<String>, Vec<String>)> {
         let problem_reg = PROBLEM_DATA
             .read()
             .map_err(|_| Error::RegistryMutexIsPoisoned)?;
+
         let prefix_ids: Vec<Option<i32>> = problem_ids
             .iter()
             .map(|id| match problem_reg.get(id) {
@@ -104,6 +108,7 @@ impl DocumentBuilder {
         let prefix_reg = PREFIX_DATA
             .read()
             .map_err(|_| Error::RegistryMutexIsPoisoned)?;
+
         if let Some(first_id) = prefix_ids[0]
             && prefix_ids.iter().all(|&id| id == prefix_ids[0])
         {
@@ -116,17 +121,100 @@ impl DocumentBuilder {
             }
         } else {
             self.group_prefixes.push(None);
-            prefix_ids.into_iter().enumerate().for_each(|(i, id_opt)| {
-                if let Some(id) = id_opt {
-                    let prefix_fetch = prefix_reg.get(&id);
-                    if let Some(prefix) = prefix_fetch {
-                        let prefix_text = prefix.clone().parse(&self.options.lang).text;
-                        question_set[i] = prefix_text + " " + &question_set[i];
+            if let Some(max_grouping) = self.options.max_prefix_group {
+                let groups = self.group_related_prefixes(&prefix_ids, max_grouping);
+                let mut new_question_set: Vec<String> = Vec::new();
+                let mut new_answer_set: Vec<String> = Vec::new();
+
+                let mut i = 0;
+                for group in groups {
+                    if group == 1 {
+                        if let Some(id) = prefix_ids[i] {
+                            let prefix_fetch = prefix_reg.get(&id);
+                            if let Some(prefix) = prefix_fetch {
+                                let prefix_text = prefix.clone().parse(&self.options.lang).text;
+                                new_question_set.push(prefix_text + " " + &question_set[i]);
+                                new_answer_set.push(answer_set[i].clone());
+                            }
+                        } else {
+                            new_question_set.push(question_set[i].clone());
+                            new_answer_set.push(answer_set[i].clone());
+                        }
+                    } else {
+                        if let Some(id) = prefix_ids[i] {
+                            let prefix_fetch = prefix_reg.get(&id);
+                            if let Some(prefix) = prefix_fetch {
+                                let prefix_text =
+                                    prefix.clone().parse(&self.options.lang).group_text;
+                                let mut grouped_questions = prefix_text;
+                                grouped_questions +=
+                                    ": \n\n#enum(numbering: \"a)\", indent: -0.8em,\n";
+
+                                let mut grouped_answers =
+                                    String::from("\\ #enum(numbering: \"a)\", indent: -1em, \n");
+
+                                for j in i..(i + group as usize) {
+                                    grouped_questions += &format!("[{q}],\n", q = &question_set[j]);
+                                    grouped_answers += &format!("[{q}],\n", q = &answer_set[j]);
+                                }
+
+                                grouped_questions += ")";
+                                new_question_set.push(grouped_questions);
+
+                                grouped_answers += ")";
+                                new_answer_set.push(grouped_answers);
+                            }
+                        }
                     }
+
+                    i += group as usize;
                 }
-            });
+                question_set = new_question_set;
+                answer_set = new_answer_set;
+            } else {
+                prefix_ids.into_iter().enumerate().for_each(|(i, id_opt)| {
+                    if let Some(id) = id_opt {
+                        let prefix_fetch = prefix_reg.get(&id);
+                        if let Some(prefix) = prefix_fetch {
+                            let prefix_text = prefix.clone().parse(&self.options.lang).text;
+                            question_set[i] = prefix_text + " " + &question_set[i];
+                        }
+                    }
+                });
+            }
         }
         Ok((question_set, answer_set))
+    }
+
+    /// Goes through the list of prefix_ids, which might look like:
+    /// None Some(1) Some(2) Some(2) Some(2) None Some(2) Some(2)
+    /// And writes out how many similar ids are adjacent:
+    /// 1 1 3 1 2
+    ///
+    /// If a chain length is > max_len, new chain is started.
+    fn group_related_prefixes(&self, prefix_ids: &Vec<Option<i32>>, max_len: u8) -> Vec<u8> {
+        if prefix_ids.len() < 2 {
+            return vec![prefix_ids.len() as u8];
+        }
+        let mut latest_id: Option<i32> = prefix_ids[0];
+        let mut current_length: u8 = 1;
+        let mut groups: Vec<u8> = Vec::new();
+        for &id in &prefix_ids[1..] {
+            if id.is_some() && id == latest_id {
+                current_length += 1;
+                if current_length > max_len.into() {
+                    groups.push(max_len.into());
+                    current_length = 1;
+                }
+            } else {
+                groups.push(current_length);
+                latest_id = id;
+                current_length = 1;
+            }
+        }
+
+        groups.push(current_length);
+        groups
     }
 
     fn add_answer_to_set(&self, problem: Problem) -> (String, String) {
@@ -199,7 +287,7 @@ impl DocumentBuilder {
 
     ///Writes the set to a flow from one filled the column to the next
     fn sets_to_columns(&self, sets: &Vec<Vec<String>>, columns: &u8) -> String {
-        let mut collection = format!("#columns({},enum(", columns);
+        let mut collection = format!("#columns({},enum(spacing: 2.5em, ", columns);
         sets.iter().for_each(|set| {
             collection += (set
                 .iter()
@@ -240,7 +328,7 @@ impl DocumentBuilder {
     }
 
     fn build_preamble(&self) -> String {
-        //Adjust order of preamble here if require
+        //Adjust order of preamble here if required
         let preamble = vec![
             self.set_colors(),
             self.set_page_size(),

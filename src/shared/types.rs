@@ -1,6 +1,4 @@
-use crate::{
-    Error, Result,
-};
+use crate::{Error, Result};
 use serde::{Deserialize, Serialize};
 
 //#################################
@@ -69,6 +67,7 @@ pub struct DocumentOptions {
     pub x_margin: u8,
     pub y_margin: u8,
     pub par_spacing: Option<u8>,
+    pub max_prefix_group: Option<u8>,
 }
 
 impl Default for DocumentOptions {
@@ -85,6 +84,7 @@ impl Default for DocumentOptions {
             y_margin: 20,
             par_spacing: None,
             answer_columns: 3,
+            max_prefix_group: Some(2),
         }
     }
 }

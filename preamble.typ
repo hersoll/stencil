@@ -7,6 +7,7 @@
 #show: equate.with(debug: false)
 #show math.equation.where(block: false): box
 #let item-counter = counter("item-counter")
+#let bold-alpha = n => [*#numbering("a)", n)*]
 
 #let balanced(column_count, items, start_pos, custom_spacing: 1.33em, title: [], debug: false) = layout(
   size => {
@@ -100,9 +101,10 @@
     if title != [] {
       title
     }
-    block(height: current_height)[ // Use current_height, not max_height
+    block(height: current_height)[
       #set enum(spacing: spacing)
-      #columns(column_count, gutter: gutter, enum(..items)) ]
+      #columns(column_count, gutter: gutter, enum(..items))
+    ]
 
     if debug {
       [
