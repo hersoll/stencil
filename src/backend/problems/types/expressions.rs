@@ -14,9 +14,14 @@ impl From<Term> for Expression {
     }
 }
 
-impl From<Vec<Term>> for Expression {
-    fn from(value: Vec<Term>) -> Self {
-        Expression { terms: value }
+impl<T> From<Vec<T>> for Expression
+where
+    T: Into<Term>,
+{
+    fn from(value: Vec<T>) -> Self {
+        Expression {
+            terms: value.into_iter().map(|t| t.into()).collect(),
+        }
     }
 }
 

@@ -283,6 +283,8 @@ fn insert_algebra_positive(id: String, lang: &str) -> Result<Problem> {
 }
 
 
+/// f(x) = 4 - 2x. Bestäm f(2a-1) 
+/// Difficulty: 7
 #[problem]
 fn insert_algebra_negative(id: String, lang: &str) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) = IntRange::without_ones_and_zero(-6, -2)?.and_random();
@@ -330,3 +332,16 @@ fn insert_algebra_negative(id: String, lang: &str) -> Result<Problem> {
     Ok(problem)
 }
 
+// f(x) = 3x - 2. Bestäm f(f(4))
+// #[problem]
+// fn insert_number_twice(id: String, _lang: &str) -> Result<Problem> {
+//     let (coef, coef_range) = IntRange::without_ones_and_zero(2, 5)?.and_random();
+//     let (constant, const_range) = IntRange::without_zero(-6, 6)?.and_random();
+//     let (val, val_range) = IntRange::without_zero(-8, 8)?.and_random();
+//     let function: Expression = vec![
+//         (coef, 'x').into(), 
+//         constant.into()
+//     ].into();
+//     let first_step = function.evaluate(&vec![('x', val)]);
+//
+// }
