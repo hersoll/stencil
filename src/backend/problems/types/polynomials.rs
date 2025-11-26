@@ -1,7 +1,8 @@
+use dioxus::html::var;
 use rand::{rng, seq::SliceRandom};
-use std::fmt::Display;
+use std::{fmt::Display, mem::replace};
 
-use crate::backend::{problems::types::terms::Term, typst_formatting};
+use crate::backend::{problems::types::terms::Term, typst_formatting, Number};
 
 #[derive(Debug, Clone)]
 pub struct Polynomial {
@@ -40,6 +41,20 @@ impl Polynomial {
 
     pub fn push(&mut self, term: Term) {
         self.terms.push(term);
+    }
+
+    /// Returns a sorted Vec of every variable in the polynomial
+    pub fn get_variables(&self) -> Vec<char> {
+        let mut variables: Vec<char> = Vec::new();
+        self.terms.iter().for_each(|term| {
+            term.variables.list.iter().for_each(|var| {
+                if !variables.contains(&var.symbol) {
+                    variables.push(var.symbol);
+                }
+            })
+        });
+        variables.sort();
+        variables
     }
 
     pub fn random_order(terms: Vec<&Term>) -> Self {
@@ -101,12 +116,26 @@ impl Polynomial {
         self.terms.sort_by(|a, b| b.variables.cmp(&a.variables));
     }
 
-    pub fn evaluate(&self, replacements: &Vec<(char, i32)>) -> Polynomial {
-        let mut new_expression = Polynomial::new();
+    pub fn evaluate<T: Into<Number> + Clone>(&self, replacements: &Vec<(char, T)>) -> Number {
+        let replacement_numbers: Vec<(char, Number)> = replacements
+        .iter()
+        .map(|(c, t)| (*c, t.clone().into()))
+        .collect();
+        let mut variables: Vec<char> = replacement_numbers.iter().map(|&(c, _)| c).collect();
+        variables.sort();
+        assert_eq!(
+            variables,
+            self.get_variables(),
+            "Called evaluate() with a mismatch of variables: \n{:#?} \n{:#?}",
+            variables,
+            self.get_variables()
+        );
+
+        let mut result: Number = 0.into();
         self.terms.iter().for_each(|term| {
-            new_expression.terms.push(term.evaluate(replacements));
+            result += term.evaluate(&replacement_numbers);
         });
-        new_expression.simplify()
+        result
     }
 
     pub fn show_replacements(&self, replacements: &Vec<(char, i32)>) -> String {
@@ -148,15 +177,19 @@ impl Polynomial {
         s
     }
 
-    pub fn show_evaluation(&self, replacements: &Vec<(char, i32)>) -> String {
+    pub fn show_evaluation<T: Into<Number> + Clone>(&self, replacements: &Vec<(char, T)>) -> String {
         use std::fmt::Write;
 
+        let replacement_numbers: Vec<(char, Number)> = replacements
+        .iter()
+        .map(|(c, t)| (*c, t.clone().into()))
+        .collect();
         let mut s = String::new();
         for (i, term) in self.terms.iter().enumerate() {
             if i == 0 {
-                write!(&mut s, "{}", term.evaluate(replacements)).unwrap();
+                write!(&mut s, "{}", term.evaluate(&replacement_numbers)).unwrap();
             } else {
-                write!(&mut s, "{:+}", term.evaluate(replacements)).unwrap();
+                write!(&mut s, "{:+}", term.evaluate(&replacement_numbers)).unwrap();
             }
         }
         s

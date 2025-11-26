@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::backend::problems::symbols;
 use crate::backend::problems::types::{Polynomial, Term};
 use crate::backend::{
-    replace_placeholders, IntRange, Number, Problem, Variables, PI, PROBLEM_DATA,
+    replace_placeholders, IntRange, Problem, Variables,
 };
 use crate::{backend, Result};
 use macros::problem;

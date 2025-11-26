@@ -1,11 +1,12 @@
 use std::fmt::Display;
 
+use num_traits::Pow;
 use num_traits::Zero;
 
-use crate::backend::IntRange;
-use crate::backend::Number;
 use crate::backend::problems::types::variables::Variable;
 use crate::backend::problems::types::variables::Variables;
+use crate::backend::IntRange;
+use crate::backend::Number;
 
 #[derive(Clone, Debug)]
 pub struct Term {
@@ -23,19 +24,15 @@ impl Term {
         }
     }
 
-    pub fn evaluate(&self, replacements: &Vec<(char, i32)>) -> Term {
-        let mut new_term = Term {
-            coefficient: self.coefficient.clone(),
-            variables: Variables::new(),
-            colored: self.colored,
-        };
+    pub fn evaluate(&self, replacements: &Vec<(char, Number)>) -> Number {
+        let mut result = self.coefficient.clone();
         self.variables.list.iter().for_each(|v| {
             match replacements.iter().find(|pair| pair.0 == v.symbol) {
-                Some(pair) => new_term.coefficient *= pair.1.pow(v.exponent as u32).into(),
-                None => new_term.variables.list.push(v.clone()),
+                Some(pair) => result *= pair.1.value().pow(v.exponent as i32).into(),
+                None => panic!("Variable {v} not in replacements {replacements:#?}. (Panic should not be reached if called from polynomial.evaluate())"),
             }
         });
-        new_term
+        result
     }
 
     pub fn assert_one_positive(term1: &mut Term, term2: &mut Term) {
