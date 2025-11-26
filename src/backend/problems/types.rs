@@ -1,9 +1,9 @@
-mod expressions;
+mod polynomials;
 mod numbers;
 mod terms;
 mod variables;
 
-pub use expressions::Expression;
+pub use polynomials::Polynomial;
 pub use numbers::*;
 pub use terms::Term;
 pub use variables::Variable;

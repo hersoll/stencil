@@ -4,36 +4,36 @@ use std::fmt::Display;
 use crate::backend::{problems::types::terms::Term, typst_formatting};
 
 #[derive(Debug, Clone)]
-pub struct Expression {
+pub struct Polynomial {
     pub terms: Vec<Term>,
 }
 
-impl From<Term> for Expression {
+impl From<Term> for Polynomial {
     fn from(value: Term) -> Self {
-        Expression { terms: vec![value] }
+        Polynomial { terms: vec![value] }
     }
 }
 
-impl<T> From<Vec<T>> for Expression
+impl<T> From<Vec<T>> for Polynomial
 where
     T: Into<Term>,
 {
     fn from(value: Vec<T>) -> Self {
-        Expression {
+        Polynomial {
             terms: value.into_iter().map(|t| t.into()).collect(),
         }
     }
 }
 
-impl From<Vec<&Term>> for Expression {
+impl From<Vec<&Term>> for Polynomial {
     fn from(value: Vec<&Term>) -> Self {
-        Expression {
+        Polynomial {
             terms: value.iter().map(|&t| t.clone()).collect(),
         }
     }
 }
 
-impl Expression {
+impl Polynomial {
     pub fn new() -> Self {
         Self { terms: Vec::new() }
     }
@@ -49,7 +49,7 @@ impl Expression {
     }
 
     pub fn simplify(&self) -> Self {
-        let mut result = Expression::new();
+        let mut result = Polynomial::new();
         for term in &self.terms {
             match result
                 .terms
@@ -101,8 +101,8 @@ impl Expression {
         self.terms.sort_by(|a, b| b.variables.cmp(&a.variables));
     }
 
-    pub fn evaluate(&self, replacements: &Vec<(char, i32)>) -> Expression {
-        let mut new_expression = Expression::new();
+    pub fn evaluate(&self, replacements: &Vec<(char, i32)>) -> Polynomial {
+        let mut new_expression = Polynomial::new();
         self.terms.iter().for_each(|term| {
             new_expression.terms.push(term.evaluate(replacements));
         });
@@ -163,7 +163,7 @@ impl Expression {
     }
 }
 
-impl std::ops::Add for Expression {
+impl std::ops::Add for Polynomial {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
         let mut result = self.terms.clone();
@@ -181,7 +181,7 @@ impl std::ops::Add for Expression {
     }
 }
 
-impl std::ops::Add<Term> for Expression {
+impl std::ops::Add<Term> for Polynomial {
     type Output = Self;
     fn add(self, rhs: Term) -> Self::Output {
         let mut result = self.terms.clone();
@@ -193,7 +193,7 @@ impl std::ops::Add<Term> for Expression {
     }
 }
 
-impl std::ops::Add<i32> for Expression {
+impl std::ops::Add<i32> for Polynomial {
     type Output = Self;
     fn add(self, rhs: i32) -> Self::Output {
         let term_rhs: Term = rhs.into();
@@ -201,19 +201,19 @@ impl std::ops::Add<i32> for Expression {
     }
 }
 
-impl std::ops::AddAssign<Term> for Expression {
+impl std::ops::AddAssign<Term> for Polynomial {
     fn add_assign(&mut self, rhs: Term) {
         *self = self.clone() + rhs;
     }
 }
 
-impl std::ops::AddAssign<i32> for Expression {
+impl std::ops::AddAssign<i32> for Polynomial {
     fn add_assign(&mut self, rhs: i32) {
         let term_rhs: Term = rhs.into();
         *self = self.clone() + term_rhs;
     }
 }
-impl std::ops::Sub for Expression {
+impl std::ops::Sub for Polynomial {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self::Output {
         let mut result = self.terms.clone();
@@ -230,10 +230,10 @@ impl std::ops::Sub for Expression {
         Self { terms: result }
     }
 }
-impl std::ops::Mul<Expression> for Expression {
+impl std::ops::Mul<Polynomial> for Polynomial {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
-        let mut result = Expression::new();
+        let mut result = Polynomial::new();
         for lhs_term in self.terms {
             for rhs_term in rhs.terms.clone() {
                 result.terms.push(lhs_term.clone() * rhs_term);
@@ -242,16 +242,16 @@ impl std::ops::Mul<Expression> for Expression {
         result
     }
 }
-impl std::ops::Mul<Expression> for Term {
-    type Output = Expression;
-    fn mul(self, rhs: Expression) -> Self::Output {
-        let lhs: Expression = self.into();
+impl std::ops::Mul<Polynomial> for Term {
+    type Output = Polynomial;
+    fn mul(self, rhs: Polynomial) -> Self::Output {
+        let lhs: Polynomial = self.into();
         lhs * rhs
     }
 }
-impl std::ops::Mul<Expression> for i32 {
-    type Output = Expression;
-    fn mul(self, rhs: Expression) -> Self::Output {
+impl std::ops::Mul<Polynomial> for i32 {
+    type Output = Polynomial;
+    fn mul(self, rhs: Polynomial) -> Self::Output {
         let mut result = rhs.clone();
         for term in &mut result.terms {
             *term *= self;
@@ -259,7 +259,7 @@ impl std::ops::Mul<Expression> for i32 {
         result
     }
 }
-impl std::ops::MulAssign<i32> for Expression {
+impl std::ops::MulAssign<i32> for Polynomial {
     fn mul_assign(&mut self, rhs: i32) {
         for term in &mut self.terms {
             *term *= rhs;
@@ -267,10 +267,10 @@ impl std::ops::MulAssign<i32> for Expression {
     }
 }
 
-impl std::ops::Neg for &Expression {
-    type Output = Expression;
+impl std::ops::Neg for &Polynomial {
+    type Output = Polynomial;
     fn neg(self) -> Self::Output {
-        let mut new_exp = Expression::new();
+        let mut new_exp = Polynomial::new();
         for term in &self.terms {
             new_exp.push(-term);
         }
@@ -278,10 +278,10 @@ impl std::ops::Neg for &Expression {
     }
 }
 
-impl std::ops::Neg for Expression {
+impl std::ops::Neg for Polynomial {
     type Output = Self;
     fn neg(self) -> Self::Output {
-        let mut new_exp = Expression::new();
+        let mut new_exp = Polynomial::new();
         for term in self.terms {
             new_exp.push(-term);
         }
@@ -289,7 +289,7 @@ impl std::ops::Neg for Expression {
     }
 }
 
-impl Display for Expression {
+impl Display for Polynomial {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut first_value_written = false;
         if self.terms.len() == 1 && self.terms[0].coefficient == 0.into() {
@@ -321,8 +321,8 @@ mod tests {
         let t2: Term = (2, ('x', 2)).into();
         let t3: Term = (-3, 'x').into();
         let t4: Term = 'a'.into();
-        let ref_expression: Expression = vec![&t1, &t2, &t3, &t4].into();
-        let expression: Expression = vec![t2, t1, t4, t3].into();
+        let ref_expression: Polynomial = vec![&t1, &t2, &t3, &t4].into();
+        let expression: Polynomial = vec![t2, t1, t4, t3].into();
         assert_eq!(ref_expression.to_string(), "3x+2x^2-3x+a");
         assert_eq!(expression.to_string(), "2x^2+3x+a-3x");
     }
@@ -333,7 +333,7 @@ mod tests {
         let t2: Term = (2, ('x', 2)).into();
         let t3: Term = (-3, 'x').into();
         let t4: Term = 'a'.into();
-        let expression: Expression = vec![t1, t2, t3, t4].into();
+        let expression: Polynomial = vec![t1, t2, t3, t4].into();
         assert_eq!(format!("{expression}"), "3x+2x^2-3x+a");
         assert_eq!(format!("{expression:+}"), "+3x+2x^2-3x+a");
     }
@@ -343,15 +343,15 @@ mod tests {
         let t_x = Term::from((-3, 'x'));
         let t_y = Term::from((2, 'y'));
         let t_const = Term::from(4);
-        let x_y_expression: Expression = vec![&t_x, &t_y].into();
+        let x_y_expression: Polynomial = vec![&t_x, &t_y].into();
         assert_eq!(x_y_expression.to_string(), "-3x+2y");
         assert_eq!(x_y_expression.sorted().to_string(), "-3x+2y");
-        let x_const_expression: Expression = vec![&t_x, &t_const].into();
+        let x_const_expression: Polynomial = vec![&t_x, &t_const].into();
         assert_eq!(x_const_expression.sorted().to_string(), "4-3x");
-        let y_const_expression: Expression = vec![&t_y, &t_const].into();
+        let y_const_expression: Polynomial = vec![&t_y, &t_const].into();
         assert_eq!(y_const_expression.sorted().to_string(), "2y+4");
         let t_const = Term::from(-4);
-        let x_const_expression: Expression = vec![&t_x, &t_const].into();
+        let x_const_expression: Polynomial = vec![&t_x, &t_const].into();
         assert_eq!(x_const_expression.sorted().to_string(), "-3x-4");
     }
 
@@ -360,10 +360,10 @@ mod tests {
         let t_x = Term::from((-3, 'x'));
         let t_x_2 = Term::from((2, ('x', 2)));
         let t_const = Term::from(4);
-        let expression: Expression = vec![&t_x, &t_x_2, &t_const].into();
+        let expression: Polynomial = vec![&t_x, &t_x_2, &t_const].into();
         assert_eq!(expression.sorted().to_string(), "2x^2-3x+4");
         let t_y_3: Term = ('y', 3).into();
-        let expression: Expression = vec![&t_x, &t_x_2, &t_const, &t_y_3].into();
+        let expression: Polynomial = vec![&t_x, &t_x_2, &t_const, &t_y_3].into();
         assert_eq!(expression.sorted().to_string(), "y^3+2x^2-3x+4");
     }
 
@@ -372,7 +372,7 @@ mod tests {
         let t1: Term = (2, 'x').into();
         let t2: Term = (-3, ('x', 2)).into();
         let t3: Term = (4, 'a').into();
-        let exp: Expression = vec![&t1, &t2, &t3].into();
+        let exp: Polynomial = vec![&t1, &t2, &t3].into();
         let partial_evaluation = exp.evaluate(&vec![('x', -1)]);
         assert_eq!(partial_evaluation.to_string(), "4a-5");
         let full_evaluation = exp.evaluate(&vec![('a', -2), ('x', 5)]);
@@ -385,7 +385,7 @@ mod tests {
         let t2: Term = (-3, ('x', 2)).into();
         let vars = Variables::from(vec![('a', 3), ('x', 3), ('y', 4)]);
         let t3: Term = (4, vars).into();
-        let exp: Expression = vec![&t1, &t2, &t3].into();
+        let exp: Polynomial = vec![&t1, &t2, &t3].into();
         assert_eq!(
             exp.show_replacements(&vec![('x', -1)]),
             "2 dot colored((-1))-3 dot colored((-1))^2+4a^3 dot colored((-1))^3 dot y^4"
@@ -401,11 +401,11 @@ mod tests {
         let t1: Term = (2, 'x').into();
         let t2: Term = (-3, ('x', 2)).into();
         let t3: Term = (4, 'a').into();
-        let exp: Expression = vec![t1, t2, t3].into();
+        let exp: Polynomial = vec![t1, t2, t3].into();
         let t1: Term = ('x', 2).into();
         let t2: Term = (3, 'x').into();
         let t3: Term = ('a', 2).into();
-        let exp_2: Expression = vec![t1, t2, t3].into();
+        let exp_2: Polynomial = vec![t1, t2, t3].into();
         assert_eq!((exp + exp_2).to_string(), "5x-2x^2+4a+a^2");
     }
 
@@ -414,11 +414,11 @@ mod tests {
         let t1: Term = (2, 'x').into();
         let t2: Term = (-3, ('x', 2)).into();
         let t3: Term = (4, 'a').into();
-        let exp: Expression = vec![t1, t2, t3].into();
+        let exp: Polynomial = vec![t1, t2, t3].into();
         let t1: Term = ('x', 2).into();
         let t2: Term = (3, 'x').into();
         let t3: Term = ('a', 2).into();
-        let exp_2: Expression = vec![t1, t2, t3].into();
+        let exp_2: Polynomial = vec![t1, t2, t3].into();
         assert_eq!((exp - exp_2).to_string(), "-x-4x^2+4a-a^2");
     }
 
@@ -427,8 +427,8 @@ mod tests {
         let t1: Term = 'x'.into();
         let t2: Term = (2, ('y', 2)).into();
         let t3: Term = (-3).into();
-        let exp_1: Expression = vec![&t1, &t2].into();
-        let exp_2: Expression = vec![t1, t2, t3].into();
+        let exp_1: Polynomial = vec![&t1, &t2].into();
+        let exp_2: Polynomial = vec![t1, t2, t3].into();
         assert_eq!((3 * exp_2.clone()).to_string(), "3x+6y^2-9");
         let mult_exp = exp_1 * exp_2;
         assert_eq!(mult_exp.to_string(), "x^2+2x y^2-3x+2x y^2+4y^4-6y^2");

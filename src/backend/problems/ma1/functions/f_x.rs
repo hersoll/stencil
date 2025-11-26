@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::{
     Result,
     backend::{
-        self, Expression, IntRange, Problem, Term, problems::symbols, replace_placeholders, typst_formatting::{self, equation_solution}
+        self, Polynomial, IntRange, Problem, Term, problems::symbols, replace_placeholders, typst_formatting::{self, equation_solution}
     },
 };
 use macros::problem;
@@ -248,10 +248,10 @@ fn insert_algebra_positive(id: String, lang: &str) -> Result<Problem> {
 
     let function_term1: Term = (function_coefficient, var).into();
     let function_term2: Term = function_constant.into();
-    let function_expression: Expression = vec!(function_term1, function_term2).into();
+    let function_expression: Polynomial = vec!(function_term1, function_term2).into();
     let algebra_term1: Term = (algebra_coefficient, algebra_symbol).into();
     let algebra_term2: Term = algebra_constant.into();
-    let algebra_expression: Expression = vec!(algebra_term1, algebra_term2).into();
+    let algebra_expression: Polynomial = vec!(algebra_term1, algebra_term2).into();
 
     let function_string = format!("{f_name}({var}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
@@ -297,11 +297,11 @@ fn insert_algebra_negative(id: String, lang: &str) -> Result<Problem> {
 
     let function_term1: Term = (function_coefficient, var).into();
     let function_term2: Term = function_constant.into();
-    let mut function_expression: Expression = vec!(function_term1, function_term2).into();
+    let mut function_expression: Polynomial = vec!(function_term1, function_term2).into();
     function_expression = function_expression.simplify();
     let algebra_term1: Term = (algebra_coefficient, algebra_symbol).into();
     let algebra_term2: Term = algebra_constant.into();
-    let algebra_expression: Expression = vec!(algebra_term1, algebra_term2).into();
+    let algebra_expression: Polynomial = vec!(algebra_term1, algebra_term2).into();
 
     let function_string = format!("{f_name}({var}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");

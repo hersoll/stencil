@@ -1,6 +1,6 @@
 use crate::Result;
 use crate::backend::problems::symbols;
-use crate::backend::{typst_formatting, Expression, IntRange, Number, Problem, Term};
+use crate::backend::{typst_formatting, Polynomial, IntRange, Number, Problem, Term};
 use macros::problem;
 
 /// 3(x+1)
@@ -13,7 +13,7 @@ fn positive_integer_mult(id: String, _lang: &str) -> Result<Problem> {
 
     let t1: Term = unknown.into();
     let t2: Term = constant.into();
-    let exp: Expression = vec![t1, t2].into();
+    let exp: Polynomial = vec![t1, t2].into();
 
     let question = format!("${factor}({exp})$");
     let answer = (factor * exp.clone()).simplify();
@@ -43,7 +43,7 @@ fn negative_integer_mult(id: String, _lang: &str) -> Result<Problem> {
 
     let t1: Term = unknown.into();
     let t2: Term = constant.into();
-    let exp: Expression = vec![t1, t2].into();
+    let exp: Polynomial = vec![t1, t2].into();
 
     let question = format!("${factor}({exp})$");
     let answer = factor * exp.clone();
@@ -76,7 +76,7 @@ fn with_coefficient_on_variable(id: String, _lang: &str) -> Result<Problem> {
 
     let t1: Term = (coef, unknown).into();
     let t2: Term = constant.into();
-    let exp: Expression = vec![&t1, &t2].into();
+    let exp: Polynomial = vec![&t1, &t2].into();
 
     let question = format!("${factor}({exp})$");
     let answer = (factor * exp.clone()).simplify();
@@ -106,7 +106,7 @@ fn multiply_by_variable(id: String, _lang: &str) -> Result<Problem> {
     let factor: Term = unknown.into();
     let t1: Term = unknown.into();
     let t2: Term = constant.into();
-    let exp: Expression = vec![&t1, &t2].into();
+    let exp: Polynomial = vec![&t1, &t2].into();
 
     let question = format!("${factor}({exp})$");
     let answer = (factor.clone() * exp.clone()).simplify();
@@ -143,8 +143,8 @@ fn add_parentheses(id: String, _lang: &str) -> Result<Problem> {
     let mut term_const_2: Term = const_2.into();
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
-    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
     exp_1.sort();
     exp_2.sort();
 
@@ -183,8 +183,8 @@ fn subtract_parentheses(id: String, _lang: &str) -> Result<Problem> {
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
 
-    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
     exp_1.sort();
     exp_2.sort();
 
@@ -219,7 +219,7 @@ fn negative_factor_and_coef(id: String, _lang: &str) -> Result<Problem> {
 
     let t1: Term = constant.into();
     let t2: Term = (coef, unknown).into();
-    let exp: Expression = vec![&t1, &t2].into();
+    let exp: Polynomial = vec![&t1, &t2].into();
 
     let question = format!("${factor}({exp})$");
     let answer = factor * exp.clone();
@@ -255,8 +255,8 @@ fn const_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
     let t2: Term = (coef, unknown).into();
     let t3: Term = constant.into();
 
-    let exp_1: Expression = t1.into();
-    let exp_2: Expression = vec![&t2, &t3].into();
+    let exp_1: Polynomial = t1.into();
+    let exp_2: Polynomial = vec![&t2, &t3].into();
 
     let question = format!("${exp_1}-({exp_2})$");
     let answer = (exp_1.clone() - exp_2.clone()).simplify();
@@ -290,8 +290,8 @@ fn var_term_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
     let t2: Term = (coef, unknown).into();
     let t3: Term = constant.into();
 
-    let exp_1: Expression = t1.into();
-    let exp_2: Expression = vec![&t2, &t3].into();
+    let exp_1: Polynomial = t1.into();
+    let exp_2: Polynomial = vec![&t2, &t3].into();
 
     let question = format!("${exp_1}-({exp_2})$");
     let answer = exp_1.clone() - exp_2.clone();
@@ -333,8 +333,8 @@ fn multiply_and_add(id: String, _lang: &str) -> Result<Problem> {
     let mut term_const_2: Term = const_2.into();
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
-    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
     exp_1.sort();
     exp_2.sort();
     let mult_1 = factor_1 * exp_1.clone();
@@ -376,8 +376,8 @@ fn multiply_first_and_subtract(id: String, _lang: &str) -> Result<Problem> {
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
 
-    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
     exp_1.sort();
     exp_2.sort();
     let mult_1 = factor_1 * exp_1.clone();
@@ -420,8 +420,8 @@ fn multiply_and_subtract(id: String, _lang: &str) -> Result<Problem> {
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
 
-    let mut exp_1: Expression = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Expression = vec![&term_var_2, &term_const_2].into();
+    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
+    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
     exp_1.sort();
     exp_2.sort();
     let mult_1 = factor_1 * exp_1.clone();
@@ -456,7 +456,7 @@ fn multiply_by_variable_term(id: String, _lang: &str) -> Result<Problem> {
     let factor: Term = (coef_1, unknown).into();
     let t1: Term = (coef_2, unknown).into();
     let t2: Term = constant.into();
-    let mut exp: Expression = vec![&t1, &t2].into();
+    let mut exp: Polynomial = vec![&t1, &t2].into();
     exp.sort();
 
     let question = format!("${factor}({exp})$");
@@ -494,8 +494,8 @@ fn one_variable_one_constant(id: String, _lang: &str) -> Result<Problem> {
     let factor: Term = coef_range.random().into();
     let v_factor: Term = unknown.into();
 
-    let mut exp_1: Expression = vec![&t1, &t2].into();
-    let mut exp_2: Expression = vec![&t3, &t4].into();
+    let mut exp_1: Polynomial = vec![&t1, &t2].into();
+    let mut exp_2: Polynomial = vec![&t3, &t4].into();
     exp_1.sort();
     exp_2.sort();
     let mult_1 = v_factor.clone() * exp_1.clone();
@@ -534,8 +534,8 @@ fn one_constant_one_variable(id: String, _lang: &str) -> Result<Problem> {
     let factor: Term = coef_range.random().into();
     let v_factor: Term = unknown.into();
 
-    let mut exp_1: Expression = vec![&t1, &t2].into();
-    let mut exp_2: Expression = vec![&t3, &t4].into();
+    let mut exp_1: Polynomial = vec![&t1, &t2].into();
+    let mut exp_2: Polynomial = vec![&t3, &t4].into();
     exp_1.sort();
     exp_2.sort();
     let mult_1 = factor.clone() * exp_1.clone();
@@ -573,8 +573,8 @@ fn multiply_both_by_variable_terms(id: String, _lang: &str) -> Result<Problem> {
     let factor_1: Term = (coef_range.random(), unknown).into();
     let factor_2: Term = (coef_range.random(), unknown).into();
 
-    let mut exp_1: Expression = vec![&t1, &t2].into();
-    let mut exp_2: Expression = vec![&t3, &t4].into();
+    let mut exp_1: Polynomial = vec![&t1, &t2].into();
+    let mut exp_2: Polynomial = vec![&t3, &t4].into();
     exp_1.sort();
     exp_2.sort();
     let mult_1 = factor_1.clone() * exp_1.clone();
@@ -619,8 +619,8 @@ fn mixing_variables(id: String, _lang: &str) -> Result<Problem> {
     Term::assert_one_positive(&mut term1, &mut term2);
     Term::assert_one_positive(&mut term3, &mut term4);
 
-    let mut exp1: Expression = vec![&term1, &term2].into();
-    let mut exp2: Expression = vec![&term3, &term4].into();
+    let mut exp1: Polynomial = vec![&term1, &term2].into();
+    let mut exp2: Polynomial = vec![&term3, &term4].into();
     exp1.sort();
     exp2.sort();
 
@@ -673,9 +673,9 @@ fn mixing_variables_and_exponents(id: String, _lang: &str) -> Result<Problem> {
     Term::assert_one_positive(&mut term3, &mut term4);
     Term::assert_one_positive(&mut term5, &mut term6);
 
-    let mut exp1: Expression = vec![&term1, &term2].into();
-    let mut exp2: Expression = vec![&term3, &term4].into();
-    let mut exp3: Expression = vec![&term5, &term6].into();
+    let mut exp1: Polynomial = vec![&term1, &term2].into();
+    let mut exp2: Polynomial = vec![&term3, &term4].into();
+    let mut exp3: Polynomial = vec![&term5, &term6].into();
     exp1.sort();
     exp2.sort();
     exp3.sort();

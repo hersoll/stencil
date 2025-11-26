@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::backend::problems::symbols;
-use crate::backend::problems::types::{Expression, Term};
+use crate::backend::problems::types::{Polynomial, Term};
 use crate::backend::{
     replace_placeholders, IntRange, Number, Problem, Variables, PI, PROBLEM_DATA,
 };
@@ -22,7 +22,7 @@ fn one_variable_and_constants_no_negatives(id: String, _lang: &str) -> Result<Pr
     let second_term: Term = (second_coef, unknown).into();
     let first_const_term: Term = first_const.into();
     let second_const_term: Term = second_const.into();
-    let original_expression: Expression = vec![
+    let original_expression: Polynomial = vec![
         &first_term,
         &first_const_term,
         &second_term,
@@ -63,7 +63,7 @@ fn one_variable_and_constants(id: String, _lang: &str) -> Result<Problem> {
     let second_term: Term = (second_coef, unknown).into();
     let first_const_term: Term = first_const.into();
     let second_const_term: Term = second_const.into();
-    let original_expression: Expression = vec![
+    let original_expression: Polynomial = vec![
         &first_term,
         &first_const_term,
         &second_term,
@@ -110,7 +110,7 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
     let mut first_const_term: Term = first_const.into();
     let mut second_const_term: Term = second_const.into();
 
-    let original_expression: Expression = Expression::random_order(vec![
+    let original_expression: Polynomial = Polynomial::random_order(vec![
         &first_term_a,
         &first_term_b,
         &second_term_a,
@@ -123,10 +123,10 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
     first_term_b.colored = true;
     first_const_term.colored = true;
     second_const_term.colored = true;
-    let first_terms: Expression = vec![&first_term_a, &first_term_b].into();
-    let second_terms: Expression = vec![&second_term_a, &second_term_b].into();
-    let const_terms: Expression = vec![&first_const_term, &second_const_term].into();
-    let sorted_expression: Expression =
+    let first_terms: Polynomial = vec![&first_term_a, &first_term_b].into();
+    let second_terms: Polynomial = vec![&second_term_a, &second_term_b].into();
+    let const_terms: Polynomial = vec![&first_const_term, &second_const_term].into();
+    let sorted_expression: Polynomial =
         first_terms.sorted() + second_terms.sorted() + const_terms.sorted();
 
     let question = format!("${original_expression}$");
@@ -160,7 +160,7 @@ fn evaluate_simple(id: String, lang: &str) -> Result<Problem> {
     let first_term: Term = (coef, unknown).into();
     let const_term: Term = constant.into();
 
-    let expression: Expression = vec![&first_term, &const_term].into();
+    let expression: Polynomial = vec![&first_term, &const_term].into();
     let map = HashMap::from([
         ("expression", expression.to_string()),
         ("unknown", unknown.to_string()),
@@ -204,7 +204,7 @@ fn evaluate_intermediate(id: String, lang: &str) -> Result<Problem> {
     let second_term: Term = (coef_2, second_unknown).into();
     let const_term: Term = constant.into();
 
-    let expression: Expression = vec![&first_term, &second_term, &const_term].into();
+    let expression: Polynomial = vec![&first_term, &second_term, &const_term].into();
     let map = HashMap::from([
         ("expression", expression.to_string()),
         ("unknown_a", first_unknown.to_string()),
@@ -254,8 +254,8 @@ fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> 
     let third_term: Term = (third_coef, (unknown, third_exp)).into();
     let fourth_term: Term = (fourth_coef, (unknown, fourth_exp)).into();
 
-    let original_expression: Expression =
-        Expression::random_order(vec![&first_term, &second_term, &third_term, &fourth_term]);
+    let original_expression: Polynomial =
+        Polynomial::random_order(vec![&first_term, &second_term, &third_term, &fourth_term]);
     let sorted_expression = original_expression.sorted();
     let simplified_expression = original_expression.simplify();
 
@@ -286,7 +286,7 @@ fn simplify_variable_combinations(id: String, _lang: &str) -> Result<Problem> {
     let total_terms = 5; 
     let variable_combinations: Vec<(i32, i32)>  = vec![(1,0), (2,0), (2,0), (1,1),(1,1), (0,1), (0,2), (0,2)];
     let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
-    let mut expression = Expression::new();
+    let mut expression = Polynomial::new();
     let mut i = 0;
     while i < total_terms {
         let coef = IntRange::without_zero(-6, 6)?.random();
@@ -323,7 +323,7 @@ fn evaluate_advanced(id: String, lang: &str) -> Result<Problem> {
     let mut total_terms = 2;
     let mut exp_combinations: Vec<(i32, i32)> = Vec::new();
     let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
-    let mut expression = Expression::new();
+    let mut expression = Polynomial::new();
     while total_terms > 0 {
         let coef = IntRange::without_ones_and_zero(-4, 4)?.random();
         let first_exponent = IntRange::with_zero(1, 2)?.random();
