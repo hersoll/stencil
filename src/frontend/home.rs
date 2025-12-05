@@ -67,7 +67,7 @@ pub fn Home() -> Element {
         ErrorBoundary {
             handle_error: |error: ErrorContext| {
                 rsx! {
-                    for e in error.errors() {
+                    for e in error.error() {
                         ErrorDisplay { message_signal: crate::clean_error_message(format!("{:#?}", e)) }
                     }
                 }

@@ -29,7 +29,7 @@ pub fn Topic(topic: i32, desc: String, set_data: Signal<ProblemSetData>) -> Elem
 
     rsx! {
         button {
-            key: topic,
+            key: "{topic}",
             class,
             onclick: move |_| {
                 if selected {

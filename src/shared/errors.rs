@@ -1,4 +1,5 @@
 use derive_more::From;
+use dioxus::prelude::ServerFnError;
 
 use crate::shared::Difficulty;
 pub type Result<T> = core::result::Result<T, Error>;
@@ -103,6 +104,14 @@ pub enum Error {
     #[from]
     Serde(serde_json::Error),
 }
+
+impl Into<ServerFnError> for Error {
+    fn into(self) -> ServerFnError {
+        return ServerFnError::ServerError { message: String::from("server error"), code: 500, details: None };
+    }
+}
+
+
 
 impl core::fmt::Display for Error {
     fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::result::Result<(), core::fmt::Error> {

@@ -1,17 +1,17 @@
-use crate::Error;
 use crate::api::generate_pdf;
-use crate::frontend::Sets;
 use crate::frontend::i18n_lookup;
+use crate::frontend::Sets;
 use crate::shared::{DocumentOptions, SendableProblemSetData};
+use crate::Error;
 use dioxus::document::eval;
-use dioxus::prelude::server_fn::error::ServerFnErrorErr;
+use dioxus::prelude::ServerFnError;
 use dioxus::prelude::*;
 #[cfg(target_arch = "wasm32")]
 use js_sys::Uint8Array;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 #[cfg(target_arch = "wasm32")]
-use web_sys::{Blob, BlobPropertyBag, HtmlAnchorElement, Url, window};
+use web_sys::{window, Blob, BlobPropertyBag, HtmlAnchorElement, Url};
 
 fn convert_sets(sets: Sets) -> Vec<SendableProblemSetData> {
     let mut converted: Vec<SendableProblemSetData> = Vec::new();
@@ -43,7 +43,7 @@ pub fn PDFButtons(sets: Signal<Sets>, options: Signal<DocumentOptions>) -> Eleme
             generation_error.set(None);
             let bytes = generate_pdf(convert_sets(sets()), options())
                 .await
-                .map_err(ServerFnErrorErr::from)?;
+                .map_err(|_| Error::PDFLoadingFailed)?;
             // Potential JS Errors in here
             let uint8_array = Uint8Array::from(bytes.as_slice());
             let array = js_sys::Array::new();

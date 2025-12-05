@@ -1,10 +1,13 @@
 use crate::{
     api,
-    frontend::{APP_LANGUAGE, Route, TRANSLATIONS},
+    frontend::{Route, APP_LANGUAGE, TRANSLATIONS},
 };
 use dioxus::prelude::*;
 
-const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
+const MAIN_CSS: Asset = asset!(
+    "/assets/styling/main.css",
+    AssetOptions::css().with_preload(true)
+);
 
 // Setting the head before spinning up the rest of the app
 #[component]

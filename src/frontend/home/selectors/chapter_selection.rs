@@ -23,7 +23,7 @@ pub fn ChapterSelection(
                     let selected_class = if active_chapter() == id { "selected" } else { "" };
                     rsx! {
                         button {
-                            key: id,
+                            key: "{id}",
                             class: "chapter {selected_class}",
                             onclick: move |_| async move {
                                 active_chapter.set(id);
