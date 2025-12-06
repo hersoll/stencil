@@ -1,5 +1,5 @@
 # Build stage
-FROM rust:latest as builder
+FROM rust:latest AS builder
 
 WORKDIR /app
 
@@ -10,17 +10,27 @@ COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 COPY macros ./macros
 COPY .sqlx ./.sqlx
+COPY preamble.typ ./preamble.typ
 
 # Build release binary
 ENV SQLX_OFFLINE=true
-RUN cargo build --release
+RUN cargo build --release --features docker
 
 # Runtime stage
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 RUN apt-get update && apt-get install -y \
     ca-certificates \
+    curl \
+    xz-utils \
+    fonts-liberation \
+    fonts-dejavu \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Typst
+RUN curl -fsSL https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz \
+    | tar -xJ --strip-components=1 -C /usr/local/bin
+
 
 WORKDIR /app
 
@@ -29,6 +39,7 @@ COPY --from=builder /app/target/release/stencil /app/stencil
 
 # Copy .env if needed
 COPY .env /app/.env
+COPY preamble.typ /app/preamble.typ
 
 EXPOSE 1337
 

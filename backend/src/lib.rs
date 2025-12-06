@@ -7,7 +7,7 @@ pub use macros::problem;
 mod builders;
 pub mod db;
 mod document;
-mod pdf_generation;
+pub mod pdf_generation;
 mod problems;
 mod registry;
 

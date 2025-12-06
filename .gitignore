@@ -7,3 +7,4 @@ stencil.typ
 about.toml
 about.hbs
 /**/target
+/node_modules

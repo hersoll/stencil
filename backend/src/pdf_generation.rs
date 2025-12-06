@@ -1,7 +1,39 @@
+use axum::{
+    http::{StatusCode, header},
+    response::{IntoResponse, Response},
+};
+
 use crate::{
-    DocumentBuilder, Error, Problem, ProblemType, SetBuilder, db::ProblemDatabase, shared,
+    DocumentBuilder, Error, Problem, ProblemType, SetBuilder,
+    db::ProblemDatabase,
+    shared::{self, DocumentOptions, ProblemSetData, SendableProblemSetData},
 };
 use std::fs;
+
+pub async fn send_pdf() -> Response {
+    let mut sets = ProblemSetData::new(1);
+    sets.topics.push(1);
+    let sendable_sets: SendableProblemSetData = sets.into();
+    let options = DocumentOptions::default();
+    match crate::create_pdf(vec![sendable_sets], options).await {
+        Ok(pdf_bytes) => (
+            StatusCode::OK,
+            [
+                (header::CONTENT_TYPE, "application/pdf"),
+                (
+                    header::CONTENT_DISPOSITION,
+                    "inline; filename=\"stencil.pdf\"",
+                ),
+            ],
+            pdf_bytes,
+        )
+            .into_response(),
+        Err(e) => {
+            println!("{e}");
+            (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+        }
+    }
+}
 
 pub async fn create_pdf(
     sets: Vec<shared::SendableProblemSetData>,

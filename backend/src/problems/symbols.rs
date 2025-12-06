@@ -1,5 +1,5 @@
-use crate::Result;
 use crate::Error;
+use crate::Result;
 use rand::{self, seq::IndexedRandom};
 struct Symbol {
     char: char,
@@ -23,10 +23,10 @@ pub fn get_unknown_with_exclusions<T: Into<Vec<char>>>(exclusions_primitive: T) 
         return Err(Error::TooManyExclusions);
     }
     while let Ok(chosen_char) = get_random(&UNKNOWNS) {
-       if !exclusions.contains(&chosen_char) {
+        if !exclusions.contains(&chosen_char) {
             return Ok(chosen_char);
         }
-    } 
+    }
     Err(Error::TooManyExclusions)
 }
 
@@ -45,18 +45,18 @@ pub fn get_two_unknowns() -> Result<(char, char)> {
     .copied()
 }
 
-pub fn get_three_unknowns() -> Result<(char, char, char)> {
-    let mut rng = rand::rng();
-    [
-        ('a', 'b', 'c'),
-        ('p', 'q', 'r'),
-        ('t', 'u', 'v'),
-        ('x', 'y', 'z'),
-    ]
-    .choose(&mut rng)
-    .ok_or(crate::Error::EmptyStatic)
-    .copied()
-}
+// pub fn get_three_unknowns() -> Result<(char, char, char)> {
+//     let mut rng = rand::rng();
+//     [
+//         ('a', 'b', 'c'),
+//         ('p', 'q', 'r'),
+//         ('t', 'u', 'v'),
+//         ('x', 'y', 'z'),
+//     ]
+//     .choose(&mut rng)
+//     .ok_or(crate::Error::EmptyStatic)
+//     .copied()
+// }
 
 /// Get a random function name - the f in f(x).
 pub fn get_function_name() -> Result<char> {

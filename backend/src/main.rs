@@ -1,6 +1,8 @@
+use stencil::pdf_generation;
+use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber;
 
-use axum::{Router, routing::get};
+use axum::{Router, http::Method, routing::get};
 
 #[tokio::main]
 async fn main() {
@@ -8,6 +10,15 @@ async fn main() {
     let host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
     let addr = format!("{}:{}", host, port);
+
+    let cors = CorsLayer::new()
+        .allow_origin(
+            "http://localhost:5173"
+                .parse::<axum::http::HeaderValue>()
+                .unwrap(),
+        )
+        .allow_methods([Method::GET, Method::POST])
+        .allow_headers(Any);
 
     tracing_subscriber::fmt::init();
 
@@ -26,9 +37,13 @@ async fn main() {
         .expect("Failed to load prefixes");
     println!("Prefixes loaded!");
 
-    let app = Router::new().route("/", get(hello_world));
+    let app = Router::new()
+        .route("/", get(hello_world))
+        .route("/pdf", get(pdf_generation::send_pdf))
+        .layer(cors);
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
+    println!("\nListening on port {port}...");
 
     axum::serve(listener, app).await.unwrap();
 }
