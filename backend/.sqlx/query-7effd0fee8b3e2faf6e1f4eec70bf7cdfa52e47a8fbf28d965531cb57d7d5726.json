@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO prefixes (name, text_sv, text_en, group_text_sv, group_text_en) \n            VALUES ($1, $2, $3, $4, $5) \n            RETURNING id \n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "7effd0fee8b3e2faf6e1f4eec70bf7cdfa52e47a8fbf28d965531cb57d7d5726"
+}

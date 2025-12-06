@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, name, text_sv, text_en, group_text_sv, group_text_en FROM prefixes",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "text_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "text_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "group_text_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "group_text_en",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7d5205983e4967a3086892a17c7c1906ec5362f6cf5535699d63f86f99abcdc2"
+}

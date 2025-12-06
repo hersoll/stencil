@@ -1,0 +1,94 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT p.id, p.name, p.difficulty, p.desc_sv, p.desc_en, p.module, \n            p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id\n\n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = $1\n        ORDER BY tp.order_index, p.name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "difficulty",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "desc_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "desc_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "module",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "question_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "question_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "answer_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "answer_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "solution_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "solution_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 12,
+        "name": "prefix_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "afc22f7046fe4d220099d0002eca82a4e2eb728c51ab93ce391b034ab1d009c8"
+}
