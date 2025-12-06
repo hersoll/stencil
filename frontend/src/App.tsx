@@ -4,7 +4,8 @@ import './App.css'
 function App() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
+  const API_URL = import.meta.env.VITE_API_URL || '/api';
 
   // Fetch PDF from Axum server
   const fetchPdf = async (): Promise<void> => {
@@ -13,7 +14,7 @@ function App() {
 
     try {
       // Replace with your actual Axum server endpoint
-      const response: Response = await fetch('http://localhost:13370/pdf', {
+      const response: Response = await fetch(`${API_URL}/pdf`, {
         method: 'GET',
         headers: {
           'Accept': 'application/pdf',
@@ -42,7 +43,7 @@ function App() {
     setError(null);
 
     try {
-      const response: Response = await fetch('http://localhost:13370/pdf');
+      const response: Response = await fetch(`${API_URL}/pdf`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

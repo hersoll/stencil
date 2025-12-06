@@ -11,9 +11,14 @@ async fn main() {
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
     let addr = format!("{}:{}", host, port);
 
+    #[cfg(feature = "docker")]
+    let frontend_port = "5172";
+    #[cfg(not(feature = "docker"))]
+    let frontend_port = "5173";
+
     let cors = CorsLayer::new()
         .allow_origin(
-            "http://localhost:5173"
+            ("http://localhost:".to_string() + frontend_port)
                 .parse::<axum::http::HeaderValue>()
                 .unwrap(),
         )

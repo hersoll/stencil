@@ -12,6 +12,7 @@ use std::fs;
 
 pub async fn send_pdf() -> Response {
     let mut sets = ProblemSetData::new(1);
+    sets.n = 50;
     sets.topics.push(1);
     let sendable_sets: SendableProblemSetData = sets.into();
     let options = DocumentOptions::default();
