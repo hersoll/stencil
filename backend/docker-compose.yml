@@ -1,0 +1,26 @@
+services:
+  stencil-server:
+    build: .
+    container_name: stencil-server
+    ports:
+      - "1337:1337"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=1337
+      - DATABASE_URL=postgresql://glitter:dev@100.70.129.113:5432/ekvata
+      - RUST_LOG=sqlx=warn
+
+    restart: unless-stopped
+
+  stencil-test:
+    build: .
+    container_name: stencil-test
+    ports:
+      - "13370:13370"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=13370
+      - DATABASE_URL=postgresql://glitter:dev@100.70.129.113:5432/ekvata
+      - RUST_LOG=sqlx=warn
+
+    restart: unless-stopped
