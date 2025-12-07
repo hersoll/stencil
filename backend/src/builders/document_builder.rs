@@ -5,7 +5,7 @@ use crate::db::I18nDatabase;
 use crate::problems::Problem;
 use crate::shared::{DocumentOptions, SetRenderingOptions, WriteSolutions};
 use crate::{Error, Result};
-use crate::{PREFIX_DATA, PROBLEM_DATA, document::*};
+use crate::{PREFIX_DATA, PROBLEM_DATA, typst_utils};
 
 #[derive(Debug)]
 pub struct DocumentBuilder {
@@ -24,14 +24,14 @@ pub struct FinishedFile {
 
 impl FinishedFile {
     pub fn new(file_path: String) -> FinishedFile {
-        let typst_file_path = file_helpers::to_typst_file_name(&file_path);
+        let typst_file_path = typst_utils::files::to_typst_file_name(&file_path);
         FinishedFile {
             file_path: typst_file_path,
         }
     }
 
     pub fn compile(&self) -> std::io::Result<String> {
-        compile_handler::compile(&self.file_path)
+        typst_utils::files::compile(&self.file_path)
     }
 }
 
@@ -249,7 +249,7 @@ impl DocumentBuilder {
             set_string += "\n#let problem_set = (";
             set_string += set
                 .iter()
-                .map(|entry| typst_formatting::to_list_item(entry))
+                .map(|entry| typst_utils::formatting::to_list_item(entry))
                 .collect::<Vec<String>>()
                 .join("\n")
                 .as_str();
@@ -269,7 +269,7 @@ impl DocumentBuilder {
                 } else {
                     format!(
                         ", title: [{}]",
-                        typst_formatting::reformat_newlines(&self.set_options[i].title)
+                        typst_utils::formatting::reformat_newlines(&self.set_options[i].title)
                     )
                 }
             );
@@ -291,7 +291,7 @@ impl DocumentBuilder {
         sets.iter().for_each(|set| {
             collection += (set
                 .iter()
-                .map(|entry| typst_formatting::to_list_item(entry))
+                .map(|entry| typst_utils::formatting::to_list_item(entry))
                 .collect::<Vec<String>>()
                 .join("\n")
                 + "\n")
@@ -308,22 +308,23 @@ impl DocumentBuilder {
         } else {
             heading = "Answer key";
         }
-        typst_formatting::to_heading(heading)
+        typst_utils::formatting::to_heading(heading)
     }
 
     pub fn build(&self) -> Result<FinishedFile> {
         let preamble = self.build_preamble();
         let question_string = self.sets_to_balanced_columns(&self.question_sets);
-        let answer_preamble = typst_formatting::page_break() + &typst_formatting::reset_enum();
+        let answer_preamble =
+            typst_utils::formatting::page_break() + &typst_utils::formatting::reset_enum();
         let answer_string = self.sets_to_columns(&self.answer_sets, &self.options.answer_columns);
 
-        let typst_file_name = file_helpers::to_typst_file_name(&self.options.file_name);
-        let typst_file = file_handler::create_typst_file(&typst_file_name)?;
-        file_handler::write(&typst_file, preamble)?;
-        file_handler::write(&typst_file, question_string)?;
-        file_handler::write(&typst_file, answer_preamble)?;
-        file_handler::write(&typst_file, self.answer_heading())?;
-        file_handler::write(&typst_file, answer_string)?;
+        let typst_file_name = typst_utils::files::to_typst_file_name(&self.options.file_name);
+        let typst_file = typst_utils::files::create_typst_file(&typst_file_name)?;
+        typst_utils::files::write(&typst_file, preamble)?;
+        typst_utils::files::write(&typst_file, question_string)?;
+        typst_utils::files::write(&typst_file, answer_preamble)?;
+        typst_utils::files::write(&typst_file, self.answer_heading())?;
+        typst_utils::files::write(&typst_file, answer_string)?;
         Ok(FinishedFile::new(typst_file_name))
     }
 
@@ -333,7 +334,7 @@ impl DocumentBuilder {
             self.set_colors(),
             self.set_page_size(),
             self.set_font_size(),
-            String::from(typst_preamble::PREAMBLE_STR),
+            String::from(typst_utils::preamble::PREAMBLE_STR),
             self.set_heading(),
         ];
 
@@ -342,7 +343,7 @@ impl DocumentBuilder {
 
     fn set_heading(&self) -> String {
         if !self.options.heading.is_empty() {
-            typst_formatting::to_heading(&self.options.heading)
+            typst_utils::formatting::to_heading(&self.options.heading)
         } else {
             String::new()
         }

@@ -1,7 +1,7 @@
 use crate::Result;
 use crate::problems::symbols;
 use crate::problems::types::Term;
-use crate::typst_formatting::{self, equation_solution};
+use crate::typst_utils::{self, formatting::equation_solution};
 use crate::{IntRange, Problem};
 use macros::problem;
 
@@ -25,10 +25,10 @@ fn two_positive_coefs_lhs_greater(id: String, _lang: &str) -> Result<Problem> {
         {total_var}{lhs_const:+} &= {rhs_const} \\ {sub_lhs} \\
         {total_var} &= {total_const} \\ {div_coef} \\
         {unknown} &= {answer} \\ \\",
-        sub_rhs = typst_formatting::subtract_term(&rhs_var),
-        sub_lhs = typst_formatting::subtract_number(lhs_const),
+        sub_rhs = typst_utils::formatting::subtract_term(&rhs_var),
+        sub_lhs = typst_utils::formatting::subtract_number(lhs_const),
         total_var = lhs_var.clone() - rhs_var.clone(),
-        div_coef = typst_formatting::divide_number(lhs_coef - rhs_coef),
+        div_coef = typst_utils::formatting::divide_number(lhs_coef - rhs_coef),
         total_const = rhs_const - lhs_const
     ));
 

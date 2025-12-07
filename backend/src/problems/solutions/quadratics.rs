@@ -1,4 +1,4 @@
-use crate::typst_formatting;
+use crate::typst_utils;
 
 pub fn pq_long(p: i32, q: i32, unknown: char) -> String {
     let symmetry = -p / 2;
@@ -13,8 +13,8 @@ pub fn pq_long(p: i32, q: i32, unknown: char) -> String {
         &{unknown} = {symmetry} plus.minus sqrt({total_sq}) \\
         &{unknown} = {symmetry} plus.minus {distance} \\
         &{unknown}_1 = {x_1}, #h(0.4em) {unknown}_2 = {x_2}",
-        p_d = typst_formatting::parentheses(p / 2),
-        q_par = typst_formatting::parentheses(q),
+        p_d = typst_utils::formatting::parentheses(p / 2),
+        q_par = typst_utils::formatting::parentheses(q),
         q_m = -q,
         p_sq = (p / 2).pow(2),
         total_sq = (p / 2).pow(2) - q,

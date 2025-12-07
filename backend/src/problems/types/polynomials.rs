@@ -1,7 +1,7 @@
 use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
-use crate::{Number, problems::types::terms::Term, typst_formatting};
+use crate::{Number, problems::types::terms::Term, typst_utils};
 
 #[derive(Debug, Clone)]
 pub struct Polynomial {
@@ -155,7 +155,7 @@ impl Polynomial {
                         write!(
                             &mut s,
                             " dot colored({}){}{}",
-                            typst_formatting::parentheses(pair.1),
+                            typst_utils::formatting::parentheses(pair.1),
                             if var.exponent > 1 {
                                 format!("^{}", var.exponent)
                             } else {

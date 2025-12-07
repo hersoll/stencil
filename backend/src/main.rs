@@ -1,18 +1,16 @@
-use std::time::Duration;
-
-use stencil::pdf_generation;
-use tower_http::{
-    cors::{Any, CorsLayer},
-    trace::TraceLayer,
-};
-use tracing_subscriber;
-
 use axum::{
     Router,
     http::{Method, Request, StatusCode},
     routing::get,
 };
+use std::time::Duration;
+use stencil::pdf_generation;
+use tower_http::{
+    cors::{Any, CorsLayer},
+    trace::TraceLayer,
+};
 use tracing::{error, info, warn};
+use tracing_subscriber::{self};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -35,6 +33,7 @@ async fn main() {
 
     info!("Starting server...");
 
+    // Load IP and port from env
     let default_host = "127.0.0.1";
     let default_port = "3000";
     let host = std::env::var("HOST").unwrap_or_else(|_| {
@@ -70,29 +69,26 @@ async fn main() {
     let frontend_port = "5173";
 
     let frontend_url = format!("http://localhost:{frontend_port}");
-
-    let cors = CorsLayer::new()
-        .allow_origin(frontend_url.parse::<axum::http::HeaderValue>().unwrap())
-        .allow_methods([Method::GET, Method::POST])
-        .allow_headers(Any);
+    let cors = create_cors_layer(&frontend_url);
     info!("Allowing connections from {frontend_url}.");
 
     let app = create_router(cors);
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
+    // Printing empty line to clearly show that setup is finished
+    // and the server is listening
     println!();
     info!("Listening on {}...", listener.local_addr().unwrap());
 
     axum::serve(listener, app).await.unwrap();
 }
 
-fn create_router(cors: CorsLayer) -> Router {
+fn create_router(cors_layer: CorsLayer) -> Router {
     Router::new()
         .route("/", get(hello_world))
-        .route("/error", get(error))
+        .route("/error", get(error_test))
         .route("/pdf", get(pdf_generation::send_pdf))
-        .layer(cors)
-        // Add tracing middleware
+        .layer(cors_layer)
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(|request: &Request<_>| {
@@ -116,6 +112,13 @@ fn create_router(cors: CorsLayer) -> Router {
         )
 }
 
+fn create_cors_layer(allowed_url: &String) -> CorsLayer {
+    CorsLayer::new()
+        .allow_origin(allowed_url.parse::<axum::http::HeaderValue>().unwrap())
+        .allow_methods([Method::GET, Method::POST])
+        .allow_headers(Any)
+}
+
 async fn hello_world() -> String {
     String::from(
         "Hello from the \"/\" path! Did you mean to hit the \"/api\"?
@@ -124,7 +127,7 @@ async fn hello_world() -> String {
     )
 }
 
-async fn error() -> Result<String, StatusCode> {
+async fn error_test() -> Result<String, StatusCode> {
     error!("This is an error code!");
     Err(StatusCode::UNAVAILABLE_FOR_LEGAL_REASONS)
 }

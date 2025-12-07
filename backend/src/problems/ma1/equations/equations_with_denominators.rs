@@ -1,6 +1,6 @@
-use crate::Result;
-use crate::typst_formatting::{self, equation_solution};
+use crate::typst_utils::formatting::equation_solution;
 use crate::{IntRange, Problem};
+use crate::{Result, typst_utils};
 use macros::problem;
 
 /// x/3 = 4
@@ -111,7 +111,7 @@ fn unit_variable_and_one_denom_integers_with_negatives(id: String, _lang: &str) 
         {one_minus_denom}{unknown} &= {rhs_denom} \\ div {one_minus_denom_par}\\
         {unknown} &= {final_answer} \\",
         one_minus_denom = 1 - denominator,
-        one_minus_denom_par = typst_formatting::parentheses(1 - denominator),
+        one_minus_denom_par = typst_utils::formatting::parentheses(1 - denominator),
         rhs_denom = rhs * denominator,
     ));
 

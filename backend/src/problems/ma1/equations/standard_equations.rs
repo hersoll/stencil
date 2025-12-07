@@ -1,7 +1,7 @@
 use crate::Result;
 use crate::problems::Problem;
 use crate::{IntRange, solutions};
-use crate::{math_utils, typst_formatting};
+use crate::{math_utils, typst_utils};
 use macros::problem;
 
 /// x + 3 = 12
@@ -15,7 +15,7 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
         "x {constant:+} &= {rhs}\\ {sub_constant} \\
               x &= {answer}\\",
         rhs = answer + constant,
-        sub_constant = typst_formatting::subtract_number(constant),
+        sub_constant = typst_utils::formatting::subtract_number(constant),
     );
 
     let problem = Problem {
@@ -24,7 +24,7 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
         // group-prefix: "Lös ekvationerna"
         question: format!("$x {constant:+} = {}$", answer + constant),
         answer: format!("$x = {answer}$"),
-        solution: typst_formatting::equation_solution(solution),
+        solution: typst_utils::formatting::equation_solution(solution),
         identifiers: vec![constant],
         combinations: constant_range.len(),
     };
@@ -50,7 +50,7 @@ fn only_multiplication(id: String, _lang: &str) -> Result<Problem> {
         id,
         question: format!("${}x = {}$", coefficient, answer * coefficient),
         answer: format!("$x = {}$", answer),
-        solution: typst_formatting::equation_solution(solution),
+        solution: typst_utils::formatting::equation_solution(solution),
         identifiers: vec![coefficient],
         combinations: coefficient_range.len(),
     };

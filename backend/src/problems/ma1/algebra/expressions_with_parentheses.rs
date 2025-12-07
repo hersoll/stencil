@@ -1,6 +1,6 @@
 use crate::Result;
 use crate::problems::symbols;
-use crate::{IntRange, Number, Polynomial, Problem, Term, typst_formatting};
+use crate::{IntRange, Number, Polynomial, Problem, Term, typst_utils};
 use macros::problem;
 
 /// 3(x+1)
@@ -51,8 +51,8 @@ fn negative_integer_mult(id: String, _lang: &str) -> Result<Problem> {
     let solution = format!(
         "$&{factor}({exp}) = colored({factor_p} dot) {unknown} + colored({factor_p} dot) {const_p} =\\
             =&{answer} = {simplified}$",
-        factor_p = typst_formatting::parentheses(factor),
-        const_p = typst_formatting::parentheses(constant),
+        factor_p = typst_utils::formatting::parentheses(factor),
+        const_p = typst_utils::formatting::parentheses(constant),
     );
 
     Ok(Problem {
@@ -227,9 +227,9 @@ fn negative_factor_and_coef(id: String, _lang: &str) -> Result<Problem> {
     let solution = format!(
         "$&{factor}({exp}) = colored({factor_p} dot) {t1_p} + colored({factor_p} dot) {t2_p} =\\
             =&{answer} = {simplified}$",
-        factor_p = typst_formatting::parentheses(factor),
-        t1_p = typst_formatting::parentheses(t1),
-        t2_p = typst_formatting::parentheses(t2),
+        factor_p = typst_utils::formatting::parentheses(factor),
+        t1_p = typst_utils::formatting::parentheses(t1),
+        t2_p = typst_utils::formatting::parentheses(t2),
     );
 
     Ok(Problem {

@@ -1,4 +1,4 @@
-use crate::{math_utils::gcd, problems, typst_formatting};
+use crate::{math_utils::gcd, problems, typst_utils};
 
 /// Equations of the form 3x + 5 = 14. Zeroes for coefficient or constant is not allowed.
 pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answer: i32) -> String {
@@ -10,12 +10,12 @@ pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answ
         "{coefficient}{unknown} {constant:+} &= {rhs} \\ {sub_constant} \\
                 {coefficient}{unknown} &= {cf_a} \\ div {cf_par} \\
                     {unknown} &= {final_answer} \\",
-        cf_par = typst_formatting::parentheses(coefficient),
+        cf_par = typst_utils::formatting::parentheses(coefficient),
         rhs = coefficient * final_answer + constant,
-        sub_constant = typst_formatting::subtract_number(constant),
+        sub_constant = typst_utils::formatting::subtract_number(constant),
         cf_a = coefficient * final_answer,
     );
-    typst_formatting::equation_solution(solution)
+    typst_utils::formatting::equation_solution(solution)
 }
 
 /// Equations of the form 3x + 4 = 14. Zeroes for coefficient or constant is not allowed.
@@ -53,7 +53,7 @@ pub fn positive_rational_answer(
                 {coefficient}{unknown} &= {numerator} \\ div {coefficient} \\
                     {unknown} &= {answer_with_simplification} \\",
         rhs = numerator + constant,
-        sub_constant = typst_formatting::subtract_number(constant),
+        sub_constant = typst_utils::formatting::subtract_number(constant),
     );
-    typst_formatting::equation_solution(solution)
+    typst_utils::formatting::equation_solution(solution)
 }

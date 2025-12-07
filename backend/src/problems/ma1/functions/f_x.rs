@@ -4,7 +4,7 @@ use crate::{
     IntRange, Polynomial, Problem, Result, Term,
     problems::symbols,
     replace_placeholders,
-    typst_formatting::{self, equation_solution},
+    typst_utils::{self, formatting::equation_solution},
 };
 use macros::problem;
 
@@ -63,7 +63,7 @@ fn without_notation_x(id: String, lang: &str) -> Result<Problem> {
         {y} &= {coefficient}x {constant:+} \\ {sub_constant} \\
         {lhs} &= {coefficient}x \\ div {coefficient} \\
         {answer} &= x \\ ",
-        sub_constant = typst_formatting::subtract_number(constant),
+        sub_constant = typst_utils::formatting::subtract_number(constant),
         lhs = answer * coefficient
     ));
 
@@ -132,8 +132,8 @@ fn find_x_where_f_x(id: String, lang: &str) -> Result<Problem> {
        colored({y}) &= {coefficient}x {constant:+} \\ {sub_con}\\
               {y_c} &= {coefficient}x \\ {div_coef}\\
        {x} &= x \\",
-        sub_con = typst_formatting::subtract_number(constant),
-        div_coef = typst_formatting::divide_number(coefficient),
+        sub_con = typst_utils::formatting::subtract_number(constant),
+        div_coef = typst_utils::formatting::divide_number(coefficient),
         y_c = y - constant
     );
 
@@ -174,8 +174,8 @@ fn equation_f_x_equals(id: String, lang: &str) -> Result<Problem> {
        colored({y}) &= {coefficient}{var} {constant:+} \\ {sub_con}\\
               {y_c} &= {coefficient}{var} \\ {div_coef}\\
        {x} &= {var} \\",
-        sub_con = typst_formatting::subtract_number(constant),
-        div_coef = typst_formatting::divide_number(coefficient),
+        sub_con = typst_utils::formatting::subtract_number(constant),
+        div_coef = typst_utils::formatting::divide_number(coefficient),
         y_c = y - constant
     );
 
@@ -217,8 +217,8 @@ fn find_y(id: String, lang: &str) -> Result<Problem> {
            {f_name}({x}) &= {prod} {constant:+} \\ \\
            {f_name}({x}) &= {y} \\",
         prod = x * coefficient,
-        par_coef = typst_formatting::parentheses(coefficient),
-        par_x = typst_formatting::parentheses(x),
+        par_coef = typst_utils::formatting::parentheses(coefficient),
+        par_x = typst_utils::formatting::parentheses(x),
     );
 
     let problem = Problem {

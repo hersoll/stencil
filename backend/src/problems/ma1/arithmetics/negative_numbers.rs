@@ -1,5 +1,5 @@
 use crate::Result;
-use crate::{IntRange, Problem, typst_formatting};
+use crate::{IntRange, Problem, typst_utils};
 use macros::problem;
 
 /// 5 - 9
@@ -45,12 +45,12 @@ fn add_negative(id: String, _lang: &str) -> Result<Problem> {
         id,
         question: format!(
             "${first} + {second_p}$",
-            second_p = typst_formatting::parentheses(second)
+            second_p = typst_utils::formatting::parentheses(second)
         ),
         answer: format!("${ans}$"),
         solution: format!(
             "${first} + {second_p} = {first} - {second_a} = {ans}$",
-            second_p = typst_formatting::parentheses(second),
+            second_p = typst_utils::formatting::parentheses(second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
@@ -69,12 +69,12 @@ fn subtract_negative(id: String, _lang: &str) -> Result<Problem> {
         id,
         question: format!(
             "${first} - {second_p}$",
-            second_p = typst_formatting::parentheses(second)
+            second_p = typst_utils::formatting::parentheses(second)
         ),
         answer: format!("${ans}$"),
         solution: format!(
             "${first} - {second_p} = {first} + {second_a} = {ans}$",
-            second_p = typst_formatting::parentheses(second),
+            second_p = typst_utils::formatting::parentheses(second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
@@ -90,8 +90,8 @@ fn make_multiplication_problem(first: IntRange, second: IntRange, id: String) ->
         id,
         question: format!(
             "${first_p} dot {second_p}$",
-            first_p = typst_formatting::parentheses(first_val),
-            second_p = typst_formatting::parentheses(second_val)
+            first_p = typst_utils::formatting::parentheses(first_val),
+            second_p = typst_utils::formatting::parentheses(second_val)
         ),
         answer: format!("${ans}$"),
         solution: if ans > 0 {
@@ -148,14 +148,14 @@ fn negative_plus_negative(id: String, _lang: &str) -> Result<Problem> {
         id,
         question: format!(
             "${first_p} + {second_p}$",
-            first_p = typst_formatting::parentheses(first),
-            second_p = typst_formatting::parentheses(second)
+            first_p = typst_utils::formatting::parentheses(first),
+            second_p = typst_utils::formatting::parentheses(second)
         ),
         answer: format!("${ans}$"),
         solution: format!(
             "${first_p} + {second_p} = {first} - {second_a} = {ans}$",
-            first_p = typst_formatting::parentheses(first),
-            second_p = typst_formatting::parentheses(second),
+            first_p = typst_utils::formatting::parentheses(first),
+            second_p = typst_utils::formatting::parentheses(second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
@@ -174,14 +174,14 @@ fn negative_minus_negative(id: String, _lang: &str) -> Result<Problem> {
         id,
         question: format!(
             "${first_p} - {second_p}$",
-            first_p = typst_formatting::parentheses(first),
-            second_p = typst_formatting::parentheses(second)
+            first_p = typst_utils::formatting::parentheses(first),
+            second_p = typst_utils::formatting::parentheses(second)
         ),
         answer: format!("${ans}$"),
         solution: format!(
             "${first_p} - {second_p} = {first} + {second_a} = {ans}$",
-            first_p = typst_formatting::parentheses(first),
-            second_p = typst_formatting::parentheses(second),
+            first_p = typst_utils::formatting::parentheses(first),
+            second_p = typst_utils::formatting::parentheses(second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
