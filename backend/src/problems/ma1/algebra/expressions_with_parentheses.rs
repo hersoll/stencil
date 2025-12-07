@@ -1,6 +1,6 @@
-use crate::Result;
 use crate::problems::symbols;
 use crate::{IntRange, Number, Polynomial, Problem, Term, typst_utils};
+use anyhow::Result;
 use macros::problem;
 
 /// 3(x+1)

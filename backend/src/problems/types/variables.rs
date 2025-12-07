@@ -148,8 +148,16 @@ impl Ord for Variables {
         } else {
             let total_exponent_first: i32 = self.list.iter().map(|v| v.exponent.abs()).sum();
             let total_exponent_second: i32 = other.list.iter().map(|v| v.exponent.abs()).sum();
-            let variable_list_first: String = self.list.iter().map(|v| v.symbol.to_string().repeat(v.exponent.abs() as usize)).collect();
-            let variable_list_second: String = other.list.iter().map(|v| v.symbol.to_string().repeat(v.exponent.abs() as usize)).collect();
+            let variable_list_first: String = self
+                .list
+                .iter()
+                .map(|v| v.symbol.to_string().repeat(v.exponent.abs() as usize))
+                .collect();
+            let variable_list_second: String = other
+                .list
+                .iter()
+                .map(|v| v.symbol.to_string().repeat(v.exponent.abs() as usize))
+                .collect();
 
             total_exponent_first
                 .cmp(&total_exponent_second)

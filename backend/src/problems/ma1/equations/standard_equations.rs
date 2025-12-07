@@ -1,7 +1,7 @@
-use crate::Result;
 use crate::problems::Problem;
 use crate::{IntRange, solutions};
 use crate::{math_utils, typst_utils};
+use anyhow::Result;
 use macros::problem;
 
 /// x + 3 = 12

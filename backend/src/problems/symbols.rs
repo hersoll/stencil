@@ -1,5 +1,4 @@
-use crate::Error;
-use crate::Result;
+use anyhow::{Context, Result, anyhow};
 use rand::{self, seq::IndexedRandom};
 struct Symbol {
     char: char,
@@ -20,14 +19,14 @@ pub fn get_unknown() -> Result<char> {
 pub fn get_unknown_with_exclusions<T: Into<Vec<char>>>(exclusions_primitive: T) -> Result<char> {
     let exclusions: Vec<char> = exclusions_primitive.into();
     if exclusions.len() == UNKNOWNS.len() {
-        return Err(Error::TooManyExclusions);
+        return Err(anyhow!("Too many exclusions when getting unknown"));
     }
     while let Ok(chosen_char) = get_random(&UNKNOWNS) {
         if !exclusions.contains(&chosen_char) {
             return Ok(chosen_char);
         }
     }
-    Err(Error::TooManyExclusions)
+    return Err(anyhow!("Too many exclusions when getting unknown"));
 }
 
 pub fn get_two_unknowns() -> Result<(char, char)> {
@@ -41,7 +40,7 @@ pub fn get_two_unknowns() -> Result<(char, char)> {
         ('x', 'y'),
     ]
     .choose(&mut rng)
-    .ok_or(crate::Error::EmptyStatic)
+    .ok_or(anyhow!("The get_two_unknowns array is somehow empty?"))
     .copied()
 }
 
@@ -72,7 +71,7 @@ fn get_random(symbols: &[Symbol]) -> Result<char> {
     let mut rng = rand::rng();
     symbols
         .choose_weighted(&mut rng, |symbol| symbol.weight)
-        .map_err(|_| crate::Error::EmptyStatic)
+        .context("The symbols array is somehow empty")
         .map(|symbol| symbol.char)
 }
 

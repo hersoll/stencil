@@ -1,15 +1,15 @@
 mod i18n;
-mod problems;
+pub mod problems;
 
 pub use i18n::I18nDatabase;
-pub use problems::ProblemDatabase;
 
+use anyhow::{Context, Result, anyhow};
 use once_cell::sync::OnceCell;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 
 static DB_POOL: OnceCell<PgPool> = OnceCell::new();
 
-pub async fn init_database() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn init_database() -> Result<()> {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = PgPoolOptions::new()
         .max_connections(20)
@@ -23,12 +23,13 @@ pub async fn init_database() -> Result<(), Box<dyn std::error::Error>> {
             })
         })
         .connect(&database_url)
-        .await?;
+        .await
+        .context("Unable to initialize DB Pool options")?;
 
     // Store the pool globally
     DB_POOL
         .set(pool)
-        .map_err(|_| "Failed to set database pool")?;
+        .map_err(|_| anyhow!("Failed to set database pool"))?;
 
     // Test the connection
     let pool = get_pool();

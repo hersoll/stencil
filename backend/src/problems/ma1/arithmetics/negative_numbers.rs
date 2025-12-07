@@ -1,5 +1,5 @@
-use crate::Result;
 use crate::{IntRange, Problem, typst_utils};
+use anyhow::Result;
 use macros::problem;
 
 /// 5 - 9

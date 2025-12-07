@@ -1,8 +1,19 @@
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
 
+use crate::db;
 use crate::shared::{ParsedPrefixData, ParsedProblemData, PrefixData, ProblemData};
-use crate::{Error, Result};
+use anyhow::{Context, Result};
+
+#[derive(Debug, thiserror::Error)]
+pub enum RegistryError {
+    #[error("problem id not found: {id}")]
+    ProblemNotFound { id: String },
+    #[error("prefix id not found: {id}")]
+    PrefixNotFound { id: i32 },
+    #[error("Mutex {registry} is poisoned")]
+    RegistryMutexIsPoisoned { registry: String },
+}
 
 /// A map between problem names (simple_equations_default) and their functions
 pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, super::ProblemGenerator>>> =
@@ -15,22 +26,24 @@ pub static PREFIX_DATA: LazyLock<RwLock<HashMap<i32, PrefixData>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
 pub async fn load_problem_data() -> Result<()> {
-    let problems = crate::db::ProblemDatabase::get_all_problem_data().await?;
+    let problems = db::problems::get_all_problem_data().await?;
     for problem in problems {
         PROBLEM_DATA
             .write()
-            .map_err(|_| Error::RegistryMutexIsPoisoned)?
+            .ok()
+            .context("Failed to write to PROBLEM_DATA")?
             .insert(problem.module.clone() + "_" + &problem.name, problem);
     }
     Ok(())
 }
 
 pub async fn load_prefix_data() -> Result<()> {
-    let prefixes = crate::db::ProblemDatabase::get_all_prefix_data().await?;
+    let prefixes = db::problems::get_all_prefix_data().await?;
     for prefix in prefixes {
         PREFIX_DATA
             .write()
-            .map_err(|_| Error::RegistryMutexIsPoisoned)?
+            .ok()
+            .context("Failed to write to PREFIX_DATA")?
             .insert(prefix.id, prefix);
     }
     Ok(())
@@ -39,10 +52,12 @@ pub async fn load_prefix_data() -> Result<()> {
 pub fn get_parsed_problem(full_name: &str, lang: &str) -> Result<ParsedProblemData> {
     let problem = PROBLEM_DATA
         .read()
-        .map_err(|_| Error::RegistryMutexIsPoisoned)?
+        .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
+            registry: "PROBLEM_DATA".to_string(),
+        })?
         .get(full_name)
         .cloned()
-        .ok_or(Error::NoSuchProblemInRegistry {
+        .ok_or(RegistryError::ProblemNotFound {
             id: full_name.to_string(),
         })?;
     Ok(problem.parse(lang))
@@ -51,10 +66,12 @@ pub fn get_parsed_problem(full_name: &str, lang: &str) -> Result<ParsedProblemDa
 pub fn get_parsed_prefix(id: i32, lang: &str) -> Result<ParsedPrefixData> {
     let prefix = PREFIX_DATA
         .read()
-        .map_err(|_| Error::RegistryMutexIsPoisoned)?
+        .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
+            registry: "PREFIX_DATA".to_string(),
+        })?
         .get(&id)
         .cloned()
-        .ok_or(Error::NoSuchProblemInRegistry { id: id.to_string() })?;
+        .ok_or(RegistryError::PrefixNotFound { id })?;
     Ok(prefix.parse(lang))
 }
 

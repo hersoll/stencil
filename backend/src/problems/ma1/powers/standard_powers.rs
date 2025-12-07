@@ -1,6 +1,6 @@
-use crate::Result;
 use crate::problems::symbols;
 use crate::{IntRange, Problem};
+use anyhow::Result;
 use macros::problem;
 
 /// 5^4 * 5^2

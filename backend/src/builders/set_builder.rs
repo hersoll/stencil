@@ -1,7 +1,6 @@
-use crate::Error;
-use crate::Result;
 use crate::problems::*;
 use crate::shared::Difficulty;
+use anyhow::{Context, Result, anyhow};
 use std::cmp::Ordering;
 
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
@@ -59,7 +58,7 @@ impl SetBuilder {
             };
             self.batches.push(batch_data);
         } else {
-            return Err(Error::NumberOfProblemsIsZero);
+            return Err(anyhow!("Called batch() with an n = 0"));
         }
         // else Err
         Ok(self)
@@ -165,7 +164,9 @@ impl SetBuilder {
                         }
                     }
 
-                    let chosen_index = max_indices.choose(rng).ok_or(Error::NoValidProblems)?;
+                    let chosen_index = max_indices
+                        .choose(rng)
+                        .context("No valid problems within the max_indices")?;
                     let scored_problem_type = filtered_candidates[*chosen_index];
                     let problem = self.get_unique_problem_or_reset_ids(
                         scored_problem_type.problem_type,
@@ -190,9 +191,9 @@ impl SetBuilder {
             .collect()
     }
 
-    fn get_count_per_difficulty(candidates: &Vec<&ProblemType>, n: &u8) -> Result<[u8; 4]> {
+    fn get_count_per_difficulty(candidates: &[&ProblemType], n: &u8) -> Result<[u8; 4]> {
         if candidates.len() == 0 {
-            return Err(Error::NoValidProblems);
+            return Err(anyhow!("get_count_per_difficulty() called with empty Vec"));
         }
         // Intro is its own variable due to get_problem_ratios not counting it
         let found_intro = candidates
@@ -230,12 +231,14 @@ impl SetBuilder {
     ///
     /// This method is only intended to be called with candidates from a specific `Difficulty`
     fn get_count_per_difficulty_number(
-        candidates: &Vec<&ProblemType>,
+        candidates: &[&ProblemType],
         n: &u8,
         difficulty: &Difficulty,
     ) -> Result<[u8; 3]> {
         if candidates.len() == 0 {
-            return Err(Error::NoValidProblems);
+            return Err(anyhow!(
+                "get_count_per_difficulty_number() called with empty Vec"
+            ));
         }
         if *n == 0 {
             return Ok([0, 0, 0]);
@@ -311,7 +314,7 @@ impl SetBuilder {
         if valid_problem_types.len() > 0 {
             Ok(valid_problem_types)
         } else {
-            Err(Error::NoValidProblems)
+            Err(anyhow!("No valid problem types of the desired difficulty"))
         }
     }
 

@@ -1,5 +1,5 @@
-use crate::Result;
 use crate::{IntRange, Problem, solutions};
+use anyhow::Result;
 use macros::problem;
 
 #[problem]

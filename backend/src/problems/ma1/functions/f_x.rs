@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 
 use crate::{
-    IntRange, Polynomial, Problem, Result, Term,
+    IntRange, Polynomial, Problem, Term,
     problems::symbols,
     replace_placeholders,
     typst_utils::{self, formatting::equation_solution},
 };
+use anyhow::Result;
 use macros::problem;
 
 // In this module, problems in the form of f(3) is known as "calculating y"

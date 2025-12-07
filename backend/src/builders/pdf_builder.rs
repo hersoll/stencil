@@ -1,15 +1,15 @@
 use super::DocumentBuilder;
 use super::SetBuilder;
 
+use crate::RegistryError;
+use crate::{
+    Problem, ProblemType, db,
+    shared::{self, DocumentOptions, ProblemSetData, SendableProblemSetData},
+};
+use anyhow::Result;
 use axum::{
     http::{StatusCode, header},
     response::{IntoResponse, Response},
-};
-
-use crate::{
-    Error, Problem, ProblemType,
-    db::ProblemDatabase,
-    shared::{self, DocumentOptions, ProblemSetData, SendableProblemSetData},
 };
 use std::fs;
 
@@ -44,7 +44,7 @@ pub async fn send_pdf() -> Response {
 pub async fn build_pdf(
     sets: Vec<shared::SendableProblemSetData>,
     document_options: shared::DocumentOptions,
-) -> crate::Result<Vec<u8>> {
+) -> Result<Vec<u8>> {
     let mut problem_sets: Vec<Vec<Problem>> = Vec::new();
     let mut set_options: Vec<shared::SetRenderingOptions> = Vec::new();
     for set in sets {
@@ -52,8 +52,8 @@ pub async fn build_pdf(
         let mut set_builder = SetBuilder::new();
         set_builder.lang(&document_options.lang);
         let problem_names =
-            ProblemDatabase::get_problem_names_for_pdf(set.topics, set.exclusions).await?;
-        let problem_types: crate::Result<Vec<ProblemType>> = problem_names
+            db::problems::get_problem_names_for_pdf(set.topics, set.exclusions).await?;
+        let problem_types: Result<Vec<ProblemType>> = problem_names
             .iter()
             .map(|name| {
                 let generator = crate::PROBLEM_MAP
@@ -61,7 +61,7 @@ pub async fn build_pdf(
                     .expect("Mutex is poisoned")
                     .get(name)
                     .cloned()
-                    .ok_or(Error::NoSuchProblemInRegistry {
+                    .ok_or(RegistryError::ProblemNotFound {
                         id: name.to_string(),
                     })?;
                 let problem = crate::PROBLEM_DATA
@@ -69,7 +69,7 @@ pub async fn build_pdf(
                     .expect("Mutex is poisoned")
                     .get(name)
                     .cloned()
-                    .ok_or(Error::NoSuchProblemInRegistry {
+                    .ok_or(RegistryError::ProblemNotFound {
                         id: name.to_string(),
                     })?;
                 Ok(ProblemType {

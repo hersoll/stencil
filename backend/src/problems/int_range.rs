@@ -1,4 +1,4 @@
-use crate::{Error, Result};
+use anyhow::{Result, anyhow};
 use rand::seq::IndexedRandom;
 
 /// Range of integers where both limits are inclusive.
@@ -27,7 +27,7 @@ impl IntRange {
 
     fn new(min: i32, max: i32, wanted_exclusions: Vec<i32>) -> Result<IntRange> {
         if min > max {
-            return Err(Error::InvalidIntRange { min, max });
+            return Err(anyhow!("Invalid IntRange, make sure max > min!"));
         }
         Ok(IntRange {
             min,
@@ -81,8 +81,16 @@ impl IntRange {
             self.len() > 0,
             "Trying to access a random number from an empty range."
         );
-        assert!(self.max > 0, "Trying to get a positive number from a range with no positives.");
-        let values: Vec<i32> = self.values().iter().filter(|x| **x > 0).map(|&x| x).collect();
+        assert!(
+            self.max > 0,
+            "Trying to get a positive number from a range with no positives."
+        );
+        let values: Vec<i32> = self
+            .values()
+            .iter()
+            .filter(|x| **x > 0)
+            .map(|&x| x)
+            .collect();
         let mut rng = rand::rng();
         *values.choose(&mut rng).unwrap()
     }
@@ -92,12 +100,19 @@ impl IntRange {
             self.len() > 0,
             "Trying to access a random number from an empty range."
         );
-        assert!(self.min < 0, "Trying to get a negative number from a range with no negatives.");
-        let values: Vec<i32> = self.values().iter().filter(|x| **x < 0).map(|&x| x).collect();
+        assert!(
+            self.min < 0,
+            "Trying to get a negative number from a range with no negatives."
+        );
+        let values: Vec<i32> = self
+            .values()
+            .iter()
+            .filter(|x| **x < 0)
+            .map(|&x| x)
+            .collect();
         let mut rng = rand::rng();
         *values.choose(&mut rng).unwrap()
     }
-
 
     /// Returns a random value alongside the range in a tuple
     ///

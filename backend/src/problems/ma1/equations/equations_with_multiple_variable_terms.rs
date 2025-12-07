@@ -1,8 +1,8 @@
-use crate::Result;
 use crate::problems::symbols;
 use crate::problems::types::Term;
 use crate::typst_utils::{self, formatting::equation_solution};
 use crate::{IntRange, Problem};
+use anyhow::Result;
 use macros::problem;
 
 /// 4x + 1 = 2x - 3

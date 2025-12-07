@@ -27,3 +27,5 @@ axum = "0.8.7"
 dotenvy = "0.15.7"
 tower-http = { version = "0.6.7", features = ["cors", "trace"] }
 tracing = "0.1.43"
+anyhow = { version = "1.0.100", features = ["backtrace"] }
+thiserror = "2.0.17"

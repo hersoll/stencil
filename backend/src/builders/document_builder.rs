@@ -1,11 +1,14 @@
 use std::collections::HashMap;
 use std::fmt::Display;
 
-use crate::db::I18nDatabase;
-use crate::problems::Problem;
-use crate::shared::{DocumentOptions, SetRenderingOptions, WriteSolutions};
-use crate::{Error, Result};
-use crate::{PREFIX_DATA, PROBLEM_DATA, typst_utils};
+use crate::{
+    PREFIX_DATA, PROBLEM_DATA, RegistryError,
+    db::I18nDatabase,
+    problems::Problem,
+    shared::{DocumentOptions, SetRenderingOptions, WriteSolutions},
+    typst_utils,
+};
+use anyhow::{Context, Result};
 
 #[derive(Debug)]
 pub struct DocumentBuilder {
@@ -93,9 +96,12 @@ impl DocumentBuilder {
         mut answer_set: Vec<String>,
         problem_ids: &Vec<String>,
     ) -> Result<(Vec<String>, Vec<String>)> {
-        let problem_reg = PROBLEM_DATA
-            .read()
-            .map_err(|_| Error::RegistryMutexIsPoisoned)?;
+        let problem_reg =
+            PROBLEM_DATA
+                .read()
+                .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
+                    registry: "PROBLEM_DATA".to_string(),
+                })?;
 
         let prefix_ids: Vec<Option<i32>> = problem_ids
             .iter()
@@ -105,10 +111,12 @@ impl DocumentBuilder {
             })
             .collect();
 
-        let prefix_reg = PREFIX_DATA
-            .read()
-            .map_err(|_| Error::RegistryMutexIsPoisoned)?;
-
+        let prefix_reg =
+            PREFIX_DATA
+                .read()
+                .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
+                    registry: "PREFIX_DATA".to_string(),
+                })?;
         if let Some(first_id) = prefix_ids[0]
             && prefix_ids.iter().all(|&id| id == prefix_ids[0])
         {
@@ -233,9 +241,7 @@ impl DocumentBuilder {
             "#block(inset: (left: -1.2em))[\n#set text(size: 0.8em)\n #emph([{}])\n\n ",
             self.i18n_strings
                 .get("solution")
-                .ok_or(Error::NoSuchKeyExists {
-                    key: "heading".to_string()
-                })?
+                .context("Unable to get key \"solution\" from i18n")?
         );
         let closing_bracket = String::from("]");
         Ok([answer, heading, solution, closing_bracket].join("\n"))

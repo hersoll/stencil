@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use crate::Result;
 use crate::problems::symbols;
 use crate::problems::types::{Polynomial, Term};
 use crate::{IntRange, Problem, Variables, replace_placeholders};
+use anyhow::Result;
 use macros::problem;
 use rand::seq::IndexedRandom;
 
