@@ -9,3 +9,4 @@ about.hbs
 /**/target
 /node_modules
 docker-compose.yml
+/**/Dockerfile
