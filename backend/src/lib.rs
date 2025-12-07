@@ -1,6 +1,5 @@
-pub mod shared;
-//pub use shared::api;
 mod errors;
+pub mod shared;
 pub use errors::{Error, Result, clean_error_message};
 
 pub use macros::problem;

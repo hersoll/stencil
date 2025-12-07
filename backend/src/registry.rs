@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
 
-use crate::Error;
-use crate::Result;
 use crate::shared::{ParsedPrefixData, ParsedProblemData, PrefixData, ProblemData};
+use crate::{Error, Result};
 
 /// A map between problem names (simple_equations_default) and their functions
 pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, super::ProblemGenerator>>> =

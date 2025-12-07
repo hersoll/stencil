@@ -4,13 +4,13 @@ use axum::{
     routing::get,
 };
 use std::time::Duration;
+use stencil::builders::pdf_builder;
 use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
 };
 use tracing::{error, info, warn};
-use tracing_subscriber::{self};
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use tracing_subscriber::{self, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
@@ -86,7 +86,7 @@ fn create_router(cors_layer: CorsLayer) -> Router {
     Router::new()
         .route("/", get(hello_world))
         .route("/error", get(error_test))
-        .route("/pdf", get(stencil::builders::send_pdf))
+        .route("/pdf", get(pdf_builder::send_pdf))
         .layer(cors_layer)
         .layer(
             TraceLayer::new_for_http()
