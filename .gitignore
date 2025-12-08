@@ -10,4 +10,4 @@ about.hbs
 /node_modules
 docker-compose.yml
 /**/Dockerfile
-.sqlx/
+/**/.sqlx/
