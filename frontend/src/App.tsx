@@ -13,7 +13,6 @@ function App() {
     setError(null);
 
     try {
-      // Replace with your actual Axum server endpoint
       const response: Response = await fetch(`${API_URL}/pdf`, {
         method: 'GET',
         headers: {

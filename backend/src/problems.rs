@@ -45,13 +45,13 @@ pub struct ProblemId {
 }
 
 #[derive(Debug, Clone, Eq)]
-pub struct ProblemType {
+pub struct ProblemArea {
     pub name: String,
     pub difficulty: u8,
     pub generator: ProblemGenerator,
 }
 
-impl PartialEq for ProblemType {
+impl PartialEq for ProblemArea {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name
     }

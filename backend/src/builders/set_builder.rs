@@ -6,17 +6,12 @@ use std::cmp::Ordering;
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
 
 #[derive(Debug)]
-struct BatchData {
+pub struct SetBuilder {
+    problem_areas: Vec<ProblemArea>,
+    lang: String,
     starting_difficulty: Difficulty,
     ending_difficulty: Difficulty,
     n: u8,
-}
-
-#[derive(Debug)]
-pub struct SetBuilder {
-    problem_areas: Vec<Vec<ProblemType>>,
-    batches: Vec<BatchData>,
-    lang: String,
 }
 
 //#################################
@@ -26,8 +21,10 @@ impl SetBuilder {
     pub fn new() -> SetBuilder {
         SetBuilder {
             problem_areas: Vec::new(),
-            batches: Vec::new(),
+            starting_difficulty: Difficulty::Intro,
+            ending_difficulty: Difficulty::Hard,
             lang: "sv".to_string(),
+            n: 1,
         }
     }
 
@@ -36,41 +33,30 @@ impl SetBuilder {
         self
     }
 
-    pub fn area(&mut self, area: Vec<ProblemType>) -> &mut Self {
-        if !self.problem_areas.contains(&area) {
-            self.problem_areas.push(area);
-        }
-        // else Err
+    pub fn problem_areas(&mut self, problem_areas: Vec<ProblemArea>) -> &mut Self {
+        self.problem_areas = problem_areas;
         self
     }
 
-    pub fn batch(
+    pub fn difficulties(
         &mut self,
         starting_difficulty: Difficulty,
         ending_difficulty: Difficulty,
-        n: u8,
-    ) -> Result<&mut Self> {
-        if n > 0 {
-            let batch_data = BatchData {
-                starting_difficulty,
-                ending_difficulty,
-                n,
-            };
-            self.batches.push(batch_data);
-        } else {
-            return Err(anyhow!("Called batch() with an n = 0"));
-        }
-        // else Err
-        Ok(self)
+    ) -> &mut Self {
+        self.starting_difficulty = starting_difficulty;
+        self.ending_difficulty = ending_difficulty;
+        self
+    }
+
+    pub fn number_of_problems(&mut self, n: u8) -> &mut Self {
+        self.n = n;
+        self
     }
 
     pub fn build(&self) -> Result<Vec<Problem>> {
         let mut rng = rand::rng();
-        let mut problems = Vec::new();
 
-        for batch in &self.batches {
-            problems.append(&mut self.choose_problems(batch, &mut rng)?);
-        }
+        let problems = self.choose_problems(&mut rng)?;
         Ok(problems)
     }
 }
@@ -90,21 +76,21 @@ const DEFAULT_SCORE: u8 = 100;
 
 #[derive(Debug, Clone, Copy)]
 struct ScoredProblemType<'a> {
-    problem_type: &'a ProblemType,
+    problem_type: &'a ProblemArea,
     score: u8,
 }
 
 impl SetBuilder {
-    fn choose_problems(&self, batch: &BatchData, rng: &mut ThreadRng) -> Result<Vec<Problem>> {
+    fn choose_problems(&self, rng: &mut ThreadRng) -> Result<Vec<Problem>> {
         let mut problems = Vec::new();
         let mut ids: Vec<ProblemId> = Vec::new();
         let difficulty_range =
-            Difficulty::enums_to_nums(batch.starting_difficulty, batch.ending_difficulty);
+            Difficulty::enums_to_nums(self.starting_difficulty, self.ending_difficulty);
 
         // Find all problems which match the desired difficulty and give them a score for assured
         // spread of problems during selection
-        let candidates: Vec<&ProblemType> = self.get_valid_problem_types(&difficulty_range)?;
-        let count_per_difficulty = Self::get_count_per_difficulty(&candidates, &batch.n)?;
+        let candidates: Vec<&ProblemArea> = self.get_valid_problem_types(&difficulty_range)?;
+        let count_per_difficulty = Self::get_count_per_difficulty(&candidates, &self.n)?;
         let mut count_per_difficulty_number = [0; 11];
         let intro_counts = Self::get_count_per_difficulty_number(
             &candidates,
@@ -191,7 +177,7 @@ impl SetBuilder {
             .collect()
     }
 
-    fn get_count_per_difficulty(candidates: &[&ProblemType], n: &u8) -> Result<[u8; 4]> {
+    fn get_count_per_difficulty(candidates: &[&ProblemArea], n: &u8) -> Result<[u8; 4]> {
         if candidates.len() == 0 {
             return Err(anyhow!("get_count_per_difficulty() called with empty Vec"));
         }
@@ -231,7 +217,7 @@ impl SetBuilder {
     ///
     /// This method is only intended to be called with candidates from a specific `Difficulty`
     fn get_count_per_difficulty_number(
-        candidates: &[&ProblemType],
+        candidates: &[&ProblemArea],
         n: &u8,
         difficulty: &Difficulty,
     ) -> Result<[u8; 3]> {
@@ -304,11 +290,10 @@ impl SetBuilder {
     }
 
     /// Returns all `ProblemType`s of the desired difficulties
-    fn get_valid_problem_types(&self, difficulties: &Vec<u8>) -> Result<Vec<&ProblemType>> {
-        let valid_problem_types: Vec<&ProblemType> = self
+    fn get_valid_problem_types(&self, difficulties: &[u8]) -> Result<Vec<&ProblemArea>> {
+        let valid_problem_types: Vec<&ProblemArea> = self
             .problem_areas
             .iter()
-            .flat_map(|area| area.iter())
             .filter(|problem_type| difficulties.contains(&problem_type.difficulty))
             .collect();
         if valid_problem_types.len() > 0 {
@@ -329,7 +314,7 @@ impl SetBuilder {
     ///       if several (>20) problems are generated from the same **function**.
     fn get_unique_problem_or_reset_ids(
         &self,
-        problem_type: &ProblemType,
+        problem_type: &ProblemArea,
         ids: &mut Vec<ProblemId>,
     ) -> Result<Problem> {
         let mut problem = (problem_type.generator)(problem_type.name.clone(), &self.lang)?;
@@ -360,8 +345,8 @@ mod tests {
         Ok(Problem::new("mock", "mock"))
     }
 
-    fn problem_type_generator(difficulty: u8) -> ProblemType {
-        ProblemType {
+    fn problem_type_generator(difficulty: u8) -> ProblemArea {
+        ProblemArea {
             name: "test".to_string(),
             difficulty,
             generator: mock_problem_generator,
@@ -369,12 +354,12 @@ mod tests {
     }
     #[test]
     fn distributes_difficulty_numbers_when_all_numbers_present() {
-        let candidates: Vec<ProblemType> = vec![
+        let candidates: Vec<ProblemArea> = vec![
             problem_type_generator(8),
             problem_type_generator(9),
             problem_type_generator(10),
         ];
-        let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
+        let ref_candidates: Vec<&ProblemArea> = candidates.iter().map(|p_type| p_type).collect();
         let inputs_and_results = [
             (0, [0, 0, 0]),
             (1, [1, 0, 0]),
@@ -401,7 +386,7 @@ mod tests {
     #[test]
     fn distributes_difficulty_numbers_when_one_number_present() {
         // Lower difficulty
-        let candidates: Vec<ProblemType> = vec![problem_type_generator(5)];
+        let candidates: Vec<ProblemArea> = vec![problem_type_generator(5)];
         let inputs_and_results = [
             (0, [0, 0, 0]),
             (1, [1, 0, 0]),
@@ -410,7 +395,7 @@ mod tests {
             (23, [23, 0, 0]),
             (100, [100, 0, 0]),
         ];
-        let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
+        let ref_candidates: Vec<&ProblemArea> = candidates.iter().map(|p_type| p_type).collect();
         for (input, result) in inputs_and_results {
             assert_eq!(
                 SetBuilder::get_count_per_difficulty_number(
@@ -424,16 +409,16 @@ mod tests {
         }
 
         // Medium difficulty
-        let candidates: Vec<ProblemType> = vec![problem_type_generator(1)];
-        let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
+        let candidates: Vec<ProblemArea> = vec![problem_type_generator(1)];
+        let ref_candidates: Vec<&ProblemArea> = candidates.iter().map(|p_type| p_type).collect();
         assert_eq!(
             SetBuilder::get_count_per_difficulty_number(&ref_candidates, &7, &Difficulty::Intro)
                 .unwrap(),
             [0, 7, 0]
         );
         // Higher difficulty
-        let candidates: Vec<ProblemType> = vec![problem_type_generator(10)];
-        let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
+        let candidates: Vec<ProblemArea> = vec![problem_type_generator(10)];
+        let ref_candidates: Vec<&ProblemArea> = candidates.iter().map(|p_type| p_type).collect();
         assert_eq!(
             SetBuilder::get_count_per_difficulty_number(&ref_candidates, &7, &Difficulty::Hard)
                 .unwrap(),
@@ -444,7 +429,7 @@ mod tests {
     #[test]
     fn distributes_difficulty_numbers_when_two_numbers_present() {
         // Lower + Medium
-        let candidates: Vec<ProblemType> =
+        let candidates: Vec<ProblemArea> =
             vec![problem_type_generator(0), problem_type_generator(1)];
         let inputs_and_results = [
             (0, [0, 0, 0]),
@@ -454,7 +439,7 @@ mod tests {
             (23, [14, 9, 0]),
             (100, [60, 40, 0]),
         ];
-        let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
+        let ref_candidates: Vec<&ProblemArea> = candidates.iter().map(|p_type| p_type).collect();
         for (input, result) in inputs_and_results {
             assert_eq!(
                 SetBuilder::get_count_per_difficulty_number(
@@ -468,7 +453,7 @@ mod tests {
         }
 
         // Lower + Higher
-        let candidates: Vec<ProblemType> =
+        let candidates: Vec<ProblemArea> =
             vec![problem_type_generator(5), problem_type_generator(7)];
         let inputs_and_results = [
             (0, [0, 0, 0]),
@@ -478,7 +463,7 @@ mod tests {
             (23, [16, 0, 7]),
             (100, [70, 0, 30]),
         ];
-        let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
+        let ref_candidates: Vec<&ProblemArea> = candidates.iter().map(|p_type| p_type).collect();
         for (input, result) in inputs_and_results {
             assert_eq!(
                 SetBuilder::get_count_per_difficulty_number(
@@ -492,7 +477,7 @@ mod tests {
         }
 
         // Medium + Higher
-        let candidates: Vec<ProblemType> =
+        let candidates: Vec<ProblemArea> =
             vec![problem_type_generator(9), problem_type_generator(10)];
         let inputs_and_results = [
             (0, [0, 0, 0]),
@@ -502,7 +487,7 @@ mod tests {
             (23, [0, 14, 9]),
             (100, [0, 60, 40]),
         ];
-        let ref_candidates: Vec<&ProblemType> = candidates.iter().map(|p_type| p_type).collect();
+        let ref_candidates: Vec<&ProblemArea> = candidates.iter().map(|p_type| p_type).collect();
         for (input, result) in inputs_and_results {
             assert_eq!(
                 SetBuilder::get_count_per_difficulty_number(

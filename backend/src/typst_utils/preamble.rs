@@ -7,7 +7,7 @@ pub static PREAMBLE_STR: &str = r#"
 #set enum(spacing: 1.33em)
 #set enum(numbering: it => {
   item-counter.step()
-  context box(width: 1.35em, text(weight: "bold")[#item-counter.display()])
+  context box(width: 1.35em, text(weight: "bold")[#item-counter.display())])
 })
 #set-num(decimal-separator: ",")
 "#;

@@ -13,15 +13,7 @@ pub async fn init_database() -> Result<()> {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = PgPoolOptions::new()
         .max_connections(20)
-        .after_connect(|conn, _meta| {
-            Box::pin(async move {
-                // Ensure UTF-8 encoding
-                sqlx::query("SET client_encoding = 'UTF8'")
-                    .execute(conn)
-                    .await?;
-                Ok(())
-            })
-        })
+        .min_connections(3)
         .connect(&database_url)
         .await
         .context("Unable to initialize DB Pool options")?;

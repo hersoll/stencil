@@ -21,23 +21,6 @@ pub struct DocumentBuilder {
     i18n_strings: HashMap<String, String>,
 }
 
-pub struct FinishedFile {
-    file_path: String,
-}
-
-impl FinishedFile {
-    pub fn new(file_path: String) -> FinishedFile {
-        let typst_file_path = typst_utils::files::to_typst_file_name(&file_path);
-        FinishedFile {
-            file_path: typst_file_path,
-        }
-    }
-
-    pub fn compile(&self) -> std::io::Result<String> {
-        typst_utils::files::compile(&self.file_path)
-    }
-}
-
 impl DocumentBuilder {
     pub async fn new(
         set_options: Vec<SetRenderingOptions>,
@@ -317,21 +300,21 @@ impl DocumentBuilder {
         typst_utils::formatting::to_heading(heading)
     }
 
-    pub fn build(&self) -> Result<FinishedFile> {
+    pub fn build_to_string(&self) -> Result<String> {
+        let mut typst_content = String::new();
+
         let preamble = self.build_preamble();
         let question_string = self.sets_to_balanced_columns(&self.question_sets);
         let answer_preamble =
             typst_utils::formatting::page_break() + &typst_utils::formatting::reset_enum();
         let answer_string = self.sets_to_columns(&self.answer_sets, &self.options.answer_columns);
 
-        let typst_file_name = typst_utils::files::to_typst_file_name(&self.options.file_name);
-        let typst_file = typst_utils::files::create_typst_file(&typst_file_name)?;
-        typst_utils::files::write(&typst_file, preamble)?;
-        typst_utils::files::write(&typst_file, question_string)?;
-        typst_utils::files::write(&typst_file, answer_preamble)?;
-        typst_utils::files::write(&typst_file, self.answer_heading())?;
-        typst_utils::files::write(&typst_file, answer_string)?;
-        Ok(FinishedFile::new(typst_file_name))
+        typst_content += &preamble;
+        typst_content += &question_string;
+        typst_content += &answer_preamble;
+        typst_content += &self.answer_heading();
+        typst_content += &answer_string;
+        Ok(typst_content)
     }
 
     fn build_preamble(&self) -> String {

@@ -1,5 +1,6 @@
 pub mod builders;
 pub mod db;
+pub mod pdf_generation;
 mod problems;
 mod registry;
 pub mod shared;
