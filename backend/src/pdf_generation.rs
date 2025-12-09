@@ -159,6 +159,9 @@ fn get_problem_difficulty(name: &String) -> Result<u8> {
     }
 }
 
+
+// NOTE: Could this be part of the SetBuilder/ProblemPicker instead?
+// Or some other module?
 async fn generate_problems_for_set(
     mut problem_sets: Vec<Vec<Problem>>,
     set: shared::SendableProblemSetData,

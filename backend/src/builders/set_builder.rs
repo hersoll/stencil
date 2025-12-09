@@ -17,6 +17,8 @@ pub struct SetBuilder {
 //#################################
 //#   PUBLIC BUILDER FUNCTIONS    #
 //#################################
+
+// TODO: This seems unnecessary as a builder. You could just pass a struct to choose_problems
 impl SetBuilder {
     pub fn new() -> SetBuilder {
         SetBuilder {
