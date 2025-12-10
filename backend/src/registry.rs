@@ -1,8 +1,15 @@
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
-
-use crate::db;
-use crate::shared::{ParsedPrefixData, ParsedProblemData, PrefixData, ProblemData};
+use crate::{
+    db, 
+    problems::problem_picker::ProblemGenerator, 
+    shared::{
+        ParsedPrefixData,
+        ParsedProblemData,
+        PrefixData, 
+        ProblemData
+    }
+};
 use anyhow::{Context, Result};
 
 #[derive(Debug, thiserror::Error)]
@@ -18,7 +25,7 @@ pub enum RegistryError {
 /// A map between problem names (simple_equations_default) and their functions
 ///
 /// This HashMap is written to in the problem! macro (during startup)
-pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, super::ProblemGenerator>>> =
+pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, ProblemGenerator>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
 pub static PROBLEM_DATA: LazyLock<RwLock<HashMap<String, ProblemData>>> =
@@ -86,7 +93,7 @@ pub fn get_parsed_prefix(id: i32, lang: &str) -> Result<ParsedPrefixData> {
 /// Used in problems with dynamic text questions, for example:
 /// "Use the function {f} to solve..."
 ///
-/// NOTE: Should this be in this module?
+/// TODO: Find a more appropriate module for this function
 pub fn replace_placeholders(template: &str, values: &HashMap<&str, String>) -> String {
     let mut result = template.to_string();
     for (key, value) in values {

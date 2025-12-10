@@ -48,13 +48,7 @@ pub struct ProblemMetadata {
 }
 */
 
-pub type ProblemGenerator = fn(String, &str) -> Result<Problem>;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct ProblemId {
-    pub name: String,
-    pub identifiers: Vec<i32>,
-}
 
 //#################################
 //#          DIFFICULTY           #

@@ -1,7 +1,7 @@
 use crate::{
     db,
     pdf_generation::ProblemSetSpec,
-    problems::{Difficulty, Problem, ProblemGenerator, ProblemId},
+    problems::{Difficulty, Problem},
     RegistryError,
 };
 use anyhow::{anyhow, Context, Result};
@@ -13,6 +13,7 @@ use rand::{rngs::ThreadRng, seq::IndexedRandom};
 /// associated with each problem.
 ///
 /// Used throughout the problem_picker functions to group the data together
+/// TODO: Is this the best way of doing it? How long until the program needs the generator?
 #[derive(Debug, Clone, Eq)]
 pub struct ProblemDescriptor {
     pub name: String,
@@ -24,6 +25,14 @@ impl PartialEq for ProblemDescriptor {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name
     }
+}
+
+pub type ProblemGenerator = fn(String, &str) -> Result<Problem>;
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct ProblemId {
+    pub name: String,
+    pub identifiers: Vec<i32>,
 }
 
 /// Defines which criteria the problem_picker functions can use to
@@ -46,6 +55,7 @@ pub async fn generate_problems_for_set(set: ProblemSetSpec, lang: String) -> Res
     // get all matching problem names from the db
     let problem_names = db::problems::get_problem_names_for_pdf(set.topics, set.exclusions).await?;
 
+    // TODO: Maybe we only use the names, and pass them on to the pool...
     let problems: Vec<ProblemDescriptor> = problem_names
         .iter()
         .map(|name| {
@@ -134,17 +144,25 @@ struct ScoredProblemDescriptor<'a> {
 
 // TODO: Refactor this shit
 fn choose_problems(problem_pool: ProblemPool, rng: &mut ThreadRng) -> Result<Vec<Problem>> {
+    // The actual generated problems
     let mut problems = Vec::new();
+
+    // NOTE: This struct ALSO contains the names...
     let mut ids: Vec<ProblemId> = Vec::new();
+
+
+    // A range of numbers, for example 3..7, as a Vec
     let difficulty_range = Difficulty::enums_to_nums(
         problem_pool.starting_difficulty,
         problem_pool.ending_difficulty,
     );
 
-    // Find all problems which match the desired difficulty and give them a score for assured
+    // Find all problems which match the desired difficulties and give them a score for assured
     // spread of problems during selection
+    // WARN: Filters based on difficulty
     let candidates: Vec<&ProblemDescriptor> =
         get_valid_problem_types(&problem_pool, &difficulty_range)?;
+    // WARN: Also uses difficulty
     let count_per_difficulty = get_count_per_difficulty(&candidates, &problem_pool.n)?;
     let mut count_per_difficulty_number = [0; 11];
     let intro_counts =
@@ -162,6 +180,9 @@ fn choose_problems(problem_pool: ProblemPool, rng: &mut ThreadRng) -> Result<Vec
     count_per_difficulty_number[2..=4].copy_from_slice(&easy_counts);
     count_per_difficulty_number[5..=7].copy_from_slice(&medium_counts);
     count_per_difficulty_number[8..=10].copy_from_slice(&hard_counts);
+    // WARN: Everything up to the previous WARN is simply used to create count_per_difficulty_number
+
+    // Attach a score to every candidate (NOTE: This could just be problem name + score)
     let candidates_with_scores: Vec<ScoredProblemDescriptor> = candidates
         .into_iter()
         .map(|candidate| ScoredProblemDescriptor {
@@ -175,6 +196,7 @@ fn choose_problems(problem_pool: ProblemPool, rng: &mut ThreadRng) -> Result<Vec
     // It generates a problem of that type, and lowers that problem's score.
     // Indices are tracked to be able to change the relevant score in `candidates_with_scores`
     for (i, count) in count_per_difficulty_number.iter().enumerate() {
+        // Skip difficulties that don't have problems
         if *count > 0 {
             let mut filtered_candidates = filter_candidates(&candidates_with_scores, i as u8);
             for _ in 0..*count {
