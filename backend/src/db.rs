@@ -13,7 +13,7 @@ pub async fn init_database() -> Result<()> {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = PgPoolOptions::new()
         .max_connections(20)
-        .min_connections(3)
+        .min_connections(1)
         .connect(&database_url)
         .await
         .context("Unable to initialize DB Pool options")?;
@@ -25,7 +25,7 @@ pub async fn init_database() -> Result<()> {
 
     // Test the connection
     let pool = get_pool();
-    let _ = sqlx::query("SELECT 1").execute(pool).await?;
+    let _ = sqlx::query("SELECT 1").execute(pool).await.context("Test connection to db failed")?;
 
     Ok(())
 }

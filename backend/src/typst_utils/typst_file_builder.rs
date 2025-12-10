@@ -2,33 +2,108 @@ use std::collections::HashMap;
 use std::fmt::Display;
 
 use crate::{
-    PREFIX_DATA, PROBLEM_DATA, RegistryError,
-    db::I18nDatabase,
-    problems::Problem,
-    shared::{DocumentOptions, SetRenderingOptions, WriteSolutions},
-    typst_utils,
+    db::I18nDatabase, problems::Problem, typst_utils, RegistryError, PREFIX_DATA, PROBLEM_DATA,
 };
 use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct SetOptions {
+    pub question_columns: u8,
+    pub title: String,
+    pub spacing: Option<u16>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct DocumentOptions {
+    pub font_size: u8,
+    pub heading: String,
+    pub answer_columns: u8,
+    pub lang: String,
+    pub write_solutions: WriteSolutions,
+    pub color: bool,
+    pub paper_size: PaperSize,
+    pub x_margin: u8,
+    pub y_margin: u8,
+    pub par_spacing: Option<u8>,
+    pub max_prefix_group: Option<u8>,
+}
+
+impl Default for DocumentOptions {
+    fn default() -> Self {
+        DocumentOptions {
+            font_size: 10,
+            lang: "sv".to_string(),
+            write_solutions: WriteSolutions::First,
+            color: true,
+            heading: String::new(),
+            paper_size: PaperSize::A4,
+            x_margin: 20,
+            y_margin: 20,
+            par_spacing: None,
+            answer_columns: 3,
+            max_prefix_group: Some(3),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum WriteSolutions {
+    All,
+    None,
+    First,
+}
+
+// TODO: Is this needed, or is it enough to just get "a4" or "a5"
+// from the HTTP request?
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum PaperSize {
+    A4,
+    A5,
+}
+
+// TODO: Check if these are even used
+impl PaperSize {
+    pub fn from(name: &str) -> PaperSize {
+        match name {
+            "a4" => PaperSize::A4,
+            "a5" => PaperSize::A5,
+            _ => PaperSize::A4,
+        }
+    }
+    pub fn to_typst(&self) -> &str {
+        match self {
+            PaperSize::A4 => "a4",
+            PaperSize::A5 => "a5",
+        }
+    }
+    pub fn to_str(&self) -> &str {
+        match self {
+            PaperSize::A4 => "A4",
+            PaperSize::A5 => "A5",
+        }
+    }
+}
 
 #[derive(Debug)]
-pub struct DocumentBuilder {
+pub struct TypstFileBuilder {
     question_sets: Vec<Vec<String>>,
     answer_sets: Vec<Vec<String>>,
     problem_names: Vec<String>,
     group_prefixes: Vec<Option<String>>,
     options: DocumentOptions,
-    set_options: Vec<SetRenderingOptions>,
+    set_options: Vec<SetOptions>,
     i18n_strings: HashMap<String, String>,
 }
 
-impl DocumentBuilder {
+impl TypstFileBuilder {
     pub async fn new(
-        set_options: Vec<SetRenderingOptions>,
+        set_options: Vec<SetOptions>,
         options: DocumentOptions,
-    ) -> Result<DocumentBuilder> {
+    ) -> Result<TypstFileBuilder> {
         let i18n_keys = vec!["solution"];
         let i18n_strings = I18nDatabase::get_multiple(i18n_keys, &options.lang).await?;
-        Ok(DocumentBuilder {
+        Ok(TypstFileBuilder {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
             problem_names: Vec::new(),

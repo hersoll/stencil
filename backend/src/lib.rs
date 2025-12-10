@@ -1,7 +1,6 @@
-pub mod builders;
 pub mod db;
 pub mod pdf_generation;
-mod problems;
+pub mod problems;
 mod registry;
 pub mod shared;
 pub mod typst_utils;
