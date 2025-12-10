@@ -77,7 +77,7 @@ pub async fn build_pdf_from_http(
     #[cfg(not(feature = "docker"))]
     let project_root = "./";
 
-    // Create temp directory inside project root
+    // Create temp directory inside project root for .typ and .pdf files
     let temp_dir = Builder::new().prefix("temp_").tempdir_in(project_root)?;
     let temp_dir_path = temp_dir.path();
 
