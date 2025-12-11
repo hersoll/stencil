@@ -485,13 +485,13 @@ pub async fn get_all_problem_data() -> Result<Vec<ProblemData>> {
 }
 
 /// For PDF generation, we need the full names (module+problem) of all the problems
-pub async fn get_problem_names_from_topics(
+pub async fn get_problem_names_and_difficulties_from_topics(
     topic_ids: Vec<i32>,
     exclusions: Vec<i32>,
-) -> Result<Vec<String>> {
+) -> Result<Vec<(String, u8)>> {
     let pool = db::get_pool();
     let problems = sqlx::query!(
-        r#"SELECT p.module, p.name 
+        r#"SELECT p.module, p.name, p.difficulty 
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = ANY($1)
@@ -504,7 +504,12 @@ pub async fn get_problem_names_from_topics(
 
     Ok(problems
         .iter()
-        .map(|record| format!("{}_{}", record.module, record.name))
+        .map(|record| {
+            (
+                format!("{}_{}", record.module, record.name),
+                record.difficulty as u8,
+            )
+        })
         .collect())
 }
 

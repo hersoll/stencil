@@ -2,8 +2,8 @@ use crate::{
     RegistryError, db,
     errors::ApiError,
     pdf_generation::ProblemSetSpec,
-    problems::{Problem, Difficulty},
-    problem_picker
+    problem_picker,
+    problems::{Difficulty, Problem},
 };
 use anyhow::{Context, Result, anyhow};
 use std::{cmp::Ordering, collections::HashSet};
@@ -57,15 +57,17 @@ pub async fn generate_problem_set(
     set: ProblemSetSpec,
     lang: String,
 ) -> Result<Vec<Problem>, ApiError> {
-    let problems = db::problems::get_problem_names_from_topics(set.topics, set.exclusions).await?;
-    // Construct an initial list of candidates from the problem names,
-    // with some default values for now
+    // (name, dificulty)
+    let problems: Vec<(String, u8)> =
+        db::problems::get_problem_names_and_difficulties_from_topics(set.topics, set.exclusions)
+            .await?;
+    // Construct an initial list of candidates from the problem names
     let problem_candidates: Vec<ProblemCandidate> = problems
         .into_iter()
         .map(|problem| {
             Ok(ProblemCandidate {
-                difficulty: get_problem_difficulty(&problem)?,
-                name: problem,
+                name: problem.0,
+                difficulty: problem.1,
                 score: DEFAULT_SCORE.max(set.n),
                 identifiers: HashSet::new(),
             })
@@ -176,30 +178,6 @@ fn get_unique_problem(candidate: &mut ProblemCandidate, lang: &str) -> Result<Pr
     }
     candidate.identifiers.insert(problem.identifiers.clone());
     Ok(problem)
-}
-
-/// Given a complete problem name (module_problem),
-/// returns the difficulty of that problem.
-///
-/// Used after retrieving the problem names from
-/// PROBLEM_MAP matching a HTTP request.
-fn get_problem_difficulty(name: &String) -> Result<u8> {
-    let difficulty = {
-        let lock = crate::PROBLEM_DATA.read().expect("Mutex is poisoned");
-        lock.get(name)
-            .ok_or(RegistryError::ProblemNotFound {
-                id: name.to_string(),
-            })?
-            .difficulty
-    }; // Lock is dropped here
-
-    // Validate the difficulty
-    match difficulty {
-        0..=10 => Ok(difficulty as u8),
-        _ => Err(anyhow!(
-            "Difficulty {difficulty} from problem {name} outside range."
-        )),
-    }
 }
 
 /// Given a complete problem name (module_problem),
