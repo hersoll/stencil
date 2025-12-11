@@ -80,7 +80,7 @@ pub async fn build_pdf_from_http(
     document_options: DocumentOptions,
 ) -> Result<Vec<u8>, ApiError> {
     info!("Building PDF with {} problem set(s)", sets.len());
-    info!("Document options: {document_options:#?}");
+    info!("{document_options:#?}");
     for (i, set) in sets.iter().enumerate() {
         info!("Set {i}: {set:#?}");
     }
