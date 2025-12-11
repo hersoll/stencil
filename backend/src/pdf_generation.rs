@@ -54,7 +54,7 @@ impl ProblemSetSpec {
 /// Make build_pdf the endpoint after that!
 pub async fn send_pdf() -> Response {
     let mut sets = ProblemSetSpec::new();
-    sets.n = 100;
+    sets.n = 60;
     sets.topics.push(1);
     let options = DocumentOptions::default();
     match build_pdf_from_http(vec![sets], options).await {

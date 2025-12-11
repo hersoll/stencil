@@ -130,7 +130,6 @@ fn choose_problems(problem_pool: &mut ProblemPool) -> Result<(), ApiError> {
     );
 
     // Retain all problems which match the desired difficulties
-    // TODO: Test the error
     problem_pool
         .problem_candidates
         .retain(|candidate| difficulty_range.contains(&candidate.difficulty));
