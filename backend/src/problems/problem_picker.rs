@@ -1,9 +1,6 @@
-use crate::{
-    errors::ApiError,
-    problem_generator::ProblemPool,
-    problems::Difficulty,
-};
+use crate::{errors::ApiError, problem_generator::ProblemPool, problems::Difficulty};
 use anyhow::{Result, anyhow};
+use tracing::debug;
 
 // Ratios when choosing a difficulty level (0-10) within a Difficulty
 const EASY_MEDIUM_RATIO: f32 = 0.60;
@@ -14,6 +11,7 @@ const MEDIUM_RATIO: f32 = 0.30;
 
 /// Designates which difficulties contain problems
 /// and thus can be used when generating problems
+#[derive(Debug)]
 struct AvailableDifficulties {
     intro: bool,
     easy: bool,
@@ -22,6 +20,7 @@ struct AvailableDifficulties {
 }
 
 /// How many problems there should be within each Difficulty
+#[derive(Debug)]
 struct DifficultyDistribution {
     intro: u8,
     easy: u8,
@@ -52,6 +51,11 @@ pub fn choose_problems(problem_pool: &mut ProblemPool) -> Result<(), ApiError> {
     problem_pool
         .problem_candidates
         .retain(|candidate| difficulty_range.contains(&candidate.difficulty));
+    debug!(
+        "Found {} problems within difficulty range",
+        problem_pool.problem_candidates.len()
+    );
+
     if problem_pool.problem_candidates.is_empty() {
         return Err(ApiError::BadRequest(
             "No valid problems in difficulty range".to_string(),
@@ -64,8 +68,14 @@ pub fn choose_problems(problem_pool: &mut ProblemPool) -> Result<(), ApiError> {
 /// Finds out how many of each difficulty number should be generated.
 pub fn distribute_problems(problem_pool: &ProblemPool) -> Result<[u8; 11]> {
     let counts = get_count_per_difficulty(problem_pool)?;
+    debug!("Problem distribution among difficulties: {:?}", counts);
+
     let distribution_per_difficulty_number =
         distribute_problems_by_difficulty_number(problem_pool, &counts)?;
+    debug!(
+        "Problem distribution among difficulty numbers: {:?}",
+        distribution_per_difficulty_number
+    );
 
     Ok(distribution_per_difficulty_number)
 }
@@ -114,6 +124,7 @@ fn get_count_per_difficulty(problem_pool: &ProblemPool) -> Result<DifficultyDist
     }
 
     let avail = check_available_difficulties(problem_pool);
+    debug!("Difficulties with available problems: {:?}", avail);
 
     // Calculate intro count
     let intro = if !avail.easy && !avail.medium && !avail.hard {
@@ -248,6 +259,3 @@ fn get_problem_ratios(avail: AvailableDifficulties, n: u8) -> [u8; 3] {
         (false, false, false) => [0, 0, 0],
     }
 }
-
-
-

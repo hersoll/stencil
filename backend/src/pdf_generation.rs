@@ -54,10 +54,10 @@ impl ProblemSetSpec {
 /// Make build_pdf the endpoint after that!
 pub async fn send_pdf() -> Response {
     let mut sets = ProblemSetSpec::new();
-    sets.n = 60;
+    sets.n = 30;
     sets.topics.push(1);
     let options = DocumentOptions::default();
-    match build_pdf_from_http(vec![sets], options).await {
+    match build_pdf_from_http(vec![sets.clone(), sets], options).await {
         Ok(pdf_bytes) => (
             StatusCode::OK,
             [
@@ -80,9 +80,9 @@ pub async fn build_pdf_from_http(
     document_options: DocumentOptions,
 ) -> Result<Vec<u8>, ApiError> {
     info!("Building PDF with {} problem set(s)", sets.len());
-    info!("{document_options:#?}");
+    debug!("{document_options:#?}");
     for (i, set) in sets.iter().enumerate() {
-        info!("Set {i}: {set:#?}");
+        debug!("Set {i}: {set:#?}");
     }
 
     // A vec containing the sets of actual problems (With question, answer, ...)
