@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
 use crate::{
     db, 
-    problems::problem_picker::ProblemGenerator, 
+    problems::problem_generator::ProblemGenerator, 
     shared::{
         ParsedPrefixData,
         ParsedProblemData,

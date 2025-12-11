@@ -7,6 +7,7 @@ pub mod ma1;
 pub mod ma2;
 pub mod math_utils;
 pub mod problem_picker;
+pub mod problem_generator;
 pub mod solutions;
 mod symbols;
 mod types;

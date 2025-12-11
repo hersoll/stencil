@@ -1,6 +1,6 @@
 use crate::{
     errors::ApiError,
-    problems::{Difficulty, Problem, problem_picker},
+    problems::{Difficulty, Problem, problem_generator},
     typst_utils::typst_file_builder::{DocumentOptions, SetOptions, TypstFileBuilder},
 };
 use anyhow::{Result, anyhow};
@@ -91,7 +91,7 @@ pub async fn build_pdf_from_http(
     for (i, set) in sets.into_iter().enumerate() {
         debug!(set_index = i, "Processing problem set");
         let problem_set =
-            problem_picker::generate_problems_for_set(set, document_options.lang.clone()).await?;
+            problem_generator::generate_problem_set(set, document_options.lang.clone()).await?;
         problem_sets.push(problem_set);
         debug!(set_index = i, "Generated every problem for set");
     }
