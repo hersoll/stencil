@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 //#################################
 //#           IMPORTS             #
 //#################################
@@ -48,8 +48,6 @@ pub struct ProblemMetadata {
 }
 */
 
-
-
 //#################################
 //#          DIFFICULTY           #
 //#################################
@@ -64,6 +62,15 @@ pub enum Difficulty {
 }
 
 impl Difficulty {
+    pub fn all() -> [Difficulty; 4] {
+        [
+            Difficulty::Intro,
+            Difficulty::Easy,
+            Difficulty::Medium,
+            Difficulty::Hard,
+        ]
+    }
+
     pub fn num_to_enum(difficulty_number: u8) -> Result<Difficulty> {
         match difficulty_number {
             0 | 1 => Ok(Difficulty::Intro),
@@ -105,23 +112,22 @@ impl Difficulty {
 
         (minimum_number..=maximum_number).collect()
     }
-    pub fn str_to_enum(s: &str) -> Difficulty {
+    pub fn str_to_enum(s: &str) -> Result<Difficulty> {
         match s {
-            "difficulty_intro" => Difficulty::Intro,
-            "difficulty_easy" => Difficulty::Easy,
-            "difficulty_medium" => Difficulty::Medium,
-            "difficulty_hard" => Difficulty::Hard,
-            _ => panic!("Don't call str_to_enum with another string you dummy"),
+            "difficulty_intro" => Ok(Difficulty::Intro),
+            "difficulty_easy" => Ok(Difficulty::Easy),
+            "difficulty_medium" => Ok(Difficulty::Medium),
+            "difficulty_hard" => Ok(Difficulty::Hard),
+            _ => Err(anyhow!("Invalid difficulty string: {s}")),
         }
     }
 
-    pub fn to_str(&self) -> String {
-        let s = match self {
+    pub fn to_str(&self) -> &str {
+        match self {
             Difficulty::Intro => "difficulty_intro",
             Difficulty::Easy => "difficulty_easy",
             Difficulty::Medium => "difficulty_medium",
             Difficulty::Hard => "difficulty_hard",
-        };
-        s.to_string()
+        }
     }
 }

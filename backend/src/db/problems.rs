@@ -485,7 +485,7 @@ pub async fn get_all_problem_data() -> Result<Vec<ProblemData>> {
 }
 
 /// For PDF generation, we need the full names (module+problem) of all the problems
-pub async fn get_problem_names_for_pdf(
+pub async fn get_problem_names_from_topics(
     topic_ids: Vec<i32>,
     exclusions: Vec<i32>,
 ) -> Result<Vec<String>> {

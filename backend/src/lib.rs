@@ -1,4 +1,5 @@
 pub mod db;
+pub mod errors;
 pub mod pdf_generation;
 pub mod problems;
 mod registry;

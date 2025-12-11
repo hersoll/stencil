@@ -1,12 +1,11 @@
 use crate::{
-    problems::problem_picker,
-    problems::Difficulty,
-    problems::Problem,
+    errors::ApiError,
+    problems::{Difficulty, Problem, problem_picker},
     typst_utils::typst_file_builder::{DocumentOptions, SetOptions, TypstFileBuilder},
 };
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use axum::{
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::{IntoResponse, Response},
 };
 use serde::{Deserialize, Serialize};
@@ -55,7 +54,7 @@ impl ProblemSetSpec {
 /// Make build_pdf the endpoint after that!
 pub async fn send_pdf() -> Response {
     let mut sets = ProblemSetSpec::new();
-    sets.n = 50;
+    sets.n = 100;
     sets.topics.push(1);
     let options = DocumentOptions::default();
     match build_pdf_from_http(vec![sets], options).await {
@@ -71,10 +70,7 @@ pub async fn send_pdf() -> Response {
             pdf_bytes,
         )
             .into_response(),
-        Err(e) => {
-            println!("{e}");
-            (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
-        }
+        Err(e) => e.into_response(),
     }
 }
 
@@ -82,7 +78,7 @@ pub async fn send_pdf() -> Response {
 pub async fn build_pdf_from_http(
     sets: Vec<ProblemSetSpec>,
     document_options: DocumentOptions,
-) -> Result<Vec<u8>> {
+) -> Result<Vec<u8>, ApiError> {
     info!("Building PDF with {} problem set(s)", sets.len());
 
     // A vec containing the sets of actual problems (With question, answer, ...)
@@ -138,7 +134,7 @@ pub async fn build_pdf_from_http(
         .await?;
 
     if !status.success() {
-        return Err(anyhow!("Typst compilation failed"));
+        return Err(anyhow!("Typst compilation failed").into());
     }
 
     let duration = start.elapsed();
