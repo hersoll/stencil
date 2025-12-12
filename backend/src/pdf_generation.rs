@@ -17,7 +17,7 @@ const DEFAULT_QUESTION_COLUMNS: u8 = 2;
 
 /// Information about what to include in the problem set
 ///
-/// Should be included in the HTTP request in the form of a Vec<SetInformation>
+/// Should be included in the HTTP request in the form of a Vec<ProblemSetSpec>
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ProblemSetSpec {
     /// Topics to draw problems from
@@ -34,8 +34,8 @@ pub struct ProblemSetSpec {
     pub options: SetOptions,
 }
 
-// TODO: Do we need this? Or will this reside in the frontend?
 impl ProblemSetSpec {
+    /// Mostly used for the /pdf/example endpoint
     pub fn new() -> ProblemSetSpec {
         ProblemSetSpec {
             topics: Vec::new(),
@@ -63,7 +63,7 @@ pub struct PDFRequest {
 /// Generates a proof-of-concept PDF without any attributes
 pub async fn generate_example_pdf() -> Response {
     let mut sets = ProblemSetSpec::new();
-    sets.n = 40;
+    sets.n = 30;
     sets.topics.push(1);
     sets.topics.push(2);
     sets.topics.push(3);
@@ -113,7 +113,8 @@ To generate a custom stencil, you need to attach a JSON body in the following fo
     }
 }
 
-/// 
+/// The function responsible for coordinating problem generation,
+/// typst file writing and compiling
 #[instrument(skip(req), fields(num_sets = req.sets.len()))]
 async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     let sets = req.sets;
@@ -188,6 +189,11 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     Ok(pdf_bytes)
 }
 
+/// Converts the Result from the build_pdf function to a HTTP response
+///
+/// The reason this isn't simply called at the end of the build_pdf function
+/// is due to easier `?` bubbling in that function. It's more ergonomic to just 
+/// return all errors and handle them at a higher level.
 fn pdf_result_to_response(pdf_result: Result<Vec<u8>, ApiError>) -> Response {
     match pdf_result {
         Ok(pdf_bytes) => (
