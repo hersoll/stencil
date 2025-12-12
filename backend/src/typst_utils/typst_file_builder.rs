@@ -1,23 +1,26 @@
-use std::collections::HashMap;
-use std::fmt::Display;
-
 use crate::{
-    db::I18nDatabase, problems::Problem, typst_utils, RegistryError, PREFIX_DATA, PROBLEM_DATA,
+    PREFIX_DATA, PROBLEM_DATA, RegistryError,
+    db::I18nDatabase,
+    problems::Problem,
+    typst_utils::{formatting, preamble::PREAMBLE_STR},
 };
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::fmt::Write;
+use tracing::error;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct SetOptions {
     pub question_columns: u8,
-    pub title: String,
+    pub heading: String,
     pub spacing: Option<u16>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DocumentOptions {
     pub font_size: u8,
-    pub heading: String,
+    pub title: String,
     pub answer_columns: u8,
     pub lang: String,
     pub write_solutions: WriteSolutions,
@@ -29,6 +32,7 @@ pub struct DocumentOptions {
     pub max_prefix_group: Option<u8>,
 }
 
+// NOTE: Defaults might not be needed after frontend is setup
 impl Default for DocumentOptions {
     fn default() -> Self {
         DocumentOptions {
@@ -36,7 +40,7 @@ impl Default for DocumentOptions {
             lang: "sv".to_string(),
             write_solutions: WriteSolutions::First,
             color: true,
-            heading: String::new(),
+            title: String::new(),
             paper_size: PaperSize::A4,
             x_margin: 20,
             y_margin: 20,
@@ -47,6 +51,10 @@ impl Default for DocumentOptions {
     }
 }
 
+/// Which problems should we write out the solutions for?
+///
+/// All/None - Self-explanatory
+/// First - Only the first problem of each problem kind
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum WriteSolutions {
     All,
@@ -54,33 +62,44 @@ pub enum WriteSolutions {
     First,
 }
 
-// TODO: Is this needed, or is it enough to just get "a4" or "a5"
-// from the HTTP request?
+impl WriteSolutions {
+    pub fn from(s: &str) -> WriteSolutions {
+        match s.to_lowercase().as_str() {
+            "all" => WriteSolutions::All,
+            "none" => WriteSolutions::None,
+            "first" => WriteSolutions::First,
+            _ => {
+                error!("Invalid WriteSolutions: {s}");
+                WriteSolutions::None
+            }
+        }
+    }
+}
+
+/// The valid paper sizes.
+///
+/// Having an enum for this makes it easier to validate correct sizes.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum PaperSize {
     A4,
     A5,
 }
 
-// TODO: Check if these are even used
 impl PaperSize {
-    pub fn from(name: &str) -> PaperSize {
-        match name {
+    pub fn from(size: &str) -> PaperSize {
+        match size.to_lowercase().as_str() {
             "a4" => PaperSize::A4,
             "a5" => PaperSize::A5,
-            _ => PaperSize::A4,
-        }
-    }
-    pub fn to_typst(&self) -> &str {
-        match self {
-            PaperSize::A4 => "a4",
-            PaperSize::A5 => "a5",
+            _ => {
+                error!("Invalid PaperSize: {size}");
+                PaperSize::A4
+            }
         }
     }
     pub fn to_str(&self) -> &str {
         match self {
-            PaperSize::A4 => "A4",
-            PaperSize::A5 => "A5",
+            PaperSize::A4 => "a4",
+            PaperSize::A5 => "a5",
         }
     }
 }
@@ -101,7 +120,7 @@ impl TypstFileBuilder {
         set_options: Vec<SetOptions>,
         options: DocumentOptions,
     ) -> Result<TypstFileBuilder> {
-        let i18n_keys = vec!["solution"];
+        let i18n_keys = vec!["solution", "answer_key"];
         let i18n_strings = I18nDatabase::get_multiple(i18n_keys, &options.lang).await?;
         Ok(TypstFileBuilder {
             question_sets: Vec::new(),
@@ -114,25 +133,21 @@ impl TypstFileBuilder {
         })
     }
 
-    pub fn write_solutions(&mut self, option: WriteSolutions) -> &mut Self {
-        self.options.write_solutions = option;
-        self
-    }
-
+    // TODO: refactor
     pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> Result<&mut Self> {
         // Save the IDs to use when appending prefixes
         let ids: Vec<String> = problem_set.iter().map(|pr| pr.id.clone()).collect();
         let results: Result<Vec<(String, String)>> = problem_set
             .into_iter()
             .map(|problem| match self.options.write_solutions {
-                WriteSolutions::None => Ok(self.add_answer_to_set(problem)),
-                WriteSolutions::All => self.add_solution_to_set(problem),
+                WriteSolutions::None => Ok(self.add_problem_without_solution(problem)),
+                WriteSolutions::All => self.add_problem_with_solution(problem),
                 WriteSolutions::First => {
                     if self.problem_names.contains(&problem.id) {
-                        Ok(self.add_answer_to_set(problem))
+                        Ok(self.add_problem_without_solution(problem))
                     } else {
                         self.problem_names.push(problem.id.clone());
-                        self.add_solution_to_set(problem)
+                        self.add_problem_with_solution(problem)
                     }
                 }
             })
@@ -145,6 +160,49 @@ impl TypstFileBuilder {
         Ok(self)
     }
 
+    /// Construct the entire Typst file and return it as one long String
+    pub fn build_to_string(&self) -> Result<String> {
+        // Estimated 16kb
+        let mut typst_content = String::with_capacity(16384);
+
+        let preamble = self.build_preamble();
+        let question_string = self.sets_to_balanced_columns(&self.question_sets);
+        // Set up to start printing the answer key
+        let answer_heading = self
+            .i18n_strings
+            .get("answer_key")
+            .expect("Unable to get answer_key translation from db");
+        let answer_preamble = formatting::page_break()
+            + &formatting::reset_enum()
+            + &formatting::heading(answer_heading);
+        let answer_string = self.sets_to_columns(&self.answer_sets, &self.options.answer_columns);
+
+        writeln!(typst_content, "{preamble}")?;
+        writeln!(typst_content, "{question_string}")?;
+        writeln!(typst_content, "{answer_preamble}")?;
+        writeln!(typst_content, "{answer_string}")?;
+        Ok(typst_content)
+    }
+
+    fn build_preamble(&self) -> String {
+        //Adjust order of preamble here if required
+        let preamble = vec![
+            formatting::colors(self.options.color),
+            formatting::page_size(
+                &self.options.paper_size.to_str(),
+                self.options.x_margin,
+                self.options.y_margin,
+            ),
+            formatting::font_size(self.options.font_size),
+            String::from(PREAMBLE_STR),
+            formatting::heading(&self.options.title),
+        ];
+
+        preamble.join("\n") + "\n" // join only adds \n between items, not at the end
+    }
+
+    // TODO: BIG refactor
+    //
     /// If all problems share prefix, a group prefix will be designated to the set.
     /// Otherwise, problems may be grouped together into nested enums if they share
     /// a prefix with adjacent problems
@@ -252,13 +310,15 @@ impl TypstFileBuilder {
         Ok((question_set, answer_set))
     }
 
+    // TODO: Refactor
+    //
     /// Goes through the list of prefix_ids, which might look like:
-    /// None Some(1) Some(2) Some(2) Some(2) None Some(2) Some(2)
+    /// [None Some(1) Some(2) Some(2) Some(2) None Some(2) Some(2)]
     /// And writes out how many similar ids are adjacent:
-    /// 1 1 3 1 2
+    /// [1 1 3 1 2]
     ///
     /// If a chain length is > max_len, new chain is started.
-    fn group_related_prefixes(&self, prefix_ids: &Vec<Option<i32>>, max_len: u8) -> Vec<u8> {
+    fn group_related_prefixes(&self, prefix_ids: &[Option<i32>], max_len: u8) -> Vec<u8> {
         if prefix_ids.len() < 2 {
             return vec![prefix_ids.len() as u8];
         }
@@ -283,17 +343,22 @@ impl TypstFileBuilder {
         groups
     }
 
-    fn add_answer_to_set(&self, problem: Problem) -> (String, String) {
+    /// Get the proper strings from a Problem for the question and answer
+    fn add_problem_without_solution(&self, problem: Problem) -> (String, String) {
         (problem.question, problem.answer)
     }
 
-    fn add_solution_to_set(&self, problem: Problem) -> Result<(String, String)> {
+    /// Get the proper strings from a Problem for the question, answer and solution
+    fn add_problem_with_solution(&self, problem: Problem) -> Result<(String, String)> {
         Ok((
             problem.question,
             self.build_solution(problem.answer, problem.solution)?,
         ))
     }
 
+    // TODO: Move to formatting module
+    //
+    /// Formats the answer and solution strings to show up as a proper solution in the Typst file
     fn build_solution(&self, answer: String, solution: String) -> Result<String> {
         let heading = format!(
             "#block(inset: (left: -1.2em))[\n#set text(size: 0.8em)\n #emph([{}])\n\n ",
@@ -305,6 +370,8 @@ impl TypstFileBuilder {
         Ok([answer, heading, solution, closing_bracket].join("\n"))
     }
 
+    // TODO: Refactor - move formatting parts to formatting module
+    //
     /// Writes the sets to columns with equal height
     fn sets_to_balanced_columns(&self, sets: &Vec<Vec<String>>) -> String {
         let mut collection = String::new();
@@ -313,7 +380,7 @@ impl TypstFileBuilder {
             set_string += "\n#let problem_set = (";
             set_string += set
                 .iter()
-                .map(|entry| typst_utils::formatting::to_list_item(entry))
+                .map(|entry| formatting::list_item(entry))
                 .collect::<Vec<String>>()
                 .join("\n")
                 .as_str();
@@ -328,12 +395,12 @@ impl TypstFileBuilder {
                 } else {
                     String::new()
                 },
-                if self.set_options[i].title.is_empty() {
+                if self.set_options[i].heading.is_empty() {
                     String::new()
                 } else {
                     format!(
                         ", title: [{}]",
-                        typst_utils::formatting::reformat_newlines(&self.set_options[i].title)
+                        formatting::reformat_newlines(&self.set_options[i].heading)
                     )
                 }
             );
@@ -349,13 +416,15 @@ impl TypstFileBuilder {
         collection
     }
 
-    ///Writes the set to a flow from one filled the column to the next
+    // TODO: Refactor - move formatting parts to formatting module
+    //
+    ///Writes the set to a flow from one filled column to the next
     fn sets_to_columns(&self, sets: &Vec<Vec<String>>, columns: &u8) -> String {
         let mut collection = format!("#columns({},enum(spacing: 2.5em, ", columns);
         sets.iter().for_each(|set| {
             collection += (set
                 .iter()
-                .map(|entry| typst_utils::formatting::to_list_item(entry))
+                .map(|entry| formatting::list_item(entry))
                 .collect::<Vec<String>>()
                 .join("\n")
                 + "\n")
@@ -363,111 +432,5 @@ impl TypstFileBuilder {
         });
         collection += "))";
         collection
-    }
-
-    fn answer_heading(&self) -> String {
-        let heading: &str;
-        if self.options.lang == "sv" {
-            heading = "Facit";
-        } else {
-            heading = "Answer key";
-        }
-        typst_utils::formatting::to_heading(heading)
-    }
-
-    pub fn build_to_string(&self) -> Result<String> {
-        let mut typst_content = String::new();
-
-        let preamble = self.build_preamble();
-        let question_string = self.sets_to_balanced_columns(&self.question_sets);
-        let answer_preamble =
-            typst_utils::formatting::page_break() + &typst_utils::formatting::reset_enum();
-        let answer_string = self.sets_to_columns(&self.answer_sets, &self.options.answer_columns);
-
-        typst_content += &preamble;
-        typst_content += &question_string;
-        typst_content += &answer_preamble;
-        typst_content += &self.answer_heading();
-        typst_content += &answer_string;
-        Ok(typst_content)
-    }
-
-    fn build_preamble(&self) -> String {
-        //Adjust order of preamble here if required
-        let preamble = vec![
-            self.set_colors(),
-            self.set_page_size(),
-            self.set_font_size(),
-            String::from(typst_utils::preamble::PREAMBLE_STR),
-            self.set_heading(),
-        ];
-
-        preamble.join("\n") + "\n" // join only adds \n between items, not at the end
-    }
-
-    fn set_heading(&self) -> String {
-        if !self.options.heading.is_empty() {
-            typst_utils::formatting::to_heading(&self.options.heading)
-        } else {
-            String::new()
-        }
-    }
-    fn set_font_size(&self) -> String {
-        format!("#set text(size: {}pt)", self.options.font_size)
-    }
-
-    fn set_page_size(&self) -> String {
-        format!(
-            "#set page(paper: \"{}\", margin: (x: {}mm, y: {}mm))",
-            self.options.paper_size.to_typst(),
-            self.options.x_margin,
-            self.options.y_margin
-        )
-    }
-
-    fn set_colors(&self) -> String {
-        let colored: Color;
-        // Graphing colors
-        let primary: Color;
-        let secondary: Color;
-        let tertiary: Color;
-        if self.options.color {
-            colored = Color::new(22, 10, 33); // Purple
-            primary = Color::new(9, 3, 18); // Dark purple
-            secondary = colored.clone();
-            tertiary = Color::new(30, 23, 39); // Light purple
-        } else {
-            colored = Color::new(10, 10, 10); // Gray
-            primary = Color::new(0, 0, 0); // Black
-            secondary = Color::new(8, 8, 8); // Gray?
-            tertiary = Color::new(16, 16, 16); // Grayer?
-        };
-
-        format!(
-            "
-#let colored(x) = text(fill: color.linear-rgb({colored}), $#x$)
-#let primary(x) = text(fill: color.linear-rgb({primary}), $#x$)
-#let secondary(x) = text(fill: color.linear-rgb({secondary}), $#x$)
-#let tertiary(x) = text(fill: color.linear-rgb({tertiary}), $#x$)"
-        )
-    }
-}
-
-#[derive(Debug, Clone)]
-struct Color {
-    r: u8,
-    g: u8,
-    b: u8,
-}
-
-impl Color {
-    fn new(r: u8, g: u8, b: u8) -> Color {
-        Color { r, g, b }
-    }
-}
-
-impl Display for Color {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}%, {}%, {}%", self.r, self.g, self.b)
     }
 }

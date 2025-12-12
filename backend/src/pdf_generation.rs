@@ -10,7 +10,6 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
-use tempfile::Builder;
 use tokio::{fs, process::Command};
 use tracing::{debug, info, instrument};
 
@@ -43,7 +42,7 @@ impl ProblemSetSpec {
             n: 10,
             options: SetOptions {
                 question_columns: 2,
-                title: String::new(),
+                heading: String::new(),
                 spacing: None,
             },
         }
@@ -108,17 +107,20 @@ pub async fn build_pdf_from_http(
     let project_root = "./";
 
     // Create temp directory inside project root for .typ and .pdf files
-    let temp_dir = Builder::new().prefix("temp_").tempdir_in(project_root)?;
+    let temp_dir = tempfile::Builder::new()
+        .prefix("temp_")
+        .tempdir_in(project_root)?;
     let temp_dir_path = temp_dir.path();
 
     debug!("Writing typst file...");
     let start = Instant::now();
     let typst_path = temp_dir_path.join("stencil.typ");
-    let mut document_builder = TypstFileBuilder::new(set_options, document_options).await?;
+    let mut typst_file_builder = TypstFileBuilder::new(set_options, document_options).await?;
     for problem_set in problem_sets {
-        document_builder.add_problem_set(problem_set)?;
+        typst_file_builder.add_problem_set(problem_set)?;
     }
-    let typst_as_string = document_builder.build_to_string()?;
+    let typst_as_string = typst_file_builder.build_to_string()?;
+    debug!("Typst file: {typst_as_string}");
     fs::write(&typst_path, typst_as_string).await?;
     let duration = start.elapsed();
     debug!("Wrote typst file in {}ms", duration.as_millis());
