@@ -219,6 +219,7 @@ impl TypstFileBuilder {
                     registry: "PROBLEM_DATA".to_string(),
                 })?;
 
+        // TODO: Scope this with the above to make it drop the lock ASAP
         let prefix_ids: Vec<Option<i32>> = problem_ids
             .iter()
             .map(|id| match problem_reg.get(id) {
@@ -227,6 +228,7 @@ impl TypstFileBuilder {
             })
             .collect();
 
+        // TODO: Scope this with the fetch below to make it drop the lock ASAP
         let prefix_reg =
             PREFIX_DATA
                 .read()
