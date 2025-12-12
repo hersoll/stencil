@@ -5,6 +5,7 @@ pub mod problems;
 mod registry;
 pub mod shared;
 pub mod typst_utils;
+pub mod text_endpoints;
 
 pub use macros::problem;
 pub use problems::int_range::IntRange;

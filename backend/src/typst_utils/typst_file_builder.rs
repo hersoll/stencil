@@ -17,6 +17,12 @@ pub struct SetOptions {
     pub spacing: Option<u16>,
 }
 
+impl Default for SetOptions {
+    fn default() -> Self {
+       SetOptions { question_columns: 2, heading: String::new(), spacing: None } 
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DocumentOptions {
     pub font_size: u8,
