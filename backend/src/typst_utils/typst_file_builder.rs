@@ -143,7 +143,7 @@ impl TypstFileBuilder {
 
     // TODO: refactor
     pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> Result<&mut Self> {
-        // Save the IDs to use when appending prefixes
+        // Save the names to use when appending prefixes
         let names: Vec<String> = problem_set.iter().map(|pr| pr.name.clone()).collect();
         let results: Result<Vec<(String, String)>> = problem_set
             .into_iter()
@@ -218,7 +218,7 @@ impl TypstFileBuilder {
         &mut self,
         mut question_set: Vec<String>,
         mut answer_set: Vec<String>,
-        problem_ids: &Vec<String>,
+        problem_names: &Vec<String>,
     ) -> Result<(Vec<String>, Vec<String>)> {
         let problem_reg =
             PROBLEM_DATA
@@ -228,7 +228,7 @@ impl TypstFileBuilder {
                 })?;
 
         // TODO: Scope this with the above to make it drop the lock ASAP
-        let prefix_ids: Vec<Option<i32>> = problem_ids
+        let prefix_ids: Vec<Option<i32>> = problem_names
             .iter()
             .map(|id| match problem_reg.get(id) {
                 Some(problem) => problem.prefix_id,
