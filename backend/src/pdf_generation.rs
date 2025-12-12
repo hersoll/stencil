@@ -10,6 +10,11 @@ use std::time::Instant;
 use tokio::{fs, process::Command};
 use tracing::{debug, info, instrument};
 
+const DEFAULT_STARTING_DIFFICULTY: Difficulty = Difficulty::Intro;
+const DEFAULT_ENDING_DIFFICULTY: Difficulty = Difficulty::Hard;
+const DEFAULT_PROBLEM_COUNT: u8 = 10;
+const DEFAULT_QUESTION_COLUMNS: u8 = 2;
+
 /// Information about what to include in the problem set
 ///
 /// Should be included in the HTTP request in the form of a Vec<SetInformation>
@@ -35,11 +40,11 @@ impl ProblemSetSpec {
         ProblemSetSpec {
             topics: Vec::new(),
             exclusions: Vec::new(),
-            starting_difficulty: Difficulty::Intro,
-            ending_difficulty: Difficulty::Hard,
-            n: 10,
+            starting_difficulty: DEFAULT_STARTING_DIFFICULTY,
+            ending_difficulty: DEFAULT_ENDING_DIFFICULTY,
+            n: DEFAULT_PROBLEM_COUNT,
             options: SetOptions {
-                question_columns: 2,
+                question_columns: DEFAULT_QUESTION_COLUMNS,
                 heading: String::new(),
                 spacing: None,
             },
@@ -55,9 +60,8 @@ pub struct PDFRequest {
     document_options: DocumentOptions,
 }
 
-/// ONLY to be used while mocking is required.
-/// Make build_pdf the endpoint after that!
-pub async fn generate_default_pdf() -> Response {
+/// Generates a proof-of-concept PDF without any attributes
+pub async fn generate_example_pdf() -> Response {
     let mut sets = ProblemSetSpec::new();
     sets.n = 40;
     sets.topics.push(1);
@@ -67,7 +71,7 @@ pub async fn generate_default_pdf() -> Response {
     let options = DocumentOptions::default();
     let req = PDFRequest {sets: vec![sets.clone(), sets], document_options: options};
 
-    let pdf_result =  build_pdf_from_structs(req).await;
+    let pdf_result =  build_pdf(req).await;
     pdf_result_to_response(pdf_result)
 }
 
@@ -82,7 +86,7 @@ pub async fn generate_pdf_from_http(
                 debug!("Set {i}: {set:#?}");
             }
 
-            let pdf_result = build_pdf_from_structs(data).await;
+            let pdf_result = build_pdf(data).await;
             pdf_result_to_response(pdf_result)
         }
         Err(JsonRejection::MissingJsonContentType(_)) => {
@@ -109,8 +113,9 @@ To generate a custom stencil, you need to attach a JSON body in the following fo
     }
 }
 
+/// 
 #[instrument(skip(req), fields(num_sets = req.sets.len()))]
-async fn build_pdf_from_structs(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
+async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     let sets = req.sets;
     let document_options = req.document_options;
     info!("Building PDF with {} problem set(s)", sets.len());

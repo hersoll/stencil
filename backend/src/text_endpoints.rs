@@ -2,7 +2,7 @@ pub async fn welcome() -> String {
     String::from(
         "Welcome to the Stencil API! \n
 Endpoints (with base /api):\n
-/pdf/default - Generate an example stencil
+/pdf/example - Generate an example stencil
 /pdf - Generate a custom stencil (GET request with JSON body required)
 /help - See the schema for custom stencil requests"
     )

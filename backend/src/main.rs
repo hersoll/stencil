@@ -87,7 +87,7 @@ fn create_router(cors_layer: CorsLayer) -> Router {
         .route("/", get(text_endpoints::welcome))
         .route("/help", get(text_endpoints::help))
         .route("/pdf", get(pdf_generation::generate_pdf_from_http))
-        .route("/pdf/default", get(pdf_generation::generate_default_pdf))
+        .route("/pdf/example", get(pdf_generation::generate_example_pdf))
         .layer(cors_layer)
         .layer(
             TraceLayer::new_for_http()
