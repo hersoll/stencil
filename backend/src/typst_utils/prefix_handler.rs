@@ -268,9 +268,9 @@ fn push_grouped_enum(
     writeln!(grouped_answers, "#enum(numbering: \"a)\",")?;
 
     for j in idx..idx + group_length {
-        let indented_solution = extra_indent_on_nested_enum_solutions(&answer_set[j]);
+        let nested_answer = adjust_nested_answer(&answer_set[j]);
         writeln!(grouped_questions, "[{}],", question_set[j])?;
-        writeln!(grouped_answers, "[{}],", indented_solution)?;
+        writeln!(grouped_answers, "[{}],", nested_answer)?;
     }
 
     grouped_questions.push(')');
@@ -285,7 +285,7 @@ fn push_grouped_enum(
 /// To make nested lists have the same width available for solutions (to avoid weird formatting
 /// near line breaks) as regular solutions, we need to adjust their insets.
 ///
-/// Note: due to answer_set not being mut in the functions above, we create a new Vec.
-fn extra_indent_on_nested_enum_solutions(answer: &String) -> String {
+/// The rule for this is set in formatting::solution_rules()
+fn adjust_nested_answer(answer: &String) -> String {
     answer.replace("#solution", "#nested_solution")
 }

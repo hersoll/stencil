@@ -108,6 +108,7 @@ pub fn reformat_newlines(input: &str) -> String {
     input.replace('\n', r" \ ")
 }
 
+// TODO: Maybe move the math functions to another module?
 pub fn subtract_number<T: PartialOrd + Zero + Signed + Display>(val: T) -> String {
     if val < T::zero() {
         format!("+ #h({OPERATOR_SPACE}em) {}", val.abs())
