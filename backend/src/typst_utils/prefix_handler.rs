@@ -287,5 +287,8 @@ fn push_grouped_enum(
 ///
 /// Note: due to answer_set not being mut in the functions above, we create a new Vec.
 fn extra_indent_on_nested_enum_solutions(answer: &String) -> String {
-    answer.replace("inset: (left: -1.2em)", "inset: (left: -2.4em)")
+    answer.replace(
+        "inset: (left: -1.2em), outset: (left: 1.7em",
+        "inset: (left: -2.5em), outset: (left: 3em",
+    )
 }

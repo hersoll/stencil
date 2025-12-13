@@ -262,10 +262,10 @@ fn insert_algebra_positive(name: String, lang: &str) -> Result<Problem> {
     let answer = function_coefficient * algebra_expression.clone() + function_constant;
 
     let solution = format!(
-        "$ {f_name}({var}) &= {function_expression} \\
+        "${f_name}({var}) &= {function_expression} \\
         {f_name}(colored({algebra_expression})) &= {function_coefficient}(colored({algebra_expression})) {function_constant:+} \\
         {f_name}({algebra_expression}) &= {mult_algebra} {function_constant:+} \\
-        {f_name}({algebra_expression}) &= {answer} $",
+        {f_name}({algebra_expression}) &= {answer}$",
         mult_algebra = function_coefficient * algebra_expression.clone(),
     );
 
@@ -310,10 +310,10 @@ fn insert_algebra_negative(name: String, lang: &str) -> Result<Problem> {
     let answer = (function_coefficient * algebra_expression.clone() + function_constant).simplify();
 
     let solution = format!(
-        "$ {f_name}({var}) &= {function_expression} \\
+        "${f_name}({var}) &= {function_expression} \\
         {f_name}(colored({algebra_expression})) &= {function_constant} {function_coefficient:+}(colored({algebra_expression}))\\
         {f_name}({algebra_expression}) &= {function_constant}{mult_algebra:+} \\
-        {f_name}({algebra_expression}) &= {answer} $",
+        {f_name}({algebra_expression}) &= {answer}$",
         mult_algebra = function_coefficient * algebra_expression.clone(),
     );
 

@@ -196,9 +196,13 @@ pub fn build_solution(
         .context("Unable to get key \"solution\" from i18n")?;
     let mut out = String::with_capacity(1024);
     writeln!(out, "{answer}")?;
-    writeln!(out, "#block(inset: (left: -1.2em))[")?;
+    writeln!(
+        out,
+        "#block(inset: (left: -1.2em), outset: (left: 1.7em, rest: 0.5em), fill: oklch(95.25%, 0.0285, 73deg, 50%), radius: 0.5em)["
+    )?;
     writeln!(out, "#set text(size: 0.8em)")?;
-    writeln!(out, "#emph([{solution_label}])\n")?;
+    writeln!(out, "#align(center)[#emph([{solution_label}])]\n")?;
+    writeln!(out, "#v(0.3em)")?;
     writeln!(out, "{solution}]")?;
     Ok(out)
 }

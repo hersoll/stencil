@@ -140,7 +140,7 @@
     share-align({
       grid(
         columns: (max-eq-width, auto),
-        inset: 0.5em,
+        inset: (top: 0.2em, rest: 0.5em),
         align: (left, horizon + left),
         grid.vline(x: 1, stroke: (paint: linecolor, thickness: 0.5pt)),
         ..equations.zip(color-operations).flatten(),
