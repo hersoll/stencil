@@ -196,7 +196,6 @@ pub fn build_solution(
         .context("Unable to get key \"solution\" from i18n")?;
     let mut out = String::with_capacity(1024);
     writeln!(out, "{answer}")?;
-    // NOTE: This is the value to adjust to fix nested enum inset
     writeln!(out, "#block(inset: (left: -1.2em))[")?;
     writeln!(out, "#set text(size: 0.8em)")?;
     writeln!(out, "#emph([{solution_label}])\n")?;
