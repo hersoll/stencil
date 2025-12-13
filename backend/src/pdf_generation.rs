@@ -64,7 +64,6 @@ pub struct PDFRequest {
 /// Generates a proof-of-concept PDF without any attributes
 pub async fn generate_example_pdf() -> Response {
     let mut sets = ProblemSetSpec::new();
-    sets.n = 10;
     sets.topics.push(1);
     sets.topics.push(2);
     sets.topics.push(3);
