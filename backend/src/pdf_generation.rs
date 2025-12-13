@@ -19,7 +19,6 @@ use tracing::{debug, info, instrument};
 const DEFAULT_STARTING_DIFFICULTY: Difficulty = Difficulty::Intro;
 const DEFAULT_ENDING_DIFFICULTY: Difficulty = Difficulty::Hard;
 const DEFAULT_PROBLEM_COUNT: u8 = 10;
-const DEFAULT_QUESTION_COLUMNS: u8 = 2;
 
 /// Information about what to include in the problem set
 ///
@@ -65,7 +64,7 @@ pub struct PDFRequest {
 /// Generates a proof-of-concept PDF without any attributes
 pub async fn generate_example_pdf() -> Response {
     let mut sets = ProblemSetSpec::new();
-    sets.n = 30;
+    sets.n = 10;
     sets.topics.push(1);
     sets.topics.push(2);
     sets.topics.push(3);
