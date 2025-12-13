@@ -1,5 +1,8 @@
 use crate::typst_utils::formatting::equation_solution;
-use crate::{IntRange, Problem, typst_utils};
+use crate::{
+    problems::{IntRange, Problem},
+    typst_utils,
+};
 use anyhow::Result;
 use macros::problem;
 
@@ -95,7 +98,10 @@ fn unit_variable_and_one_denom_integers_positive(name: String, _lang: &str) -> R
 /// x/4 - x = 9
 /// Difficulty: 3
 #[problem]
-fn unit_variable_and_one_denom_integers_with_negatives(name: String, _lang: &str) -> Result<Problem> {
+fn unit_variable_and_one_denom_integers_with_negatives(
+    name: String,
+    _lang: &str,
+) -> Result<Problem> {
     let (denominator, denominator_range) = IntRange::without_zero(3, 5)?.and_random();
     // n is a multiple, will show up in both the question and answer
     let n = IntRange::without_zero(-3, 3)?.random();

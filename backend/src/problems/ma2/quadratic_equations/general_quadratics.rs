@@ -1,4 +1,4 @@
-use crate::{IntRange, Problem, solutions};
+use crate::problems::{IntRange, Problem, solutions};
 use anyhow::Result;
 use macros::problem;
 

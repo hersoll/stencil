@@ -1,3 +1,4 @@
+pub mod api;
 mod i18n;
 pub mod problems;
 
@@ -25,7 +26,10 @@ pub async fn init_database() -> Result<()> {
 
     // Test the connection
     let pool = get_pool();
-    let _ = sqlx::query("SELECT 1").execute(pool).await.context("Test connection to db failed")?;
+    let _ = sqlx::query("SELECT 1")
+        .execute(pool)
+        .await
+        .context("Test connection to db failed")?;
 
     Ok(())
 }

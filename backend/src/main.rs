@@ -4,7 +4,7 @@ use axum::{
     routing::get,
 };
 use std::time::Duration;
-use stencil::{pdf_generation, text_endpoints};
+use stencil::{db, pdf_generation, registry, text_endpoints};
 use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
@@ -46,18 +46,18 @@ async fn main() {
     let addr = format!("{}:{}", host, port);
 
     info!("Initializing db...");
-    match stencil::db::init_database().await {
+    match db::init_database().await {
         Ok(_) => info!("Finished initializing db!"),
         Err(_) => error!("Failed to initialize db!"),
     }
 
     info!("Loading problems to registry...");
-    match stencil::load_problem_data().await {
+    match registry::load_problem_data().await {
         Ok(_) => info!("Problems loaded!"),
         Err(_) => error!("Failed to load problems from registry!"),
     }
     info!("Loading prefixes to registry...");
-    match stencil::load_prefix_data().await {
+    match registry::load_prefix_data().await {
         Ok(_) => info!("Prefixes loaded!"),
         Err(_) => error!("Failed to load prefixes from registry!"),
     }
@@ -118,4 +118,3 @@ fn create_cors_layer(allowed_url: &String) -> CorsLayer {
         .allow_methods([Method::GET, Method::POST])
         .allow_headers(Any)
 }
-

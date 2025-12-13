@@ -31,7 +31,7 @@ pub fn problem(_attr: TokenStream, item: TokenStream) -> TokenStream {
 
         #[ctor::ctor]
         fn #register_fn_ident() {
-            use crate::PROBLEM_MAP;
+            use crate::registry::PROBLEM_MAP;
             let final_id = #id_expr;
             PROBLEM_MAP.write().unwrap().insert(
                 final_id,

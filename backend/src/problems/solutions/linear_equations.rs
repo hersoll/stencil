@@ -1,4 +1,7 @@
-use crate::{math_utils::gcd, problems, typst_utils};
+use crate::{
+    problems::{self, math_utils::gcd},
+    typst_utils,
+};
 
 /// Equations of the form 3x + 5 = 14. Zeroes for coefficient or constant is not allowed.
 pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answer: i32) -> String {

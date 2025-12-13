@@ -1,4 +1,7 @@
-use crate::{errors::ApiError, problem_generator::ProblemPool, problems::Difficulty};
+use crate::{
+    errors::ApiError,
+    problems::{Difficulty, problem_generator::ProblemPool},
+};
 use anyhow::{Result, anyhow};
 use tracing::debug;
 

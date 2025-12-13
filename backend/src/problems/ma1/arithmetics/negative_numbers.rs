@@ -1,4 +1,7 @@
-use crate::{IntRange, Problem, typst_utils};
+use crate::{
+    problems::{IntRange, Problem},
+    typst_utils,
+};
 use anyhow::Result;
 use macros::problem;
 

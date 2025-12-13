@@ -1,12 +1,7 @@
-use std::fmt::Display;
-
+use crate::problems::{IntRange, Number, types::variables::Variable, types::variables::Variables};
 use num_traits::Pow;
 use num_traits::Zero;
-
-use crate::IntRange;
-use crate::Number;
-use crate::problems::types::variables::Variable;
-use crate::problems::types::variables::Variables;
+use std::fmt::Display;
 
 #[derive(Clone, Debug)]
 pub struct Term {
@@ -307,7 +302,7 @@ impl std::ops::MulAssign<i32> for Term {
 
 #[cfg(test)]
 mod tests {
-    use crate::PI;
+    use crate::problems::PI;
 
     use super::*;
 

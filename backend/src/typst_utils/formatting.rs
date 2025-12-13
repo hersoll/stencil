@@ -4,7 +4,7 @@ use std::fmt::Write;
 use std::{collections::HashMap, fmt::Display};
 use tracing::debug;
 
-use crate::Term;
+use crate::problems::Term;
 use crate::typst_utils::typst_file_builder::{DEFAULT_QUESTION_COLUMNS, SetOptions};
 
 /// The space between the operator and number in the solution step-by-step

@@ -1,7 +1,5 @@
-use crate::problems::symbols;
-use crate::problems::types::Term;
+use crate::problems::{IntRange, Problem, symbols, types::Term};
 use crate::typst_utils::{self, formatting::equation_solution};
-use crate::{IntRange, Problem};
 use anyhow::Result;
 use macros::problem;
 

@@ -1,7 +1,10 @@
 use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
-use crate::{Number, problems::types::terms::Term, typst_utils};
+use crate::{
+    problems::{Number, types::terms::Term},
+    typst_utils,
+};
 
 #[derive(Debug, Clone)]
 pub struct Polynomial {
@@ -348,7 +351,7 @@ impl Display for Polynomial {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Variables;
+    use crate::problems::Variables;
 
     #[test]
     fn expression_creation() {

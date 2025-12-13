@@ -1,6 +1,6 @@
 use crate::{
-    problems::{symbols, Problem},
-    typst_utils, IntRange, Number, Polynomial, Term,
+    problems::{IntRange, Number, Polynomial, Problem, Term, symbols},
+    typst_utils,
 };
 use anyhow::Result;
 use macros::problem;

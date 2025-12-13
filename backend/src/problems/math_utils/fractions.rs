@@ -1,4 +1,4 @@
-use crate::math_utils;
+use crate::problems::math_utils;
 
 pub fn simplified_fraction(numerator: i32, denominator: i32) -> (i32, i32) {
     let mut new_numerator = numerator;

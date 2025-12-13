@@ -1,9 +1,9 @@
 use crate::{
-    RegistryError, db,
+    db,
     errors::ApiError,
     pdf_generation::ProblemSetSpec,
-    problem_picker,
-    problems::{Difficulty, Problem},
+    problems::{Difficulty, Problem, problem_picker},
+    registry::{PROBLEM_MAP, RegistryError},
 };
 use anyhow::{Context, Result, anyhow};
 use std::{cmp::Ordering, collections::HashSet};
@@ -184,7 +184,7 @@ fn get_unique_problem(candidate: &mut ProblemCandidate, lang: &str) -> Result<Pr
 /// returns a pointer to the function that generates that problem.
 fn get_generator_function(name: &String) -> Result<ProblemGenerator> {
     let generator = {
-        let lock = crate::PROBLEM_MAP.read().expect("Mutex is poisoned");
+        let lock = PROBLEM_MAP.read().expect("Mutex is poisoned");
         lock.get(name)
             .copied()
             .ok_or(RegistryError::ProblemNotFound {

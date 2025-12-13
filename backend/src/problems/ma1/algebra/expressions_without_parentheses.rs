@@ -1,11 +1,11 @@
-use std::collections::HashMap;
-
 use crate::problems::symbols;
 use crate::problems::types::{Polynomial, Term};
-use crate::{IntRange, Problem, Variables, replace_placeholders};
+use crate::problems::{IntRange, Problem, Variables};
+use crate::registry::{get_parsed_problem, replace_placeholders};
 use anyhow::Result;
 use macros::problem;
 use rand::seq::IndexedRandom;
+use std::collections::HashMap;
 
 /// 3x + 4 + 2x + 1
 /// Difficulty: 0
@@ -164,7 +164,7 @@ fn evaluate_simple(name: String, lang: &str) -> Result<Problem> {
         ("unknown", unknown.to_string()),
         ("value", value.to_string()),
     ]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
     let replacements = vec![(unknown, value)];
     let answer = expression.evaluate(&replacements);
@@ -210,7 +210,7 @@ fn evaluate_intermediate(name: String, lang: &str) -> Result<Problem> {
         ("value_x", value_x.to_string()),
         ("value_y", value_y.to_string()),
     ]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
     let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
     let answer = expression.evaluate(&replacements);
@@ -360,7 +360,7 @@ fn evaluate_advanced(name: String, lang: &str) -> Result<Problem> {
         ("value_x", value_x.to_string()),
         ("value_y", value_y.to_string()),
     ]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
     let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
     let answer = expression.evaluate(&replacements);

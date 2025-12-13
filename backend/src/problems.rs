@@ -2,15 +2,16 @@ use anyhow::{Result, anyhow};
 //#################################
 //#           IMPORTS             #
 //#################################
-pub mod int_range;
+mod int_range;
 pub mod ma1;
 pub mod ma2;
 pub mod math_utils;
-pub mod problem_picker;
 pub mod problem_generator;
+pub mod problem_picker;
 pub mod solutions;
 mod symbols;
 mod types;
+pub use int_range::IntRange;
 
 use serde::{Deserialize, Serialize};
 pub use types::*;

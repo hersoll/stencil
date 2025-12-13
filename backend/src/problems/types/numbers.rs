@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::math_utils::simplified_fraction;
+use crate::problems::math_utils::simplified_fraction;
 
 // This limits all numbers to 3 decimals.
 const DECIMAL_FACTOR: i32 = 1_000;

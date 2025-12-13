@@ -1,13 +1,11 @@
-use std::collections::HashMap;
-
 use crate::{
-    IntRange, Polynomial, Problem, Term,
-    problems::symbols,
-    replace_placeholders,
+    problems::{IntRange, Polynomial, Problem, Term, symbols},
+    registry::{self, replace_placeholders},
     typst_utils::{self, formatting::equation_solution},
 };
 use anyhow::Result;
 use macros::problem;
+use std::collections::HashMap;
 
 // In this module, problems in the form of f(3) is known as "calculating y"
 // and problems like f(x) = 3 are known as "calculating x"
@@ -23,7 +21,7 @@ fn without_notation_y(name: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = registry::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
 
     let solution = format!(
@@ -56,7 +54,7 @@ fn without_notation_x(name: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = registry::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
 
     let solution = equation_solution(format!(
@@ -91,7 +89,7 @@ fn find_y_no_negatives(name: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = registry::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
 
     let solution = format!(
@@ -125,7 +123,7 @@ fn find_x_where_f_x(name: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = registry::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
 
     let solution = format!(
@@ -167,7 +165,7 @@ fn equation_f_x_equals(name: String, lang: &str) -> Result<Problem> {
         ("var", var.to_string()),
         ("f", f_name.to_string()),
     ]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = registry::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
 
     let solution = format!(
@@ -209,7 +207,7 @@ fn find_y(name: String, lang: &str) -> Result<Problem> {
         ("var", var.to_string()),
         ("f", f_name.to_string()),
     ]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = registry::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
 
     let solution = format!(
@@ -257,7 +255,7 @@ fn insert_algebra_positive(name: String, lang: &str) -> Result<Problem> {
     let function_string = format!("{f_name}({var}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
     let map = HashMap::from([("function", function_string), ("algebra", algebra_string)]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = registry::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
     let answer = function_coefficient * algebra_expression.clone() + function_constant;
 
@@ -305,7 +303,7 @@ fn insert_algebra_negative(name: String, lang: &str) -> Result<Problem> {
     let function_string = format!("{f_name}({var}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
     let map = HashMap::from([("function", function_string), ("algebra", algebra_string)]);
-    let strings = crate::get_parsed_problem(&name, lang)?;
+    let strings = registry::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
     let answer = (function_coefficient * algebra_expression.clone() + function_constant).simplify();
 
