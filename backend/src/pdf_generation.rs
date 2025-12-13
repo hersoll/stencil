@@ -1,10 +1,13 @@
 use crate::{
     errors::ApiError,
     problems::{Difficulty, Problem, problem_generator},
+    text_endpoints,
     typst_utils::typst_file_builder::{DocumentOptions, SetOptions, TypstFileBuilder},
 };
 use anyhow::{Result, anyhow};
 use axum::{
+    Json,
+    extract::rejection::JsonRejection,
     http::{StatusCode, header},
     response::{IntoResponse, Response},
 };
@@ -13,9 +16,14 @@ use std::time::Instant;
 use tokio::{fs, process::Command};
 use tracing::{debug, info, instrument};
 
+const DEFAULT_STARTING_DIFFICULTY: Difficulty = Difficulty::Intro;
+const DEFAULT_ENDING_DIFFICULTY: Difficulty = Difficulty::Hard;
+const DEFAULT_PROBLEM_COUNT: u8 = 10;
+const DEFAULT_QUESTION_COLUMNS: u8 = 2;
+
 /// Information about what to include in the problem set
 ///
-/// Should be included in the HTTP request in the form of a Vec<SetInformation>
+/// Should be included in the HTTP request in the form of a Vec<ProblemSetSpec>
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ProblemSetSpec {
     /// Topics to draw problems from
@@ -28,57 +36,94 @@ pub struct ProblemSetSpec {
     /// Number of problems
     pub n: u8,
     /// Typst rendering options
+    #[serde(default)]
     pub options: SetOptions,
 }
 
-// TODO: Do we need this? Or will this reside in the frontend?
 impl ProblemSetSpec {
+    /// Mostly used for the /pdf/example endpoint
     pub fn new() -> ProblemSetSpec {
         ProblemSetSpec {
             topics: Vec::new(),
             exclusions: Vec::new(),
-            starting_difficulty: Difficulty::Intro,
-            ending_difficulty: Difficulty::Hard,
-            n: 10,
+            starting_difficulty: DEFAULT_STARTING_DIFFICULTY,
+            ending_difficulty: DEFAULT_ENDING_DIFFICULTY,
+            n: DEFAULT_PROBLEM_COUNT,
             options: SetOptions::default(),
         }
     }
 }
 
-/// ONLY to be used while mocking is required.
-/// Make build_pdf the endpoint after that!
-pub async fn send_pdf() -> Response {
+/// What the HTTP request is deserialized into
+#[derive(Debug, Deserialize, Serialize)]
+pub struct PDFRequest {
+    sets: Vec<ProblemSetSpec>,
+    #[serde(default)]
+    document_options: DocumentOptions,
+}
+
+/// Generates a proof-of-concept PDF without any attributes
+pub async fn generate_example_pdf() -> Response {
     let mut sets = ProblemSetSpec::new();
     sets.n = 30;
     sets.topics.push(1);
+    sets.topics.push(2);
+    sets.topics.push(3);
+    sets.topics.push(4);
     let options = DocumentOptions::default();
-    match build_pdf_from_http(vec![sets.clone(), sets], options).await {
-        Ok(pdf_bytes) => (
-            StatusCode::OK,
-            [
-                (header::CONTENT_TYPE, "application/pdf"),
-                (
-                    header::CONTENT_DISPOSITION,
-                    "inline; filename=\"stencil.pdf\"",
-                ),
-            ],
-            pdf_bytes,
+    let req = PDFRequest {
+        sets: vec![sets.clone(), sets],
+        document_options: options,
+    };
+
+    let pdf_result = build_pdf(req).await;
+    pdf_result_to_response(pdf_result)
+}
+
+pub async fn generate_pdf_from_http(payload: Result<Json<PDFRequest>, JsonRejection>) -> Response {
+    match payload {
+        Ok(Json(data)) => {
+            // Debug tracing
+            debug!("{:#?}", data.document_options);
+            for (i, set) in data.sets.iter().enumerate() {
+                debug!("Set {i}: {set:#?}");
+            }
+
+            let pdf_result = build_pdf(data).await;
+            pdf_result_to_response(pdf_result)
+        }
+        Err(JsonRejection::MissingJsonContentType(_)) => (
+            StatusCode::BAD_REQUEST,
+            "
+It seems like the request was sent without a JSON.
+To generate a custom stencil, you need to attach a JSON body in the following format: 
+
+"
+            .to_owned()
+                + &text_endpoints::get_http_schema(),
         )
             .into_response(),
-        Err(e) => e.into_response(),
+        Err(JsonRejection::JsonDataError(err)) => {
+            (StatusCode::BAD_REQUEST, err.to_string()).into_response()
+        }
+        Err(JsonRejection::JsonSyntaxError(err)) => {
+            (StatusCode::BAD_REQUEST, err.to_string()).into_response()
+        }
+        Err(_) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "An unknown error occured in the JSON parsing.",
+        )
+            .into_response(),
     }
 }
 
-#[instrument(skip(sets, document_options), fields(num_sets = sets.len()))]
-pub async fn build_pdf_from_http(
-    sets: Vec<ProblemSetSpec>,
-    document_options: DocumentOptions,
-) -> Result<Vec<u8>, ApiError> {
+/// The function responsible for coordinating problem generation,
+/// typst file writing and compiling
+#[instrument(skip(req), fields(num_sets = req.sets.len()))]
+async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
+    let sets = req.sets;
+    let document_options = req.document_options;
     info!("Building PDF with {} problem set(s)", sets.len());
-    debug!("{document_options:#?}");
-    for (i, set) in sets.iter().enumerate() {
-        debug!("Set {i}: {set:#?}");
-    }
 
     // A vec containing the sets of actual problems (With question, answer, ...)
     let mut problem_sets: Vec<Vec<Problem>> = Vec::with_capacity(sets.len());
@@ -146,4 +191,27 @@ pub async fn build_pdf_from_http(
     let pdf_bytes = fs::read(&pdf_path).await?;
 
     Ok(pdf_bytes)
+}
+
+/// Converts the Result from the build_pdf function to a HTTP response
+///
+/// The reason this isn't simply called at the end of the build_pdf function
+/// is due to easier `?` bubbling in that function. It's more ergonomic to just
+/// return all errors and handle them at a higher level.
+fn pdf_result_to_response(pdf_result: Result<Vec<u8>, ApiError>) -> Response {
+    match pdf_result {
+        Ok(pdf_bytes) => (
+            StatusCode::OK,
+            [
+                (header::CONTENT_TYPE, "application/pdf"),
+                (
+                    header::CONTENT_DISPOSITION,
+                    "inline; filename=\"stencil.pdf\"",
+                ),
+            ],
+            pdf_bytes,
+        )
+            .into_response(),
+        Err(e) => e.into_response(),
+    }
 }

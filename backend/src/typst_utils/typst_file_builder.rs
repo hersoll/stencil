@@ -38,6 +38,16 @@ impl Default for SetOptions {
     }
 }
 
+impl Default for SetOptions {
+    fn default() -> Self {
+        SetOptions {
+            question_columns: 2,
+            heading: String::new(),
+            spacing: None,
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DocumentOptions {
     pub font_size: u8,
@@ -141,6 +151,8 @@ impl TypstFileBuilder {
         set_options: Vec<SetOptions>,
         options: DocumentOptions,
     ) -> Result<TypstFileBuilder> {
+        // Some static strings in the file are language dependent
+        // Retrieve them during creation
         let i18n_keys = vec!["solution", "answer_key"];
         let i18n_strings = I18nDatabase::get_multiple(i18n_keys, &options.lang).await?;
         Ok(TypstFileBuilder {
@@ -163,20 +175,18 @@ impl TypstFileBuilder {
             self.group_prefixes.push(None);
             return Ok(self);
         }
-
-        // Save the IDs to use when appending prefixes
-        let ids: Vec<String> = problem_set.iter().map(|pr| pr.id.clone()).collect();
-
+        // Save the names to use when appending prefixes
+        let names: Vec<String> = problem_set.iter().map(|pr| pr.name.clone()).collect();
         let results: Result<Vec<(String, String)>> = problem_set
             .into_iter()
             .map(|problem| match self.options.write_solutions {
                 WriteSolutions::None => Ok(self.add_problem_without_solution(problem)),
                 WriteSolutions::All => self.add_problem_with_solution(problem),
                 WriteSolutions::First => {
-                    if self.problem_names.contains(&problem.id) {
+                    if self.problem_names.contains(&problem.name) {
                         Ok(self.add_problem_without_solution(problem))
                     } else {
-                        self.problem_names.push(problem.id.clone());
+                        self.problem_names.push(problem.name.clone());
                         self.add_problem_with_solution(problem)
                     }
                 }
@@ -184,7 +194,7 @@ impl TypstFileBuilder {
             .collect();
         let (mut question_set, mut answer_set): (Vec<String>, Vec<String>) =
             results?.into_iter().unzip();
-        (question_set, answer_set) = self.handle_prefixes(question_set, answer_set, &ids)?;
+        (question_set, answer_set) = self.handle_prefixes(question_set, answer_set, &names)?;
         self.question_sets.push(question_set);
         self.answer_sets.push(answer_set);
         Ok(self)
@@ -192,8 +202,8 @@ impl TypstFileBuilder {
 
     /// Construct the entire Typst file and return it as one long String
     pub fn build_to_string(&self) -> Result<String> {
-        // Estimated 16kb
-        let mut typst_content = String::with_capacity(16384);
+        // Estimated 32kb
+        let mut typst_content = String::with_capacity(32768);
 
         let preamble = self.build_preamble();
         let question_string = self.sets_to_balanced_columns(&self.question_sets);
@@ -240,7 +250,7 @@ impl TypstFileBuilder {
         &mut self,
         mut question_set: Vec<String>,
         mut answer_set: Vec<String>,
-        problem_ids: &Vec<String>,
+        problem_names: &Vec<String>,
     ) -> Result<(Vec<String>, Vec<String>)> {
         let problem_reg =
             PROBLEM_DATA
@@ -250,7 +260,7 @@ impl TypstFileBuilder {
                 })?;
 
         // TODO: Scope this with the above to make it drop the lock ASAP
-        let prefix_ids: Vec<Option<i32>> = problem_ids
+        let prefix_ids: Vec<Option<i32>> = problem_names
             .iter()
             .map(|id| match problem_reg.get(id) {
                 Some(problem) => problem.prefix_id,

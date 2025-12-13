@@ -1,10 +1,10 @@
 use axum::{
     Router,
-    http::{Method, Request, StatusCode},
+    http::{Method, Request},
     routing::get,
 };
 use std::time::Duration;
-use stencil::pdf_generation;
+use stencil::{pdf_generation, text_endpoints};
 use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
@@ -84,9 +84,10 @@ async fn main() {
 
 fn create_router(cors_layer: CorsLayer) -> Router {
     Router::new()
-        .route("/", get(hello_world))
-        .route("/error", get(error_test))
-        .route("/pdf", get(pdf_generation::send_pdf))
+        .route("/", get(text_endpoints::welcome))
+        .route("/help", get(text_endpoints::help))
+        .route("/pdf", get(pdf_generation::generate_pdf_from_http))
+        .route("/pdf/example", get(pdf_generation::generate_example_pdf))
         .layer(cors_layer)
         .layer(
             TraceLayer::new_for_http()
@@ -118,15 +119,3 @@ fn create_cors_layer(allowed_url: &String) -> CorsLayer {
         .allow_headers(Any)
 }
 
-async fn hello_world() -> String {
-    String::from(
-        "Hello from the \"/\" path! Did you mean to hit the \"/api\"?
-            Try hitting the \"/error\" path to get a funny HTTP error!
-        ",
-    )
-}
-
-async fn error_test() -> Result<String, StatusCode> {
-    error!("This is an error code!");
-    Err(StatusCode::UNAVAILABLE_FOR_LEGAL_REASONS)
-}

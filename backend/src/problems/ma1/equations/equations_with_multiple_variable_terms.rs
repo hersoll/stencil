@@ -8,7 +8,7 @@ use macros::problem;
 /// 4x + 1 = 2x - 3
 /// Difficulty: 1
 #[problem]
-fn two_positive_coefs_lhs_greater(id: String, _lang: &str) -> Result<Problem> {
+fn two_positive_coefs_lhs_greater(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = IntRange::without_zero(1, 6)?.random();
     let (lhs_coef, lhs_range) = IntRange::without_zero(3, 9)?.and_random();
@@ -33,7 +33,7 @@ fn two_positive_coefs_lhs_greater(id: String, _lang: &str) -> Result<Problem> {
     ));
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: answer_str,
         solution,

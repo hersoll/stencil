@@ -21,33 +21,13 @@ pub use types::*;
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Problem {
-    pub id: String,
+    pub name: String,
     pub question: String,
     pub answer: String,
     pub solution: String,
     pub identifiers: Vec<i32>,
     pub combinations: usize,
 }
-/*
- TODO: Maybe do it like this?
-
-pub struct Problem {
-    pub content: ProblemContent,
-    pub metadata: ProblemMetadata,
-}
-
-pub struct ProblemContent {
-    pub question: String,
-    pub answer: String,
-    pub solution: String,
-}
-
-pub struct ProblemMetadata {
-    pub id: String,
-    pub identifiers: Vec<i32>,
-    pub combinations: usize,
-}
-*/
 
 //#################################
 //#          DIFFICULTY           #

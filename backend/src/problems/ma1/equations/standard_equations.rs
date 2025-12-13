@@ -7,7 +7,7 @@ use macros::problem;
 /// x + 3 = 12
 /// Difficulty: 0
 #[problem]
-fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
+fn only_addition_or_subtraction(name: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::with_zero(0, 9)?.random();
     let (constant, constant_range) = IntRange::without_zero(-answer, 9)?.and_random();
 
@@ -19,7 +19,7 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
     );
 
     let problem = Problem {
-        id,
+        name,
         // prefix: "Lös ekvationen",
         // group-prefix: "Lös ekvationerna"
         question: format!("$x {constant:+} = {}$", answer + constant),
@@ -34,7 +34,7 @@ fn only_addition_or_subtraction(id: String, _lang: &str) -> Result<Problem> {
 /// 3x = 12
 /// Difficulty: 0
 #[problem]
-fn only_multiplication(id: String, _lang: &str) -> Result<Problem> {
+fn only_multiplication(name: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(2, 5)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(3, 9)?.and_random();
 
@@ -47,7 +47,7 @@ fn only_multiplication(id: String, _lang: &str) -> Result<Problem> {
     );
 
     let problem = Problem {
-        id,
+        name,
         question: format!("${}x = {}$", coefficient, answer * coefficient),
         answer: format!("$x = {}$", answer),
         solution: typst_utils::formatting::equation_solution(solution),
@@ -61,7 +61,7 @@ fn only_multiplication(id: String, _lang: &str) -> Result<Problem> {
 /// 4x + 1 = 13
 /// Difficulty: 1
 #[problem]
-fn positive_up_to_5(id: String, _lang: &str) -> Result<Problem> {
+fn positive_up_to_5(name: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 5)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 5)?.and_random();
     let (constant, constant_range) =
@@ -70,7 +70,7 @@ fn positive_up_to_5(id: String, _lang: &str) -> Result<Problem> {
     let solution = solutions::linear_equations::integer_answer(coefficient, 'x', constant, answer);
 
     let problem = Problem {
-        id,
+        name,
         question: format!(
             "${cf}x {co:+} = {rhs}$",
             cf = coefficient,
@@ -88,7 +88,7 @@ fn positive_up_to_5(id: String, _lang: &str) -> Result<Problem> {
 /// 6x + 8 = 20
 /// Difficulty: 2
 #[problem]
-fn positive_answers(id: String, _lang: &str) -> Result<Problem> {
+fn positive_answers(name: String, _lang: &str) -> Result<Problem> {
     let answer = IntRange::without_zero(0, 10)?.random();
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 9)?.and_random();
     let (constant, constant_range) =
@@ -97,7 +97,7 @@ fn positive_answers(id: String, _lang: &str) -> Result<Problem> {
     let solution = solutions::linear_equations::integer_answer(coefficient, 'x', constant, answer);
 
     let problem = Problem {
-        id,
+        name,
         question: format!(
             "${cf}x {co:+} = {rhs}$",
             cf = coefficient,
@@ -115,7 +115,7 @@ fn positive_answers(id: String, _lang: &str) -> Result<Problem> {
 /// 6x + 8 = 19
 /// Difficulty: 3
 #[problem]
-fn positive_rational(id: String, _lang: &str) -> Result<Problem> {
+fn positive_rational(name: String, _lang: &str) -> Result<Problem> {
     let (denominator, denominator_range) = IntRange::without_zero(2, 9)?.and_random();
     let numerator = IntRange::without_zero(1, denominator * 2 - 1)?
         .exclude(denominator)
@@ -135,7 +135,7 @@ fn positive_rational(id: String, _lang: &str) -> Result<Problem> {
         math_utils::simplified_fraction(numerator, denominator);
 
     let problem = Problem {
-        id,
+        name,
         question: format!(
             "${cf}x {co:+} = {rhs}$",
             cf = coefficient,

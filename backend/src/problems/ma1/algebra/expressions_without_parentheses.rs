@@ -10,7 +10,7 @@ use rand::seq::IndexedRandom;
 /// 3x + 4 + 2x + 1
 /// Difficulty: 0
 #[problem]
-fn one_variable_and_constants_no_negatives(id: String, _lang: &str) -> Result<Problem> {
+fn one_variable_and_constants_no_negatives(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let (first_coef, first_coef_range) = IntRange::without_zero(1, 6)?.and_random();
     let second_coef = IntRange::without_zero(-(first_coef - 1), 6)?.random();
@@ -39,7 +39,7 @@ fn one_variable_and_constants_no_negatives(id: String, _lang: &str) -> Result<Pr
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer,
         solution,
@@ -51,7 +51,7 @@ fn one_variable_and_constants_no_negatives(id: String, _lang: &str) -> Result<Pr
 /// 3x - 5 - 5x + 2
 /// Difficulty: 1
 #[problem]
-fn one_variable_and_constants(id: String, _lang: &str) -> Result<Problem> {
+fn one_variable_and_constants(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let (first_coef, first_coef_range) = IntRange::without_zero(-6, 6)?.and_random();
     let second_coef = IntRange::without_zero(-6, 6)?.random();
@@ -80,7 +80,7 @@ fn one_variable_and_constants(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer,
         solution,
@@ -92,7 +92,7 @@ fn one_variable_and_constants(id: String, _lang: &str) -> Result<Problem> {
 /// 2x - 3y + 3x - 8y + 1
 /// Difficulty: 2
 #[problem]
-fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
+fn two_variables_and_constants(name: String, _lang: &str) -> Result<Problem> {
     let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
     let (first_coef_a, first_coef_a_range) = IntRange::with_zero(-9, 9)?.and_random();
     let first_coef_b = IntRange::with_zero(-9, 9)?.random();
@@ -137,7 +137,7 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer,
         solution,
@@ -149,7 +149,7 @@ fn two_variables_and_constants(id: String, _lang: &str) -> Result<Problem> {
 /// Evaluate 3x - 1 when x = -3
 /// Difficulty: 1
 #[problem]
-fn evaluate_simple(id: String, lang: &str) -> Result<Problem> {
+fn evaluate_simple(name: String, lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let (coef, coef_range) = IntRange::without_ones_and_zero(-9, 9)?.and_random();
     let constant = IntRange::without_zero(-9, 9)?.random();
@@ -164,7 +164,7 @@ fn evaluate_simple(id: String, lang: &str) -> Result<Problem> {
         ("unknown", unknown.to_string()),
         ("value", value.to_string()),
     ]);
-    let strings = crate::get_parsed_problem(&id, lang)?;
+    let strings = crate::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
     let replacements = vec![(unknown, value)];
     let answer = expression.evaluate(&replacements);
@@ -178,7 +178,7 @@ fn evaluate_simple(id: String, lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -190,7 +190,7 @@ fn evaluate_simple(id: String, lang: &str) -> Result<Problem> {
 /// Evaluate 3x - 2y + 1 when x = -3 and y = 2
 /// Difficulty: 2
 #[problem]
-fn evaluate_intermediate(id: String, lang: &str) -> Result<Problem> {
+fn evaluate_intermediate(name: String, lang: &str) -> Result<Problem> {
     let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
     let (coef, coef_range) = IntRange::without_ones_and_zero(-9, 9)?.and_random();
     let (coef_2, coef_2_range) = IntRange::without_ones_and_zero(-9, 9)?.and_random();
@@ -210,7 +210,7 @@ fn evaluate_intermediate(id: String, lang: &str) -> Result<Problem> {
         ("value_x", value_x.to_string()),
         ("value_y", value_y.to_string()),
     ]);
-    let strings = crate::get_parsed_problem(&id, lang)?;
+    let strings = crate::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
     let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
     let answer = expression.evaluate(&replacements);
@@ -225,7 +225,7 @@ fn evaluate_intermediate(id: String, lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -236,7 +236,7 @@ fn evaluate_intermediate(id: String, lang: &str) -> Result<Problem> {
 /// x^2 + 2x + 3x^2 - 4x
 /// Difficulty: 3
 #[problem]
-fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> {
+fn one_variable_different_exponents(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let (first_coef, first_coef_range) = IntRange::with_zero(-9, 9)?.and_random();
     let second_coef = IntRange::with_zero(-9, 9)?.random();
@@ -267,7 +267,7 @@ fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> 
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer,
         solution,
@@ -279,7 +279,7 @@ fn one_variable_different_exponents(id: String, _lang: &str) -> Result<Problem> 
 /// 3x - xy + 4x + 4xy - y^2
 /// Difficulty: 5
 #[problem]
-fn simplify_variable_combinations(id: String, _lang: &str) -> Result<Problem> {
+fn simplify_variable_combinations(name: String, _lang: &str) -> Result<Problem> {
     let mut rng = rand::rng();
     let total_terms = 5;
     let variable_combinations: Vec<(i32, i32)> = vec![
@@ -317,7 +317,7 @@ fn simplify_variable_combinations(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question: format!("${expression}$"),
         answer: format!("${simplified}$"),
         solution,
@@ -329,7 +329,7 @@ fn simplify_variable_combinations(id: String, _lang: &str) -> Result<Problem> {
 /// Evaluate 3x2 + 2xy^2 + 3x if x = -3 and y = 2
 /// Difficulty: 5
 #[problem]
-fn evaluate_advanced(id: String, lang: &str) -> Result<Problem> {
+fn evaluate_advanced(name: String, lang: &str) -> Result<Problem> {
     let mut total_terms = 2;
     let mut exp_combinations: Vec<(i32, i32)> = Vec::new();
     let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
@@ -360,7 +360,7 @@ fn evaluate_advanced(id: String, lang: &str) -> Result<Problem> {
         ("value_x", value_x.to_string()),
         ("value_y", value_y.to_string()),
     ]);
-    let strings = crate::get_parsed_problem(&id, lang)?;
+    let strings = crate::get_parsed_problem(&name, lang)?;
     let question = replace_placeholders(&strings.question, &map);
     let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
     let answer = expression.evaluate(&replacements);
@@ -374,7 +374,7 @@ fn evaluate_advanced(id: String, lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,

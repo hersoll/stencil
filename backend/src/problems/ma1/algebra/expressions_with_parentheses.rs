@@ -8,7 +8,7 @@ use macros::problem;
 /// 3(x+1)
 /// Difficulty: 0
 #[problem]
-fn positive_integer_mult(id: String, _lang: &str) -> Result<Problem> {
+fn positive_integer_mult(name: String, _lang: &str) -> Result<Problem> {
     let (factor, f_range) = IntRange::without_zero(2, 5)?.and_random();
     let unknown = symbols::get_unknown()?;
     let (constant, c_range) = IntRange::without_zero(-7, 7)?.and_random();
@@ -26,7 +26,7 @@ fn positive_integer_mult(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -38,7 +38,7 @@ fn positive_integer_mult(id: String, _lang: &str) -> Result<Problem> {
 /// -2(x+4)
 /// Difficulty: 1
 #[problem]
-fn negative_integer_mult(id: String, _lang: &str) -> Result<Problem> {
+fn negative_integer_mult(name: String, _lang: &str) -> Result<Problem> {
     let (factor, f_range) = IntRange::without_zero(-5, -2)?.and_random();
     let unknown = symbols::get_unknown()?;
     let (constant, c_range) = IntRange::without_zero(-7, -1)?.and_random();
@@ -58,7 +58,7 @@ fn negative_integer_mult(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${simplified}$"),
         solution,
@@ -70,7 +70,7 @@ fn negative_integer_mult(id: String, _lang: &str) -> Result<Problem> {
 /// 3(2a-4)
 /// Difficulty: 2
 #[problem]
-fn with_coefficient_on_variable(id: String, _lang: &str) -> Result<Problem> {
+fn with_coefficient_on_variable(name: String, _lang: &str) -> Result<Problem> {
     let (factor, f_range) = IntRange::without_zero(2, 5)?.and_random();
     let unknown = symbols::get_unknown()?;
     let coef = IntRange::without_zero(2, 5)?.random();
@@ -89,7 +89,7 @@ fn with_coefficient_on_variable(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -101,7 +101,7 @@ fn with_coefficient_on_variable(id: String, _lang: &str) -> Result<Problem> {
 /// x(x+1)
 /// Difficulty: 2
 #[problem]
-fn multiply_by_variable(id: String, _lang: &str) -> Result<Problem> {
+fn multiply_by_variable(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let (constant, c_range) = IntRange::without_zero(-7, 7)?.and_random();
 
@@ -119,7 +119,7 @@ fn multiply_by_variable(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -131,7 +131,7 @@ fn multiply_by_variable(id: String, _lang: &str) -> Result<Problem> {
 /// (2x + 1) + (3x - 4)
 /// Difficulty: 2
 #[problem]
-fn add_parentheses(id: String, _lang: &str) -> Result<Problem> {
+fn add_parentheses(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
     let coef_1 = coef_range.random();
@@ -158,7 +158,7 @@ fn add_parentheses(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -170,7 +170,7 @@ fn add_parentheses(id: String, _lang: &str) -> Result<Problem> {
 /// (2x + 1) - (3x - 4)
 /// Difficulty: 3
 #[problem]
-fn subtract_parentheses(id: String, _lang: &str) -> Result<Problem> {
+fn subtract_parentheses(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
     let coef_1 = coef_range.random();
@@ -201,7 +201,7 @@ fn subtract_parentheses(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -213,7 +213,7 @@ fn subtract_parentheses(id: String, _lang: &str) -> Result<Problem> {
 /// -4(3 - 4x)
 /// Difficulty: 2
 #[problem]
-fn negative_factor_and_coef(id: String, _lang: &str) -> Result<Problem> {
+fn negative_factor_and_coef(name: String, _lang: &str) -> Result<Problem> {
     let (factor, f_range) = IntRange::without_zero(-8, -2)?.and_random();
     let unknown = symbols::get_unknown()?;
     let coef = IntRange::without_zero(-5, -2)?.random();
@@ -235,7 +235,7 @@ fn negative_factor_and_coef(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${simplified}$"),
         solution,
@@ -247,7 +247,7 @@ fn negative_factor_and_coef(id: String, _lang: &str) -> Result<Problem> {
 /// 3 - (2x - 1)
 /// Difficulty: 3
 #[problem]
-fn const_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
+fn const_minus_parenthesis(name: String, _lang: &str) -> Result<Problem> {
     let (initial, i_range) = IntRange::without_zero(2, 5)?.and_random();
     let unknown = symbols::get_unknown()?;
     let coef = IntRange::without_zero(2, 6)?.random();
@@ -270,7 +270,7 @@ fn const_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -282,7 +282,7 @@ fn const_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
 /// 2x - (7x - 1)
 /// Difficulty: 3
 #[problem]
-fn var_term_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
+fn var_term_minus_parenthesis(name: String, _lang: &str) -> Result<Problem> {
     let (initial, i_range) = IntRange::without_zero(1, 4)?.and_random();
     let unknown = symbols::get_unknown()?;
     let coef = IntRange::without_zero(5, 10)?.random();
@@ -306,7 +306,7 @@ fn var_term_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${simplified}$"),
         solution,
@@ -318,7 +318,7 @@ fn var_term_minus_parenthesis(id: String, _lang: &str) -> Result<Problem> {
 /// 4(2x + 1) + 2(3x - 4)
 /// Difficulty: 3
 #[problem]
-fn multiply_and_add(id: String, _lang: &str) -> Result<Problem> {
+fn multiply_and_add(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
     let factor_range = IntRange::without_zero(2, 5)?;
@@ -349,7 +349,7 @@ fn multiply_and_add(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -361,7 +361,7 @@ fn multiply_and_add(id: String, _lang: &str) -> Result<Problem> {
 /// 4(2x + 1) - (3x - 4)
 /// Difficulty: 3
 #[problem]
-fn multiply_first_and_subtract(id: String, _lang: &str) -> Result<Problem> {
+fn multiply_first_and_subtract(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
     let factor_range = IntRange::without_zero(2, 5)?;
@@ -392,7 +392,7 @@ fn multiply_first_and_subtract(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -404,7 +404,7 @@ fn multiply_first_and_subtract(id: String, _lang: &str) -> Result<Problem> {
 /// 4(2x + 1) - 2(3x - 4)
 /// Difficulty: 4
 #[problem]
-fn multiply_and_subtract(id: String, _lang: &str) -> Result<Problem> {
+fn multiply_and_subtract(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
     let factor_range = IntRange::without_zero(2, 5)?;
@@ -436,7 +436,7 @@ fn multiply_and_subtract(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -448,7 +448,7 @@ fn multiply_and_subtract(id: String, _lang: &str) -> Result<Problem> {
 /// 3x(1 - 2x)
 /// Difficulty: 5
 #[problem]
-fn multiply_by_variable_term(id: String, _lang: &str) -> Result<Problem> {
+fn multiply_by_variable_term(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let constant = IntRange::without_zero(2, 7)?.random();
     let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
@@ -475,7 +475,7 @@ fn multiply_by_variable_term(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -487,7 +487,7 @@ fn multiply_by_variable_term(id: String, _lang: &str) -> Result<Problem> {
 /// x(3x + 1) - 3(2 + x)
 /// Difficulty: 6
 #[problem]
-fn one_variable_one_constant(id: String, _lang: &str) -> Result<Problem> {
+fn one_variable_one_constant(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
     let mut t1: Term = (coef_range.random(), unknown).into();
@@ -515,7 +515,7 @@ fn one_variable_one_constant(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -527,7 +527,7 @@ fn one_variable_one_constant(id: String, _lang: &str) -> Result<Problem> {
 /// 3(3x + 1) - x(2 + x)
 /// Difficulty: 6
 #[problem]
-fn one_constant_one_variable(id: String, _lang: &str) -> Result<Problem> {
+fn one_constant_one_variable(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
     let mut t1: Term = (coef_range.random(), unknown).into();
@@ -555,7 +555,7 @@ fn one_constant_one_variable(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -567,7 +567,7 @@ fn one_constant_one_variable(id: String, _lang: &str) -> Result<Problem> {
 /// 3x(3x + 1) - 2x(2 + x)
 /// Difficulty: 7
 #[problem]
-fn multiply_both_by_variable_terms(id: String, _lang: &str) -> Result<Problem> {
+fn multiply_both_by_variable_terms(name: String, _lang: &str) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
     let mut t1: Term = (coef_range.random(), unknown).into();
@@ -594,7 +594,7 @@ fn multiply_both_by_variable_terms(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -606,7 +606,7 @@ fn multiply_both_by_variable_terms(id: String, _lang: &str) -> Result<Problem> {
 /// 2x(1 + y) - 3(x + y)
 /// Difficulty: 8
 #[problem]
-fn mixing_variables(id: String, _lang: &str) -> Result<Problem> {
+fn mixing_variables(name: String, _lang: &str) -> Result<Problem> {
     let (unknown1, unknown2) = symbols::get_two_unknowns()?;
     let num_range = IntRange::without_zero(-5, 5)?;
     let factor1 = num_range.positive();
@@ -641,7 +641,7 @@ fn mixing_variables(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -653,7 +653,7 @@ fn mixing_variables(id: String, _lang: &str) -> Result<Problem> {
 /// x^2(1 - y) + 3x(y - 1) - y(3x + 1)
 /// Difficulty: 9
 #[problem]
-fn mixing_variables_and_exponents(id: String, _lang: &str) -> Result<Problem> {
+fn mixing_variables_and_exponents(name: String, _lang: &str) -> Result<Problem> {
     let (unknown1, unknown2) = symbols::get_two_unknowns()?;
     let num_range = IntRange::without_zero(-5, 5)?;
     let factor1 = num_range.positive();
@@ -699,7 +699,7 @@ fn mixing_variables_and_exponents(id: String, _lang: &str) -> Result<Problem> {
     );
 
     Ok(Problem {
-        id,
+        name,
         question,
         answer: format!("${answer}$"),
         solution,
