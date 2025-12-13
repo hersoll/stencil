@@ -13,7 +13,7 @@ function App() {
     setError(null);
 
     try {
-      const response: Response = await fetch(`${API_URL}/pdf`, {
+      const response: Response = await fetch(`${API_URL}/pdf/example`, {
         method: 'GET',
         headers: {
           'Accept': 'application/pdf',
@@ -42,7 +42,7 @@ function App() {
     setError(null);
 
     try {
-      const response: Response = await fetch(`${API_URL}/pdf`);
+      const response: Response = await fetch(`${API_URL}/pdf/example`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
