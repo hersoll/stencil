@@ -1,5 +1,8 @@
-use crate::problems::{IntRange, Problem, math_utils, solutions};
-use crate::typst_utils;
+use crate::{
+    math::{self, IntRange},
+    problems::{Problem, solutions},
+    typst_utils,
+};
 use anyhow::Result;
 use macros::problem;
 
@@ -131,7 +134,7 @@ fn positive_rational(name: String, _lang: &str) -> Result<Problem> {
         denominator,
     );
     let (simplified_numerator, simplified_denominator) =
-        math_utils::simplified_fraction(numerator, denominator);
+        math::utils::simplified_fraction(numerator, denominator);
 
     let problem = Problem {
         name,

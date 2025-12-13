@@ -1,8 +1,5 @@
 use crate::typst_utils::formatting::equation_solution;
-use crate::{
-    problems::{IntRange, Problem},
-    typst_utils,
-};
+use crate::{math::IntRange, problems::Problem, typst_utils};
 use anyhow::Result;
 use macros::problem;
 

@@ -1,5 +1,9 @@
 use crate::{
-    problems::{IntRange, Number, Polynomial, Problem, Term, symbols},
+    math::{
+        IntRange, symbols,
+        types::{Number, Polynomial, Term},
+    },
+    problems::Problem,
     typst_utils,
 };
 use anyhow::Result;

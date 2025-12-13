@@ -1,4 +1,4 @@
-use crate::problems::math_utils;
+use crate::math;
 
 pub fn simplified_fraction(numerator: i32, denominator: i32) -> (i32, i32) {
     let mut new_numerator = numerator;
@@ -9,7 +9,7 @@ pub fn simplified_fraction(numerator: i32, denominator: i32) -> (i32, i32) {
     }
 
     // abs() since one negative fucks it up
-    let gcd = math_utils::gcd(new_numerator, new_denominator);
+    let gcd = math::utils::gcd(new_numerator, new_denominator);
     (new_numerator / gcd, new_denominator / gcd)
 }
 

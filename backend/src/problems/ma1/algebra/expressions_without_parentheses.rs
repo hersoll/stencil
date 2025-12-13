@@ -1,6 +1,7 @@
-use crate::problems::symbols;
-use crate::problems::types::{Polynomial, Term};
-use crate::problems::{IntRange, Problem, Variables};
+use crate::math::IntRange;
+use crate::math::symbols;
+use crate::math::types::{Polynomial, Term, Variables};
+use crate::problems::Problem;
 use crate::registry::{get_parsed_problem, replace_placeholders};
 use anyhow::Result;
 use macros::problem;

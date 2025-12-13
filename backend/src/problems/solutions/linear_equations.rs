@@ -1,5 +1,5 @@
 use crate::{
-    problems::{self, math_utils::gcd},
+    math::{self, utils::gcd},
     typst_utils,
 };
 
@@ -39,7 +39,7 @@ pub fn positive_rational_answer(
     }
 
     let (simplified_numerator, simplified_denominator) =
-        problems::math_utils::simplified_fraction(numerator, denominator);
+        math::utils::simplified_fraction(numerator, denominator);
     let gcd = gcd(numerator, denominator);
     let answer_with_simplification = if gcd == denominator {
         format!("{}", numerator / denominator)

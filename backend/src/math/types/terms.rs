@@ -1,4 +1,6 @@
-use crate::problems::{IntRange, Number, types::variables::Variable, types::variables::Variables};
+use crate::math::{
+    IntRange, types::Number, types::variables::Variable, types::variables::Variables,
+};
 use num_traits::Pow;
 use num_traits::Zero;
 use std::fmt::Display;
@@ -302,7 +304,7 @@ impl std::ops::MulAssign<i32> for Term {
 
 #[cfg(test)]
 mod tests {
-    use crate::problems::PI;
+    use crate::math::types::PI;
 
     use super::*;
 

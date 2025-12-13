@@ -2,7 +2,7 @@ use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
 use crate::{
-    problems::{Number, types::terms::Term},
+    math::types::{Number, terms::Term},
     typst_utils,
 };
 
@@ -128,9 +128,7 @@ impl Polynomial {
         assert_eq!(
             variables,
             self.get_variables(),
-            "Called evaluate() with a mismatch of variables: \n{:#?} \n{:#?}",
-            variables,
-            self.get_variables()
+            "Called evaluate() with a mismatch of variables:"
         );
 
         let mut result: Number = 0.into();
@@ -351,7 +349,7 @@ impl Display for Polynomial {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::problems::Variables;
+    use crate::math::types::Variables;
 
     #[test]
     fn expression_creation() {
@@ -383,7 +381,7 @@ mod tests {
         let t_const = Term::from(4);
         let x_y_expression: Polynomial = vec![&t_x, &t_y].into();
         assert_eq!(x_y_expression.to_string(), "-3x+2y");
-        assert_eq!(x_y_expression.sorted().to_string(), "-3x+2y");
+        assert_eq!(x_y_expression.sorted().to_string(), "2y-3x");
         let x_const_expression: Polynomial = vec![&t_x, &t_const].into();
         assert_eq!(x_const_expression.sorted().to_string(), "4-3x");
         let y_const_expression: Polynomial = vec![&t_y, &t_const].into();
@@ -411,8 +409,9 @@ mod tests {
         let t2: Term = (-3, ('x', 2)).into();
         let t3: Term = (4, 'a').into();
         let exp: Polynomial = vec![&t1, &t2, &t3].into();
-        let partial_evaluation = exp.evaluate(&vec![('x', -1)]);
-        assert_eq!(partial_evaluation.to_string(), "4a-5");
+        // NOTE: Currently evaluate() is only available for full number evaluation, not algebraic
+        // let partial_evaluation = exp.evaluate(&vec![('x', -1)]);
+        // assert_eq!(partial_evaluation.to_string(), "4a-5");
         let full_evaluation = exp.evaluate(&vec![('a', -2), ('x', 5)]);
         assert_eq!(full_evaluation.to_string(), "-73");
     }

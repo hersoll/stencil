@@ -1,5 +1,9 @@
 use crate::{
-    problems::{IntRange, Polynomial, Problem, Term, symbols},
+    math::{
+        IntRange, symbols,
+        types::{Polynomial, Term},
+    },
+    problems::Problem,
     registry::{self, replace_placeholders},
     typst_utils::{self, formatting::equation_solution},
 };
