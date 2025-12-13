@@ -286,6 +286,7 @@ fn push_grouped_enum(
 /// near line breaks) as regular solutions, we need to adjust their insets.
 ///
 /// The rule for this is set in formatting::solution_rules()
+/// TODO: The entire nested solution is unbreakable right now.
 fn adjust_nested_answer(answer: &String) -> String {
     answer.replace("#solution", "#nested_solution")
 }
