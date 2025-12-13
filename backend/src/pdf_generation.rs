@@ -159,10 +159,16 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
         typst_file_builder.add_problem_set(problem_set)?;
     }
     let typst_as_string = typst_file_builder.build_to_string()?;
-    debug!("Typst file: {typst_as_string}");
     fs::write(&typst_path, typst_as_string).await?;
     let duration = start.elapsed();
     debug!("Wrote typst file in {}ms", duration.as_millis());
+
+    // Print typst file (pretty-printed) for debugging
+    #[cfg(not(feature = "docker"))]
+    Command::new("typstyle")
+        .arg(typst_path.to_str().unwrap())
+        .status()
+        .await?;
 
     debug!("Compiling PDF...");
     let start = Instant::now();

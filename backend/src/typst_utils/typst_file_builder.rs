@@ -174,11 +174,8 @@ impl TypstFileBuilder {
             let include_solution = self.should_include_solution(&problem.name);
 
             let (q, a) = if include_solution {
-                let answer_with_solution = formatting::build_solution(
-                    problem.answer,
-                    problem.solution,
-                    &self.i18n_strings,
-                )?;
+                let answer_with_solution =
+                    formatting::build_solution(problem.answer, problem.solution)?;
                 (problem.question, answer_with_solution)
             } else {
                 (problem.question, problem.answer)
@@ -205,7 +202,7 @@ impl TypstFileBuilder {
     pub fn build_to_string(&self) -> Result<String> {
         let mut typst_content = String::with_capacity(32 * 1024);
 
-        let preamble = self.build_preamble();
+        let preamble = self.build_preamble()?;
         let question_string = formatting::sets_to_balanced_columns(
             &self.question_sets,
             &self.group_prefixes,
@@ -238,8 +235,8 @@ impl TypstFileBuilder {
         }
     }
 
-    fn build_preamble(&self) -> String {
-        let mut parts = Vec::with_capacity(6);
+    fn build_preamble(&self) -> Result<String> {
+        let mut parts = Vec::with_capacity(7);
         parts.push(formatting::colors(self.options.color));
         parts.push(formatting::page_size(
             &self.options.paper_size.to_str(),
@@ -247,8 +244,9 @@ impl TypstFileBuilder {
             self.options.y_margin,
         ));
         parts.push(formatting::font_size(self.options.font_size));
+        parts.push(formatting::solution_rules(&self.i18n_strings)?);
         parts.push(String::from(PREAMBLE_STR));
         parts.push(formatting::heading(&self.options.title));
-        parts.join("\n") + "\n" // join only adds \n between items, not at the end
+        Ok(parts.join("\n") + "\n") // join only adds \n between items, not at the end
     }
 }

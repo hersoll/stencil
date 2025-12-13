@@ -54,7 +54,7 @@ function App() {
       const url: string = URL.createObjectURL(blob);
       const a: HTMLAnchorElement = document.createElement('a');
       a.href = url;
-      a.download = 'document.pdf';
+      a.download = 'stencil.pdf';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

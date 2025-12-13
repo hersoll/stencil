@@ -10,4 +10,5 @@ pub static PREAMBLE_STR: &str = r#"
   context box(width: 1.35em, text(weight: "bold")[#item-counter.display())])
 })
 #set-num(decimal-separator: ",")
+#let item(content) = block(breakable: false, content)
 "#;
