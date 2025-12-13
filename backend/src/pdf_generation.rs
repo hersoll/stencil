@@ -40,11 +40,7 @@ impl ProblemSetSpec {
             starting_difficulty: Difficulty::Intro,
             ending_difficulty: Difficulty::Hard,
             n: 10,
-            options: SetOptions {
-                question_columns: 2,
-                heading: String::new(),
-                spacing: None,
-            },
+            options: SetOptions::default(),
         }
     }
 }

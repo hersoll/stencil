@@ -8,13 +8,34 @@ use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::Write;
-use tracing::error;
+use tracing::{error, warn};
+
+const DEFAULT_QUESTION_COLUMNS: u8 = 2;
+const DEFAULT_ANSWER_COLUMNS: u8 = 3;
+const DEFAULT_FONT_SIZE: u8 = 10;
+const DEFAULT_X_MARGIN: u8 = 20;
+const DEFAULT_Y_MARGIN: u8 = 20;
+const DEFAULT_LANG: &'static str = "sv";
+const DEFAULT_MAX_PREFIX_GROUP: Option<u8> = Some(3);
+const DEFAULT_PAPER_SIZE: PaperSize = PaperSize::A4;
+const DEFAULT_WRITE_SOLUTIONS: WriteSolutions = WriteSolutions::First;
+const DEFAULT_PAR_SPACING: Option<u8> = None;
+const DEFAULT_COLORS: bool = true;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct SetOptions {
     pub question_columns: u8,
     pub heading: String,
     pub spacing: Option<u16>,
+}
+impl Default for SetOptions {
+    fn default() -> Self {
+        SetOptions {
+            question_columns: DEFAULT_QUESTION_COLUMNS,
+            heading: String::new(),
+            spacing: None,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -32,21 +53,20 @@ pub struct DocumentOptions {
     pub max_prefix_group: Option<u8>,
 }
 
-// NOTE: Defaults might not be needed after frontend is setup
 impl Default for DocumentOptions {
     fn default() -> Self {
         DocumentOptions {
-            font_size: 10,
-            lang: "sv".to_string(),
-            write_solutions: WriteSolutions::First,
-            color: true,
             title: String::new(),
-            paper_size: PaperSize::A4,
-            x_margin: 20,
-            y_margin: 20,
-            par_spacing: None,
-            answer_columns: 3,
-            max_prefix_group: Some(3),
+            lang: DEFAULT_LANG.to_string(),
+            font_size: DEFAULT_FONT_SIZE,
+            write_solutions: DEFAULT_WRITE_SOLUTIONS,
+            color: DEFAULT_COLORS,
+            paper_size: DEFAULT_PAPER_SIZE,
+            x_margin: DEFAULT_X_MARGIN,
+            y_margin: DEFAULT_Y_MARGIN,
+            par_spacing: DEFAULT_PAR_SPACING,
+            answer_columns: DEFAULT_ANSWER_COLUMNS,
+            max_prefix_group: DEFAULT_MAX_PREFIX_GROUP,
         }
     }
 }
@@ -116,6 +136,7 @@ pub struct TypstFileBuilder {
 }
 
 impl TypstFileBuilder {
+    /// Create a new builder. Some 18n keys are fetched up-front.
     pub async fn new(
         set_options: Vec<SetOptions>,
         options: DocumentOptions,
@@ -127,16 +148,25 @@ impl TypstFileBuilder {
             answer_sets: Vec::new(),
             problem_names: Vec::new(),
             group_prefixes: Vec::new(),
-            set_options,
             options,
+            set_options,
             i18n_strings,
         })
     }
 
-    // TODO: refactor
+    /// Add a problem set to the builder. The builder stores formatted question/answer strings
     pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> Result<&mut Self> {
+        if problem_set.is_empty() {
+            warn!("Trying to add_problem_set() an empty problem set!");
+            self.question_sets.push(Vec::new());
+            self.answer_sets.push(Vec::new());
+            self.group_prefixes.push(None);
+            return Ok(self);
+        }
+
         // Save the IDs to use when appending prefixes
         let ids: Vec<String> = problem_set.iter().map(|pr| pr.id.clone()).collect();
+
         let results: Result<Vec<(String, String)>> = problem_set
             .into_iter()
             .map(|problem| match self.options.write_solutions {
