@@ -161,23 +161,6 @@ async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
     Ok(course_entry)
 }
 
-async fn parse_chapter_path(chapter_path: &str) -> Result<CourseEntry, ApiError> {
-    let chapter_entry = match chapter_path.parse::<i32>() {
-        Ok(id) => db::get_course_by_id(id).await?,
-        Err(_) => db::get_course_by_name(chapter_path).await?,
-    };
-
-    Ok(chapter_entry)
-}
-
-async fn parse_topic_path(topic_path: &str) -> Result<CourseEntry, ApiError> {
-    let topic_entry = match topic_path.parse::<i32>() {
-        Ok(id) => db::get_course_by_id(id).await?,
-        Err(_) => db::get_course_by_name(topic_path).await?,
-    };
-
-    Ok(topic_entry)
-}
 async fn validate_chapter(course_path: &str, chapter_path: &str) -> Result<ChapterEntry, ApiError> {
     let course = parse_course_path(&course_path).await?;
     let valid_chapters = db::get_course_chapters(course.id).await?;
@@ -202,6 +185,7 @@ async fn validate_topic(
     let valid_topics = db::get_chapter_topics(chapter_entry.id).await?;
     let topic_entry = valid_topics
         .into_iter()
+        // topic_path can be either an ID or a name
         .find(|t| t.name == topic_path || &t.id.to_string() == topic_path)
         .ok_or_else(|| {
             ApiError::BadRequest(format!(
