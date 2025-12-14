@@ -4,15 +4,18 @@ pub async fn welcome() -> String {
 Endpoints (with base /api):\n
 /pdf/example - Generate an example stencil
 /pdf - Generate a custom stencil (GET request with JSON body required)
-/help - See the schema for custom stencil requests"
+/help - See the schema for custom stencil requests",
     )
 }
 
 pub async fn help() -> String {
-    String::from("To properly request a custom stencil, a JSON body of the following format must be attached:\n") + &get_http_schema()
+    String::from(
+        "To properly request a custom stencil, a JSON body of the following format must be attached:\n",
+    ) + &get_http_schema()
 }
 pub fn get_http_schema() -> String {
-    String::from(r#"
+    String::from(
+        r#"
 {
   sets: [
     {
@@ -38,6 +41,6 @@ pub fn get_http_schema() -> String {
     max_prefix_group: number
   }
 }
-"#)
+"#,
+    )
 }
-
