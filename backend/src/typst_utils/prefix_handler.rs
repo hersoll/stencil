@@ -1,13 +1,14 @@
 use crate::{
+    Language,
+    db::PrefixEntry,
     registry::{PREFIX_DATA, PROBLEM_DATA, RegistryError},
-    shared::PrefixData,
     typst_utils::typst_file_builder::DocumentOptions,
 };
 use anyhow::{Result, anyhow};
 use std::collections::HashMap;
 use std::fmt::Write;
 
-type PrefixRegistry = std::sync::RwLockReadGuard<'static, HashMap<i32, PrefixData>>;
+type PrefixRegistry = std::sync::RwLockReadGuard<'static, HashMap<i32, PrefixEntry>>;
 
 /// Will either:
 ///
@@ -94,15 +95,15 @@ fn get_prefix_registry() -> Result<PrefixRegistry> {
 /// return the group version of that prefix
 fn detect_group_prefix(
     prefix_ids: &[Option<i32>],
-    prefix_reg: &HashMap<i32, PrefixData>,
-    lang: &str,
+    prefix_reg: &HashMap<i32, PrefixEntry>,
+    lang: &Language,
 ) -> Option<String> {
     let first = prefix_ids.first().and_then(|&id| id)?;
 
     if prefix_ids.iter().all(|&id| id == Some(first)) {
         prefix_reg
             .get(&first)
-            .map(|p| format!("{}:", p.clone().parse(lang).group_text))
+            .map(|p| format!("{}:", p.get_group_text(lang)))
     } else {
         None
     }
@@ -114,9 +115,9 @@ fn apply_grouped_prefixes(
     question_set: Vec<String>,
     answer_set: Vec<String>,
     prefix_ids: &[Option<i32>],
-    prefix_reg: &HashMap<i32, PrefixData>,
+    prefix_reg: &HashMap<i32, PrefixEntry>,
     max_group: u8,
-    lang: &str,
+    lang: &Language,
 ) -> Result<(Vec<String>, Vec<String>)> {
     let groups = group_related_prefixes(prefix_ids, max_group);
 
@@ -192,13 +193,13 @@ fn apply_inline_prefixes(
     mut question_set: Vec<String>,
     answer_set: Vec<String>,
     prefix_ids: &[Option<i32>],
-    prefix_reg: &HashMap<i32, PrefixData>,
-    lang: &str,
+    prefix_reg: &HashMap<i32, PrefixEntry>,
+    lang: &Language,
 ) -> Result<(Vec<String>, Vec<String>)> {
     for (i, id) in prefix_ids.iter().enumerate() {
         if let Some(id) = id {
             if let Some(prefix) = prefix_reg.get(id) {
-                let text = prefix.clone().parse(lang).text;
+                let text = prefix.get_text(lang);
                 question_set[i] = format!("{text} {}", question_set[i]);
             }
         }
@@ -213,14 +214,14 @@ fn push_single_prefixed(
     question_set: &[String],
     answer_set: &[String],
     prefix_ids: &[Option<i32>],
-    prefix_reg: &HashMap<i32, PrefixData>,
+    prefix_reg: &HashMap<i32, PrefixEntry>,
     prefixed_questions: &mut Vec<String>,
     prefixed_answers: &mut Vec<String>,
-    lang: &str,
+    lang: &Language,
 ) {
     let question = match prefix_ids[idx].and_then(|id| prefix_reg.get(&id)) {
         Some(prefix) => {
-            let text = prefix.clone().parse(lang).text;
+            let text = prefix.get_text(lang);
             format!("{text} {}", question_set[idx])
         }
         None => question_set[idx].clone(),
@@ -238,10 +239,10 @@ fn push_grouped_enum(
     question_set: &[String],
     answer_set: &[String],
     prefix_ids: &[Option<i32>],
-    prefix_reg: &HashMap<i32, PrefixData>,
+    prefix_reg: &HashMap<i32, PrefixEntry>,
     prefixed_questions: &mut Vec<String>,
     prefixed_answers: &mut Vec<String>,
-    lang: &str,
+    lang: &Language,
 ) -> Result<()> {
     let Some(id) = prefix_ids[idx] else {
         return Ok(());
@@ -253,7 +254,7 @@ fn push_grouped_enum(
         ));
     };
 
-    let prefix_text = prefix.clone().parse(lang).group_text;
+    let prefix_text = prefix.get_group_text(lang);
 
     let mut grouped_questions = String::new();
     let mut grouped_answers = String::new();

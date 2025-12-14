@@ -1,4 +1,5 @@
 use crate::{
+    Language,
     db::I18nDatabase,
     problems::Problem,
     typst_utils::{formatting, preamble::PREAMBLE_STR, prefix_handler},
@@ -14,7 +15,7 @@ const DEFAULT_ANSWER_COLUMNS: u8 = 3;
 const DEFAULT_FONT_SIZE: u8 = 10;
 const DEFAULT_X_MARGIN: u8 = 20;
 const DEFAULT_Y_MARGIN: u8 = 20;
-const DEFAULT_LANG: &'static str = "sv";
+const DEFAULT_LANG: Language = Language::Sv;
 const DEFAULT_MAX_PREFIX_GROUP: Option<u8> = Some(3);
 const DEFAULT_PAPER_SIZE: PaperSize = PaperSize::A4;
 const DEFAULT_WRITE_SOLUTIONS: WriteSolutions = WriteSolutions::First;
@@ -42,7 +43,7 @@ pub struct DocumentOptions {
     pub font_size: u8,
     pub title: String,
     pub answer_columns: u8,
-    pub lang: String,
+    pub lang: Language,
     pub write_solutions: WriteSolutions,
     pub color: bool,
     pub paper_size: PaperSize,
@@ -56,7 +57,7 @@ impl Default for DocumentOptions {
     fn default() -> Self {
         DocumentOptions {
             title: String::new(),
-            lang: DEFAULT_LANG.to_string(),
+            lang: DEFAULT_LANG,
             font_size: DEFAULT_FONT_SIZE,
             write_solutions: DEFAULT_WRITE_SOLUTIONS,
             color: DEFAULT_COLORS,

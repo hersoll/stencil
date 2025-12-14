@@ -1,4 +1,5 @@
 use crate::{
+    Language,
     math::{
         IntRange, symbols,
         types::{Polynomial, Term},
@@ -17,7 +18,7 @@ use std::collections::HashMap;
 /// y = 3x + 1, x = 3
 /// Difficulty: 0
 #[problem]
-fn without_notation_y(name: String, lang: &str) -> Result<Problem> {
+fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
     let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
     let x = IntRange::without_zero(1, 5)?.random();
@@ -25,8 +26,8 @@ fn without_notation_y(name: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
-    let strings = registry::get_parsed_problem(&name, lang)?;
-    let question = replace_placeholders(&strings.question, &map);
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = replace_placeholders(problem_data.get_question(lang), &map);
 
     let solution = format!(
         "y &= {coefficient}x {constant:+} \\x={x} \\
@@ -50,7 +51,7 @@ fn without_notation_y(name: String, lang: &str) -> Result<Problem> {
 /// y = 2x + 2, y = 2
 /// Difficulty: 1
 #[problem]
-fn without_notation_x(name: String, lang: &str) -> Result<Problem> {
+fn without_notation_x(name: String, lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
     let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
     let answer = IntRange::without_zero(1, 5)?.random();
@@ -58,8 +59,8 @@ fn without_notation_x(name: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
-    let strings = registry::get_parsed_problem(&name, lang)?;
-    let question = replace_placeholders(&strings.question, &map);
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = replace_placeholders(problem_data.get_question(lang), &map);
 
     let solution = equation_solution(format!(
         "y &= {coefficient}x {constant:+} \\ y={y} \\
@@ -84,7 +85,7 @@ fn without_notation_x(name: String, lang: &str) -> Result<Problem> {
 /// f(3), no negatives
 /// Difficulty: 2
 #[problem]
-fn find_y_no_negatives(name: String, lang: &str) -> Result<Problem> {
+fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
     let x = IntRange::without_zero(1, 5)?.random();
     let (constant, constant_range) =
@@ -93,8 +94,8 @@ fn find_y_no_negatives(name: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
-    let strings = registry::get_parsed_problem(&name, lang)?;
-    let question = replace_placeholders(&strings.question, &map);
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = replace_placeholders(problem_data.get_question(lang), &map);
 
     let solution = format!(
         "f(x) &= {coefficient}x {constant:+} \\x={x} \\
@@ -118,7 +119,7 @@ fn find_y_no_negatives(name: String, lang: &str) -> Result<Problem> {
 /// Find x where f(x) = 2
 /// Difficulty: 3
 #[problem]
-fn find_x_where_f_x(name: String, lang: &str) -> Result<Problem> {
+fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
     let x = IntRange::without_zero(1, 5)?.random();
     let (constant, constant_range) =
@@ -127,8 +128,8 @@ fn find_x_where_f_x(name: String, lang: &str) -> Result<Problem> {
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
     let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
-    let strings = registry::get_parsed_problem(&name, lang)?;
-    let question = replace_placeholders(&strings.question, &map);
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = replace_placeholders(problem_data.get_question(lang), &map);
 
     let solution = format!(
         "f(x) &= {coefficient}x {constant:+} \\f(x)={y} \\
@@ -154,7 +155,7 @@ fn find_x_where_f_x(name: String, lang: &str) -> Result<Problem> {
 /// Solve the equation f(x) = 4
 /// Difficulty: 3
 #[problem]
-fn equation_f_x_equals(name: String, lang: &str) -> Result<Problem> {
+fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_ones_and_zero(-10, 10)?.and_random();
     let x = IntRange::with_zero(-7, 7)?.random();
     let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
@@ -169,8 +170,8 @@ fn equation_f_x_equals(name: String, lang: &str) -> Result<Problem> {
         ("var", var.to_string()),
         ("f", f_name.to_string()),
     ]);
-    let strings = registry::get_parsed_problem(&name, lang)?;
-    let question = replace_placeholders(&strings.question, &map);
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = replace_placeholders(problem_data.get_question(lang), &map);
 
     let solution = format!(
         "{f_name}({var}) &= {coefficient}{var} {constant:+} \\{f_name}({var})={y} \\
@@ -196,7 +197,7 @@ fn equation_f_x_equals(name: String, lang: &str) -> Result<Problem> {
 /// f(-3)
 /// Difficulty: 3
 #[problem]
-fn find_y(name: String, lang: &str) -> Result<Problem> {
+fn find_y(name: String, lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = IntRange::without_ones_and_zero(-10, 10)?.and_random();
     let x = IntRange::with_zero(-7, 7)?.random();
     let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
@@ -211,8 +212,8 @@ fn find_y(name: String, lang: &str) -> Result<Problem> {
         ("var", var.to_string()),
         ("f", f_name.to_string()),
     ]);
-    let strings = registry::get_parsed_problem(&name, lang)?;
-    let question = replace_placeholders(&strings.question, &map);
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = replace_placeholders(problem_data.get_question(lang), &map);
 
     let solution = format!(
         "{f_name}({var}) &= {coefficient}{var} {constant:+} \\{var}={x} \\
@@ -238,7 +239,7 @@ fn find_y(name: String, lang: &str) -> Result<Problem> {
 /// f(x) = 2x + 4. Bestäm f(a+1)
 /// Difficulty: 6
 #[problem]
-fn insert_algebra_positive(name: String, lang: &str) -> Result<Problem> {
+fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
         IntRange::without_ones_and_zero(2, 6)?.and_random();
     let (algebra_coefficient, algebra_coefficient_range) =
@@ -259,8 +260,8 @@ fn insert_algebra_positive(name: String, lang: &str) -> Result<Problem> {
     let function_string = format!("{f_name}({var}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
     let map = HashMap::from([("function", function_string), ("algebra", algebra_string)]);
-    let strings = registry::get_parsed_problem(&name, lang)?;
-    let question = replace_placeholders(&strings.question, &map);
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = replace_placeholders(problem_data.get_question(lang), &map);
     let answer = function_coefficient * algebra_expression.clone() + function_constant;
 
     let solution = format!(
@@ -285,7 +286,7 @@ fn insert_algebra_positive(name: String, lang: &str) -> Result<Problem> {
 /// f(x) = 4 - 2x. Bestäm f(2a-1)
 /// Difficulty: 7
 #[problem]
-fn insert_algebra_negative(name: String, lang: &str) -> Result<Problem> {
+fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
         IntRange::without_ones_and_zero(-6, -2)?.and_random();
     let (algebra_coefficient, algebra_coefficient_range) =
@@ -307,8 +308,8 @@ fn insert_algebra_negative(name: String, lang: &str) -> Result<Problem> {
     let function_string = format!("{f_name}({var}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
     let map = HashMap::from([("function", function_string), ("algebra", algebra_string)]);
-    let strings = registry::get_parsed_problem(&name, lang)?;
-    let question = replace_placeholders(&strings.question, &map);
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = replace_placeholders(&problem_data.get_question(&lang), &map);
     let answer = (function_coefficient * algebra_expression.clone() + function_constant).simplify();
 
     let solution = format!(
@@ -332,7 +333,7 @@ fn insert_algebra_negative(name: String, lang: &str) -> Result<Problem> {
 
 // f(x) = 3x - 2. Bestäm f(f(4))
 // #[problem]
-// fn insert_number_twice(name: String, _lang: &str) -> Result<Problem> {
+// fn insert_number_twice(name: String, _lang: &Language) -> Result<Problem> {
 //     let (coef, coef_range) = IntRange::without_ones_and_zero(2, 5)?.and_random();
 //     let (constant, const_range) = IntRange::without_zero(-6, 6)?.and_random();
 //     let (val, val_range) = IntRange::without_zero(-8, 8)?.and_random();

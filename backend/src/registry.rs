@@ -1,21 +1,15 @@
-use std::collections::HashMap;
-use std::sync::{LazyLock, RwLock};
 use crate::{
-    db, 
-    problems::problem_generator::ProblemGenerator, 
-    shared::{
-        ParsedPrefixData,
-        ParsedProblemData,
-        PrefixData, 
-        ProblemData
-    }
+    db::{self, PrefixEntry, ProblemEntry},
+    problems::problem_generator::ProblemGenerator,
 };
 use anyhow::{Context, Result};
+use std::collections::HashMap;
+use std::sync::{LazyLock, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum RegistryError {
-    #[error("problem id not found: {id}")]
-    ProblemNotFound { id: String },
+    #[error("problem id not found: {name}")]
+    ProblemNotFound { name: String },
     #[error("prefix id not found: {id}")]
     PrefixNotFound { id: i32 },
     #[error("Mutex {registry} is poisoned")]
@@ -28,16 +22,16 @@ pub enum RegistryError {
 pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, ProblemGenerator>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
-pub static PROBLEM_DATA: LazyLock<RwLock<HashMap<String, ProblemData>>> =
+pub static PROBLEM_DATA: LazyLock<RwLock<HashMap<String, ProblemEntry>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
-pub static PREFIX_DATA: LazyLock<RwLock<HashMap<i32, PrefixData>>> =
+pub static PREFIX_DATA: LazyLock<RwLock<HashMap<i32, PrefixEntry>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
 /// Loads data about every problem in the database to the PROBLEM_DATA hashmap
 /// to lessen database hits during runtime
 pub async fn load_problem_data() -> Result<()> {
-    let problems = db::problems::get_all_problem_data().await?;
+    let problems = db::get_all_problem_data().await?;
     for problem in problems {
         PROBLEM_DATA
             .write()
@@ -51,7 +45,7 @@ pub async fn load_problem_data() -> Result<()> {
 /// Loads every prefix in the database to the PREFIX_DATA hashmap
 /// to lessen database hits during runtime
 pub async fn load_prefix_data() -> Result<()> {
-    let prefixes = db::problems::get_all_prefix_data().await?;
+    let prefixes = db::get_all_prefix_data().await?;
     for prefix in prefixes {
         PREFIX_DATA
             .write()
@@ -62,8 +56,7 @@ pub async fn load_prefix_data() -> Result<()> {
     Ok(())
 }
 
-/// Gets problem data from the database and returns it with only the relevant language
-pub fn get_parsed_problem(full_name: &str, lang: &str) -> Result<ParsedProblemData> {
+pub fn get_problem_data(full_name: &str) -> Result<ProblemEntry> {
     let problem = PROBLEM_DATA
         .read()
         .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
@@ -72,13 +65,12 @@ pub fn get_parsed_problem(full_name: &str, lang: &str) -> Result<ParsedProblemDa
         .get(full_name)
         .cloned()
         .ok_or(RegistryError::ProblemNotFound {
-            id: full_name.to_string(),
+            name: full_name.to_string(),
         })?;
-    Ok(problem.parse(lang))
+    Ok(problem)
 }
 
-/// Gets prefix data from the database and returns it with only the relevant language
-pub fn get_parsed_prefix(id: i32, lang: &str) -> Result<ParsedPrefixData> {
+pub fn get_prefix_data(id: i32) -> Result<PrefixEntry> {
     let prefix = PREFIX_DATA
         .read()
         .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
@@ -87,7 +79,7 @@ pub fn get_parsed_prefix(id: i32, lang: &str) -> Result<ParsedPrefixData> {
         .get(&id)
         .cloned()
         .ok_or(RegistryError::PrefixNotFound { id })?;
-    Ok(prefix.parse(lang))
+    Ok(prefix)
 }
 
 /// Used in problems with dynamic text questions, for example:

@@ -88,6 +88,15 @@ fn create_router(cors_layer: CorsLayer) -> Router {
         .route("/help", get(text_endpoints::help))
         .route("/pdf", get(pdf_generation::generate_pdf_from_http))
         .route("/pdf/example", get(pdf_generation::generate_example_pdf))
+        .route("/{lang}/course/{course}", get(db::api::get_course))
+        .route(
+            "/{lang}/course/{course}/{chapter}",
+            get(db::api::get_chapter),
+        )
+        .route(
+            "/{lang}/course/{course}/{chapter}/{topic}",
+            get(db::api::get_topic),
+        )
         .layer(cors_layer)
         .layer(
             TraceLayer::new_for_http()

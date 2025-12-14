@@ -1,11 +1,11 @@
-use crate::{math::IntRange, problems::Problem, typst_utils};
+use crate::{Language, math::IntRange, problems::Problem, typst_utils};
 use anyhow::Result;
 use macros::problem;
 
 /// 5 - 9
 /// Difficulty: 0
 #[problem]
-fn subtract_larger(name: String, _lang: &str) -> Result<Problem> {
+fn subtract_larger(name: String, _lang: &Language) -> Result<Problem> {
     let (first, first_range) = IntRange::without_zero(1, 10)?.and_random();
     let second = IntRange::without_zero(first + 1, first + 10)?.random();
     Ok(Problem {
@@ -21,7 +21,7 @@ fn subtract_larger(name: String, _lang: &str) -> Result<Problem> {
 /// -4 + 2
 /// Difficulty: 2
 #[problem]
-fn start_negative(name: String, _lang: &str) -> Result<Problem> {
+fn start_negative(name: String, _lang: &Language) -> Result<Problem> {
     let (first, first_range) = IntRange::without_zero(-10, -1)?.and_random();
     let (second, second_range) = IntRange::without_zero(-10, 10)?.and_random();
     Ok(Problem {
@@ -37,7 +37,7 @@ fn start_negative(name: String, _lang: &str) -> Result<Problem> {
 /// 4 + (-2)
 /// Difficulty: 2
 #[problem]
-fn add_negative(name: String, _lang: &str) -> Result<Problem> {
+fn add_negative(name: String, _lang: &Language) -> Result<Problem> {
     let (first, first_range) = IntRange::without_zero(1, 10)?.and_random();
     let (second, second_range) = IntRange::without_zero(-10, -1)?.and_random();
     let ans = first + second;
@@ -61,7 +61,7 @@ fn add_negative(name: String, _lang: &str) -> Result<Problem> {
 /// 4 - (-2)
 /// Difficulty: 2
 #[problem]
-fn subtract_negative(name: String, _lang: &str) -> Result<Problem> {
+fn subtract_negative(name: String, _lang: &Language) -> Result<Problem> {
     let (first, first_range) = IntRange::without_zero(1, 10)?.and_random();
     let (second, second_range) = IntRange::without_zero(-10, -1)?.and_random();
     let ans = first - second;
@@ -107,7 +107,7 @@ fn make_multiplication_problem(first: IntRange, second: IntRange, name: String) 
 /// 4 * (-2)
 /// Difficulty: 2
 #[problem]
-fn positive_times_negative(name: String, _lang: &str) -> Result<Problem> {
+fn positive_times_negative(name: String, _lang: &Language) -> Result<Problem> {
     make_multiplication_problem(
         IntRange::without_zero(1, 10)?,
         IntRange::without_zero(-10, -1)?,
@@ -118,7 +118,7 @@ fn positive_times_negative(name: String, _lang: &str) -> Result<Problem> {
 /// (-4) * 2
 /// Difficulty: 2
 #[problem]
-fn negative_times_positive(name: String, _lang: &str) -> Result<Problem> {
+fn negative_times_positive(name: String, _lang: &Language) -> Result<Problem> {
     make_multiplication_problem(
         IntRange::without_zero(-10, -1)?,
         IntRange::without_zero(1, 10)?,
@@ -129,7 +129,7 @@ fn negative_times_positive(name: String, _lang: &str) -> Result<Problem> {
 /// (-4) * (-2)
 /// Difficulty: 2
 #[problem]
-fn negative_times_negative(name: String, _lang: &str) -> Result<Problem> {
+fn negative_times_negative(name: String, _lang: &Language) -> Result<Problem> {
     make_multiplication_problem(
         IntRange::without_zero(-10, -1)?,
         IntRange::without_zero(-10, -1)?,
@@ -140,7 +140,7 @@ fn negative_times_negative(name: String, _lang: &str) -> Result<Problem> {
 /// (-4) + (-2)
 /// Difficulty: 3
 #[problem]
-fn negative_plus_negative(name: String, _lang: &str) -> Result<Problem> {
+fn negative_plus_negative(name: String, _lang: &Language) -> Result<Problem> {
     let (first, first_range) = IntRange::without_zero(-10, -1)?.and_random();
     let (second, second_range) = IntRange::without_zero(-10, -1)?.and_random();
     let ans = first + second;
@@ -166,7 +166,7 @@ fn negative_plus_negative(name: String, _lang: &str) -> Result<Problem> {
 /// (-4) - (-2)
 /// Difficulty: 3
 #[problem]
-fn negative_minus_negative(name: String, _lang: &str) -> Result<Problem> {
+fn negative_minus_negative(name: String, _lang: &Language) -> Result<Problem> {
     let (first, first_range) = IntRange::without_zero(-10, -1)?.and_random();
     let (second, second_range) = IntRange::without_zero(-10, -1)?.and_random();
     let ans = first - second;

@@ -1,5 +1,5 @@
 use crate::{
-    db,
+    Language, db,
     errors::ApiError,
     pdf_generation::ProblemSetSpec,
     problems::{Difficulty, Problem, problem_picker},
@@ -12,7 +12,7 @@ use rand::{rngs::ThreadRng, seq::IndexedRandom};
 
 const DEFAULT_SCORE: u8 = 100;
 
-pub type ProblemGenerator = fn(String, &str) -> Result<Problem>;
+pub type ProblemGenerator = fn(String, &Language) -> Result<Problem>;
 
 /// Defines which problems are available to choose from and which
 /// criteria the problem_picker functions can use to
@@ -20,7 +20,7 @@ pub type ProblemGenerator = fn(String, &str) -> Result<Problem>;
 #[derive(Debug)]
 pub struct ProblemPool {
     pub problem_candidates: Vec<ProblemCandidate>,
-    pub lang: String,
+    pub lang: Language,
     pub starting_difficulty: Difficulty,
     pub ending_difficulty: Difficulty,
     pub n: u8,
@@ -55,12 +55,11 @@ impl PartialEq for ProblemCandidate {
 /// and distributes them appropriately across the difficulties given
 pub async fn generate_problem_set(
     set: ProblemSetSpec,
-    lang: String,
+    lang: Language,
 ) -> Result<Vec<Problem>, ApiError> {
     // (name, dificulty)
     let problems: Vec<(String, u8)> =
-        db::problems::get_problem_names_and_difficulties_from_topics(set.topics, set.exclusions)
-            .await?;
+        db::get_problem_names_and_difficulties_from_topics(set.topics, set.exclusions).await?;
     // Construct an initial list of candidates from the problem names
     let problem_candidates: Vec<ProblemCandidate> = problems
         .into_iter()
@@ -156,7 +155,7 @@ fn generate_problems(
 /// Generates a problem with a unique ID (the actual numbers that makes the problem different).
 ///
 /// If there are no more possible IDs to generate, reset (which might repeat problems)
-fn get_unique_problem(candidate: &mut ProblemCandidate, lang: &str) -> Result<Problem> {
+fn get_unique_problem(candidate: &mut ProblemCandidate, lang: &Language) -> Result<Problem> {
     let generator = get_generator_function(&candidate.name)?;
     let mut problem = (generator)(candidate.name.clone(), lang)?;
 
@@ -188,7 +187,7 @@ fn get_generator_function(name: &String) -> Result<ProblemGenerator> {
         lock.get(name)
             .copied()
             .ok_or(RegistryError::ProblemNotFound {
-                id: name.to_string(),
+                name: name.to_string(),
             })?
     }; // Lock is dropped here
 

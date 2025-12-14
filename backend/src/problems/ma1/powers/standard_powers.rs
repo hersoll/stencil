@@ -1,4 +1,5 @@
 use crate::{
+    Language,
     math::{IntRange, symbols},
     problems::Problem,
 };
@@ -8,7 +9,7 @@ use macros::problem;
 /// 5^4 * 5^2
 /// Difficulty: 0
 #[problem]
-fn simple_multiplication(name: String, _lang: &str) -> Result<Problem> {
+fn simple_multiplication(name: String, _lang: &Language) -> Result<Problem> {
     let base = IntRange::without_zero(4, 9)?.random();
     let (exp1, exp1_range) = IntRange::without_zero(2, 6)?.and_random();
     let (exp2, exp2_range) = IntRange::without_zero(2, 6)?.and_random();
@@ -32,7 +33,7 @@ fn simple_multiplication(name: String, _lang: &str) -> Result<Problem> {
 /// x^4 * x^2
 /// Difficulty: 1
 #[problem]
-fn simple_multiplication_variables(name: String, _lang: &str) -> Result<Problem> {
+fn simple_multiplication_variables(name: String, _lang: &Language) -> Result<Problem> {
     let base = symbols::get_unknown()?;
     let (exp1, exp1_range) = IntRange::without_zero(2, 6)?.and_random();
     let (exp2, exp2_range) = IntRange::without_zero(2, 6)?.and_random();
@@ -56,7 +57,7 @@ fn simple_multiplication_variables(name: String, _lang: &str) -> Result<Problem>
 /// 5^4 / 5^2
 /// Difficulty: 0
 #[problem]
-fn simple_division(name: String, _lang: &str) -> Result<Problem> {
+fn simple_division(name: String, _lang: &Language) -> Result<Problem> {
     let (base, base_range) = IntRange::without_zero(4, 9)?.and_random();
     let (exp1, exp1_range) = IntRange::without_zero(4, 10)?.and_random();
     let exp2 = IntRange::without_zero(2, exp1 - 2)?.random();
@@ -80,7 +81,7 @@ fn simple_division(name: String, _lang: &str) -> Result<Problem> {
 /// a^4 / a^2
 /// Difficulty: 1
 #[problem]
-fn simple_division_variables(name: String, _lang: &str) -> Result<Problem> {
+fn simple_division_variables(name: String, _lang: &Language) -> Result<Problem> {
     let base = symbols::get_unknown()?;
     let (exp1, exp1_range) = IntRange::without_zero(4, 10)?.and_random();
     let exp2 = IntRange::without_zero(2, exp1 - 2)?.random();
@@ -103,7 +104,7 @@ fn simple_division_variables(name: String, _lang: &str) -> Result<Problem> {
 /// (5^4)^2
 /// Difficulty: 1
 #[problem]
-fn double_exponentiation(name: String, _lang: &str) -> Result<Problem> {
+fn double_exponentiation(name: String, _lang: &Language) -> Result<Problem> {
     let (base, base_range) = IntRange::without_zero(2, 9)?.and_random();
     let (exp1, exp1_range) = IntRange::without_zero(2, 6)?.and_random();
     let exp2 = IntRange::without_zero(3, 6)?.random();
@@ -126,7 +127,7 @@ fn double_exponentiation(name: String, _lang: &str) -> Result<Problem> {
 /// (x^4)^2
 /// Difficulty: 1
 #[problem]
-fn double_exponentiation_variables(name: String, _lang: &str) -> Result<Problem> {
+fn double_exponentiation_variables(name: String, _lang: &Language) -> Result<Problem> {
     let base = symbols::get_unknown()?;
     let (exp1, exp1_range) = IntRange::without_zero(2, 6)?.and_random();
     let exp2 = IntRange::without_zero(3, 6)?.random();
@@ -149,7 +150,7 @@ fn double_exponentiation_variables(name: String, _lang: &str) -> Result<Problem>
 // (5^3 * 5^6) / 5^2
 // Difficulty: 2
 #[problem]
-fn multiplication_and_division(name: String, _lang: &str) -> Result<Problem> {
+fn multiplication_and_division(name: String, _lang: &Language) -> Result<Problem> {
     let (base, base_range) = IntRange::without_zero(3, 9)?.and_random();
     let (exp1, exp1_range) = IntRange::without_zero(2, 10)?.and_random();
     let (exp2, exp2_range) = IntRange::without_zero(2, 10)?.and_random();

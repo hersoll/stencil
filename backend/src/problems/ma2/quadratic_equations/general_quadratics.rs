@@ -1,4 +1,5 @@
 use crate::{
+    Language,
     math::IntRange,
     problems::{Problem, solutions},
 };
@@ -6,7 +7,7 @@ use anyhow::Result;
 use macros::problem;
 
 #[problem]
-fn small_numbers_positive_p(name: String, _lang: &str) -> Result<Problem> {
+fn small_numbers_positive_p(name: String, _lang: &Language) -> Result<Problem> {
     let (symmetry, sym_range) = IntRange::without_zero(-3, -1)?.and_random();
     let (distance, dist_range) = IntRange::without_zero(-symmetry + 1, 5)?.and_random();
     let x_1 = symmetry - distance;

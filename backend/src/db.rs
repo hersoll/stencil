@@ -1,8 +1,21 @@
 pub mod api;
+mod chapters;
+mod common;
+mod courses;
 mod i18n;
-pub mod problems;
+mod prefixes;
+mod problems;
+mod relationships;
+mod topics;
+mod types;
 
+pub use chapters::*;
+pub use courses::*;
 pub use i18n::I18nDatabase;
+pub use prefixes::*;
+pub use problems::*;
+pub use topics::*;
+pub use types::*;
 
 use anyhow::{Context, Result, anyhow};
 use once_cell::sync::OnceCell;

@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
-use crate::db;
+use crate::{Language, db};
 use anyhow::{Context, Result};
 
 pub struct I18nDatabase;
 
 impl I18nDatabase {
-    pub async fn get_i18n(lang: &str) -> Result<HashMap<String, String>> {
+    pub async fn get_i18n(lang: &Language) -> Result<HashMap<String, String>> {
         let pool = db::get_pool();
         let data = sqlx::query!(
             "SELECT key, CASE 
@@ -15,7 +15,7 @@ impl I18nDatabase {
                             ELSE sv
                         END as value
             FROM i18n",
-            lang
+            lang.to_str()
         )
         .fetch_all(pool)
         .await
@@ -28,7 +28,7 @@ impl I18nDatabase {
         Ok(map)
     }
 
-    pub async fn get(key: &str, lang: &str) -> Result<String> {
+    pub async fn get(key: &str, lang: &Language) -> Result<String> {
         let pool = db::get_pool();
         let data = sqlx::query!(
             "SELECT CASE 
@@ -38,7 +38,7 @@ impl I18nDatabase {
                     END as value
             FROM i18n
             WHERE key = $2",
-            lang,
+            lang.to_str(),
             key
         )
         .fetch_one(pool)
@@ -47,7 +47,7 @@ impl I18nDatabase {
         Ok(data.value.unwrap_or_default())
     }
 
-    pub async fn get_multiple(keys: Vec<&str>, lang: &str) -> Result<HashMap<String, String>> {
+    pub async fn get_multiple(keys: Vec<&str>, lang: &Language) -> Result<HashMap<String, String>> {
         let pool = db::get_pool();
         let owned_keys: Vec<String> = keys.into_iter().map(|s| s.to_string()).collect();
         let data = sqlx::query!(
@@ -58,7 +58,7 @@ impl I18nDatabase {
                         END as value
             FROM i18n
             WHERE key = ANY($2)",
-            lang,
+            lang.to_str(),
             &owned_keys
         )
         .fetch_all(pool)
