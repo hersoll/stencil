@@ -98,10 +98,10 @@ struct ProblemInformation {
 }
 
 pub async fn get_course(
-    Path((lang_code, course_name)): Path<(String, String)>,
+    Path((lang_code, course_path)): Path<(String, String)>,
 ) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
-    let course = db::get_course_by_name(&course_name).await?;
+    let course = parse_course_path(&course_path).await?;
     let chapters = db::get_course_chapters(course.id).await?;
     let chapter_ids: Vec<i32> = chapters.iter().map(|c| c.id).collect();
     let topics_by_chapter = db::get_topics_for_chapters(&chapter_ids).await?;
@@ -130,10 +130,10 @@ pub async fn get_course(
 }
 
 pub async fn get_chapter(
-    Path((lang_code, course_name, chapter_name)): Path<(String, String, String)>,
+    Path((lang_code, course_path, chapter_path)): Path<(String, String, String)>,
 ) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
-    let chapter_entry = validate_chapter(&course_name, &chapter_name).await?;
+    let chapter_entry = validate_chapter(&course_path, &chapter_path).await?;
     let topics = db::get_chapter_topics(chapter_entry.id).await?;
     let chapter = ChapterHierarchy::from(&chapter_entry, &topics, &lang);
 
@@ -142,43 +142,70 @@ pub async fn get_chapter(
 
 // lang_c instead of lang_code to shorten line :)
 pub async fn get_topic(
-    Path((lang_c, course_name, chapter_name, topic_name)): Path<(String, String, String, String)>,
+    Path((lang_c, course_path, chapter_path, topic_path)): Path<(String, String, String, String)>,
 ) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_c)?;
-    let topic_entry = validate_topic(&course_name, &chapter_name, &topic_name).await?;
+    let topic_entry = validate_topic(&course_path, &chapter_path, &topic_path).await?;
     let problems = db::get_topic_problems(topic_entry.id).await?;
     let topic = TopicHierarchyWithProblems::from(&topic_entry, &problems, &lang);
 
     Ok((StatusCode::OK, Json(json!(topic))))
 }
 
-async fn validate_chapter(course_name: &str, chapter_name: &str) -> Result<ChapterEntry, ApiError> {
-    let course = db::get_course_by_name(&course_name).await?;
+async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
+    let course_entry = match course_path.parse::<i32>() {
+        Ok(id) => db::get_course_by_id(id).await?,
+        Err(_) => db::get_course_by_name(course_path).await?,
+    };
+
+    Ok(course_entry)
+}
+
+async fn parse_chapter_path(chapter_path: &str) -> Result<CourseEntry, ApiError> {
+    let chapter_entry = match chapter_path.parse::<i32>() {
+        Ok(id) => db::get_course_by_id(id).await?,
+        Err(_) => db::get_course_by_name(chapter_path).await?,
+    };
+
+    Ok(chapter_entry)
+}
+
+async fn parse_topic_path(topic_path: &str) -> Result<CourseEntry, ApiError> {
+    let topic_entry = match topic_path.parse::<i32>() {
+        Ok(id) => db::get_course_by_id(id).await?,
+        Err(_) => db::get_course_by_name(topic_path).await?,
+    };
+
+    Ok(topic_entry)
+}
+async fn validate_chapter(course_path: &str, chapter_path: &str) -> Result<ChapterEntry, ApiError> {
+    let course = parse_course_path(&course_path).await?;
     let valid_chapters = db::get_course_chapters(course.id).await?;
     let chapter_entry = valid_chapters
         .into_iter()
-        .find(|c| c.name == chapter_name)
+        // chapter_path can be either an ID or a name
+        .find(|c| c.name == chapter_path || &c.id.to_string() == chapter_path)
         .ok_or_else(|| {
             ApiError::BadRequest(format!(
-                "There is no chapter \"{chapter_name}\" in course {course_name}"
+                "There is no chapter \"{chapter_path}\" in course {course_path}"
             ))
         })?;
     Ok(chapter_entry)
 }
 
 async fn validate_topic(
-    course_name: &str,
-    chapter_name: &str,
-    topic_name: &str,
+    course_path: &str,
+    chapter_path: &str,
+    topic_path: &str,
 ) -> Result<TopicEntry, ApiError> {
-    let chapter_entry = validate_chapter(course_name, chapter_name).await?;
+    let chapter_entry = validate_chapter(course_path, chapter_path).await?;
     let valid_topics = db::get_chapter_topics(chapter_entry.id).await?;
     let topic_entry = valid_topics
         .into_iter()
-        .find(|t| t.name == topic_name)
+        .find(|t| t.name == topic_path || &t.id.to_string() == topic_path)
         .ok_or_else(|| {
             ApiError::BadRequest(format!(
-                "There is no topic \"{topic_name}\" in chapter {chapter_name}"
+                "There is no topic \"{topic_path}\" in chapter {chapter_path}"
             ))
         })?;
 
