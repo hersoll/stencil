@@ -32,7 +32,7 @@ pub fn get_http_schema() -> String {
     font_size: number,
     title: string,
     answer_columns: number,
-    lang: "sv" | "en",
+    lang: "Sv" | "En",
     write_solutions: "First" | "All" | "None",
     color: boolean,
     paper_size: "A4" | "A5",
