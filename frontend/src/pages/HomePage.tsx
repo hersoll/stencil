@@ -8,10 +8,13 @@ export default function HomePage() {
   return (
     <>
       <h1 className='mb-4'>Stencil</h1>
-      <h2 className='mb-4'>Välj kurs</h2>
-      <div className='flex gap-4'>
-        <CourseButton course={t("courses.ma1b")} page="ma1b" />
-        <CourseButton course={t("courses.ma2b")} page="ma2b" />
+      <div className='bg-mid p-4 mb-10 rounded-xl'>
+        <h2 className='mb-2 text-2xl text-left'>{t("home_header")}</h2>
+        <p className='text-muted text-left'>{t("home_par")}</p>
+        <div className='flex gap-4 mt-4'>
+          <CourseButton course={t("courses.ma1b")} page="1b" />
+          <CourseButton course={t("courses.ma2b")} page="2b" />
+        </div>
       </div>
 
       <button onClick={() => { i18n.changeLanguage("sv"); localStorage.setItem("lang", "sv") }}>

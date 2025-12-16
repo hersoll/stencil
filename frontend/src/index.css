@@ -1,18 +1,44 @@
 @import 'tailwindcss';
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --bg-dark: oklch(0.1 0 264);
+  --bg: oklch(0.15 0 264);
+  --bg-light: oklch(0.2 0 264);
+  --text: oklch(0.96 0 264);
+  --text-muted: oklch(0.76 0 264);
+  --highlight: oklch(0.5 0 264);
+  --border: oklch(0.4 0 264);
+  --border-muted: oklch(0.3 0 264);
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+
+  font-family: Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-dark: oklch(0.92 0 264);
+    --bg: oklch(0.96 0 264);
+    --bg-light: oklch(1 0 264);
+    --text: oklch(0.15 0 264);
+    --text-muted: oklch(0.4 0 264);
+    --highlight: oklch(1 0 264);
+    --border: oklch(0.6 0 264);
+    --border-muted: oklch(0.7 0 264);
+    --danger: oklch(0.5 0.05 30);
+    --warning: oklch(0.5 0.05 100);
+    --success: oklch(0.5 0.05 160);
+  }
 }
 
 a {
@@ -28,8 +54,8 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 800px;
-  min-height: 100vh;
+  color: var(--text);
+  background-color: var(--bg-dark);
 }
 
 h1 {
@@ -44,27 +70,30 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--bg-light);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--border);
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.bg-dark {
+  background-color: var(--bg_dark);
+}
+.bg-mid {
+  background-color: var(--bg);
+}
+.bg-light {
+  background-color: var(--bg-light);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+.text-color {
+  color: var(--text);
 }

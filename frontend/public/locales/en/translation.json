@@ -1,6 +1,8 @@
 {
     "courses": {
-        "ma1b": "Mathematics 1b",
-        "ma2b": "Mathematics 2b"
-    }
+        "ma1b": "Mathematics, level 1b",
+        "ma2b": "Mathematics, level 2b"
+    },
+    "home_header": "Choose level",
+    "home_par": "And choose wisely"
 }
