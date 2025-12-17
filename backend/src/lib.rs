@@ -5,6 +5,7 @@ pub mod math;
 pub mod pdf_generation;
 pub mod problems;
 pub mod registry;
+pub mod server;
 pub mod text_endpoints;
 pub mod typst_utils;
 
