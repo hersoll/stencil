@@ -8,6 +8,7 @@ pub fn create_router() -> Router {
     Router::new()
         .route("/", get(text_endpoints::welcome))
         .route("/help", get(text_endpoints::help))
+        .route("/translations/{lang}", get(db::api::get_translation))
         .route("/{lang}/course/{course}", get(db::api::get_course))
         .route(
             "/{lang}/course/{course}/{chapter}",

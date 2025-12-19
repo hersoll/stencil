@@ -1,8 +1,8 @@
 use crate::{
-    Language,
-    db::I18nDatabase,
+    db,
     problems::Problem,
     typst_utils::{formatting, preamble::PREAMBLE_STR, prefix_handler},
+    Language,
 };
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -144,7 +144,7 @@ impl TypstFileBuilder {
         options: DocumentOptions,
     ) -> Result<TypstFileBuilder> {
         let i18n_keys = vec!["solution", "answer_key"];
-        let i18n_strings = I18nDatabase::get_multiple(i18n_keys, &options.lang).await?;
+        let i18n_strings = db::i18n::get_multiple(i18n_keys, &options.lang).await?;
         Ok(TypstFileBuilder {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),

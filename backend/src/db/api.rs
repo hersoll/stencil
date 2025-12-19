@@ -1,9 +1,9 @@
 use crate::{
-    Language,
     db::{self, ChapterEntry, CourseEntry, HasDesc, ProblemEntry, TopicEntry},
     errors::ApiError,
+    Language,
 };
-use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
+use axum::{extract::Path, http::StatusCode, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -95,6 +95,13 @@ struct ProblemInformation {
     id: i32, // We probably don't need the name in the frontend, only id
     difficulty: i32,
     desc: String,
+}
+
+pub async fn get_translation(Path(lang_code): Path<String>) -> Result<impl IntoResponse, ApiError> {
+    let lang = parse_language(&lang_code)?;
+    let translations = db::i18n::get_i18n_for_web(&lang).await?;
+
+    Ok((StatusCode::OK, Json(json!(translations))).into_response())
 }
 
 pub async fn get_course(

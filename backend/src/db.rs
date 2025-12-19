@@ -2,7 +2,7 @@ pub mod api;
 mod chapters;
 mod common;
 mod courses;
-mod i18n;
+pub mod i18n;
 mod prefixes;
 mod problems;
 mod relationships;
@@ -11,15 +11,14 @@ mod types;
 
 pub use chapters::*;
 pub use courses::*;
-pub use i18n::I18nDatabase;
 pub use prefixes::*;
 pub use problems::*;
 pub use topics::*;
 pub use types::*;
 
-use anyhow::{Context, Result, anyhow};
+use anyhow::{anyhow, Context, Result};
 use once_cell::sync::OnceCell;
-use sqlx::{PgPool, postgres::PgPoolOptions};
+use sqlx::{postgres::PgPoolOptions, PgPool};
 
 static DB_POOL: OnceCell<PgPool> = OnceCell::new();
 
