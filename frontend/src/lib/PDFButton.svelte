@@ -25,13 +25,30 @@
   };
 </script>
 
-<div style="display: flex; flex-direction: column;">
+<div class="pdf_container">
   <button onclick={fetchPdf}>
     {loading ? 'Loading...' : 'Get Example PDF'}
   </button>
 
   {#if pdfUrl != ''}
-    <iframe style="width: 400px; height: 800px;" src={pdfUrl} title="PDF Viewer"
-    ></iframe>
+    <iframe src={pdfUrl} title="PDF Viewer"></iframe>
   {/if}
 </div>
+
+<style>
+  .pdf_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2em;
+
+    padding: 2em;
+    width: 600px;
+    height: 900px;
+  }
+
+  iframe {
+    width: 600px;
+    height: 800px;
+  }
+</style>
