@@ -101,7 +101,14 @@ pub async fn get_translation(Path(lang_code): Path<String>) -> Result<impl IntoR
     let lang = parse_language(&lang_code)?;
     let translations = db::i18n::get_i18n_for_web(&lang).await?;
 
-    Ok((StatusCode::OK, Json(json!(translations))).into_response())
+    Ok((
+        StatusCode::OK,
+        [
+            ("Cache-Control", "public, max-age=3600"), // Cache 1 hour
+            ("Content-Type", "application/json"),
+        ],
+        Json(json!(translations)),
+    ))
 }
 
 pub async fn get_course(
