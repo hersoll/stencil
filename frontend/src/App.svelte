@@ -1,36 +1,21 @@
 <script lang="ts">
-  import './i18n.ts';
-  import {
-    availableLanguages,
-    currentLanguage,
-    setLanguage,
-    t,
-    translationLoading,
-    initI18n
-  } from './i18n';
+  import i18n from './i18n.svelte';
   import FetchButton from './lib/FetchButton.svelte';
   import PDFButton from './lib/PDFButton.svelte';
   import { onMount } from 'svelte';
+  import LanguageSwitch from './lib/LanguageSwitch.svelte';
 
   onMount(async () => {
-    await initI18n();
+    await i18n.init();
   });
 </script>
 
 <main>
-  {#if $translationLoading}
+  {#if i18n.loading}
     <p>Laddar...</p>
   {:else}
     <nav>
-      <select
-        value={$currentLanguage}
-        onchange={e => setLanguage(e.currentTarget.value)}
-      >
-        {#each availableLanguages as lang}
-          <option value={lang}>{lang.toLocaleUpperCase()}</option>
-        {/each}
-      </select>
-      <p>Language test: {$t('document_option_color')}</p>
+      <LanguageSwitch />
     </nav>
     <h1>Stencil</h1>
 
