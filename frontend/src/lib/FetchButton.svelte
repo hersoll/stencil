@@ -7,7 +7,7 @@
 
   async function loadTranslations() {
     loading = true;
-    const res = await fetch(`${API_URL}/translation/${lang_code}`);
+    const res = await fetch(`${API_URL}/translations/${lang_code}`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
