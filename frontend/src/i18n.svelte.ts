@@ -69,7 +69,6 @@ class I18n {
   }
 
   async setLanguage(lang: string) {
-
     const data = this.translations[lang] || await this.fetchTranslation(lang);
 
     this.translations = {

@@ -1,8 +1,7 @@
 <script lang="ts">
-  import i18n from './i18n.svelte';
-  import FetchButton from './lib/FetchButton.svelte';
-  import PDFButton from './lib/PDFButton.svelte';
   import { onMount } from 'svelte';
+  import i18n from './i18n.svelte';
+  import PDFButton from './lib/PDFButton.svelte';
   import LanguageSwitch from './lib/LanguageSwitch.svelte';
 
   onMount(async () => {
@@ -19,7 +18,6 @@
     </nav>
     <h1>Stencil</h1>
 
-    <FetchButton />
     <PDFButton />
   {/if}
 </main>

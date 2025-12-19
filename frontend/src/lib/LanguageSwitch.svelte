@@ -7,12 +7,12 @@
   <button
     class={currentLang === 'sv' ? 'active_language' : ''}
     disabled={currentLang === 'sv'}
-    onclick={() => i18n.setLanguage('sv')}>{i18n.t('language_sv')}</button
+    onclick={() => i18n.setLanguage('sv')}>Svenska</button
   >
   <button
     class={currentLang === 'en' ? 'active_language' : ''}
     disabled={currentLang === 'en'}
-    onclick={() => i18n.setLanguage('en')}>{i18n.t('language_en')}</button
+    onclick={() => i18n.setLanguage('en')}>English</button
   >
 </div>
 

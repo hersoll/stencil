@@ -1,4 +1,5 @@
 <script lang="ts">
+  import i18n from '../i18n.svelte';
   let loading = $state(false);
   let errorMessage = $state('');
   let pdfUrl = $state('');
@@ -27,7 +28,7 @@
 
 <div class="pdf_container">
   <button onclick={fetchPdf}>
-    {loading ? 'Loading...' : 'Get Example PDF'}
+    {loading ? 'Loading...' : i18n.t('create_pdf')}
   </button>
 
   {#if pdfUrl != ''}
