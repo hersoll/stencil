@@ -1,10 +1,51 @@
-import { init, locale, register } from 'svelte-i18n';
+import { derived, get, writable } from "svelte/store";
+
+export type Translations = Record<string, any>;
+// Params are what will be replaced in strings with {}.
+export type TranslationParams = Record<string, string | number>;
+export interface TranslationFunction {
+  (key: string, params?: TranslationParams): string;
+}
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 const DEFAULT_LANGUAGE = 'sv';
 
-async function fetchTranslation(locale: string) {
-  const cached = localStorage.getItem(`translations_${locale}`);
+export const currentLanguage = writable(DEFAULT_LANGUAGE);
+const translations = writable<Record<string, Translations>>({});
+export const translationLoading = writable(false);
+
+function interpolate(text: string, params: TranslationParams = {}): string {
+  return text.replace(/{(\w+)}/g, (match, key) => {
+    const value = params[key];
+    return value !== undefined ? String(value) : match;
+  });
+}
+
+export const t = derived(
+  [currentLanguage, translations],
+  ([$currentLanguage, $translations]): TranslationFunction => {
+    return (key: string, params: TranslationParams = {}): string => {
+      const translationRecord = $translations[$currentLanguage];
+
+      // Will happen during init
+      if (!translationRecord) {
+        return key;
+      }
+      const translation = translationRecord[key];
+
+      if (!translation) {
+        console.warn(`Translation not found for key: ${key} in lang: ${$currentLanguage}`);
+        return key;
+      }
+
+      return interpolate(translation, params);
+    };
+  }
+);
+
+async function fetchTranslation(lang: string) {
+
+  const cached = localStorage.getItem(`translations_${lang}`);
   if (cached) {
     const { data, timestamp } = JSON.parse(cached);
     if (Date.now() - timestamp < 60 * 60 * 1000) { // 60 minutes
@@ -13,41 +54,46 @@ async function fetchTranslation(locale: string) {
   }
 
   try {
-    const res = await fetch(`${API_URL}/translations/${locale}`);
+    translationLoading.set(true);
+    const res = await fetch(`${API_URL}/translations/${lang}`);
 
     if (!res.ok) {
       throw new Error(`Failed to load translations from server: ${res.status}`);
     }
     const data = await res.json();
 
-    localStorage.setItem(`translations_${locale}`, JSON.stringify({ data, timestamp: Date.now() }));
-    localStorage.setItem('lang', locale);
+    localStorage.setItem(`translations_${lang}`, JSON.stringify({ data, timestamp: Date.now() }));
+    localStorage.setItem('lang', lang);
 
     return data;
   } catch (error) {
-    console.error(`Error loading ${locale} translations:`, error);
+    console.error(`Error loading ${lang} translations:`, error);
 
     return {};
+  } finally {
+    translationLoading.set(false);
   }
 }
 
-function getLanguageChoice() {
-  let cached = localStorage.getItem('lang');
-  return cached || DEFAULT_LANGUAGE;
-}
+export async function setLanguage(lang: string) {
+  const loadedTranslations = get(translations);
 
-register('sv', () => fetchTranslation('sv'));
-register('en', () => fetchTranslation('en'));
+  const data = loadedTranslations[lang] || await fetchTranslation(lang);
 
-init({
-  fallbackLocale: 'sv',
-  initialLocale: getLanguageChoice(),
-  loadingDelay: 200,
-});
+  translations.update(current => ({
+    ...current,
+    [lang]: data
+  }));
 
-export { locale };
-export function setLanguage(lang: string) {
-  locale.set(lang);
+  currentLanguage.set(lang);
   localStorage.setItem('lang', lang);
 }
-export const availableLocales = ['en', 'sv'];
+
+export async function initI18n() {
+  let cached = localStorage.getItem('lang');
+  const lang = cached || DEFAULT_LANGUAGE;
+
+  await setLanguage(lang);
+}
+
+export const availableLanguages = ['sv', 'en'];
