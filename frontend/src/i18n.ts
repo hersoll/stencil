@@ -44,7 +44,6 @@ export const t = derived(
 );
 
 async function fetchTranslation(lang: string) {
-
   const cached = localStorage.getItem(`translations_${lang}`);
   if (cached) {
     const { data, timestamp } = JSON.parse(cached);
@@ -55,20 +54,19 @@ async function fetchTranslation(lang: string) {
 
   try {
     translationLoading.set(true);
+
     const res = await fetch(`${API_URL}/translations/${lang}`);
 
     if (!res.ok) {
       throw new Error(`Failed to load translations from server: ${res.status}`);
     }
-    const data = await res.json();
 
+    const data = await res.json();
     localStorage.setItem(`translations_${lang}`, JSON.stringify({ data, timestamp: Date.now() }));
-    localStorage.setItem('lang', lang);
 
     return data;
   } catch (error) {
     console.error(`Error loading ${lang} translations:`, error);
-
     return {};
   } finally {
     translationLoading.set(false);
