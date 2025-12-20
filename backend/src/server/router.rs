@@ -1,5 +1,9 @@
 use crate::{db, pdf_generation, server::middleware, text_endpoints};
-use axum::{Router, http::Request, routing::get};
+use axum::{
+    Router,
+    http::Request,
+    routing::{get, post},
+};
 use std::time::Duration;
 use tower_governor::GovernorLayer;
 use tower_http::trace::TraceLayer;
@@ -20,7 +24,7 @@ pub fn create_router() -> Router {
             get(db::api::get_topic),
         )
         .layer(GovernorLayer::new(middleware::rate_limiting::json_limit()))
-        .route("/pdf", get(pdf_generation::generate_pdf_from_http))
+        .route("/pdf", post(pdf_generation::generate_pdf_from_http))
         .route("/pdf/example", get(pdf_generation::generate_example_pdf))
         .layer(middleware::cors::create_cors_layer())
         // Annoying type signature, don't try to extract to its own function...
