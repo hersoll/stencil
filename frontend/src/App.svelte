@@ -10,6 +10,3 @@
 </script>
 
 <Router />
-
-<style>
-</style>

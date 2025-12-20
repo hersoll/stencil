@@ -1,5 +1,5 @@
 <script lang="ts">
-  import i18n from '../i18n.svelte';
+  import i18n from '$src/i18n.svelte';
   let loading = $state(false);
   let errorMessage = $state('');
   let pdfUrl = $state('');

@@ -1,12 +1,14 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
+  "extends": [
+    "./.router/tsconfig.json",
+    "@tsconfig/svelte/tsconfig.json"
+  ],
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "target": "ES2022",
     "useDefineForClassFields": true,
-    "module": "ESNext",
     "types": [
       "svelte",
+      "node",
       "vite/client"
     ],
     "noEmit": true,
@@ -16,9 +18,36 @@
      * Note that setting allowJs false does not prevent the use
      * of JS in `.svelte` files.
      */
+    "moduleDetection": "force",
+    "lib": [
+      "EsNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
     "allowJs": true,
     "checkJs": true,
-    "moduleDetection": "force"
+    "baseUrl": ".",
+    "paths": {
+      "sv-router": [
+        "node_modules/sv-router/src/index.d.ts"
+      ],
+      "$src/*": [
+        "src/*"
+      ],
+      "$lib/*": [
+        "src/lib/*"
+      ],
+      "$routes/*": [
+        "src/routes/*"
+      ],
+      "sv-router/generated": [
+        "./.router/generated"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts",

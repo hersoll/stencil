@@ -1,7 +1,6 @@
 <script>
-  import LanguageSwitch from '../lib/LanguageSwitch.svelte';
-  import PDFButton from '../lib/PDFButton.svelte';
-  import i18n from '../i18n.svelte';
+  import PDFButton from '$lib/PDFButton.svelte';
+  import i18n from '$src/i18n.svelte';
 </script>
 
 <main>

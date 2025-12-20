@@ -1,5 +1,5 @@
 <script>
-  import i18n from '../i18n.svelte';
+  import i18n from '$src/i18n.svelte';
   let currentLang = $derived(i18n.currentLanguage);
 </script>
 
@@ -19,8 +19,10 @@
 <style>
   div {
     position: absolute;
-    left: 0;
+    left: 2em;
+    background-color: var(--bg-light);
     padding: 1rem;
+    border-radius: 1rem;
   }
   button {
     margin: 0 0.25rem;
