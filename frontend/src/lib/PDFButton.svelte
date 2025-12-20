@@ -1,17 +1,25 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
+  import { API_URL } from '$src/main';
+  let { sets } = $props();
   let loading = $state(false);
   let errorMessage = $state('');
   let pdfUrl = $state('');
-  const API_URL = import.meta.env.VITE_API_URL || '/api';
 
   const fetchPdf = async (): Promise<void> => {
     loading = true;
 
     try {
-      const response: Response = await fetch(`${API_URL}/pdf/example`);
+      const response: Response = await fetch(`${API_URL}/pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'applications/json'
+        },
+        body: JSON.stringify(sets)
+      });
 
       if (!response.ok) {
+        console.log(response.statusText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
