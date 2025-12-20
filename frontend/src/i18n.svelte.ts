@@ -17,32 +17,33 @@ class I18n {
   translations = $state<Record<string, Translations>>({});
   loading = $state(false);
 
-  t = $derived.by(
-    () => {
-      return (key: string, params: TranslationParams = {}): string => {
-        const translationRecord = this.translations[this.currentLanguage];
+  t = $derived.by(() => {
+    return (key: string, params: TranslationParams = {}): string => {
+      const translationRecord = this.translations[this.currentLanguage];
 
-        // Will happen during init
-        if (!translationRecord) {
-          return key;
-        }
-        const translation = translationRecord[key];
+      // Will happen during init
+      if (!translationRecord) {
+        return key;
+      }
+      const translation = translationRecord[key];
 
-        if (!translation) {
-          console.warn(`Translation not found for key: ${key} in lang: ${this.currentLanguage}`);
-          return key;
-        }
+      if (!translation) {
+        console.warn(
+          `Translation not found for key: ${key} in lang: ${this.currentLanguage}`
+        );
+        return key;
+      }
 
-        return interpolate(translation, params);
-      };
-    }
-  );
+      return interpolate(translation, params);
+    };
+  });
 
   async fetchTranslation(lang: string) {
     const cached = localStorage.getItem(`translations_${lang}`);
     if (cached) {
       const { data, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp < 60 * 60 * 1000) { // 60 minutes
+      if (Date.now() - timestamp < 60 * 60 * 1000) {
+        // 60 minutes
         return data;
       }
     }
@@ -53,11 +54,16 @@ class I18n {
       const res = await fetch(`${API_URL}/translations/${lang}`);
 
       if (!res.ok) {
-        throw new Error(`Failed to load translations from server: ${res.status}`);
+        throw new Error(
+          `Failed to load translations from server: ${res.status}`
+        );
       }
 
       const data = await res.json();
-      localStorage.setItem(`translations_${lang}`, JSON.stringify({ data, timestamp: Date.now() }));
+      localStorage.setItem(
+        `translations_${lang}`,
+        JSON.stringify({ data, timestamp: Date.now() })
+      );
 
       return data;
     } catch (error) {
@@ -69,7 +75,7 @@ class I18n {
   }
 
   async setLanguage(lang: string) {
-    const data = this.translations[lang] || await this.fetchTranslation(lang);
+    const data = this.translations[lang] || (await this.fetchTranslation(lang));
 
     this.translations = {
       ...this.translations,

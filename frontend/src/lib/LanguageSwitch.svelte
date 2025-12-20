@@ -17,8 +17,13 @@
 </div>
 
 <style>
+  div {
+    position: absolute;
+    left: 0;
+    padding: 1rem;
+  }
   button {
-    margin: 1em 0.25rem;
+    margin: 0 0.25rem;
     padding: 0;
     background: none;
     color: var(--text);
