@@ -1,9 +1,9 @@
 use crate::{
+    Language,
     db::{self, ChapterEntry, CourseEntry, HasDesc, ProblemEntry, TopicEntry},
     errors::ApiError,
-    Language,
 };
-use axum::{extract::Path, http::StatusCode, response::IntoResponse, Json};
+use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -108,6 +108,24 @@ pub async fn get_translation(Path(lang_code): Path<String>) -> Result<impl IntoR
             ("Content-Type", "application/json"),
         ],
         Json(json!(translations)),
+    ))
+}
+
+pub async fn get_courses(Path(lang_code): Path<String>) -> Result<impl IntoResponse, ApiError> {
+    let lang = parse_language(&lang_code)?;
+    let courses = db::get_all_courses().await?;
+    let course_data: Vec<CourseHierarchy> = courses
+        .into_iter()
+        .map(|course| CourseHierarchy::from(&course, Vec::new(), &lang))
+        .collect();
+
+    Ok((
+        StatusCode::OK,
+        [
+            ("Cache-Control", "public, max-age=3600"), // Cache 1 hour
+            ("Content-Type", "application/json"),
+        ],
+        Json(json!(course_data)),
     ))
 }
 

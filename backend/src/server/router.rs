@@ -1,5 +1,5 @@
 use crate::{db, pdf_generation, server::middleware, text_endpoints};
-use axum::{http::Request, routing::get, Router};
+use axum::{Router, http::Request, routing::get};
 use std::time::Duration;
 use tower_governor::GovernorLayer;
 use tower_http::trace::TraceLayer;
@@ -9,6 +9,7 @@ pub fn create_router() -> Router {
         .route("/", get(text_endpoints::welcome))
         .route("/help", get(text_endpoints::help))
         .route("/translations/{lang}", get(db::api::get_translation))
+        .route("/{lang}/course", get(db::api::get_courses))
         .route("/{lang}/course/{course}", get(db::api::get_course))
         .route(
             "/{lang}/course/{course}/{chapter}",
