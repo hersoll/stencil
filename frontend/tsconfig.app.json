@@ -32,6 +32,9 @@
     "checkJs": true,
     "baseUrl": ".",
     "paths": {
+      "sv-router/generated": [
+        "./.router/router.ts"
+      ],
       "sv-router": [
         "node_modules/sv-router/src/index.d.ts"
       ],
@@ -43,9 +46,6 @@
       ],
       "$routes/*": [
         "src/routes/*"
-      ],
-      "sv-router/generated": [
-        "./.router/generated"
       ]
     }
   },

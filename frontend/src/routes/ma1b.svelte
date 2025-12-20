@@ -1,1 +1,5 @@
-<h1>1b</h1>
+<script>
+  import CoursePage from '$src/lib/CoursePage.svelte';
+</script>
+
+<CoursePage course="1b" />

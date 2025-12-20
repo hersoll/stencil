@@ -1,9 +1,8 @@
 <script lang="ts">
+  import { API_URL } from '$src/main';
   let data = $state(null);
   let loading = $state(false);
   let lang_code = 'sv';
-
-  const API_URL = import.meta.env.VITE_API_URL || '/api';
 
   async function loadTranslations() {
     loading = true;

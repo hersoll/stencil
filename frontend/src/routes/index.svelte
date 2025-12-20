@@ -1,12 +1,78 @@
-<script>
-  import PDFButton from '$lib/PDFButton.svelte';
+<script lang="ts">
   import i18n from '$src/i18n.svelte';
+  import { navigate } from 'sv-router/generated';
+  import { API_URL } from '$src/main';
+  import { onMount } from 'svelte';
+  type CourseData = {
+    desc: string;
+    id: number;
+  };
+
+  let data: Record<string, CourseData> = $state({});
+  let loading = $state(false);
+
+  async function loadCourses() {
+    loading = true;
+    const res = await fetch(`${API_URL}/${i18n.currentLanguage}/course`);
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    data = await res.json();
+    loading = false;
+  }
+
+  onMount(async () => {
+    await loadCourses();
+  });
+
+  // This will run whenever i18n.currentLanguage changes
+  $effect(() => {
+    if (i18n.currentLanguage) {
+      loadCourses();
+    }
+  });
 </script>
 
 <main>
   {#if i18n.loading}
     <p>Laddar...</p>
   {:else}
-    <PDFButton />
+    <div class="main-div">
+      <h2>{i18n.t('course_selector')}</h2>
+      <div class="btn-container">
+        <button onclick={() => navigate('/ma1b')}>{data['ma1b']?.desc}</button>
+        <button onclick={() => navigate('/ma2b')}>{data['ma2b']?.desc}</button>
+      </div>
+    </div>
   {/if}
 </main>
+
+<style>
+  button {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 3rem;
+    margin: 0;
+    margin-bottom: 2rem;
+  }
+
+  .main-div {
+    margin-top: 10rem;
+    padding: 2rem 4rem;
+    border-radius: 2rem;
+
+    background-color: var(--bg);
+
+    text-align: center;
+  }
+
+  .btn-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+</style>
