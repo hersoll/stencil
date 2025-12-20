@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     Language,
     db::{self, ChapterEntry, CourseEntry, HasDesc, ProblemEntry, TopicEntry},
@@ -6,6 +8,13 @@ use crate::{
 use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+
+/// Only used for sending a list of courses
+#[derive(Serialize, Deserialize)]
+struct CourseData {
+    id: i32,
+    desc: String,
+}
 
 #[derive(Serialize, Deserialize)]
 struct CourseHierarchy {
@@ -114,10 +123,16 @@ pub async fn get_translation(Path(lang_code): Path<String>) -> Result<impl IntoR
 pub async fn get_courses(Path(lang_code): Path<String>) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
     let courses = db::get_all_courses().await?;
-    let course_data: Vec<CourseHierarchy> = courses
-        .into_iter()
-        .map(|course| CourseHierarchy::from(&course, Vec::new(), &lang))
-        .collect();
+    let mut course_data: HashMap<String, CourseData> = HashMap::new();
+    for course in courses {
+        course_data.insert(
+            course.name.clone(),
+            CourseData {
+                id: course.id,
+                desc: course.get_desc(&lang),
+            },
+        );
+    }
 
     Ok((
         StatusCode::OK,
