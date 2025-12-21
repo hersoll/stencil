@@ -80,14 +80,16 @@ impl TopicHierarchy {
 
 /// Only used for the /topic endpoint, when the problems are expected to be returned
 #[derive(Serialize, Deserialize)]
-struct TopicIdWithProblems {
-    topic_id: i32,
+struct TopicWithProblems {
+    id: i32,
+    desc: String,
     problems: Vec<ProblemInformation>,
 }
-impl TopicIdWithProblems {
-    fn from(topic_id: i32, problems: &[ProblemEntry], lang: &Language) -> Self {
-        TopicIdWithProblems {
-            topic_id,
+impl TopicWithProblems {
+    fn from(topic: &TopicEntry, problems: &[ProblemEntry], lang: &Language) -> Self {
+        TopicWithProblems {
+            id: topic.id,
+            desc: topic.get_desc(&lang),
             problems: problems
                 .into_iter()
                 .map(|p| ProblemInformation {
@@ -199,19 +201,15 @@ pub async fn get_problems(
         }
     };
     let lang = parse_language(&lang_code)?;
-    let mut problem_vec = Vec::new();
-    for id in topic_ids {
-        let problems = db::get_topic_problems(id).await?;
-        problems.into_iter().for_each(|p| {
-            problem_vec.push(ProblemInformation {
-                id: p.id,
-                difficulty: p.difficulty,
-                desc: p.get_desc(&lang),
-            })
-        });
+    let topics = db::get_topics(&topic_ids).await?;
+    let mut topic_vec = Vec::new();
+    for topic in topics {
+        let problems = db::get_topic_problems(topic.id).await?;
+        let topic = TopicWithProblems::from(&topic, &problems, &lang);
+        topic_vec.push(topic);
     }
 
-    Ok((StatusCode::OK, Json(json!(problem_vec))))
+    Ok((StatusCode::OK, Json(json!(topic_vec))))
 }
 
 async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
@@ -236,6 +234,26 @@ async fn validate_chapter(course_path: &str, chapter_path: &str) -> Result<Chapt
             ))
         })?;
     Ok(chapter_entry)
+}
+
+async fn validate_topic(
+    course_path: &str,
+    chapter_path: &str,
+    topic_path: &str,
+) -> Result<TopicEntry, ApiError> {
+    let chapter_entry = validate_chapter(course_path, chapter_path).await?;
+    let valid_topics = db::get_chapter_topics(chapter_entry.id).await?;
+    let topic_entry = valid_topics
+        .into_iter()
+        // topic_path can be either an ID or a name
+        .find(|t| t.name == topic_path || &t.id.to_string() == topic_path)
+        .ok_or_else(|| {
+            ApiError::BadRequest(format!(
+                "There is no topic \"{topic_path}\" in chapter {chapter_path}"
+            ))
+        })?;
+
+    Ok(topic_entry)
 }
 
 fn parse_language(lang: &str) -> Result<Language, ApiError> {
