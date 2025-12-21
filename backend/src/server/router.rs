@@ -20,7 +20,7 @@ pub fn create_router() -> Router {
             get(db::api::get_chapter),
         )
         .route("/{lang}/problems", post(db::api::get_problems))
-        .layer(GovernorLayer::new(middleware::rate_limiting::json_limit()))
+        //.layer(GovernorLayer::new(middleware::rate_limiting::json_limit()))
         .route("/pdf", post(pdf_generation::generate_pdf_from_http))
         .route("/pdf/example", get(pdf_generation::generate_example_pdf))
         .layer(middleware::cors::create_cors_layer())
