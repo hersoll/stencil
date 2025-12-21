@@ -11,7 +11,7 @@
     background-color: var(--primary);
 
     &:hover {
-      background-color: fuchsia;
+      background-color: var(--secondary);
     }
   }
 </style>

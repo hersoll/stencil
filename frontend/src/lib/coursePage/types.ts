@@ -41,6 +41,8 @@ export type ProblemSetSpec = {
   options: SetOptions;
 };
 
+export type SetState = { id: number; set: ProblemSetSpec };
+
 export const defaultProblemSet: ProblemSetSpec = {
   topics: [],
   exclusions: [],

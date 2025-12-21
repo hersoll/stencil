@@ -1,7 +1,12 @@
-import { defaultProblemSet, type ProblemSetSpec } from './lib/coursePage/types';
+import {
+  defaultProblemSet,
+  type ProblemSetSpec,
+  type SetState
+} from './lib/coursePage/types';
 
+export let set_id = $state({ count: 0 });
 export let error = $state<{ message: string | null }>({ message: null });
-export let problems = $state<{
-  sets: ProblemSetSpec[];
+export let sets = $state<{
+  set_states: SetState[];
   current_set: ProblemSetSpec;
-}>({ sets: [], current_set: defaultProblemSet });
+}>({ set_states: [], current_set: defaultProblemSet });

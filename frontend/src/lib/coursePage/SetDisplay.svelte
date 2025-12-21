@@ -4,7 +4,10 @@
   import i18n from '$src/i18n.svelte';
   import type { ProblemData, ProblemSetSpec } from './types';
 
-  let { set }: { set: ProblemSetSpec } = $props();
+  let {
+    set = $bindable(),
+    onDelete
+  }: { set: ProblemSetSpec; onDelete: () => void } = $props();
   let topics = $state<{ id: number; desc: string; problems: ProblemData[] }[]>(
     []
   );
@@ -30,7 +33,7 @@
   });
 </script>
 
-<div>
+<button popovertarget="set-editor" class="set-container">
   {#if topics.length > 0}
     <h3>
       {topics.length}
@@ -45,23 +48,61 @@
   {:else}
     <h2>No problems</h2>
   {/if}
+</button>
+
+<div popover id="set-editor" class="set-editor">
+  {#each topics as topic}
+    <h2>{topic.desc}</h2>
+    {#each topic.problems as problem}
+      <p>{problem.desc}</p>
+    {/each}
+  {/each}
 </div>
 
 <style>
-  h3 {
-    margin: 0;
-  }
-  div {
+  .set-container {
+    text-align: left;
     background-color: var(--bg-light);
+    border: 2px solid transparent;
     padding: 1rem;
     border-radius: 2rem;
+    transition: border 0.15s;
+    &:hover {
+      border: 2px solid var(--secondary);
+      cursor: pointer;
+    }
+    h3 {
+      color: var(--text);
+    }
+    p {
+      color: var(--text-muted);
+    }
+    .header {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
   }
-  p {
-    color: var(--text-muted);
-    margin: 0;
+
+  .set-editor {
+    margin: auto;
+    padding: 2rem;
+    border-radius: 2rem;
+    border: none;
+    opacity: 0;
+
+    transition:
+      opacity 0.15s,
+      display 0.15s allow-discrete;
+
+    &:popover-open {
+      opacity: 1;
+      @starting-style {
+        opacity: 0;
+      }
+    }
   }
-  .header {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
+
+  ::backdrop {
+    backdrop-filter: blur(3px);
   }
 </style>

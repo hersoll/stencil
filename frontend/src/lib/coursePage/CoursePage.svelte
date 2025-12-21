@@ -6,7 +6,7 @@
   import InitialSetOptions from './InitialSetOptions.svelte';
   import PDFButton from '../PDFButton.svelte';
   import ErrorPage from '../ErrorPage.svelte';
-  import { error, problems } from '$src/states.svelte';
+  import { error, sets } from '$src/states.svelte';
   import SetDisplay from './SetDisplay.svelte';
 
   let { course }: { course: string } = $props();
@@ -20,6 +20,10 @@
       error.message = `Status code ${res.status} \n ${await res.text()}`;
     }
     course_data = await res.json();
+  }
+
+  function deleteSet(id: number) {
+    sets.set_states = sets.set_states.filter(state => state.id !== id);
   }
 
   $effect(() => {
@@ -46,11 +50,17 @@
     <aside class="options-container">
       <InitialSetOptions />
     </aside>
-    {#if problems.sets.length > 0}
+    {#if sets.set_states.length > 0}
       <aside class="set-container">
-        <h2>{i18n.t('sets')}</h2>
-        {#each problems.sets as set}
-          <SetDisplay {set} />
+        <div>
+          <h2>{i18n.t('sets')}</h2>
+          <p>Klicka för att redigera</p>
+        </div>
+        {#each sets.set_states as set_state}
+          <SetDisplay
+            bind:set={set_state.set}
+            onDelete={() => deleteSet(set_state.id)}
+          />
         {/each}
       </aside>
     {/if}
@@ -87,7 +97,12 @@
     align-self: start;
 
     & h2 {
-      margin: 0 0 0.5rem 0;
+      margin: 0;
+    }
+
+    & p {
+      margin: 0;
+      color: var(--text-muted);
     }
   }
   .chapter-container {

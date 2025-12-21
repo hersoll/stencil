@@ -2,10 +2,14 @@
   import i18n from '$src/i18n.svelte';
   import DifficultySelector from './DifficultySelector.svelte';
   import SubmitSet from './SubmitSet.svelte';
-  import { problems } from '$src/states.svelte';
+  import { sets, set_id } from '$src/states.svelte';
 
   function submitSet() {
-    problems.sets.push(structuredClone($state.snapshot(problems.current_set)));
+    sets.set_states.push({
+      id: set_id.count,
+      set: structuredClone($state.snapshot(sets.current_set))
+    });
+    set_id.count += 1;
   }
 </script>
 
@@ -13,7 +17,7 @@
   <h2>{i18n.t('options')}</h2>
   <div class="n-container">
     <label for="n">{i18n.t('pick_number')}</label>
-    <input name="n" type="number" bind:value={problems.current_set.n} />
+    <input name="n" type="number" bind:value={sets.current_set.n} />
   </div>
   <div>
     <label for="">{i18n.t('difficulty')}:</label>
