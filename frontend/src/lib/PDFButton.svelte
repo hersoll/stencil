@@ -1,8 +1,8 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import { API_URL } from '$src/main';
-  import { error } from '$src/error.svelte';
-  let { sets } = $props();
+  import { error, problems } from '$src/states.svelte';
+
   let loading = $state(false);
   let errorMessage = $state('');
   let pdfUrl = $state('');
@@ -11,13 +11,13 @@
     loading = true;
 
     try {
-      console.log(JSON.stringify({ sets }));
+      console.log(JSON.stringify({ sets: problems.sets }));
       const response: Response = await fetch(`${API_URL}/pdf`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ sets })
+        body: JSON.stringify({ sets: problems.sets })
       });
 
       if (!response.ok) {

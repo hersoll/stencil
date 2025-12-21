@@ -1,22 +1,15 @@
 <script lang="ts">
   import { API_URL } from '$src/main';
   import i18n from '$src/i18n.svelte';
-  import {
-    type CourseData,
-    type ProblemSetSpec,
-    defaultProblemSet
-  } from './types';
+  import { type CourseData } from './types';
   import ChapterDisplay from './ChapterDisplay.svelte';
   import InitialSetOptions from './InitialSetOptions.svelte';
   import PDFButton from '../PDFButton.svelte';
   import ErrorPage from '../ErrorPage.svelte';
-  import { error } from '$src/error.svelte';
+  import { error, problems } from '$src/states.svelte';
 
   let { course }: { course: string } = $props();
   let course_data: CourseData | null = $state(null);
-
-  let sets: ProblemSetSpec[] = $state([]);
-  let current_set: ProblemSetSpec = $state(defaultProblemSet);
 
   async function loadCourseData() {
     const res = await fetch(
@@ -29,7 +22,7 @@
   }
 
   function submitSet() {
-    sets.push({ ...current_set });
+    problems.sets.push({ ...problems.current_set });
   }
 
   $effect(() => {
@@ -49,18 +42,18 @@
       <h1>{i18n.t('mathematics')} - {course_data?.desc}</h1>
       <div class="chapter-container">
         {#each course_data?.chapters.filter(c => c.topics.length > 0) as chapter}
-          <ChapterDisplay {chapter} {current_set} />
+          <ChapterDisplay {chapter} current_set={problems.current_set} />
         {/each}
       </div>
     </section>
-    <InitialSetOptions {submitSet} {...current_set} />
+    <InitialSetOptions {submitSet} {...problems.current_set} />
   </main>
   <div>
-    {#each sets as set, i}
+    {#each problems.sets as set, i}
       <p>Set {i + 1}: {set.topics}</p>
     {/each}
   </div>
-  <PDFButton {sets} />
+  <PDFButton />
 {/if}
 
 <style>

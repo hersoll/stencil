@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { error } from '$src/error.svelte';
+  import { error } from '$src/states.svelte';
 </script>
 
 <main>

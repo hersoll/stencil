@@ -1,20 +1,12 @@
 <script lang="ts">
-  import type { Difficulty, SetOptions } from './types';
   import i18n from '$src/i18n.svelte';
   import DifficultySelector from './DifficultySelector.svelte';
   import SubmitSet from './SubmitSet.svelte';
+  import { problems } from '$src/states.svelte';
 
   let {
-    //options,
-    n,
-    starting_difficulty,
-    ending_difficulty,
     submitSet
   }: {
-    options: SetOptions;
-    n: number;
-    starting_difficulty: Difficulty;
-    ending_difficulty: Difficulty;
     submitSet: Function;
   } = $props();
 </script>
@@ -23,15 +15,15 @@
   <h2>Options</h2>
   <span>
     <label for="n">{i18n.t('pick_number')}</label>
-    <input name="n" type="number" bind:value={n} />
+    <input name="n" type="number" bind:value={problems.current_set.n} />
   </span>
   <!-- TODO: Fix difficulty limits -->
   <div>
     <label for="">{i18n.t('difficulty')}:</label>
     <br />
-    <DifficultySelector difficulty={starting_difficulty} />
+    <DifficultySelector type="starting" />
     {i18n.t('to')}
-    <DifficultySelector difficulty={ending_difficulty} />
+    <DifficultySelector type="ending" />
   </div>
   <SubmitSet submitFunction={submitSet} />
 </aside>
