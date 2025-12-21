@@ -4,11 +4,9 @@
   import SubmitSet from './SubmitSet.svelte';
   import { problems } from '$src/states.svelte';
 
-  let {
-    submitSet
-  }: {
-    submitSet: Function;
-  } = $props();
+  function submitSet() {
+    problems.sets.push(structuredClone($state.snapshot(problems.current_set)));
+  }
 </script>
 
 <div class="options">
@@ -17,7 +15,6 @@
     <label for="n">{i18n.t('pick_number')}</label>
     <input name="n" type="number" bind:value={problems.current_set.n} />
   </div>
-  <!-- TODO: Fix difficulty limits -->
   <div>
     <label for="">{i18n.t('difficulty')}:</label>
     <br />

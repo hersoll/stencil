@@ -12,9 +12,6 @@
   let { course }: { course: string } = $props();
   let course_data: CourseData | null = $state(null);
 
-  // In each problems.sets set, there is an array of topics: [1, 2, 3]
-  // I would like to go into the course_data, find the
-
   async function loadCourseData() {
     const res = await fetch(
       `${API_URL}/${i18n.currentLanguage}/course/${course}`
@@ -23,10 +20,6 @@
       error.message = `Status code ${res.status} \n ${await res.text()}`;
     }
     course_data = await res.json();
-  }
-
-  function submitSet() {
-    problems.sets.push(structuredClone($state.snapshot(problems.current_set)));
   }
 
   $effect(() => {
@@ -51,7 +44,7 @@
       </div>
     </section>
     <aside class="options-container">
-      <InitialSetOptions {submitSet} {...problems.current_set} />
+      <InitialSetOptions />
     </aside>
     {#if problems.sets.length > 0}
       <aside class="set-container">
@@ -69,7 +62,7 @@
   main {
     margin-top: 2rem;
     display: grid;
-    grid-template-columns: 3fr 1fr;
+    grid-template-columns: auto 1fr;
     grid-template-rows: min-content 1fr;
     gap: 2rem;
   }
@@ -100,10 +93,10 @@
   .chapter-container {
     margin-top: 2rem;
 
-    column-count: 2;
+    column-count: 3;
     column-gap: 1rem;
 
-    max-width: 900px;
+    max-width: 1100px;
   }
 
   section {
