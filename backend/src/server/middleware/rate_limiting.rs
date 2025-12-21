@@ -8,8 +8,8 @@ pub fn json_limit() -> Box<GovernorConfig<SmartIpKeyExtractor, NoOpMiddleware>> 
     Box::new(
         GovernorConfigBuilder::default()
             .key_extractor(SmartIpKeyExtractor)
-            .per_second(10)
-            .burst_size(100)
+            .per_second(20)
+            .burst_size(200)
             .finish()
             .unwrap(),
     )

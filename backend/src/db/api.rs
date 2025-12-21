@@ -199,14 +199,19 @@ pub async fn get_problems(
         }
     };
     let lang = parse_language(&lang_code)?;
-    let mut topics = Vec::new();
+    let mut problem_vec = Vec::new();
     for id in topic_ids {
         let problems = db::get_topic_problems(id).await?;
-        let topic = TopicIdWithProblems::from(id, &problems, &lang);
-        topics.push(topic);
+        problems.into_iter().for_each(|p| {
+            problem_vec.push(ProblemInformation {
+                id: p.id,
+                difficulty: p.difficulty,
+                desc: p.get_desc(&lang),
+            })
+        });
     }
 
-    Ok((StatusCode::OK, Json(json!(topics))))
+    Ok((StatusCode::OK, Json(json!(problem_vec))))
 }
 
 async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
