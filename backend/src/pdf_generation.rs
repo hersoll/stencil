@@ -7,7 +7,7 @@ use crate::{
 use anyhow::{Result, anyhow};
 use axum::{
     Json,
-    extract::rejection::{self, JsonRejection},
+    extract::rejection::JsonRejection,
     http::{StatusCode, header},
     response::{IntoResponse, Response},
 };

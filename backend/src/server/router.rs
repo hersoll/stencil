@@ -19,10 +19,7 @@ pub fn create_router() -> Router {
             "/{lang}/course/{course}/{chapter}",
             get(db::api::get_chapter),
         )
-        .route(
-            "/{lang}/course/{course}/{chapter}/{topic}",
-            get(db::api::get_topic),
-        )
+        .route("/{lang}/problems", post(db::api::get_problems))
         .layer(GovernorLayer::new(middleware::rate_limiting::json_limit()))
         .route("/pdf", post(pdf_generation::generate_pdf_from_http))
         .route("/pdf/example", get(pdf_generation::generate_example_pdf))

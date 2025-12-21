@@ -5,7 +5,12 @@ use crate::{
     db::{self, ChapterEntry, CourseEntry, HasDesc, ProblemEntry, TopicEntry},
     errors::ApiError,
 };
-use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
+use axum::{
+    Json,
+    extract::{Path, rejection::JsonRejection},
+    http::StatusCode,
+    response::IntoResponse,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -75,18 +80,14 @@ impl TopicHierarchy {
 
 /// Only used for the /topic endpoint, when the problems are expected to be returned
 #[derive(Serialize, Deserialize)]
-struct TopicHierarchyWithProblems {
-    name: String,
-    id: String,
-    desc: String,
+struct TopicIdWithProblems {
+    topic_id: i32,
     problems: Vec<ProblemInformation>,
 }
-impl TopicHierarchyWithProblems {
-    fn from(entry: &TopicEntry, problems: &[ProblemEntry], lang: &Language) -> Self {
-        TopicHierarchyWithProblems {
-            name: entry.name.clone(),
-            id: entry.id.to_string(),
-            desc: entry.get_desc(lang),
+impl TopicIdWithProblems {
+    fn from(topic_id: i32, problems: &[ProblemEntry], lang: &Language) -> Self {
+        TopicIdWithProblems {
+            topic_id,
             problems: problems
                 .into_iter()
                 .map(|p| ProblemInformation {
@@ -187,16 +188,25 @@ pub async fn get_chapter(
     Ok((StatusCode::OK, Json(json!(chapter))))
 }
 
-// lang_c instead of lang_code to shorten line :)
-pub async fn get_topic(
-    Path((lang_c, course_path, chapter_path, topic_path)): Path<(String, String, String, String)>,
+pub async fn get_problems(
+    Path(lang_code): Path<String>,
+    payload: Result<Json<Vec<i32>>, JsonRejection>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let lang = parse_language(&lang_c)?;
-    let topic_entry = validate_topic(&course_path, &chapter_path, &topic_path).await?;
-    let problems = db::get_topic_problems(topic_entry.id).await?;
-    let topic = TopicHierarchyWithProblems::from(&topic_entry, &problems, &lang);
+    let topic_ids = match payload {
+        Ok(Json(topics)) => topics,
+        Err(e) => {
+            return Err(ApiError::BadRequest(e.to_string()));
+        }
+    };
+    let lang = parse_language(&lang_code)?;
+    let mut topics = Vec::new();
+    for id in topic_ids {
+        let problems = db::get_topic_problems(id).await?;
+        let topic = TopicIdWithProblems::from(id, &problems, &lang);
+        topics.push(topic);
+    }
 
-    Ok((StatusCode::OK, Json(json!(topic))))
+    Ok((StatusCode::OK, Json(json!(topics))))
 }
 
 async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
@@ -221,26 +231,6 @@ async fn validate_chapter(course_path: &str, chapter_path: &str) -> Result<Chapt
             ))
         })?;
     Ok(chapter_entry)
-}
-
-async fn validate_topic(
-    course_path: &str,
-    chapter_path: &str,
-    topic_path: &str,
-) -> Result<TopicEntry, ApiError> {
-    let chapter_entry = validate_chapter(course_path, chapter_path).await?;
-    let valid_topics = db::get_chapter_topics(chapter_entry.id).await?;
-    let topic_entry = valid_topics
-        .into_iter()
-        // topic_path can be either an ID or a name
-        .find(|t| t.name == topic_path || &t.id.to_string() == topic_path)
-        .ok_or_else(|| {
-            ApiError::BadRequest(format!(
-                "There is no topic \"{topic_path}\" in chapter {chapter_path}"
-            ))
-        })?;
-
-    Ok(topic_entry)
 }
 
 fn parse_language(lang: &str) -> Result<Language, ApiError> {
