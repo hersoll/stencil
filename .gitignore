@@ -1,4 +1,4 @@
-.env
+.env*
 stencil.typ
 *.pdf
 /target
