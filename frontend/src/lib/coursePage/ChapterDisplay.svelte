@@ -1,17 +1,14 @@
 <script lang="ts">
   import type { ChapterData, ProblemSetSpec } from './types';
-
-  let {
-    chapter,
-    current_set
-  }: { chapter: ChapterData; current_set: ProblemSetSpec } = $props();
+  import { problems } from '$src/states.svelte';
+  let { chapter }: { chapter: ChapterData } = $props();
 
   function handleChange(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     if (checkbox.checked) {
-      current_set.topics.push(Number(checkbox.value));
+      problems.current_set.topics.push(Number(checkbox.value));
     } else {
-      current_set.topics = current_set.topics.filter(
+      problems.current_set.topics = problems.current_set.topics.filter(
         t => t != Number(checkbox.value)
       );
     }
@@ -47,6 +44,10 @@
   }
   label {
     color: var(--text-muted);
+    cursor: pointer;
+    &:hover {
+      color: var(--text);
+    }
   }
   section {
     background-color: var(--bg-light);

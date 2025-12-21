@@ -22,7 +22,7 @@
   }
 
   function submitSet() {
-    problems.sets.push({ ...problems.current_set });
+    problems.sets.push(structuredClone($state.snapshot(problems.current_set)));
   }
 
   $effect(() => {
