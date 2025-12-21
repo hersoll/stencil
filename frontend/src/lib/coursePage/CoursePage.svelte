@@ -1,16 +1,17 @@
 <script lang="ts">
   import { API_URL } from '$src/main';
   import i18n from '$src/i18n.svelte';
-  import { onMount } from 'svelte';
   import {
     type CourseData,
     type ProblemSetSpec,
-    type DocumentOptions,
     defaultProblemSet
   } from './types';
   import ChapterDisplay from './ChapterDisplay.svelte';
   import InitialSetOptions from './InitialSetOptions.svelte';
   import PDFButton from '../PDFButton.svelte';
+  import ErrorPage from '../ErrorPage.svelte';
+  import { error } from '$src/error.svelte';
+
   let { course }: { course: string } = $props();
   let course_data: CourseData | null = $state(null);
 
@@ -22,7 +23,7 @@
       `${API_URL}/${i18n.currentLanguage}/course/${course}`
     );
     if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
+      error.message = `Status code ${res.status} \n ${await res.text()}`;
     }
     course_data = await res.json();
   }
@@ -31,10 +32,6 @@
     sets.push({ ...current_set });
   }
 
-  onMount(async () => {
-    await loadCourseData();
-  });
-
   $effect(() => {
     if (i18n.currentLanguage) {
       loadCourseData();
@@ -42,8 +39,10 @@
   });
 </script>
 
-{#if !course_data}
-  <h1>Laddar...</h1>
+{#if error.message}
+  <ErrorPage />
+{:else if !course_data}
+  <h1>{i18n.t('loading')}...</h1>
 {:else}
   <main>
     <section>

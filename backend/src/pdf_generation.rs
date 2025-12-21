@@ -7,7 +7,7 @@ use crate::{
 use anyhow::{Result, anyhow};
 use axum::{
     Json,
-    extract::rejection::JsonRejection,
+    extract::rejection::{self, JsonRejection},
     http::{StatusCode, header},
     response::{IntoResponse, Response},
 };
@@ -90,17 +90,20 @@ pub async fn generate_pdf_from_http(payload: Result<Json<PDFRequest>, JsonReject
             let pdf_result = build_pdf(data).await;
             pdf_result_to_response(pdf_result)
         }
-        Err(JsonRejection::MissingJsonContentType(_)) => (
-            StatusCode::BAD_REQUEST,
-            "
+        Err(JsonRejection::MissingJsonContentType(rejection)) => {
+            info!("Rejected request body: {rejection}");
+            (
+                StatusCode::BAD_REQUEST,
+                format!(
+                    "Rejected request: {rejection}
 It seems like the request was sent without a JSON.
 To generate a custom stencil, you need to attach a JSON body in the following format: 
 
 "
-            .to_owned()
-                + &text_endpoints::get_http_schema(),
-        )
-            .into_response(),
+                ) + &text_endpoints::get_http_schema(),
+            )
+                .into_response()
+        }
         Err(JsonRejection::JsonDataError(err)) => {
             (StatusCode::BAD_REQUEST, err.to_string()).into_response()
         }

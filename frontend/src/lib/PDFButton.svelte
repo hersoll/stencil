@@ -1,6 +1,7 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import { API_URL } from '$src/main';
+  import { error } from '$src/error.svelte';
   let { sets } = $props();
   let loading = $state(false);
   let errorMessage = $state('');
@@ -10,17 +11,18 @@
     loading = true;
 
     try {
+      console.log(JSON.stringify({ sets }));
       const response: Response = await fetch(`${API_URL}/pdf`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'applications/json'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(sets)
+        body: JSON.stringify({ sets })
       });
 
       if (!response.ok) {
-        console.log(response.statusText);
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let text = await response.text();
+        error.message = `Status: ${response.status} \n${text}`;
       }
 
       // Get the PDF as a blob (binary data)
