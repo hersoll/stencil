@@ -59,6 +59,7 @@
         {#each sets.set_states as set_state}
           <SetDisplay
             bind:set={set_state.set}
+            id={set_state.id}
             onDelete={() => deleteSet(set_state.id)}
           />
         {/each}

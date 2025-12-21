@@ -6,8 +6,9 @@
 
   let {
     set = $bindable(),
+    id,
     onDelete
-  }: { set: ProblemSetSpec; onDelete: () => void } = $props();
+  }: { set: ProblemSetSpec; onDelete: () => void; id: number } = $props();
   let topics = $state<{ id: number; desc: string; problems: ProblemData[] }[]>(
     []
   );
@@ -33,7 +34,7 @@
   });
 </script>
 
-<button popovertarget="set-editor" class="set-container">
+<button popovertarget="set-editor-{id}" class="set-container">
   {#if topics.length > 0}
     <h3>
       {topics.length}
@@ -50,7 +51,7 @@
   {/if}
 </button>
 
-<div popover id="set-editor" class="set-editor">
+<div popover id="set-editor-{id}" class="set-editor">
   {#each topics as topic}
     <h2>{topic.desc}</h2>
     {#each topic.problems as problem}
