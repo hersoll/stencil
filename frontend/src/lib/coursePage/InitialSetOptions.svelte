@@ -11,12 +11,12 @@
   } = $props();
 </script>
 
-<aside>
-  <h2>Options</h2>
-  <span>
+<div class="options">
+  <h2>{i18n.t('options')}</h2>
+  <div class="n-container">
     <label for="n">{i18n.t('pick_number')}</label>
     <input name="n" type="number" bind:value={problems.current_set.n} />
-  </span>
+  </div>
   <!-- TODO: Fix difficulty limits -->
   <div>
     <label for="">{i18n.t('difficulty')}:</label>
@@ -26,16 +26,28 @@
     <DifficultySelector type="ending" />
   </div>
   <SubmitSet submitFunction={submitSet} />
-</aside>
+</div>
 
 <style>
-  aside {
+  .options {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    background-color: var(--bg);
-    margin-top: 2rem;
-    border-radius: 2rem;
-    padding: 1rem;
+  }
+  h2 {
+    margin: 0;
+  }
+
+  .n-container {
+    display: grid;
+
+    & input {
+      width: 50%;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      line-height: 1.5rem;
+      padding-left: 0.5rem;
+    }
   }
 </style>

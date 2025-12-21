@@ -1,3 +1,9 @@
+export type ProblemData = {
+  id: number;
+  difficulty: number;
+  desc: string;
+};
+
 export type TopicData = {
   name: string;
   id: number;

@@ -49,6 +49,7 @@
 <style>
   .pdf_container {
     display: flex;
+    margin: 0 auto;
     flex-direction: column;
     align-items: center;
     gap: 2em;

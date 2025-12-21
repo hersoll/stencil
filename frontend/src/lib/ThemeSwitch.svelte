@@ -44,14 +44,18 @@
     margin: 0 0.25rem;
     padding: 0;
     background: none;
-    color: var(--text);
+    color: var(--text-muted);
     border: none;
     transition: color 0.25s;
 
     &:hover {
-      color: var(--text-muted);
+      color: var(--text);
     }
     &:disabled {
+      cursor: default;
+    }
+    &.active_theme {
+      color: var(--primary);
       cursor: default;
     }
   }

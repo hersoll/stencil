@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ChapterData, ProblemSetSpec } from './types';
+  import type { ChapterData } from './types';
   import { problems } from '$src/states.svelte';
   let { chapter }: { chapter: ChapterData } = $props();
 
@@ -45,13 +45,19 @@
   label {
     color: var(--text-muted);
     cursor: pointer;
+    transition: font-size 0.03s;
+    &:active {
+      font-size: 1.04rem;
+    }
     &:hover {
       color: var(--text);
     }
   }
   section {
+    margin: 1rem 0;
     background-color: var(--bg-light);
     border-radius: 1rem;
     padding: 1rem;
+    break-inside: avoid;
   }
 </style>
