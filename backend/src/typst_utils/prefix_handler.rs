@@ -43,27 +43,27 @@ pub fn handle_prefixes(
     // Case 2: No group prefix.
     group_prefixes.push(None);
     match document_options.max_prefix_group {
-        // Case 2A: Group similar problems
-        //
-        // Questions and answers are grouped into nested lists,
-        // and therefore will be mutated quite a lot
-        Some(max) => apply_grouped_prefixes(
-            question_set,
-            answer_set,
-            &prefix_ids,
-            &prefix_reg,
-            max,
-            &document_options.lang,
-        ),
-        // Case 2B: Don't group anything
+        // Case 2A: Don't group anything
         //
         // Prefixes are applied to the questions that have them.
         // Nothing else is changed
-        None => apply_inline_prefixes(
+        0 => apply_inline_prefixes(
             question_set,
             answer_set,
             &prefix_ids,
             &prefix_reg,
+            &document_options.lang,
+        ),
+        // Case 2B: Group similar problems
+        //
+        // Questions and answers are grouped into nested lists,
+        // and therefore will be mutated quite a lot
+        _ => apply_grouped_prefixes(
+            question_set,
+            answer_set,
+            &prefix_ids,
+            &prefix_reg,
+            document_options.max_prefix_group,
             &document_options.lang,
         ),
     }

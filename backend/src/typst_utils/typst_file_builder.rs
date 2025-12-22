@@ -1,8 +1,7 @@
 use crate::{
-    db,
+    Language, db,
     problems::Problem,
     typst_utils::{formatting, preamble::PREAMBLE_STR, prefix_handler},
-    Language,
 };
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -16,7 +15,7 @@ const DEFAULT_FONT_SIZE: u8 = 10;
 const DEFAULT_X_MARGIN: u8 = 20;
 const DEFAULT_Y_MARGIN: u8 = 20;
 const DEFAULT_LANG: Language = Language::Sv;
-const DEFAULT_MAX_PREFIX_GROUP: Option<u8> = Some(3);
+const DEFAULT_MAX_PREFIX_GROUP: u8 = 3;
 const DEFAULT_PAPER_SIZE: PaperSize = PaperSize::A4;
 const DEFAULT_WRITE_SOLUTIONS: WriteSolutions = WriteSolutions::First;
 const DEFAULT_PAR_SPACING: Option<u8> = None;
@@ -50,7 +49,7 @@ pub struct DocumentOptions {
     pub x_margin: u8,
     pub y_margin: u8,
     pub par_spacing: Option<u8>,
-    pub max_prefix_group: Option<u8>,
+    pub max_prefix_group: u8,
 }
 
 impl Default for DocumentOptions {
