@@ -39,6 +39,7 @@
   }
 
   function deleteSet(id: number) {
+    document.getElementById(`set-editor-${id}`)?.hidePopover();
     sets.set_states = sets.set_states.filter(state => state.id !== id);
   }
 
