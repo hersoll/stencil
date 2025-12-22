@@ -57,3 +57,13 @@
   >
   <option value="Hard">{i18n.t('difficulty_hard')}</option>
 </select>
+
+<style>
+  select {
+    font-size: 1rem;
+    background-color: var(--bg-light);
+    border-radius: 0.5rem;
+    border: none;
+    padding: 0.5rem 0.3rem 0.5rem 0.3rem;
+  }
+</style>

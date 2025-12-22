@@ -18,12 +18,14 @@
     <label for="n">{i18n.t('pick_number')}</label>
     <input name="n" type="number" bind:value={sets.current_set.n} />
   </div>
-  <div>
+  <div class="difficulty-container">
     <label for="">{i18n.t('difficulty')}:</label>
     <br />
-    <DifficultySelector type="starting" />
-    {i18n.t('to')}
-    <DifficultySelector type="ending" />
+    <div class="difficulty-row">
+      <DifficultySelector type="starting" />
+      {i18n.t('to')}
+      <DifficultySelector type="ending" />
+    </div>
   </div>
   <button
     class="primary create-btn"
@@ -53,6 +55,13 @@
       line-height: 1.5rem;
       padding-left: 0.5rem;
     }
+  }
+
+  .difficulty-row {
+    margin-top: 0.2rem;
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
   }
 
   .create-btn {

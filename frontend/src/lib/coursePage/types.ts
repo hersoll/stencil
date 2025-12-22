@@ -32,7 +32,7 @@ export type SetOptions = {
 
 export type Difficulty = 'Intro' | 'Easy' | 'Medium' | 'Hard';
 
-export function num_to_difficulty(num: number): string {
+export function num_to_difficulty_str(num: number): string {
   if (num <= 1) {
     return 'difficulty_intro';
   } else if (num <= 4) {
@@ -41,6 +41,23 @@ export function num_to_difficulty(num: number): string {
     return 'difficulty_medium';
   } else {
     return 'difficulty_hard';
+  }
+}
+
+export function difficulty_to_string(difficulty: Difficulty): string {
+  switch (difficulty) {
+    case 'Intro': {
+      return 'difficulty_intro';
+    }
+    case 'Easy': {
+      return 'difficulty_easy';
+    }
+    case 'Medium': {
+      return 'difficulty_medium';
+    }
+    case 'Hard': {
+      return 'difficulty_hard';
+    }
   }
 }
 
