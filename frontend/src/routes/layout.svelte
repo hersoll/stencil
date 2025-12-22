@@ -28,6 +28,7 @@
     justify-content: center;
     background-color: var(--bg);
     border-radius: 2rem;
+    box-shadow: var(--shadow-elevation-low);
   }
   a {
     margin: 0;

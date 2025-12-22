@@ -26,7 +26,7 @@
     <DifficultySelector type="ending" />
   </div>
   <button
-    class="primary"
+    class="primary create-btn"
     disabled={sets.current_set.topics.length == 0}
     onclick={submitSet}>{i18n.t('create_set')}</button
   >
@@ -53,5 +53,9 @@
       line-height: 1.5rem;
       padding-left: 0.5rem;
     }
+  }
+
+  .create-btn {
+    box-shadow: var(--shadow-elevation-medium);
   }
 </style>

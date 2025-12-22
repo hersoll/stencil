@@ -106,11 +106,13 @@
   }
   .main-container {
     padding: 2rem;
+    box-shadow: var(--shadow-elevation-low);
   }
   .options-container {
     background-color: var(--bg);
     border-radius: 2rem;
     padding: 1rem;
+    box-shadow: var(--shadow-elevation-low);
   }
   .set-container {
     display: flex;
@@ -119,6 +121,7 @@
     background-color: var(--bg);
     border-radius: 2rem;
     padding: 1rem;
+    box-shadow: var(--shadow-elevation-low);
 
     & h2 {
       margin: 0;

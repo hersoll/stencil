@@ -62,6 +62,9 @@
     width: 600px;
     height: 900px;
   }
+  button {
+    box-shadow: var(--shadow-elevation-medium);
+  }
 
   iframe {
     width: 600px;
