@@ -1,6 +1,12 @@
 * {
   margin: 0;
   box-sizing: border-box;
+  color: var(--text);
+
+  transition:
+    color 0.4s,
+    background-color 0.4s,
+    box-shadow 0.4s;
 }
 :root {
   --bg-dark: light-dark(oklch(0.9 0 264), oklch(0.1 0 264));
@@ -120,9 +126,9 @@ button {
   background-color: var(--bg-light);
   cursor: pointer;
   transition:
-    border-color 0.25s,
     color 0.4s,
-    background-color 0.4s;
+    background-color 0.4s,
+    border-color 0.3s;
 
   &.primary {
     background-color: var(--primary);

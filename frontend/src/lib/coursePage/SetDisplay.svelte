@@ -59,11 +59,16 @@
         {i18n.t('topics').toLowerCase()}
       </h3>
     {/if}
-    <p class="header">
-      {set.n} uppgifter, {i18n.t(difficulty_to_string(set.starting_difficulty))}
-      {i18n.t('to')}
-      {i18n.t(difficulty_to_string(set.ending_difficulty))}
-    </p>
+    <div class="set-description">
+      <p>
+        {set.n} uppgifter
+      </p>
+      <p>
+        {i18n.t(difficulty_to_string(set.starting_difficulty))}
+        {i18n.t('to')}
+        {i18n.t(difficulty_to_string(set.ending_difficulty))}
+      </p>
+    </div>
   {:else}
     <h2>No problems</h2>
   {/if}
@@ -73,7 +78,7 @@
 
 <style>
   .set-container {
-    max-width: 20rem;
+    width: 20rem;
     text-align: left;
     background-color: var(--bg-light);
     border: 2px solid transparent;
@@ -88,6 +93,7 @@
       cursor: pointer;
     }
     h3 {
+      font-size: 1.2rem;
       color: var(--text);
 
       overflow: hidden;
@@ -95,17 +101,11 @@
       white-space: nowrap;
     }
     p {
+      margin-top: 0.15rem;
       color: var(--text-muted);
     }
-    .header {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .id {
-      position: absolute;
-      right: 1rem;
-      top: 1rem;
+    .set-description {
+      margin-top: 0.5rem;
     }
   }
 </style>

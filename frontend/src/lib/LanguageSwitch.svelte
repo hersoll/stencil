@@ -23,6 +23,7 @@
     background-color: var(--bg-light);
     padding: 1rem;
     border-radius: 1rem;
+    box-shadow: var(--shadow-elevation-low);
   }
   button {
     margin: 0 0.25rem;
