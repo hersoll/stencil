@@ -1,7 +1,7 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import { API_URL } from '$src/main';
-  import { error, sets } from '$src/states.svelte';
+  import { error, sets, document_options } from '$src/states.svelte';
 
   let loading = $state(false);
   let errorMessage = $state('');
@@ -17,7 +17,7 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ sets: mapped_sets })
+        body: JSON.stringify({ sets: mapped_sets, document_options })
       });
 
       if (!response.ok) {

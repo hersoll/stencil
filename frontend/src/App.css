@@ -111,6 +111,22 @@ body {
   -ms-user-select: none; /* IE10+/Edge */
 }
 
+.text {
+  color: var(--text);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+.bg-dark {
+  background-color: var(--bg-dark);
+}
+.bg {
+  background-color: var(--bg);
+}
+.bg-light {
+  background-color: var(--bg-light);
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

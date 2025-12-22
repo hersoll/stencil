@@ -1,31 +1,28 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import { sets } from '$src/states.svelte';
-  let { type } = $props();
+  import type { ProblemSetSpec } from './types';
+  let { set, type }: { set: ProblemSetSpec; type: 'starting' | 'ending' } =
+    $props();
 
   let difficulty = {
     get value() {
       return type == 'starting'
-        ? sets.current_set.starting_difficulty
-        : sets.current_set.ending_difficulty;
+        ? set.starting_difficulty
+        : set.ending_difficulty;
     },
     set value(val) {
       if (type == 'starting') {
-        sets.current_set.starting_difficulty = val;
+        set.starting_difficulty = val;
       } else {
-        sets.current_set.ending_difficulty = val;
+        set.ending_difficulty = val;
       }
     }
   };
   let starting_difficulty_num = $derived(
-    { Intro: 0, Easy: 1, Medium: 2, Hard: 3 }[
-      sets.current_set.starting_difficulty
-    ]
+    { Intro: 0, Easy: 1, Medium: 2, Hard: 3 }[set.starting_difficulty]
   );
   let ending_difficulty_num = $derived(
-    { Intro: 0, Easy: 1, Medium: 2, Hard: 3 }[
-      sets.current_set.ending_difficulty
-    ]
+    { Intro: 0, Easy: 1, Medium: 2, Hard: 3 }[set.ending_difficulty]
   );
 
   /** 
@@ -34,7 +31,7 @@
   $effect(() => {
     // Only trigger once, otherwise there will be two triggers
     if (type == 'ending' && starting_difficulty_num > ending_difficulty_num) {
-      sets.current_set.ending_difficulty = sets.current_set.starting_difficulty;
+      set.ending_difficulty = set.starting_difficulty;
     }
   });
 </script>

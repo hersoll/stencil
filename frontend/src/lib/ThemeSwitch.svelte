@@ -1,4 +1,5 @@
 <script lang="ts">
+  import i18n from '$src/i18n.svelte';
   let theme = $state(localStorage.getItem('theme') || 'system');
 
   function setTheme(newTheme: string) {
@@ -14,21 +15,21 @@
     class:active_theme={theme === 'system'}
     onclick={() => setTheme('system')}
   >
-    System
+    {i18n.t('theme_system')}
   </button>
   <button
     id="theme-dark"
     class:active_theme={theme === 'dark'}
     onclick={() => setTheme('dark')}
   >
-    Dark
+    {i18n.t('theme_dark')}
   </button>
   <button
     id="theme-light"
     class:active_theme={theme === 'light'}
     onclick={() => setTheme('light')}
   >
-    Light
+    {i18n.t('theme_light')}
   </button>
 </div>
 

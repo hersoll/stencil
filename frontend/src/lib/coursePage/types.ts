@@ -4,6 +4,12 @@ export type ProblemData = {
   desc: string;
 };
 
+export type TopicWithProblems = {
+  id: number;
+  desc: string;
+  problems: ProblemData[];
+};
+
 export type TopicData = {
   name: string;
   id: number;
@@ -93,5 +99,19 @@ export type DocumentOptions = {
   x_margin: number;
   y_margin: number;
   par_spacing: number | null;
-  max_prefix_group: number | null;
+  max_prefix_group: number;
+};
+
+export const defaultDocumentOptions: DocumentOptions = {
+  font_size: 10,
+  title: '',
+  answer_columns: 3,
+  lang: 'Sv',
+  write_solutions: 'First',
+  color: true,
+  paper_size: 'A4',
+  x_margin: 20,
+  y_margin: 20,
+  par_spacing: null,
+  max_prefix_group: 3
 };

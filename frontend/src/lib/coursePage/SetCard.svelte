@@ -2,7 +2,7 @@
   import i18n from '$src/i18n.svelte';
   import { API_URL } from '$src/main';
   import { error } from '$src/states.svelte';
-  import SetEditor from './SetEditor.svelte';
+  import SetEditor from './SetEditor/SetEditor.svelte';
 
   import {
     difficulty_to_string,
@@ -61,7 +61,8 @@
     {/if}
     <div class="set-description">
       <p>
-        {set.n} uppgifter
+        {set.n}
+        {i18n.t('problems').toLowerCase()}
       </p>
       <p>
         {i18n.t(difficulty_to_string(set.starting_difficulty))}
@@ -70,11 +71,11 @@
       </p>
     </div>
   {:else}
-    <h2>No problems</h2>
+    <h2>{i18n.t('something_went_wrong')}</h2>
   {/if}
 </button>
 
-<SetEditor bind:set {onDelete} {id} {topics} />
+<SetEditor {set} {onDelete} {id} {topics} />
 
 <style>
   .set-container {

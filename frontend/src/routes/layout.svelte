@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
   let { children }: { children: Snippet } = $props();
   import LanguageSwitch from '$lib/LanguageSwitch.svelte';
-  import ThemeSwitch from '$src/lib/ThemeSwitch.svelte';
+  import ThemeSwitch from '$lib/ThemeSwitch.svelte';
 </script>
 
 <nav>

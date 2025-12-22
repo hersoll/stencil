@@ -1,7 +1,8 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import DifficultySelector from './DifficultySelector.svelte';
+  import DifficultySelector from './inputComponents/DifficultySelector.svelte';
   import { sets, set_id } from '$src/states.svelte';
+  import ProblemNumberInput from './inputComponents/ProblemNumberInput.svelte';
 
   function submitSet() {
     sets.set_states.push({
@@ -14,17 +15,14 @@
 
 <div class="options">
   <h2>{i18n.t('options')}</h2>
-  <div class="n-container">
-    <label for="n">{i18n.t('pick_number')}</label>
-    <input name="n" type="number" bind:value={sets.current_set.n} />
-  </div>
+  <ProblemNumberInput set={sets.current_set} />
   <div class="difficulty-container">
     <label for="">{i18n.t('difficulty')}:</label>
     <br />
     <div class="difficulty-row">
-      <DifficultySelector type="starting" />
+      <DifficultySelector set={sets.current_set} type="starting" />
       {i18n.t('to')}
-      <DifficultySelector type="ending" />
+      <DifficultySelector set={sets.current_set} type="ending" />
     </div>
   </div>
   <button
@@ -42,19 +40,6 @@
   }
   h2 {
     margin: 0;
-  }
-
-  .n-container {
-    display: grid;
-
-    & input {
-      width: 50%;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      line-height: 1.5rem;
-      padding-left: 0.5rem;
-    }
   }
 
   .difficulty-row {

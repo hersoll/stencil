@@ -3,12 +3,13 @@
   import i18n from '$src/i18n.svelte';
   import { type CourseData } from './types';
   import { applyMasonry } from './masonry';
-  import ChapterDisplay from './ChapterDisplay.svelte';
+  import ChapterDisplay from './ChapterCard.svelte';
   import InitialSetOptions from './InitialSetOptions.svelte';
-  import PDFButton from '../PDFButton.svelte';
+  import PDFButton from './PDFViewer.svelte';
   import ErrorPage from '../ErrorPage.svelte';
   import { error, sets } from '$src/states.svelte';
-  import SetDisplay from './SetDisplay.svelte';
+  import SetDisplay from './SetCard.svelte';
+  import DocumentOptions from './DocumentOptions.svelte';
 
   let { course }: { course: string } = $props();
   let course_data: CourseData | null = $state(null);
@@ -65,6 +66,7 @@
           {/each}
         </div>
       </section>
+      <DocumentOptions />
       <PDFButton />
     </div>
 
@@ -76,7 +78,7 @@
         <aside class="set-container">
           <div>
             <h2>{i18n.t('sets')}</h2>
-            <p>Klicka för att redigera</p>
+            <p>{i18n.t('click_to_edit')}</p>
           </div>
           {#each sets.set_states as set_state}
             <SetDisplay
