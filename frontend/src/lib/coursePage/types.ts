@@ -31,6 +31,19 @@ export type SetOptions = {
 };
 
 export type Difficulty = 'Intro' | 'Easy' | 'Medium' | 'Hard';
+
+export function num_to_difficulty(num: number): string {
+  if (num <= 1) {
+    return 'difficulty_intro';
+  } else if (num <= 4) {
+    return 'difficulty_easy';
+  } else if (num <= 7) {
+    return 'difficulty_medium';
+  } else {
+    return 'difficulty_hard';
+  }
+}
+
 /// Should match the ProblemSetSpec of the backend
 export type ProblemSetSpec = {
   topics: number[];

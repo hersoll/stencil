@@ -15,8 +15,8 @@
   }
 </script>
 
-<section>
-  <h2 style:color={chapter.topics.length > 0 ? 'var(--text)' : 'gray'}>
+<div class="chapter-card">
+  <h2>
     {chapter.desc}
   </h2>
   <div>
@@ -29,11 +29,11 @@
           type="checkbox"
           onchange={handleChange}
         />
-        <label for={topic.name}>{topic.desc}</label>
+        <label for={topic.name} class="no-select">{topic.desc}</label>
       </span>
     {/each}
   </div>
-</section>
+</div>
 
 <style>
   div {
@@ -41,6 +41,7 @@
   }
   h2 {
     margin: 0 0 1rem 0;
+    color: var(--text);
   }
   label {
     color: var(--text-muted);
@@ -53,11 +54,12 @@
       color: var(--text);
     }
   }
-  section {
-    margin: 1rem 0;
+  .chapter-card {
     background-color: var(--bg-light);
     border-radius: 1rem;
     padding: 1rem;
-    break-inside: avoid;
+    box-shadow: var(--shadow-elevation-medium);
+    height: fit-content;
+    min-height: 0;
   }
 </style>

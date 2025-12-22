@@ -49,13 +49,11 @@
 <style>
   button {
     background-color: var(--primary);
-    color: var(--text);
-    color-scheme: light;
+    color: black;
     transition:
       color 0.4s,
       background-color 0.4s;
     &:disabled {
-      color-scheme: dark;
       cursor: not-allowed;
       background-color: var(--bg-light);
       color: gray;
