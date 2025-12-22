@@ -1,7 +1,6 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import DifficultySelector from './DifficultySelector.svelte';
-  import SubmitSet from './SubmitSet.svelte';
   import { sets, set_id } from '$src/states.svelte';
 
   function submitSet() {
@@ -26,7 +25,11 @@
     {i18n.t('to')}
     <DifficultySelector type="ending" />
   </div>
-  <SubmitSet submitFunction={submitSet} />
+  <button
+    class="primary"
+    disabled={sets.current_set.topics.length == 0}
+    onclick={submitSet}>{i18n.t('create_set')}</button
+  >
 </div>
 
 <style>

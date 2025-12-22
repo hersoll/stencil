@@ -115,7 +115,25 @@ button {
   font-family: inherit;
   background-color: var(--bg-light);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition:
+    border-color 0.25s,
+    color 0.4s,
+    background-color 0.4s;
+
+  &.primary {
+    background-color: var(--primary);
+    color: oklch(0.18 0 0);
+
+    &:hover:enabled {
+      background-color: var(--secondary);
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: var(--bg-light);
+    color: gray;
+  }
 }
 
 button:focus,

@@ -37,7 +37,11 @@
 </script>
 
 <div class="pdf_container">
-  <button onclick={fetchPdf} disabled={sets.set_states.length == 0}>
+  <button
+    class="primary"
+    onclick={fetchPdf}
+    disabled={sets.set_states.length == 0}
+  >
     {loading ? 'Loading...' : i18n.t('create_pdf')}
   </button>
 
@@ -47,18 +51,6 @@
 </div>
 
 <style>
-  button {
-    background-color: var(--primary);
-    color: black;
-    transition:
-      color 0.4s,
-      background-color 0.4s;
-    &:disabled {
-      cursor: not-allowed;
-      background-color: var(--bg-light);
-      color: gray;
-    }
-  }
   .pdf_container {
     display: flex;
     margin: 0 auto;
