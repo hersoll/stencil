@@ -17,7 +17,7 @@
     }
   }
   const ANSWER_COLUMNS_MIN = 1;
-  const ANSWER_COLUMNS_MAX = 3;
+  const ANSWER_COLUMNS_MAX = 8;
   function handleAnswerColumnsBlur(
     e: Event & { currentTarget: HTMLInputElement }
   ) {
