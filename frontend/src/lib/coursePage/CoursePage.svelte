@@ -61,6 +61,7 @@
     <div class="col">
       <section class="main-container">
         <h1>{i18n.t('mathematics')} - {course_data?.desc}</h1>
+        <h2>{i18n.t('instructions')}</h2>
         <div class="chapter-container" bind:this={container}>
           {#each course_data?.chapters.filter(c => c.topics.length > 0) as chapter}
             <ChapterDisplay {chapter} />
@@ -73,7 +74,9 @@
     </div>
 
     <div class="col">
-      <DocumentOptions />
+      <div class="options-container">
+        <DocumentOptions />
+      </div>
       {#if sets.set_states.length > 0}
         <aside class="set-container">
           <div>
@@ -97,7 +100,7 @@
   main {
     margin-top: 2rem;
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 22rem;
     align-items: start;
     gap: 2rem;
   }
@@ -116,6 +119,11 @@
 
     h1 {
       align-self: self-start;
+      color: var(--text);
+    }
+    h2 {
+      align-self: self-start;
+      color: var(--text-muted);
     }
   }
   .set-container {
@@ -135,6 +143,13 @@
       margin: 0;
       color: var(--text-muted);
     }
+  }
+
+  .options-container {
+    padding: 1rem;
+    border-radius: 2rem;
+    background-color: var(--bg);
+    box-shadow: var(--shadow-elevation-low);
   }
   .chapter-container {
     margin-top: 2rem;

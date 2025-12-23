@@ -26,7 +26,6 @@
     border-radius: 1rem;
     box-shadow: var(--shadow-elevation-medium);
     padding: 1rem;
-    width: 28rem;
     display: flex;
     gap: 4rem;
     justify-content: center;

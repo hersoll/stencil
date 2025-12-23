@@ -100,8 +100,14 @@
   }
 </script>
 
-<div class="options-container">
-  <h2>{i18n.t('options')}</h2>
+<h2>{i18n.t('options')}</h2>
+
+<div class="options">
+  <!-- TITLE  -->
+  <div class="title-container">
+    <label for="title">{i18n.t('document_option_title')}</label>
+    <input name="title" type="text" bind:value={document_options.title} />
+  </div>
 
   <!-- LANGUAGE -->
   <div class="language-container">
@@ -229,20 +235,14 @@
     <label for="color">{i18n.t('document_option_color')}</label>
     <input name="color" type="checkbox" bind:checked={document_options.color} />
   </div>
-
-  <!-- TITLE  -->
-  <div class="title-container">
-    <label for="title">{i18n.t('document_option_heading')}</label>
-    <input name="title" type="text" bind:value={document_options.title} />
-  </div>
 </div>
 
 <style>
-  .options-container {
-    padding: 1rem;
-    border-radius: 2rem;
-    background-color: var(--bg);
-    box-shadow: var(--shadow-elevation-low);
+  .options {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
   }
   h2 {
     margin: 0;

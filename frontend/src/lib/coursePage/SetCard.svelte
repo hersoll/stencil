@@ -79,7 +79,6 @@
 
 <style>
   .set-container {
-    width: 20rem;
     text-align: left;
     background-color: var(--bg-light);
     border: 2px solid transparent;
