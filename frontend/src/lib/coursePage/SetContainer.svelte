@@ -26,7 +26,7 @@
     <p>{i18n.t('click_to_edit')}</p>
   </div>
   <button class="delete-all" onclick={() => dialogElement.showModal()}
-    >Delete all</button
+    >{i18n.t('clear')}</button
   >
   {#each sets.set_states as set_state}
     <SetDisplay
