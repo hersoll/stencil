@@ -53,6 +53,7 @@
     class="pdf-container {loading || pdfUrl != '' ? 'expanded' : ''}"
     bind:this={scrollElement}
     in:fly={{ y: 60, duration: 600, delay: 150 }}
+    out:fly={{ x: 60, duration: 600, delay: 100 }}
   >
     <div class="title-container">
       <label for="title">{i18n.t('document_option_title')}:</label>

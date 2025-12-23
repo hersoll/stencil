@@ -8,10 +8,10 @@
   import PDFCard from './PDFCard.svelte';
   import ErrorPage from '../ErrorPage.svelte';
   import { error, sets } from '$src/states.svelte';
-  import SetDisplay from './SetCard.svelte';
   import DocumentOptions from './DocumentOptions.svelte';
   import CreateSetButton from './CreateSetButton.svelte';
   import { fade, fly } from 'svelte/transition';
+  import SetContainer from './SetContainer.svelte';
 
   let { course }: { course: string } = $props();
   let course_data: CourseData | null = $state(null);
@@ -46,11 +46,6 @@
     show_loading_message = false;
     clearTimeout(delay);
     course_data = await res.json();
-  }
-
-  function deleteSet(id: number) {
-    document.getElementById(`set-editor-${id}`)?.hidePopover();
-    sets.set_states = sets.set_states.filter(state => state.id !== id);
   }
 
   $effect(() => {
@@ -90,19 +85,7 @@
         <DocumentOptions />
       </div>
       {#if sets.set_states.length > 0}
-        <aside class="set-container" in:fly={{ y: 60, duration: 600 }}>
-          <div>
-            <h2>{i18n.t('sets')}</h2>
-            <p>{i18n.t('click_to_edit')}</p>
-          </div>
-          {#each sets.set_states as set_state}
-            <SetDisplay
-              bind:set={set_state.set}
-              id={set_state.id}
-              onDelete={() => deleteSet(set_state.id)}
-            />
-          {/each}
-        </aside>
+        <SetContainer />
       {/if}
     </div>
   </main>
@@ -135,24 +118,6 @@
     }
     h2 {
       align-self: self-start;
-      color: var(--text-muted);
-    }
-  }
-  .set-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    background-color: var(--bg);
-    border-radius: 2rem;
-    padding: 1rem;
-    box-shadow: var(--shadow-elevation-low);
-
-    & h2 {
-      margin: 0;
-    }
-
-    & p {
-      margin: 0;
       color: var(--text-muted);
     }
   }
