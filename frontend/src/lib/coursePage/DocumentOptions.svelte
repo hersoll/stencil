@@ -104,13 +104,13 @@
 
 <div class="options">
   <!-- TITLE  -->
-  <div class="title-container">
+  <div class="title container">
     <label for="title">{i18n.t('document_option_title')}</label>
     <input name="title" type="text" bind:value={document_options.title} />
   </div>
 
   <!-- LANGUAGE -->
-  <div class="language-container">
+  <div class="language container">
     <label for="language">{i18n.t('document_option_language')}</label>
     <select name="language" id="language" bind:value={document_options.lang}>
       <option value="Sv">{i18n.t('language_sv')}</option>
@@ -119,7 +119,7 @@
   </div>
 
   <!-- WRITE SOLUTIONS  -->
-  <div class="solutions-container">
+  <div class="solutions container">
     <label for="write_solutions">{i18n.t('document_option_solutions')}</label>
     <select
       name="write_solutions"
@@ -133,7 +133,7 @@
   </div>
 
   <!-- PAPER SIZE -->
-  <div class="paper-size-container">
+  <div class="paper-size container">
     <label for="paper_size">{i18n.t('document_option_paper_size')}</label>
     <select
       name="paper_size"
@@ -146,7 +146,7 @@
   </div>
 
   <!-- FONT SIZE -->
-  <div class="font-size-container">
+  <div class="font-size container">
     <label for="font-size">{i18n.t('document_option_font_size')}</label>
     <input
       name="font-size"
@@ -159,7 +159,7 @@
   </div>
 
   <!-- ANSWER COLUMNS -->
-  <div class="answer-columns-container">
+  <div class="answer-columns container">
     <label for="answer-columns"
       >{i18n.t('document_option_answer_columns')}</label
     >
@@ -174,9 +174,8 @@
   </div>
 
   <!-- MARGINS  -->
-  <div class="margins-container">
-    <p>Margins (FIX)</p>
-    <label for="x-margin">x</label>
+  <div class="margins container">
+    <label for="x-margin">{i18n.t('document_option_margins')}</label>
     <input
       name="x-margin"
       type="number"
@@ -185,7 +184,6 @@
       max={MARGIN_MAX}
       onblur={handleXMarginBlur}
     />
-    <label for="y-margin">y</label>
     <input
       name="y-margin"
       type="number"
@@ -197,7 +195,7 @@
   </div>
 
   <!-- PAR SPACING -->
-  <div class="par-spacing-container">
+  <div class="par-spacing container">
     <label for="par-spacing">{i18n.t('document_option_spacing')}</label>
     <input
       type="checkbox"
@@ -218,7 +216,7 @@
   </div>
 
   <!-- PREFIX GROUP -->
-  <div class="prefix-group-container">
+  <div class="prefix-group container">
     <label for="prefix-group">{i18n.t('document_option_prefix_group')}</label>
     <input
       name="prefix-group"
@@ -231,7 +229,7 @@
   </div>
 
   <!-- COLOR  -->
-  <div class="color-container">
+  <div class="color container">
     <label for="color">{i18n.t('document_option_color')}</label>
     <input name="color" type="checkbox" bind:checked={document_options.color} />
   </div>
@@ -244,8 +242,20 @@
     flex-direction: column;
     gap: 0.25rem;
   }
+  .container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  label {
+    font-weight: 500;
+  }
   h2 {
     margin: 0;
     font-size: 2rem;
+  }
+  input,
+  select {
+    font-size: 0.9rem;
   }
 </style>
