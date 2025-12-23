@@ -104,34 +104,40 @@
   <h2>{i18n.t('options')}</h2>
 
   <!-- LANGUAGE -->
-  <label for="language">{i18n.t('document_option_language')}</label>
-  <select name="language" id="language" bind:value={document_options.lang}>
-    <option value="Sv">{i18n.t('language_sv')}</option>
-    <option value="En">{i18n.t('language_en')}</option>
-  </select>
+  <div class="language-container">
+    <label for="language">{i18n.t('document_option_language')}</label>
+    <select name="language" id="language" bind:value={document_options.lang}>
+      <option value="Sv">{i18n.t('language_sv')}</option>
+      <option value="En">{i18n.t('language_en')}</option>
+    </select>
+  </div>
 
   <!-- WRITE SOLUTIONS  -->
-  <label for="write_solutions">{i18n.t('document_option_solutions')}</label>
-  <select
-    name="write_solutions"
-    id="write_solutions"
-    bind:value={document_options.write_solutions}
-  >
-    <option value="First">{i18n.t('document_option_solutions_first')}</option>
-    <option value="All">{i18n.t('document_option_solutions_all')}</option>
-    <option value="None">{i18n.t('document_option_solutions_none')}</option>
-  </select>
+  <div class="solutions-container">
+    <label for="write_solutions">{i18n.t('document_option_solutions')}</label>
+    <select
+      name="write_solutions"
+      id="write_solutions"
+      bind:value={document_options.write_solutions}
+    >
+      <option value="First">{i18n.t('document_option_solutions_first')}</option>
+      <option value="All">{i18n.t('document_option_solutions_all')}</option>
+      <option value="None">{i18n.t('document_option_solutions_none')}</option>
+    </select>
+  </div>
 
   <!-- PAPER SIZE -->
-  <label for="paper_size">{i18n.t('document_option_paper_size')}</label>
-  <select
-    name="paper_size"
-    id="paper_size"
-    bind:value={document_options.paper_size}
-  >
-    <option value="A4">A4</option>
-    <option value="A5">A5</option>
-  </select>
+  <div class="paper-size-container">
+    <label for="paper_size">{i18n.t('document_option_paper_size')}</label>
+    <select
+      name="paper_size"
+      id="paper_size"
+      bind:value={document_options.paper_size}
+    >
+      <option value="A4">A4</option>
+      <option value="A5">A5</option>
+    </select>
+  </div>
 
   <!-- FONT SIZE -->
   <div class="font-size-container">
@@ -233,7 +239,7 @@
 
 <style>
   .options-container {
-    padding: 2rem;
+    padding: 1rem;
     border-radius: 2rem;
     background-color: var(--bg);
     box-shadow: var(--shadow-elevation-low);

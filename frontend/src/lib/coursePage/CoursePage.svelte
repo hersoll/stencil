@@ -10,6 +10,7 @@
   import { error, sets } from '$src/states.svelte';
   import SetDisplay from './SetCard.svelte';
   import DocumentOptions from './DocumentOptions.svelte';
+  import CreateSetButton from './CreateSetButton.svelte';
 
   let { course }: { course: string } = $props();
   let course_data: CourseData | null = $state(null);
@@ -65,15 +66,14 @@
             <ChapterDisplay {chapter} />
           {/each}
         </div>
+        <InitialSetOptions />
+        <CreateSetButton />
       </section>
-      <DocumentOptions />
       <PDFButton />
     </div>
 
     <div class="col">
-      <aside class="options-container">
-        <InitialSetOptions />
-      </aside>
+      <DocumentOptions />
       {#if sets.set_states.length > 0}
         <aside class="set-container">
           <div>
@@ -110,12 +110,13 @@
   .main-container {
     padding: 2rem;
     box-shadow: var(--shadow-elevation-low);
-  }
-  .options-container {
-    background-color: var(--bg);
-    border-radius: 2rem;
-    padding: 1rem;
-    box-shadow: var(--shadow-elevation-low);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h1 {
+      align-self: self-start;
+    }
   }
   .set-container {
     display: flex;

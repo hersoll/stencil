@@ -1,6 +1,6 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import type { ProblemSetSpec } from './types';
+  import type { ProblemSetSpec } from '../types';
   let { set, type }: { set: ProblemSetSpec; type: 'starting' | 'ending' } =
     $props();
 
