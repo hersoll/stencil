@@ -254,8 +254,12 @@
     margin: 0;
     font-size: 2rem;
   }
-  input,
+  input {
+    font-size: 0.9rem;
+  }
   select {
     font-size: 0.9rem;
+    background-color: var(--bg-light);
+    border: none;
   }
 </style>
