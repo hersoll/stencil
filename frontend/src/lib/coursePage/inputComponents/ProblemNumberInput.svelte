@@ -2,8 +2,9 @@
   import type { ProblemSetSpec } from '../types';
   let { set }: { set: ProblemSetSpec } = $props();
 
-  const MIN = 0;
-  const MAX = 10;
+  const MIN = 1;
+  const MAX = 250;
+
   function handleBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {

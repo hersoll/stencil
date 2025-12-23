@@ -40,9 +40,9 @@
   <button
     class="primary"
     onclick={fetchPdf}
-    disabled={sets.set_states.length == 0}
+    disabled={sets.set_states.length == 0 || loading}
   >
-    {loading ? 'Loading...' : i18n.t('create_pdf')}
+    {loading ? i18n.t('loading') + '...' : i18n.t('create_pdf')}
   </button>
 
   {#if pdfUrl != ''}

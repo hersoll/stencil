@@ -46,12 +46,12 @@
   label {
     color: var(--text-muted);
     cursor: pointer;
-    transition: font-size 0.03s;
-    &:active {
-      font-size: 1.04rem;
-    }
+    transition: color 0.15s;
     &:hover {
       color: var(--text);
+    }
+    &:active {
+      color: var(--text-muted);
     }
   }
   .chapter-card {
