@@ -15,10 +15,10 @@
 
   let { course }: { course: string } = $props();
   let course_data: CourseData | null = $state(null);
-  let show_loading_message = $state(false);
 
   let container = $state<HTMLElement | undefined>();
 
+  let show_loading_message = $state(false);
   const delay = setTimeout(() => {
     if (!course_data) show_loading_message = true;
   }, 600);

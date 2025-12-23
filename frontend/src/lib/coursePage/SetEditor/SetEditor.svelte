@@ -4,7 +4,6 @@
   import TopicCard from './TopicCard.svelte';
   import SetOptions from './SetOptions.svelte';
   import SetButtons from './SetButtons.svelte';
-  import { fly } from 'svelte/transition';
 
   let {
     set,
