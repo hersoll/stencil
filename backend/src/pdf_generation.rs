@@ -168,10 +168,15 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
 
     // Print typst file (pretty-printed) for debugging
     #[cfg(not(feature = "docker"))]
-    Command::new("typstyle")
-        .arg(typst_path.to_str().unwrap())
-        .status()
-        .await?;
+    if std::env::args()
+        .collect::<Vec<String>>()
+        .contains(&"show-output".to_string())
+    {
+        Command::new("typstyle")
+            .arg(typst_path.to_str().unwrap())
+            .status()
+            .await?;
+    }
 
     debug!("Compiling PDF...");
     let start = Instant::now();
