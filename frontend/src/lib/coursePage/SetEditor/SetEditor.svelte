@@ -1,10 +1,10 @@
 <script lang="ts">
-  import i18n from '$src/i18n.svelte';
   import { type ProblemSetSpec, type TopicWithProblems } from '../types';
   import { onMount } from 'svelte';
   import TopicCard from './TopicCard.svelte';
   import SetOptions from './SetOptions.svelte';
   import SetButtons from './SetButtons.svelte';
+  import { fly } from 'svelte/transition';
 
   let {
     set,
@@ -76,8 +76,8 @@
     opacity: 0;
     box-shadow: var(--shadow-elevation-high);
     transition:
-      opacity 0.15s,
-      display 0.15s allow-discrete;
+      opacity 0.25s,
+      display 0.25s allow-discrete;
 
     &:popover-open {
       opacity: 1;

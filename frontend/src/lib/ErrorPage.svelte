@@ -1,8 +1,9 @@
 <script lang="ts">
   import { error } from '$src/states.svelte';
+  import { fly } from 'svelte/transition';
 </script>
 
-<main>
+<main in:fly={{ y: 60, duration: 600 }}>
   <h1>ERROR</h1>
   <pre>{error.message}</pre>
 </main>

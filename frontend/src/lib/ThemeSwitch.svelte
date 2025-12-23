@@ -57,7 +57,7 @@
       cursor: default;
     }
     &.active_theme {
-      color: var(--primary);
+      color: var(--primary-text);
       cursor: default;
     }
   }

@@ -103,12 +103,6 @@
 <h2>{i18n.t('options')}</h2>
 
 <div class="options">
-  <!-- TITLE  -->
-  <div class="title container">
-    <label for="title">{i18n.t('document_option_title')}</label>
-    <input name="title" type="text" bind:value={document_options.title} />
-  </div>
-
   <!-- LANGUAGE -->
   <div class="language container">
     <label for="language">{i18n.t('document_option_language')}</label>

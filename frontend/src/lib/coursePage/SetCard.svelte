@@ -2,6 +2,7 @@
   import i18n from '$src/i18n.svelte';
   import { API_URL } from '$src/main';
   import { error } from '$src/states.svelte';
+  import { fade, fly } from 'svelte/transition';
   import SetEditor from './SetEditor/SetEditor.svelte';
 
   import {
@@ -40,7 +41,11 @@
   });
 </script>
 
-<button popovertarget="set-editor-{id}" class="set-container">
+<button
+  popovertarget="set-editor-{id}"
+  class="set-container"
+  in:fly={{ y: -40, duration: 400 }}
+>
   {#if topics.length > 0}
     {#if topics.length == 1}
       <h3>

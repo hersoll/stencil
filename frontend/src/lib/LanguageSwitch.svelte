@@ -40,7 +40,7 @@
       cursor: default;
     }
     &.active_language {
-      color: var(--primary);
+      color: var(--primary-text);
     }
   }
 </style>

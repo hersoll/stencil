@@ -19,6 +19,7 @@
 
 <style>
   .create-btn {
+    font-size: 1.2rem;
     width: 20rem;
     height: 3rem;
     box-shadow: var(--shadow-elevation-medium);

@@ -15,7 +15,13 @@
   --text: light-dark(oklch(0.15 0 264), oklch(0.96 0 264));
   --text-muted: light-dark(oklch(0.4 0 264), oklch(0.84 0 264));
   --primary: oklch(0.76 0.1 326);
-  --secondary: oklch(0.68 0.1 326);
+  --secondary: oklch(from var(--primary) calc(l - 0.1) c h);
+  /* Text in light mode looks brighter, need to compensate with darker color */
+  --primary-text: light-dark(
+    oklch(from var(--primary) calc(l - 0.2) c h),
+    var(--primary)
+  );
+  --secondary-text: oklch(from var(--secondary) calc(l + 0.2) c h);
   --highlight: light-dark(oklch(1 0 264), oklch(0.5 0 264));
   --border: light-dark(oklch(0.6 0 264), oklch(0.4 0 264));
   --border-muted: light-dark(oklch(0.7 0 264), oklch(0.3 0 264));

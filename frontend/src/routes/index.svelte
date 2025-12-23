@@ -3,6 +3,7 @@
   import { navigate } from 'sv-router/generated';
   import { API_URL } from '$src/main';
   import { onMount } from 'svelte';
+  import { fly } from 'svelte/transition';
   type CourseData = {
     desc: string;
     id: number;
@@ -35,19 +36,17 @@
   });
 </script>
 
-<main>
-  {#if i18n.loading}
-    <p>Laddar...</p>
-  {:else}
-    <div class="main-div">
-      <h2>{i18n.t('course_selector')}</h2>
-      <div class="btn-container">
-        <button onclick={() => navigate('/ma1b')}>{data['ma1b']?.desc}</button>
-        <button onclick={() => navigate('/ma2b')}>{data['ma2b']?.desc}</button>
-      </div>
+{#if i18n.loading}
+  <p>Laddar...</p>
+{:else}
+  <div class="main-div" in:fly={{ y: 60, duration: 600 }}>
+    <h2>{i18n.t('course_selector')}</h2>
+    <div class="btn-container">
+      <button onclick={() => navigate('/ma1b')}>{data['ma1b']?.desc}</button>
+      <button onclick={() => navigate('/ma2b')}>{data['ma2b']?.desc}</button>
     </div>
-  {/if}
-</main>
+  </div>
+{/if}
 
 <style>
   button {

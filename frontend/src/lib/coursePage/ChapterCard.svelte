@@ -48,10 +48,10 @@
     cursor: pointer;
     transition: color 0.15s;
     &:hover {
-      color: var(--text);
+      color: var(--primary-text);
     }
     &:active {
-      color: var(--text-muted);
+      color: var(--secondary-text);
     }
   }
   .chapter-card {

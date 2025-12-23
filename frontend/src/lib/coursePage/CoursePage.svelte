@@ -5,17 +5,23 @@
   import { applyMasonry } from './masonry';
   import ChapterDisplay from './ChapterCard.svelte';
   import InitialSetOptions from './InitialSetOptions.svelte';
-  import PDFButton from './PDFViewer.svelte';
+  import PDFCard from './PDFCard.svelte';
   import ErrorPage from '../ErrorPage.svelte';
   import { error, sets } from '$src/states.svelte';
   import SetDisplay from './SetCard.svelte';
   import DocumentOptions from './DocumentOptions.svelte';
   import CreateSetButton from './CreateSetButton.svelte';
+  import { fade, fly } from 'svelte/transition';
 
   let { course }: { course: string } = $props();
   let course_data: CourseData | null = $state(null);
+  let show_loading_message = $state(false);
 
   let container = $state<HTMLElement | undefined>();
+
+  const delay = setTimeout(() => {
+    if (!course_data) show_loading_message = true;
+  }, 600);
 
   // Ensures the chapter cards are in their proper layout
   $effect(() => {
@@ -37,6 +43,8 @@
     if (!res.ok) {
       error.message = `Status code ${res.status} \n ${await res.text()}`;
     }
+    show_loading_message = false;
+    clearTimeout(delay);
     course_data = await res.json();
   }
 
@@ -54,12 +62,14 @@
 
 {#if error.message}
   <ErrorPage />
-{:else if !course_data}
-  <h1>{i18n.t('loading')}...</h1>
-{:else}
+{:else if show_loading_message}
+  <h1 class="loading-message" in:fade={{ duration: 200 }}>
+    {i18n.t('loading')}...
+  </h1>
+{:else if course_data}
   <main>
     <div class="col">
-      <section class="main-container">
+      <section class="main-container" in:fly={{ y: 60, duration: 600 }}>
         <h1>{i18n.t('mathematics')} - {course_data?.desc}</h1>
         <h2>{i18n.t('instructions')}</h2>
         <div class="chapter-container" bind:this={container}>
@@ -70,15 +80,17 @@
         <InitialSetOptions />
         <CreateSetButton />
       </section>
-      <PDFButton />
+      {#if sets.set_states.length > 0}
+        <PDFCard />
+      {/if}
     </div>
 
     <div class="col">
-      <div class="options-container">
+      <div class="options-container" in:fly={{ y: 60, duration: 600 }}>
         <DocumentOptions />
       </div>
       {#if sets.set_states.length > 0}
-        <aside class="set-container">
+        <aside class="set-container" in:fly={{ y: 60, duration: 600 }}>
           <div>
             <h2>{i18n.t('sets')}</h2>
             <p>{i18n.t('click_to_edit')}</p>
@@ -151,6 +163,7 @@
     background-color: var(--bg);
     box-shadow: var(--shadow-elevation-low);
   }
+
   .chapter-container {
     margin-top: 2rem;
 
@@ -168,5 +181,9 @@
   h1 {
     margin: 0;
     color: var(--text);
+  }
+
+  .loading-message {
+    margin-top: 10rem;
   }
 </style>
