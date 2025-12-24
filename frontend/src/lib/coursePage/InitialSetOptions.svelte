@@ -43,6 +43,15 @@
     gap: 0.25rem;
   }
 
+  .number_picker {
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1.2rem;
+    line-height: 1.5rem;
+    padding-left: 0.5rem;
+  }
+
+
   .difficulty-row {
     margin-top: 0.2rem;
     display: flex;

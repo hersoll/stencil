@@ -17,6 +17,7 @@
 
 <input
   name="n"
+  id="number_picker"
   type="number"
   bind:value={set.n}
   min="1"
@@ -25,11 +26,4 @@
 />
 
 <style>
-  input {
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1.2rem;
-    line-height: 1.5rem;
-    padding-left: 0.5rem;
-  }
 </style>

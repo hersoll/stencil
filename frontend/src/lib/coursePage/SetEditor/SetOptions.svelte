@@ -9,10 +9,16 @@
 
 <div class="options-container">
   <h2>{i18n.t('options')}</h2>
-  <ProblemNumberInput {set} />
-  <DifficultySelector {set} type="starting" />
-  <DifficultySelector {set} type="ending" />
-  <div>
+  <div class="label-div">
+    <label for="n">{i18n.t("pick_number")}</label>
+    <ProblemNumberInput {set} />
+  </div>
+  <div class="label-div">
+    <label for="difficulty">{i18n.t("difficulty")}</label>
+    <DifficultySelector {set} type="starting" />
+    <DifficultySelector {set} type="ending" />
+  </div>
+  <div class="label-div">
     <label for="heading">{i18n.t('set_option_heading')}</label>
     <input
       type="text"
@@ -22,7 +28,7 @@
       onchange={e => (set.options.heading = e.currentTarget.value)}
     />
   </div>
-  <div>
+  <div class="label-div">
     <label for="columns"> {i18n.t('set_option_columns')}</label>
     <input
       type="number"
@@ -32,7 +38,7 @@
         (set.options.question_columns = e.currentTarget.valueAsNumber)}
     />
   </div>
-  <div>
+  <div class="label-div">
     <label for="spacing">{i18n.t('set_option_spacing')}</label>
     <input
       type="number"
@@ -51,6 +57,11 @@
     height: min-content;
     width: 20rem;
     padding: 1rem;
+  }
+
+  .label-div {
+    display: flex;
+    flex-direction: column;
   }
 
   h2 {
