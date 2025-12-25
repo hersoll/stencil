@@ -68,7 +68,8 @@
 <style>
   .set-editor {
     background-color: var(--bg);
-    overflow: hidden;
+    max-height: 90vh;
+    overflow-y: auto;
     margin: auto;
     padding: 2rem;
     border-radius: 2rem;
@@ -99,7 +100,7 @@
 
   .scrollable {
     border-radius: 1rem;
-    max-height: 70vh;
+    max-height: 60vh;
     overflow-y: auto;
     /* 2rem for shadows, 1rem for shadows hitting bottom, 0.5 rem for scrollbar */
     padding: 0 2rem 1rem 0.5rem;
@@ -129,13 +130,12 @@
     .set-editor {
       margin: 0.5rem;
       padding: 1rem;
-      overflow-y: auto;
-    }
-    .editing-grid {
-      max-height: 25rem;
+      max-height: 90vh;
+      margin: auto;
     }
 
     .scrollable {
+      max-height: 40vh;
       padding: 0;
       direction: ltr;
       &::-webkit-scrollbar {
@@ -154,6 +154,7 @@
   @media (max-width: 75rem) {
     .editing-grid {
       grid-template-columns: 1fr;
+      gap: 1rem;
     }
   }
 </style>

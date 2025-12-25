@@ -44,58 +44,64 @@
 
 <div class="options-container">
   <h2>{i18n.t('options')}</h2>
-  <div class="label-div">
-    <label for="n">{i18n.t('pick_number')}</label>
-    <input
-      name="n"
-      id="number_picker"
-      type="number"
-      bind:value={set.n}
-      min="1"
-      max="250"
-      onblur={handleNumberBlur}
-    />
-  </div>
-  <div class="label-div">
-    <label for="difficulty">{i18n.t('difficulty')}</label>
-    <div class="difficulty-options">
-      <p>{i18n.t('from')}</p>
-      <DifficultySelector {set} type="starting" />
-      <p>{i18n.t('to')}</p>
-      <DifficultySelector {set} type="ending" />
+  <div class="flex">
+    <div class="col">
+      <div class="label-div">
+        <label for="n">{i18n.t('pick_number')}</label>
+        <input
+          name="n"
+          id="number_picker"
+          type="number"
+          bind:value={set.n}
+          min="1"
+          max="250"
+          onblur={handleNumberBlur}
+        />
+      </div>
+      <div class="label-div">
+        <label for="difficulty">{i18n.t('difficulty')}</label>
+        <div class="difficulty-options">
+          <p>{i18n.t('from')}</p>
+          <DifficultySelector {set} type="starting" />
+          <p>{i18n.t('to')}</p>
+          <DifficultySelector {set} type="ending" />
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="label-div">
-    <label for="heading">{i18n.t('set_option_heading')}</label>
-    <input
-      type="text"
-      value={set.options.heading}
-      id="heading"
-      class="text-input"
-      placeholder="Lös uppgifterna"
-      onchange={e => (set.options.heading = e.currentTarget.value)}
-    />
-  </div>
-  <div class="label-div">
-    <label for="columns"> {i18n.t('set_option_columns')}</label>
-    <input
-      type="number"
-      id="columns"
-      bind:value={set.options.question_columns}
-      onchange={e =>
-        (set.options.question_columns = e.currentTarget.valueAsNumber)}
-      onblur={handleColumnsBlur}
-    />
-  </div>
-  <div class="label-div">
-    <label for="spacing">{i18n.t('set_option_spacing')}</label>
-    <input
-      type="number"
-      id="spacing"
-      bind:value={set.options.spacing}
-      onchange={e => (set.options.spacing = e.currentTarget.valueAsNumber)}
-      onblur={handleSpacingBlur}
-    />
+    <div class="col">
+      <div class="label-div">
+        <label for="heading">{i18n.t('set_option_heading')}</label>
+        <input
+          type="text"
+          value={set.options.heading}
+          id="heading"
+          class="text-input"
+          placeholder="Lös uppgifterna"
+          onchange={e => (set.options.heading = e.currentTarget.value)}
+        />
+      </div>
+      <div class="label-div">
+        <label for="columns"> {i18n.t('set_option_columns')}</label>
+        <input
+          type="number"
+          id="columns"
+          bind:value={set.options.question_columns}
+          onchange={e =>
+            (set.options.question_columns = e.currentTarget.valueAsNumber)}
+          onblur={handleColumnsBlur}
+        />
+      </div>
+      <div class="label-div">
+        <label for="spacing">{i18n.t('set_option_spacing')}</label>
+        <input
+          type="number"
+          id="spacing"
+          bind:value={set.options.spacing}
+          onchange={e => (set.options.spacing = e.currentTarget.valueAsNumber)}
+          onblur={handleSpacingBlur}
+        />
+      </div>
+    </div>
   </div>
 </div>
 
@@ -105,8 +111,11 @@
     border-radius: 1rem;
     box-shadow: var(--shadow-elevation-medium);
     height: min-content;
-    width: 20rem;
     padding: 1rem;
+  }
+  .flex {
+    display: flex;
+    flex-direction: column;
   }
 
   .label-div {
@@ -151,5 +160,12 @@
   h2 {
     margin-top: -0.25rem;
     margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 75rem) and (min-width: 50rem) {
+    .flex {
+      flex-direction: row;
+      gap: 5rem;
+    }
   }
 </style>
