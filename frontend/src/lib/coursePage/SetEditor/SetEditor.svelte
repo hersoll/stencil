@@ -1,4 +1,5 @@
 <script lang="ts">
+  import i18n from '$src/i18n.svelte';
   import { type ProblemSetSpec, type TopicWithProblems } from '../types';
   import { onMount } from 'svelte';
   import TopicCard from './TopicCard.svelte';
@@ -47,9 +48,9 @@
   class="set-editor"
   ontoggle={handlePopoverToggle}
 >
-  <h1>Redigera sektion</h1>
+  <h1>{i18n.t('edit_set')}</h1>
   <p class="text-muted subtitle">
-    Klicka på problemtyper för att stryka dem från stencilen
+    {i18n.t('click_to_exclude')}
   </p>
   <div class="editing-grid">
     <div class="scrollable">

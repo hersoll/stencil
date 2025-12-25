@@ -52,7 +52,7 @@
     display: flex;
     gap: 4rem;
     justify-content: center;
-    margin-top: 4rem;
+    margin-top: 2rem;
     margin-bottom: 2rem;
   }
   label {

@@ -91,6 +91,7 @@
     }
 
     &:hover {
+      border: 2px solid transparent;
       p {
         color: light-dark(
           oklch(from var(--text-muted) calc(l + 0.2) c h),
@@ -100,6 +101,7 @@
     }
 
     &:active {
+      background-color: var(--bg-light);
       p {
         color: var(--text);
       }
