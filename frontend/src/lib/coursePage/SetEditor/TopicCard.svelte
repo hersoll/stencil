@@ -65,7 +65,7 @@
           : ''}"
         onclick={() => excludeProblem(problem.id)}
       >
-        <p class="no-select">{problem.desc}</p>
+        <p class="no-select problem-descriptor">{problem.desc}</p>
         <p class="no-select difficulty-descriptor">
           {i18n.t(num_to_difficulty_str(problem.difficulty))}
         </p>
@@ -158,6 +158,21 @@
 
     &:hover {
       border-color: var(--primary);
+    }
+  }
+
+  @media (max-width: 50rem) {
+    .problem-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .problem-descriptor {
+      max-width: 15rem;
+      text-align: left;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 </style>

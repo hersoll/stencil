@@ -1,6 +1,6 @@
 export function applyMasonry(container: HTMLElement) {
   const rowHeight = 1;
-  const cardMargin = 32; // 2rem margin-bottom
+  const cardMargin = 16; // 1rem margin-bottom
 
   const resize = () => {
     container.querySelectorAll<HTMLElement>('.chapter-card').forEach(card => {

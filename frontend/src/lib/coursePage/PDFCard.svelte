@@ -90,7 +90,6 @@
 <style>
   .pdf-container {
     margin-top: 1rem;
-    margin-bottom: 4rem;
     padding: 1rem;
     border-radius: 2rem;
     background-color: var(--bg);

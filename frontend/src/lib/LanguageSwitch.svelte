@@ -18,8 +18,6 @@
 
 <style>
   div {
-    position: absolute;
-    left: 2em;
     background-color: var(--bg-light);
     padding: 1rem;
     border-radius: 1rem;
@@ -41,6 +39,11 @@
     }
     &.active_language {
       color: var(--primary-text);
+    }
+  }
+  @media (max-width: 50rem) {
+    div {
+      display: none;
     }
   }
 </style>

@@ -83,6 +83,7 @@
       color: var(--text-muted);
     }
   }
+
   .delete-all {
     position: absolute;
     top: 1rem;

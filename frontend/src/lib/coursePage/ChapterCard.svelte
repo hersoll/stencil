@@ -61,5 +61,6 @@
     box-shadow: var(--shadow-elevation-medium);
     height: fit-content;
     min-height: 0;
+    justify-self: stretch;
   }
 </style>

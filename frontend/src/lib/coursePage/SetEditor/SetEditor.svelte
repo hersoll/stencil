@@ -124,4 +124,36 @@
     backdrop-filter: blur(3px);
     background-color: oklch(0 0 0 / 20%);
   }
+
+  @media (max-width: 50rem) {
+    .set-editor {
+      margin: 0.5rem;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .editing-grid {
+      max-height: 25rem;
+    }
+
+    .scrollable {
+      padding: 0;
+      direction: ltr;
+      &::-webkit-scrollbar {
+        background: none;
+        border-radius: none;
+        box-shadow: none;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: none;
+        box-shadow: none;
+        border-radius: none;
+      }
+    }
+  }
+
+  @media (max-width: 75rem) {
+    .editing-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

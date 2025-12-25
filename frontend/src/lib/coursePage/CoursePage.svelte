@@ -85,8 +85,11 @@
   <main>
     <div class="col">
       <section class="main-container" in:fly={{ y: 60, duration: 600 }}>
-        <h1>{i18n.t('mathematics')} - {course_data?.desc}</h1>
-        <h2>{i18n.t('instructions')}</h2>
+        <h1 class="title">
+          <span class="subject-prefix">{i18n.t('mathematics')} - {' '}</span
+          >{course_data?.desc}
+        </h1>
+        <h2 class="subtitle">{i18n.t('instructions')}</h2>
         <button
           class="select-all-btn"
           onclick={sets.current_set.topics.length == 0
@@ -114,9 +117,7 @@
     </div>
 
     <div class="col">
-      <div class="options-container" in:fly={{ y: 60, duration: 600 }}>
-        <DocumentOptions />
-      </div>
+      <DocumentOptions />
       {#if sets.set_states.length > 0}
         <SetContainer />
       {/if}
@@ -126,11 +127,30 @@
 
 <style>
   main {
-    margin-top: 2rem;
+    margin: 1rem;
     display: grid;
-    grid-template-columns: auto 22rem;
+    grid-template-columns: full;
     align-items: start;
     gap: 2rem;
+  }
+
+  h1 {
+    align-self: self-start;
+    color: var(--text);
+    font-size: 2rem;
+  }
+  .subject-prefix {
+    display: none;
+  }
+  @media (min-width: 50rem) {
+    main {
+      margin: 2rem;
+
+      grid-template-columns: auto 22rem;
+    }
+    h1 {
+      font-size: 3rem;
+    }
   }
 
   .col {
@@ -140,37 +160,67 @@
   }
   .main-container {
     position: relative;
-    padding: 2rem;
+    padding: 1rem;
     box-shadow: var(--shadow-elevation-low);
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    h1 {
-      align-self: self-start;
-      color: var(--text);
-    }
     h2 {
       align-self: self-start;
       color: var(--text-muted);
     }
   }
 
-  .options-container {
-    padding: 1rem;
-    border-radius: 2rem;
-    background-color: var(--bg);
-    box-shadow: var(--shadow-elevation-low);
-  }
-
   .chapter-container {
     margin-top: 2rem;
+    align-self: stretch;
 
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: 1fr;
     grid-auto-rows: 1px;
-    column-gap: 2rem;
-    max-width: 1100px;
+    column-gap: 1rem;
+    max-width: 1200px;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    max-width: 15rem;
+  }
+
+  @media (min-width: 50rem) {
+    .main-container {
+      padding: 2rem;
+    }
+    .chapter-container {
+      grid-template-columns: repeat(1, 1fr);
+    }
+    .subtitle {
+      font-size: 1.5rem;
+      max-width: 28rem;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .chapter-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .subtitle {
+      max-width: 28rem;
+    }
+    .subject-prefix {
+      display: inline;
+    }
+  }
+
+  @media (min-width: 100rem) {
+    .chapter-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .subtitle {
+      max-width: 28rem;
+    }
   }
 
   section {
@@ -184,9 +234,10 @@
 
   .select-all-btn {
     position: absolute;
-    top: 2rem;
-    right: 2rem;
+    top: 1rem;
+    right: 1rem;
     box-shadow: var(--shadow-elevation-low);
+    font-size: 0.8rem;
     border: 2px solid transparent;
     &:hover {
       border-color: var(--primary);
@@ -197,7 +248,24 @@
     }
   }
 
+  @media (min-width: 50rem) {
+    .select-all-btn {
+      font-size: 1rem;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .select-all-btn {
+      top: 2rem;
+      right: 2rem;
+    }
+  }
+
   .loading-message {
     margin-top: 10rem;
+  }
+
+  :global(body) {
+    padding-bottom: 4rem;
   }
 </style>

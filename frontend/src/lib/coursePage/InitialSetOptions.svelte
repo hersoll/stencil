@@ -59,6 +59,13 @@
     font-size: 1.5rem;
     font-weight: 600;
   }
+
+  @media (max-width: 75rem) {
+    .options {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
   .n-container,
   .difficulty-container {
     display: flex;
