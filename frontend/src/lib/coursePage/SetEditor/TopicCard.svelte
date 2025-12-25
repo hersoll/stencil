@@ -66,7 +66,7 @@
         onclick={() => excludeProblem(problem.id)}
       >
         <p class="no-select">{problem.desc}</p>
-        <p class="no-select">
+        <p class="no-select difficulty-descriptor">
           {i18n.t(num_to_difficulty_str(problem.difficulty))}
         </p>
       </button>
@@ -104,13 +104,18 @@
   .problem-grid {
     padding: 0.1rem 0;
     display: grid;
-    grid-template-columns: 35rem 4rem;
+    grid-template-columns: 35rem 4.5rem;
+    border: 2px solid transparent;
     p {
       color: var(--text-muted);
       width: fit-content;
       transition:
         color 0.15s,
         text-decoration 0.15s;
+    }
+
+    .difficulty-descriptor {
+      justify-self: end;
     }
 
     &.excluded {
@@ -124,7 +129,6 @@
     }
 
     &:hover {
-      border: 2px solid transparent;
       p {
         color: light-dark(
           oklch(from var(--text-muted) calc(l + 0.2) c h),
