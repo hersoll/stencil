@@ -236,6 +236,7 @@
     font-size: 2rem;
   }
   input {
+    background-color: var(--bg-light);
     font-size: 1rem;
     padding: 0.25rem 0.5rem;
     border: none;
