@@ -82,9 +82,13 @@
       {i18n.t('problems').toLowerCase()}
     </p>
     <p in:fade={{ duration: 300 }}>
-      {i18n.t(difficulty_to_string(set.starting_difficulty))}
-      {i18n.t('to')}
-      {i18n.t(difficulty_to_string(set.ending_difficulty))}
+      {set.starting_difficulty == set.ending_difficulty
+        ? i18n.t(difficulty_to_string(set.starting_difficulty))
+        : i18n.t(difficulty_to_string(set.starting_difficulty)) +
+          ' ' +
+          i18n.t('to') +
+          ' ' +
+          i18n.t(difficulty_to_string(set.ending_difficulty))}
     </p>
   </div>
 </button>
