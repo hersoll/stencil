@@ -7,11 +7,11 @@
   import InitialSetOptions from './InitialSetOptions.svelte';
   import PDFCard from './PDFCard.svelte';
   import ErrorPage from '../ErrorPage.svelte';
-  import { error, sets } from '$src/states.svelte';
   import DocumentOptions from './DocumentOptions.svelte';
   import CreateSetButton from './CreateSetButton.svelte';
-  import { fade, fly } from 'svelte/transition';
   import SetContainer from './SetContainer.svelte';
+  import { fade, fly } from 'svelte/transition';
+  import { error, sets } from '$src/states.svelte';
 
   let { course }: { course: string } = $props();
   let course_data: CourseData | null = $state(null);
@@ -53,6 +53,26 @@
       loadCourseData();
     }
   });
+
+  function deselectAllTopics() {
+    const chapterContainer = document.getElementById('chapter-container');
+    chapterContainer
+      ?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
+      .forEach(box => {
+        box.checked = false;
+        box.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+  }
+
+  function selectAllTopics() {
+    const chapterContainer = document.getElementById('chapter-container');
+    chapterContainer
+      ?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
+      .forEach(box => {
+        box.checked = true;
+        box.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+  }
 </script>
 
 {#if error.message}
@@ -67,7 +87,20 @@
       <section class="main-container" in:fly={{ y: 60, duration: 600 }}>
         <h1>{i18n.t('mathematics')} - {course_data?.desc}</h1>
         <h2>{i18n.t('instructions')}</h2>
-        <div class="chapter-container" bind:this={container}>
+        <button
+          class="select-all-btn"
+          onclick={sets.current_set.topics.length == 0
+            ? selectAllTopics
+            : deselectAllTopics}
+          >{sets.current_set.topics.length == 0
+            ? i18n.t('select_all')
+            : i18n.t('deselect_all')}</button
+        >
+        <div
+          class="chapter-container"
+          id="chapter-container"
+          bind:this={container}
+        >
           {#each course_data?.chapters.filter(c => c.topics.length > 0) as chapter}
             <ChapterDisplay {chapter} />
           {/each}
@@ -106,6 +139,7 @@
     gap: 1rem;
   }
   .main-container {
+    position: relative;
     padding: 2rem;
     box-shadow: var(--shadow-elevation-low);
     display: flex;
@@ -146,6 +180,21 @@
   h1 {
     margin: 0;
     color: var(--text);
+  }
+
+  .select-all-btn {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    box-shadow: var(--shadow-elevation-low);
+    border: 2px solid transparent;
+    &:hover {
+      border-color: var(--primary);
+    }
+    &:active {
+      background-color: var(--bg);
+      transition: background-color 0.1s;
+    }
   }
 
   .loading-message {

@@ -150,6 +150,15 @@ button {
     color 0.4s,
     background-color 0.4s,
     border-color 0.3s;
+  border: 2px solid transparent;
+
+  &:hover {
+    border-color: var(--primary);
+  }
+  &:active {
+    background-color: var(--bg);
+    transition: background-color 0.1s;
+  }
 
   &.primary {
     background-color: var(--primary);
