@@ -10,12 +10,36 @@
   let { set, topic }: { set: ProblemSetSpec; topic: TopicWithProblems } =
     $props();
 
+  let excluded_problem_count = $state(0);
+
   function excludeProblem(id: number) {
     if (set.exclusions.includes(id)) {
       set.exclusions = set.exclusions.filter(e => e !== id);
+      excluded_problem_count--;
     } else {
       set.exclusions.push(id);
+      excluded_problem_count++;
     }
+  }
+
+  function excludeAll(event: MouseEvent) {
+    const topicContainer = (event.target as HTMLElement).parentElement;
+    topicContainer
+      ?.querySelectorAll<HTMLButtonElement>(
+        'button.problem-grid:not(.excluded)'
+      )
+      .forEach(btn => {
+        btn.click();
+      });
+  }
+
+  function includeAll(event: MouseEvent) {
+    const topicContainer = (event.target as HTMLElement).parentElement;
+    topicContainer
+      ?.querySelectorAll<HTMLButtonElement>('button.problem-grid.excluded')
+      .forEach(btn => {
+        btn.click();
+      });
   }
 
   let problems_to_display = $derived(
@@ -31,7 +55,7 @@
   );
 </script>
 
-<div class="topic-container">
+<div class="topic-container" id="topic-container">
   <h2>{topic.desc}</h2>
   {#if problems_to_display.length > 0}
     {#each problems_to_display as problem}
@@ -47,6 +71,13 @@
         </p>
       </button>
     {/each}
+    <button
+      class="select-all-btn"
+      onclick={excluded_problem_count == 0 ? excludeAll : includeAll}
+      >{excluded_problem_count == 0
+        ? i18n.t('select_all')
+        : i18n.t('clear')}</button
+    >
   {:else}
     <span class="problem-grid">
       <p>{i18n.t('no_problems_in_range')}</p>
@@ -61,6 +92,8 @@
     direction: ltr;
   }
   .topic-container {
+    display: flex;
+    flex-direction: column;
     background-color: var(--bg-light);
     border-radius: 1rem;
     padding: 1rem;
@@ -110,5 +143,17 @@
   h2 {
     margin-top: -0.25rem;
     margin-bottom: 0.5rem;
+  }
+
+  .select-all-btn {
+    width: fit-content;
+    align-self: self-end;
+    margin-top: 1rem;
+    border: 2px solid var(--bg);
+    box-shadow: var(--shadow-elevation-low);
+
+    &:hover {
+      border-color: var(--primary);
+    }
   }
 </style>

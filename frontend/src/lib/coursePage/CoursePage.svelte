@@ -94,7 +94,7 @@
             : deselectAllTopics}
           >{sets.current_set.topics.length == 0
             ? i18n.t('select_all')
-            : i18n.t('deselect_all')}</button
+            : i18n.t('clear')}</button
         >
         <div
           class="chapter-container"
