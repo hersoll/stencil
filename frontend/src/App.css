@@ -9,9 +9,9 @@
     box-shadow 0.4s;
 }
 :root {
-  --bg-dark: light-dark(oklch(0.9 0 264), oklch(0.1 0 264));
-  --bg: light-dark(oklch(0.95 0 264), oklch(0.18 0 264));
-  --bg-light: light-dark(oklch(1 0 264), oklch(0.24 0 264));
+  --bg-dark: light-dark(oklch(0.9 0 264), oklch(0.16 0 264));
+  --bg: light-dark(oklch(0.95 0 264), oklch(0.22 0 264));
+  --bg-light: light-dark(oklch(1 0 264), oklch(0.28 0 264));
   --text: light-dark(oklch(0.15 0 264), oklch(0.96 0 264));
   --text-muted: light-dark(oklch(0.4 0 264), oklch(0.84 0 264));
   --primary: oklch(0.76 0.1 326);

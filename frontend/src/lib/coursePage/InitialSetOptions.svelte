@@ -69,7 +69,8 @@
   .number-picker,
   .difficulty-row {
     border-radius: 0.5rem;
-    border: 1px solid var(--bg-dark);
+    border: 1px solid light-dark(var(--bg-dark), var(--bg));
+    background-color: var(--bg-light);
     box-shadow: var(--shadow-elevation-low);
     padding: 0.5rem;
     font-size: 1.1rem;
