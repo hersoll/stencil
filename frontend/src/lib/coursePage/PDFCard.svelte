@@ -57,7 +57,12 @@
   >
     <div class="title-container">
       <label for="title">{i18n.t('document_option_title')}:</label>
-      <input name="title" type="text" bind:value={document_options.title} />
+      <input
+        name="title"
+        placeholder={i18n.t('title_placeholder')}
+        type="text"
+        bind:value={document_options.title}
+      />
     </div>
 
     <button class="primary" onclick={fetchPdf} disabled={loading} type="submit">
