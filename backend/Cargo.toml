@@ -29,3 +29,5 @@ thiserror = "2.0.17"
 tempfile = "3.23.0"
 tower_governor = { version = "0.8.0", features = ["tracing"] }
 governor = "0.10.4"
+argon2 = "0.5.3"
+base64 = "0.22.1"

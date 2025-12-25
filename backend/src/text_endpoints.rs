@@ -8,6 +8,10 @@ Endpoints (with base /api):\n
     )
 }
 
+pub async fn protected() -> String {
+    String::from("You successfully reached a protected route!")
+}
+
 pub async fn help() -> String {
     String::from(
         "To properly request a custom stencil, a JSON body of the following format must be attached:\n",

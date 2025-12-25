@@ -8,6 +8,7 @@ mod problems;
 mod relationships;
 mod topics;
 mod types;
+pub mod users;
 
 pub use chapters::*;
 pub use courses::*;
@@ -16,9 +17,9 @@ pub use problems::*;
 pub use topics::*;
 pub use types::*;
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use once_cell::sync::OnceCell;
-use sqlx::{postgres::PgPoolOptions, PgPool};
+use sqlx::{PgPool, postgres::PgPoolOptions};
 
 static DB_POOL: OnceCell<PgPool> = OnceCell::new();
 
