@@ -116,6 +116,10 @@
     input {
       font-size: 1.2rem;
       width: 20rem;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      box-shadow: var(--shadow-elevation-low);
     }
   }
 

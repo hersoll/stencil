@@ -10,6 +10,7 @@
 
 <style>
   h1 {
+    margin: 8rem 0 2rem 0;
     color: darkred;
   }
   main {

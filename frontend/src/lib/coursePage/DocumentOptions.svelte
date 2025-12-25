@@ -58,26 +58,15 @@
 
   const PAR_SPACING_MIN = 0;
   const PAR_SPACING_MAX = 200;
-  let parSpacingEnabled = $state(false);
-  let parSpacingChoice = $state(PAR_SPACING_MIN);
-  function handleParSpacingCheck(event: Event) {
-    const checkbox = event.target as HTMLInputElement;
-    if (checkbox.checked) {
-      document_options.par_spacing = parSpacingChoice;
-    } else {
-      document_options.par_spacing = null;
-    }
-  }
   function handleParSpacingBlur(
-    e: Event & { currentTarget: HTMLInputElement }
+    event: Event & { currentTarget: HTMLInputElement }
   ) {
-    const value = parseInt(e.currentTarget.value);
+    const value = parseInt(event.currentTarget.value);
     if (!isNaN(value)) {
       document_options.par_spacing = Math.max(
         PAR_SPACING_MIN,
         Math.min(PAR_SPACING_MAX, value)
       );
-      parSpacingChoice = document_options.par_spacing;
     } else {
       document_options.par_spacing = null;
     }
@@ -103,15 +92,6 @@
 <h2>{i18n.t('options')}</h2>
 
 <div class="options">
-  <!-- LANGUAGE -->
-  <div class="language container">
-    <label for="language">{i18n.t('document_option_language')}</label>
-    <select name="language" id="language" bind:value={document_options.lang}>
-      <option value="Sv">{i18n.t('language_sv')}</option>
-      <option value="En">{i18n.t('language_en')}</option>
-    </select>
-  </div>
-
   <!-- WRITE SOLUTIONS  -->
   <div class="solutions container">
     <label for="write_solutions">{i18n.t('document_option_solutions')}</label>
@@ -126,16 +106,40 @@
     </select>
   </div>
 
-  <!-- PAPER SIZE -->
-  <div class="paper-size container">
-    <label for="paper_size">{i18n.t('document_option_paper_size')}</label>
-    <select
-      name="paper_size"
-      id="paper_size"
-      bind:value={document_options.paper_size}
+  <!-- ANSWER COLUMNS -->
+  <div class="answer-columns container">
+    <label for="answer-columns"
+      >{i18n.t('document_option_answer_columns')}</label
     >
-      <option value="A4">A4</option>
-      <option value="A5">A5</option>
+    <input
+      name="answer-columns"
+      type="number"
+      bind:value={document_options.answer_columns}
+      min={ANSWER_COLUMNS_MIN}
+      max={ANSWER_COLUMNS_MAX}
+      onblur={handleAnswerColumnsBlur}
+    />
+  </div>
+
+  <!-- PREFIX GROUP -->
+  <div class="prefix-group container">
+    <label for="prefix-group">{i18n.t('document_option_prefix_group')}</label>
+    <input
+      name="prefix-group"
+      type="number"
+      bind:value={document_options.max_prefix_group}
+      min={PREFIX_GROUP_MIN}
+      max={PREFIX_GROUP_MAX}
+      onblur={handlePrefixGroupBlur}
+    />
+  </div>
+
+  <!-- LANGUAGE -->
+  <div class="language container">
+    <label for="language">{i18n.t('document_option_language')}</label>
+    <select name="language" id="language" bind:value={document_options.lang}>
+      <option value="Sv">{i18n.t('language_sv')}</option>
+      <option value="En">{i18n.t('language_en')}</option>
     </select>
   </div>
 
@@ -152,19 +156,17 @@
     />
   </div>
 
-  <!-- ANSWER COLUMNS -->
-  <div class="answer-columns container">
-    <label for="answer-columns"
-      >{i18n.t('document_option_answer_columns')}</label
+  <!-- PAPER SIZE -->
+  <div class="paper-size container">
+    <label for="paper_size">{i18n.t('document_option_paper_size')}</label>
+    <select
+      name="paper_size"
+      id="paper_size"
+      bind:value={document_options.paper_size}
     >
-    <input
-      name="answer-columns"
-      type="number"
-      bind:value={document_options.answer_columns}
-      min={ANSWER_COLUMNS_MIN}
-      max={ANSWER_COLUMNS_MAX}
-      onblur={handleAnswerColumnsBlur}
-    />
+      <option value="A4">A4</option>
+      <option value="A5">A5</option>
+    </select>
   </div>
 
   <!-- MARGINS  -->
@@ -192,40 +194,24 @@
   <div class="par-spacing container">
     <label for="par-spacing">{i18n.t('document_option_spacing')}</label>
     <input
-      type="checkbox"
-      name="par-spacing"
-      bind:checked={parSpacingEnabled}
-      onchange={handleParSpacingCheck}
-    />
-    {#if parSpacingEnabled}
-      <input
-        name="par-spacing-amount"
-        type="number"
-        bind:value={parSpacingChoice}
-        min={PAR_SPACING_MIN}
-        max={PAR_SPACING_MAX}
-        onblur={handleParSpacingBlur}
-      />
-    {/if}
-  </div>
-
-  <!-- PREFIX GROUP -->
-  <div class="prefix-group container">
-    <label for="prefix-group">{i18n.t('document_option_prefix_group')}</label>
-    <input
-      name="prefix-group"
+      name="par-spacing-amount"
       type="number"
-      bind:value={document_options.max_prefix_group}
-      min={PREFIX_GROUP_MIN}
-      max={PREFIX_GROUP_MAX}
-      onblur={handlePrefixGroupBlur}
+      bind:value={document_options.par_spacing}
+      min={PAR_SPACING_MIN}
+      max={PAR_SPACING_MAX}
+      onblur={handleParSpacingBlur}
     />
   </div>
 
   <!-- COLOR  -->
   <div class="color container">
     <label for="color">{i18n.t('document_option_color')}</label>
-    <input name="color" type="checkbox" bind:checked={document_options.color} />
+    <input
+      name="color"
+      type="checkbox"
+      class="checkbox"
+      bind:checked={document_options.color}
+    />
   </div>
 </div>
 
@@ -234,7 +220,7 @@
     margin-top: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.5rem;
   }
   .container {
     display: flex;
@@ -242,6 +228,7 @@
     gap: 0.5rem;
   }
   label {
+    font-size: 1.1rem;
     font-weight: 500;
   }
   h2 {
@@ -249,11 +236,23 @@
     font-size: 2rem;
   }
   input {
-    font-size: 0.9rem;
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    width: 4rem;
+    box-shadow: var(--shadow-elevation-low);
   }
   select {
-    font-size: 0.9rem;
+    font-size: 1rem;
     background-color: var(--bg-light);
     border: none;
+    padding: 0.25rem;
+    box-shadow: var(--shadow-elevation-low);
+    border-radius: 0.5rem;
+  }
+  .checkbox {
+    width: auto;
+    box-shadow: none;
   }
 </style>
