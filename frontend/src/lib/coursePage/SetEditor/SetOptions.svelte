@@ -1,22 +1,69 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import DifficultySelector from '../inputComponents/DifficultySelector.svelte';
-  import ProblemNumberInput from '../inputComponents/ProblemNumberInput.svelte';
+  import DifficultySelector from '../DifficultySelector.svelte';
   import type { ProblemSetSpec } from '../types';
-
   let { set }: { set: ProblemSetSpec } = $props();
+
+  const MIN_PROBLEMS = 1;
+  const MAX_PROBLEMS = 250;
+
+  function handleNumberBlur(e: Event & { currentTarget: HTMLInputElement }) {
+    const value = parseInt(e.currentTarget.value);
+    if (!isNaN(value)) {
+      set.n = Math.max(MIN_PROBLEMS, Math.min(MAX_PROBLEMS, value));
+    } else {
+      set.n = MIN_PROBLEMS;
+    }
+  }
+
+  const MIN_COLUMNS = 1;
+  const MAX_COLUMNS = 8;
+  function handleColumnsBlur(e: Event & { currentTarget: HTMLInputElement }) {
+    const value = parseInt(e.currentTarget.value);
+    if (!isNaN(value)) {
+      set.options.question_columns = Math.max(
+        MIN_COLUMNS,
+        Math.min(MAX_COLUMNS, value)
+      );
+    } else {
+      set.options.question_columns = MIN_COLUMNS;
+    }
+  }
+
+  const MIN_SPACING = 0;
+  const MAX_SPACING = 300;
+  function handleSpacingBlur(e: Event & { currentTarget: HTMLInputElement }) {
+    const value = parseInt(e.currentTarget.value);
+    if (!isNaN(value)) {
+      set.options.spacing = Math.max(MIN_SPACING, Math.min(MAX_SPACING, value));
+    } else {
+      set.options.spacing = null;
+    }
+  }
 </script>
 
 <div class="options-container">
   <h2>{i18n.t('options')}</h2>
   <div class="label-div">
-    <label for="n">{i18n.t("pick_number")}</label>
-    <ProblemNumberInput {set} />
+    <label for="n">{i18n.t('pick_number')}</label>
+    <input
+      name="n"
+      id="number_picker"
+      type="number"
+      bind:value={set.n}
+      min="1"
+      max="250"
+      onblur={handleNumberBlur}
+    />
   </div>
   <div class="label-div">
-    <label for="difficulty">{i18n.t("difficulty")}</label>
-    <DifficultySelector {set} type="starting" />
-    <DifficultySelector {set} type="ending" />
+    <label for="difficulty">{i18n.t('difficulty')}</label>
+    <div class="difficulty-options">
+      <p>{i18n.t('from')}</p>
+      <DifficultySelector {set} type="starting" />
+      <p>{i18n.t('to')}</p>
+      <DifficultySelector {set} type="ending" />
+    </div>
   </div>
   <div class="label-div">
     <label for="heading">{i18n.t('set_option_heading')}</label>
@@ -24,6 +71,7 @@
       type="text"
       value={set.options.heading}
       id="heading"
+      class="text-input"
       placeholder="Lös uppgifterna"
       onchange={e => (set.options.heading = e.currentTarget.value)}
     />
@@ -36,6 +84,7 @@
       bind:value={set.options.question_columns}
       onchange={e =>
         (set.options.question_columns = e.currentTarget.valueAsNumber)}
+      onblur={handleColumnsBlur}
     />
   </div>
   <div class="label-div">
@@ -45,6 +94,7 @@
       id="spacing"
       bind:value={set.options.spacing}
       onchange={e => (set.options.spacing = e.currentTarget.valueAsNumber)}
+      onblur={handleSpacingBlur}
     />
   </div>
 </div>
@@ -60,8 +110,42 @@
   }
 
   .label-div {
+    font-size: 1.1rem;
+    font-weight: 500;
     display: flex;
     flex-direction: column;
+    margin-bottom: 0.5rem;
+
+    input {
+      width: 4.5rem;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      border: 1px solid var(--bg-dark);
+      box-shadow: var(--shadow-elevation-low);
+      padding: 0.5rem;
+    }
+
+    .text-input {
+      width: 15rem;
+    }
+  }
+
+  .difficulty-options {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    width: min-content;
+    border-radius: 0.5rem;
+    border: none;
+    border: 1px solid var(--bg-dark);
+    box-shadow: var(--shadow-elevation-low);
+
+    p {
+      font-weight: 400;
+      font-size: 1rem;
+    }
   }
 
   h2 {

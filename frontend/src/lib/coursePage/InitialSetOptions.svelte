@@ -1,18 +1,41 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import DifficultySelector from './inputComponents/DifficultySelector.svelte';
+  import DifficultySelector from './DifficultySelector.svelte';
   import { sets } from '$src/states.svelte';
-  import ProblemNumberInput from './inputComponents/ProblemNumberInput.svelte';
+
+  const MIN_PROBLEMS = 1;
+  const MAX_PROBLEMS = 250;
+
+  function handleBlur(e: Event & { currentTarget: HTMLInputElement }) {
+    const value = parseInt(e.currentTarget.value);
+    if (!isNaN(value)) {
+      sets.current_set.n = Math.max(
+        MIN_PROBLEMS,
+        Math.min(MAX_PROBLEMS, value)
+      );
+    } else {
+      sets.current_set.n = MIN_PROBLEMS;
+    }
+  }
 </script>
 
 <div class="options">
   <div class="n-container">
     <label for="n">{i18n.t('pick_number')}:</label>
-    <ProblemNumberInput set={sets.current_set} />
+    <input
+      name="n"
+      class="number-picker"
+      type="number"
+      bind:value={sets.current_set.n}
+      min="1"
+      max="250"
+      onblur={handleBlur}
+    />
   </div>
   <div class="difficulty-container">
     <label for="difficulty-row">{i18n.t('difficulty')}:</label>
     <div class="difficulty-row">
+      {i18n.t('from')}
       <DifficultySelector set={sets.current_set} type="starting" />
       {i18n.t('to')}
       <DifficultySelector set={sets.current_set} type="ending" />
@@ -43,19 +66,23 @@
     gap: 0.25rem;
   }
 
-  .number_picker {
-    border: none;
+  .number-picker,
+  .difficulty-row {
     border-radius: 0.5rem;
-    font-size: 1.2rem;
-    line-height: 1.5rem;
-    padding-left: 0.5rem;
+    border: 1px solid var(--bg-dark);
+    box-shadow: var(--shadow-elevation-low);
+    padding: 0.5rem;
+    font-size: 1.1rem;
   }
 
-
   .difficulty-row {
-    margin-top: 0.2rem;
     display: flex;
-    gap: 0.35rem;
+    gap: 0.5rem;
     align-items: center;
+  }
+
+  .number-picker {
+    width: 5rem;
+    line-height: 1.5rem;
   }
 </style>

@@ -61,6 +61,7 @@
     background-color: var(--bg-light);
     border-radius: 0.5rem;
     border: none;
-    padding: 0.5rem 0.3rem 0.5rem 0.3rem;
+    padding: 0.3rem;
+    width: min-content;
   }
 </style>

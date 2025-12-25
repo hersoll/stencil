@@ -31,11 +31,10 @@
 
   --shadow-base: light-dark(oklch(0.75 0 0), oklch(0.15 0 0));
   --shadow-elevation-low:
-    0.8px 0.5px 1.1px color-mix(in oklch, var(--shadow-base) 24%, transparent),
+    1.6px 1px 1.1px color-mix(in oklch, var(--shadow-base) 24%, transparent),
     1.3px 0.8px 1.8px -1px
       color-mix(in oklch, var(--shadow-base) 27%, transparent),
-    2.9px 1.8px 4px -2.1px
-      color-mix(in oklch, var(--shadow-base) 30%, transparent);
+    5px 3px 4px -2.1px color-mix(in oklch, var(--shadow-base) 30%, transparent);
   --shadow-elevation-medium:
     0.8px 0.5px 1.1px color-mix(in oklch, var(--shadow-base) 25%, transparent),
     2.6px 1.7px 3.7px -0.7px
