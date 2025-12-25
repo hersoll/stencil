@@ -1,6 +1,7 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import {
+    difficulty_in_range,
     num_to_difficulty_str,
     type ProblemSetSpec,
     type TopicWithProblems
@@ -16,23 +17,42 @@
       set.exclusions.push(id);
     }
   }
+
+  let problems_to_display = $derived(
+    topic.problems
+      .filter(problem =>
+        difficulty_in_range(
+          problem.difficulty,
+          set.starting_difficulty,
+          set.ending_difficulty
+        )
+      )
+      .sort((p1, p2) => p1.difficulty - p2.difficulty)
+  );
 </script>
 
 <div class="topic-container">
   <h2>{topic.desc}</h2>
-  {#each topic.problems as problem}
-    <button
-      class="problem-grid {set.exclusions.includes(problem.id)
-        ? 'excluded'
-        : ''}"
-      onclick={() => excludeProblem(problem.id)}
-    >
-      <p class="no-select">{problem.desc}</p>
-      <p class="no-select">
-        {i18n.t(num_to_difficulty_str(problem.difficulty))}
-      </p>
-    </button>
-  {/each}
+  {#if problems_to_display.length > 0}
+    {#each problems_to_display as problem}
+      <button
+        class="problem-grid {set.exclusions.includes(problem.id)
+          ? 'excluded'
+          : ''}"
+        onclick={() => excludeProblem(problem.id)}
+      >
+        <p class="no-select">{problem.desc}</p>
+        <p class="no-select">
+          {i18n.t(num_to_difficulty_str(problem.difficulty))}
+        </p>
+      </button>
+    {/each}
+  {:else}
+    <span class="problem-grid">
+      <p>{i18n.t('no_problems_in_range')}</p>
+      <span></span>
+    </span>
+  {/if}
 </div>
 
 <style>

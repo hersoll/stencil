@@ -67,6 +67,56 @@ export function difficulty_to_string(difficulty: Difficulty): string {
   }
 }
 
+export function difficulty_in_range(
+  difficulty: number,
+  starting: Difficulty,
+  ending: Difficulty
+): boolean {
+  let starting_num: number, ending_num: number;
+  switch (starting) {
+    case 'Intro': {
+      starting_num = 0;
+      break;
+    }
+    case 'Easy': {
+      starting_num = 2;
+      break;
+    }
+
+    case 'Medium': {
+      starting_num = 5;
+      break;
+    }
+
+    case 'Hard': {
+      starting_num = 8;
+      break;
+    }
+  }
+  switch (ending) {
+    case 'Intro': {
+      ending_num = 1;
+      break;
+    }
+    case 'Easy': {
+      ending_num = 4;
+      break;
+    }
+
+    case 'Medium': {
+      ending_num = 7;
+      break;
+    }
+
+    case 'Hard': {
+      ending_num = 10;
+      break;
+    }
+  }
+
+  return difficulty >= starting_num && difficulty <= ending_num;
+}
+
 /// Should match the ProblemSetSpec of the backend
 export type ProblemSetSpec = {
   topics: number[];
