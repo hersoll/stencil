@@ -134,7 +134,7 @@ export const defaultProblemSet: ProblemSetSpec = {
   exclusions: [],
   starting_difficulty: 'Intro',
   ending_difficulty: 'Hard',
-  n: 10,
+  n: 20,
   options: { question_columns: 2, heading: '', spacing: null }
 };
 
