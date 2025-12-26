@@ -5,7 +5,7 @@
   let data = $state('');
 
   async function accessAdminPage() {
-    const res = await fetch(`${API_URL}/admin`);
+    const res = await fetch(`${API_URL}/edit`);
 
     if (res.status === 401) {
       console.log('Logging in');
@@ -18,7 +18,7 @@
 
   function login() {
     const returnTo = window.location.href;
-    window.location.href = `${API_URL}/admin/login?return=${encodeURIComponent(returnTo)}`;
+    window.location.href = `${API_URL}/edit/login?return=${encodeURIComponent(returnTo)}`;
   }
 
   onMount(() => accessAdminPage());

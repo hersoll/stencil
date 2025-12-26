@@ -169,6 +169,7 @@ button {
   }
 
   &:disabled {
+    border-color: transparent;
     cursor: not-allowed;
     background-color: var(--bg-light);
     color: gray;
