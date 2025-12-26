@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use anyhow::{Result, anyhow};
 use argon2::PasswordHash;
 use argon2::PasswordVerifier;
@@ -7,15 +9,37 @@ use argon2::{
 };
 use axum::body::Body;
 use axum::extract::Path;
+use axum::extract::Query;
 use axum::http::Request;
 use axum::http::StatusCode;
+use axum::http::header;
 use axum::middleware::Next;
 use axum::response::IntoResponse;
 use axum::response::Response;
 use base64::Engine;
+use tracing::error;
+use tracing::info;
+use tracing::warn;
 
 use crate::db;
 use crate::errors::ApiError;
+
+pub async fn login(Query(params): Query<HashMap<String, String>>) -> impl IntoResponse {
+    let return_to = params
+        .get("return")
+        .map(String::as_str)
+        .unwrap_or("http://localhost:5173");
+
+    // TODO: Only bounce back if allowed URL (localhost or actual URL)
+    if !return_to.starts_with("http://localhost:5173") {
+        warn!("The redirect is {return_to}");
+    }
+
+    (
+        StatusCode::FOUND,
+        [(header::LOCATION, return_to.to_string())],
+    )
+}
 
 pub async fn authenticate(req: Request<Body>, next: Next) -> Response {
     let Some(auth) = req
@@ -23,27 +47,33 @@ pub async fn authenticate(req: Request<Body>, next: Next) -> Response {
         .get(axum::http::header::AUTHORIZATION)
         .and_then(|h| h.to_str().ok())
     else {
+        error!("Did not find authorization header");
         return unauthorized();
     };
 
     let Some(basic) = auth.strip_prefix("Basic ") else {
+        error!("No Basic authorization in header");
         return unauthorized();
     };
 
     let Ok(decoded) = base64_decode(basic) else {
+        error!("Unable to decode header");
         return unauthorized();
     };
 
     let Ok(creds) = String::from_utf8(decoded) else {
+        error!("Unable to parse header from utf8");
         return unauthorized();
     };
 
     let Some((user, pass)) = creds.split_once(':') else {
+        error!("Unable to parse {creds} as user:pass");
         return unauthorized();
     };
 
     if let Ok(user_data) = db::users::get_user_data(user).await {
         if verify_password(pass, &user_data.password).is_ok() {
+            info!("Logged in as {}", user_data.username);
             return next.run(req).await;
         }
     }

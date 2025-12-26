@@ -3,11 +3,16 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { router } from 'sv-router/vite-plugin';
 import path from 'path';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [svelte(), router()],
   server: {
-    host: true
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
+      }
+    }
   },
   resolve: {
     alias: {

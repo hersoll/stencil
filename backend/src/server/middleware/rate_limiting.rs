@@ -30,8 +30,8 @@ pub fn auth_limit() -> Box<GovernorConfig<SmartIpKeyExtractor, NoOpMiddleware>> 
     Box::new(
         GovernorConfigBuilder::default()
             .key_extractor(SmartIpKeyExtractor)
-            .per_second(1)
-            .burst_size(1)
+            .per_second(2)
+            .burst_size(3)
             .finish()
             .unwrap(),
     )

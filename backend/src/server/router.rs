@@ -31,17 +31,21 @@ pub fn create_router() -> Router {
         .route("/pdf/example", get(pdf_generation::generate_example_pdf));
     //.layer(GovernorLayer::new(middleware::rate_limiting::pdf_limit()))
     let protected_routes = Router::new()
-        .route("/edit", get(text_endpoints::protected))
+        .route("/admin/login", get(middleware::auth::login))
+        .route("/admin", get(text_endpoints::protected))
         .layer(GovernorLayer::new(middleware::rate_limiting::auth_limit()))
         .layer(axum::middleware::from_fn(authenticate))
         .layer(axum::middleware::from_fn(|req, next| {
             restrict_ip(req, next, vec!["127.0.0.1".parse().unwrap()])
         }));
 
-    Router::new()
+    let api_router = Router::new()
         .merge(standard_routes)
         .merge(pdf_routes)
-        .merge(protected_routes)
+        .merge(protected_routes);
+
+    Router::new()
+        .nest("/api", api_router)
         .layer(middleware::cors::create_cors_layer())
         // Annoying type signature, don't try to extract to its own function...
         .layer(

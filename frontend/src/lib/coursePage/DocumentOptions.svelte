@@ -249,6 +249,7 @@
   }
   input {
     font-size: 1rem;
+    background-color: var(--bg-light);
     padding: 0.25rem 0.5rem;
     border: none;
     border-radius: 0.5rem;

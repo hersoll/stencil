@@ -236,26 +236,6 @@ async fn validate_chapter(course_path: &str, chapter_path: &str) -> Result<Chapt
     Ok(chapter_entry)
 }
 
-async fn validate_topic(
-    course_path: &str,
-    chapter_path: &str,
-    topic_path: &str,
-) -> Result<TopicEntry, ApiError> {
-    let chapter_entry = validate_chapter(course_path, chapter_path).await?;
-    let valid_topics = db::get_chapter_topics(chapter_entry.id).await?;
-    let topic_entry = valid_topics
-        .into_iter()
-        // topic_path can be either an ID or a name
-        .find(|t| t.name == topic_path || &t.id.to_string() == topic_path)
-        .ok_or_else(|| {
-            ApiError::BadRequest(format!(
-                "There is no topic \"{topic_path}\" in chapter {chapter_path}"
-            ))
-        })?;
-
-    Ok(topic_entry)
-}
-
 fn parse_language(lang: &str) -> Result<Language, ApiError> {
     match lang {
         "sv" => Ok(Language::Sv),
