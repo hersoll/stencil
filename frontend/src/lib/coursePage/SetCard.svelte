@@ -48,6 +48,7 @@
   });
 </script>
 
+<!-- TODO: Make draggable (HTML draggable=true)-->
 <button
   popovertarget="set-editor-{id}"
   class="set-container"
