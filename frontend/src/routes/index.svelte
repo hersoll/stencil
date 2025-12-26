@@ -51,6 +51,9 @@
 <style>
   button {
     font-size: 2.5rem;
+    &:hover {
+      background-color: var(--primary);
+    }
   }
 
   h2 {
@@ -60,18 +63,17 @@
   }
 
   .main-div {
-    margin-top: 10rem;
+    margin: 10rem auto;
     padding: 2rem 4rem;
+    max-width: 40rem;
     border-radius: 2rem;
 
     background-color: var(--bg);
-
     text-align: center;
   }
 
   .btn-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    gap: 2rem;
   }
 </style>
