@@ -83,98 +83,7 @@ pub async fn get_topic_problems(topic_id: i32) -> Result<Vec<ProblemEntry>> {
     Ok(problems.into_iter().map(ProblemEntry::from).collect())
 }
 
-/// Query builder for fetching problems with filters
-pub struct ProblemQuery {
-    topic_ids: Vec<i32>,
-    min_difficulty: Option<i32>,
-    max_difficulty: Option<i32>,
-    exclusions: Vec<i32>,
-}
-
-impl ProblemQuery {
-    /// Create a new problem query for the given topics
-    pub fn for_topics(topic_ids: Vec<i32>) -> Self {
-        Self {
-            topic_ids,
-            min_difficulty: None,
-            max_difficulty: None,
-            exclusions: Vec::new(),
-        }
-    }
-
-    /// Filter by minimum difficulty (inclusive)
-    pub fn min_difficulty(mut self, difficulty: i32) -> Self {
-        self.min_difficulty = Some(difficulty);
-        self
-    }
-
-    /// Filter by maximum difficulty (inclusive)
-    pub fn max_difficulty(mut self, difficulty: i32) -> Self {
-        self.max_difficulty = Some(difficulty);
-        self
-    }
-
-    /// Set difficulty range (inclusive on both ends)
-    pub fn difficulty_range(mut self, min: i32, max: i32) -> Self {
-        self.min_difficulty = Some(min);
-        self.max_difficulty = Some(max);
-        self
-    }
-
-    /// Exclude specific problem IDs
-    pub fn exclude(mut self, problem_ids: Vec<i32>) -> Self {
-        self.exclusions = problem_ids;
-        self
-    }
-
-    /// Execute the query and return matching problems
-    pub async fn fetch(self) -> Result<Vec<ProblemEntry>> {
-        let pool = db::get_pool();
-        let min_diff = self.min_difficulty.unwrap_or(i32::MIN);
-        let max_diff = self.max_difficulty.unwrap_or(i32::MAX);
-
-        let problems = sqlx::query_as!(
-                DbProblemRow,
-                r#"SELECT DISTINCT p.id, p.name, p.difficulty, p.desc_sv, p.desc_en, p.module, 
-                p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id
-            FROM problems p
-            JOIN topic_problems tp ON p.id = tp.problem_id
-            WHERE tp.topic_id = ANY($1)
-                AND p.difficulty >= $2
-                AND p.difficulty <= $3
-                AND NOT p.id = ANY($4)
-            ORDER BY p.difficulty"#,
-                &self.topic_ids,
-                min_diff,
-                max_diff,
-                &self.exclusions
-            )
-            .fetch_all(pool)
-            .await?;
-
-        Ok(problems.into_iter().map(ProblemEntry::from).collect())
-    }
-}
-
-/// Get problems from topics within a difficulty range
-///
-/// This is a convenience function. For more control, use `ProblemQuery::for_topics()`.
-pub async fn get_topic_problems_in_difficulty_range(
-    topic_ids: Vec<i32>,
-    starting_difficulty: i32,
-    ending_difficulty: i32,
-) -> Result<Vec<ProblemEntry>> {
-    ProblemQuery::for_topics(topic_ids)
-        .difficulty_range(starting_difficulty, ending_difficulty)
-        .fetch()
-        .await
-}
-
 /// Get problem names and difficulties from topics for PDF generation
-///
-/// # Arguments
-/// * `topic_ids` - The topics to get problems from
-/// * `exclusions` - Problem IDs to exclude from the results
 ///
 /// # Returns
 /// A vector of tuples containing (full_problem_name, difficulty)
@@ -207,46 +116,11 @@ pub async fn get_problem_names_and_difficulties_from_topics(
         .collect())
 }
 
-/// Get a single problem by ID
-pub async fn get_problem(id: i32) -> Result<ProblemEntry> {
-    let pool = db::get_pool();
-    let problem = sqlx::query_as!(
-        DbProblemRow,
-        r#"SELECT id, name, difficulty, desc_sv, desc_en, module, 
-            question_sv, question_en, answer_sv, answer_en, solution_sv, solution_en, prefix_id
-                FROM problems
-                WHERE id = $1"#,
-        id,
-    )
-    .fetch_one(pool)
-    .await
-    .with_context(|| error_context("get", "problem", id))?;
-
-    Ok(ProblemEntry::from(problem))
-}
-
-/// Get multiple problems by IDs
-pub async fn get_problems(ids: &[i32]) -> Result<Vec<ProblemEntry>> {
-    let pool = db::get_pool();
-    let problems = sqlx::query_as!(
-        DbProblemRow,
-        r#"SELECT id, name, difficulty, desc_sv, desc_en, module, 
-            question_sv, question_en, answer_sv, answer_en, solution_sv, solution_en, prefix_id
-                FROM problems
-            WHERE id = ANY($1)
-            ORDER BY module"#,
-        ids,
-    )
-    .fetch_all(pool)
-    .await?;
-
-    Ok(problems.into_iter().map(ProblemEntry::from).collect())
-}
-
 /// Create a new problem
-pub async fn create_problem(problem: ProblemEntry) -> Result<i32> {
+///
+/// Returns the new hot fresh id of the created problem
+pub async fn create_problem_from_entry(problem: ProblemEntry) -> Result<i32> {
     let pool = db::get_pool();
-    let desc = problem.desc;
     let translations = problem.translations;
     let result = sqlx::query!(
         r#"INSERT INTO problems (name, desc_sv, desc_en, difficulty, module,
@@ -254,8 +128,8 @@ pub async fn create_problem(problem: ProblemEntry) -> Result<i32> {
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
             RETURNING id"#,
         problem.name,
-        desc.sv,
-        desc.en,
+        problem.desc.sv,
+        problem.desc.en,
         problem.difficulty,
         problem.module,
         translations.sv.question,
@@ -274,19 +148,20 @@ pub async fn create_problem(problem: ProblemEntry) -> Result<i32> {
 }
 
 /// Update an existing problem
-pub async fn update_problem(problem: ProblemEntry) -> Result<i32> {
+///
+/// Returns the name of the updated problem if OK
+pub async fn update_problem_from_entry(problem: ProblemEntry) -> Result<String> {
     let pool = db::get_pool();
-    let desc = problem.desc;
     let translations = problem.translations;
     let result = sqlx::query!(
             r#"UPDATE problems SET name = $2, difficulty = $12, desc_sv = $3, desc_en = $4, module = $5,
             question_sv = $6, question_en = $7, answer_sv = $8, answer_en = $9, solution_sv = $10, solution_en = $11, prefix_id = $13
             WHERE id = $1
-            RETURNING id"#,
+            RETURNING name"#,
             problem.id,
             problem.name,
-            desc.sv,
-            desc.en,
+            problem.desc.sv,
+            problem.desc.en,
             problem.module,
             translations.sv.question,
             translations.en.question,
@@ -301,11 +176,11 @@ pub async fn update_problem(problem: ProblemEntry) -> Result<i32> {
         .await
         .with_context(|| error_context("update", "problem", problem.id))?;
 
-    Ok(result.id)
+    Ok(result.name)
 }
 
 /// Delete a problem by ID, returns the deleted problem name
-pub async fn delete_problem(id: i32) -> Result<String> {
+pub async fn delete_problem_with_id(id: i32) -> Result<String> {
     let pool = db::get_pool();
     let result = sqlx::query!(r#"DELETE FROM problems WHERE id = $1 RETURNING name"#, id)
         .fetch_one(pool)

@@ -9,6 +9,9 @@ pub enum ApiError {
     #[error("Bad request: {0}")]
     BadRequest(String),
 
+    #[error("Database error: {0}")]
+    Database(String),
+
     #[error(transparent)]
     Io(#[from] std::io::Error),
 
@@ -20,6 +23,7 @@ impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let status_code = match self {
             ApiError::BadRequest(_) => StatusCode::BAD_REQUEST,
+            ApiError::Database(_) => StatusCode::INTERNAL_SERVER_ERROR,
             ApiError::Io(_) => StatusCode::INTERNAL_SERVER_ERROR,
             ApiError::Other(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };

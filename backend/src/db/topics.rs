@@ -5,13 +5,6 @@ use super::relationships::{TopicProblems, update_relationships};
 use crate::db::{self, DescriptionTranslations, TopicEntry};
 use anyhow::{Context, Result};
 
-impl From<DbDescRow> for TopicEntry {
-    fn from(row: DbDescRow) -> Self {
-        let (id, name, desc) = row.into_desc_translations();
-        TopicEntry { id, name, desc }
-    }
-}
-
 /// Get all topics ordered by name
 pub async fn get_all_topic_data() -> Result<Vec<TopicEntry>> {
     let pool = db::get_pool();
@@ -22,6 +15,22 @@ pub async fn get_all_topic_data() -> Result<Vec<TopicEntry>> {
     )
     .fetch_all(pool)
     .await?;
+
+    Ok(topics.into_iter().map(TopicEntry::from).collect())
+}
+
+pub async fn get_topics_from_ids(topic_ids: &[i32]) -> Result<Vec<TopicEntry>> {
+    let pool = db::get_pool();
+    let topics = sqlx::query_as!(
+        DbDescRow,
+        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en
+        FROM topics t
+        WHERE t.id = ANY($1)"#,
+        topic_ids
+    )
+    .fetch_all(pool)
+    .await
+    .with_context(|| format!("Failed to get topics with ids {topic_ids:?}"))?;
 
     Ok(topics.into_iter().map(TopicEntry::from).collect())
 }
@@ -65,7 +74,8 @@ impl Into<TopicEntry> for SpecialTopicRow {
         }
     }
 }
-/// If we have multiple chapters (say, from a course) we want to get all topics at the same time,
+/// If we have multiple chapters (say, from a course)
+/// we want to get all topics at the same time,
 /// instead of hitting the DB for each chapter
 pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32, Vec<TopicEntry>>> {
     let pool = db::get_pool();
@@ -89,48 +99,13 @@ pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32,
     Ok(map)
 }
 
-/// Get a single topic by ID
-pub async fn get_topic(id: i32) -> Result<TopicEntry> {
-    let pool = db::get_pool();
-    let topic = sqlx::query_as!(
-        DbDescRow,
-        r#"SELECT id, name, desc_sv, desc_en
-                FROM topics
-                WHERE id = $1"#,
-        id,
-    )
-    .fetch_one(pool)
-    .await
-    .with_context(|| error_context("get", "topic", id))?;
-
-    Ok(TopicEntry::from(topic))
-}
-
-/// Get multiple topics by IDs
-pub async fn get_topics(ids: &[i32]) -> Result<Vec<TopicEntry>> {
-    let pool = db::get_pool();
-    let topics = sqlx::query_as!(
-        DbDescRow,
-        r#"SELECT id, name, desc_sv, desc_en 
-                FROM topics
-                WHERE id = ANY($1)
-                ORDER BY name"#,
-        ids,
-    )
-    .fetch_all(pool)
-    .await?;
-
-    Ok(topics.into_iter().map(TopicEntry::from).collect())
-}
-
 /// Create a new topic
-pub async fn create_topic(topic: TopicEntry) -> Result<TopicEntry> {
+pub async fn create_topic_from_entry(topic: TopicEntry) -> Result<i32> {
     let pool = db::get_pool();
     let desc = topic.desc;
-    let created = sqlx::query_as!(
-        DbDescRow,
+    let created = sqlx::query!(
         r#"INSERT INTO topics (name, desc_sv, desc_en) VALUES ($1, $2, $3) 
-               RETURNING id, name, desc_sv, desc_en"#,
+               RETURNING id"#,
         topic.name,
         desc.sv,
         desc.en,
@@ -139,17 +114,16 @@ pub async fn create_topic(topic: TopicEntry) -> Result<TopicEntry> {
     .await
     .with_context(|| error_context_by_name("create", "topic", &topic.name))?;
 
-    Ok(TopicEntry::from(created))
+    Ok(created.id)
 }
 
 /// Update an existing topic
-pub async fn update_topic(topic: TopicEntry) -> Result<TopicEntry> {
+pub async fn update_topic_from_entry(topic: TopicEntry) -> Result<String> {
     let pool = db::get_pool();
     let desc = topic.desc;
-    let updated = sqlx::query_as!(
-        DbDescRow,
+    let updated = sqlx::query!(
         r#"UPDATE topics SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 
-               RETURNING id, name, desc_sv, desc_en"#,
+               RETURNING name"#,
         topic.name,
         desc.sv,
         desc.en,
@@ -159,11 +133,11 @@ pub async fn update_topic(topic: TopicEntry) -> Result<TopicEntry> {
     .await
     .with_context(|| error_context("update", "topic", topic.id))?;
 
-    Ok(TopicEntry::from(updated))
+    Ok(updated.name)
 }
 
 /// Delete a topic by ID, returns the deleted topic name
-pub async fn delete_topic(id: i32) -> Result<String> {
+pub async fn delete_topic_with_id(id: i32) -> Result<String> {
     let pool = db::get_pool();
     let result = sqlx::query!(r#"DELETE FROM topics WHERE id = $1 RETURNING name"#, id)
         .fetch_one(pool)

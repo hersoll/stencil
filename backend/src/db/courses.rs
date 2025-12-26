@@ -3,15 +3,8 @@ use super::relationships::{CourseChapters, update_relationships};
 use crate::db::{self, CourseEntry};
 use anyhow::{Context, Result};
 
-impl From<DbDescRow> for CourseEntry {
-    fn from(row: DbDescRow) -> Self {
-        let (id, name, desc) = row.into_desc_translations();
-        CourseEntry { id, name, desc }
-    }
-}
-
 /// Get all courses ordered by name
-pub async fn get_all_courses() -> Result<Vec<CourseEntry>> {
+pub async fn get_all_course_data() -> Result<Vec<CourseEntry>> {
     let pool = db::get_pool();
     let courses = sqlx::query_as!(
         DbDescRow,
@@ -59,46 +52,42 @@ pub async fn get_course_by_name(name: &str) -> Result<CourseEntry> {
 }
 
 /// Create a new course
-pub async fn create_course(course: CourseEntry) -> Result<CourseEntry> {
+pub async fn create_course_from_entry(course: CourseEntry) -> Result<i32> {
     let pool = db::get_pool();
-    let desc = course.desc;
-    let created = sqlx::query_as!(
-        DbDescRow,
+    let created = sqlx::query!(
         r#"INSERT INTO courses (name, desc_sv, desc_en) VALUES ($1, $2, $3) 
-               RETURNING id, name, desc_sv, desc_en"#,
+               RETURNING id"#,
         course.name,
-        desc.sv,
-        desc.en,
+        course.desc.sv,
+        course.desc.en,
     )
     .fetch_one(pool)
     .await
     .with_context(|| error_context_by_name("create", "course", &course.name))?;
 
-    Ok(CourseEntry::from(created))
+    Ok(created.id)
 }
 
 /// Update an existing course
-pub async fn update_course(course: CourseEntry) -> Result<CourseEntry> {
+pub async fn update_course_from_entry(course: CourseEntry) -> Result<String> {
     let pool = db::get_pool();
-    let desc = course.desc;
-    let updated = sqlx::query_as!(
-        DbDescRow,
+    let updated = sqlx::query!(
         r#"UPDATE courses SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 
-               RETURNING id, name, desc_sv, desc_en"#,
+               RETURNING name"#,
         course.name,
-        desc.sv,
-        desc.en,
+        course.desc.sv,
+        course.desc.en,
         course.id
     )
     .fetch_one(pool)
     .await
     .with_context(|| error_context("update", "course", course.id))?;
 
-    Ok(CourseEntry::from(updated))
+    Ok(updated.name)
 }
 
 /// Delete a course by ID, returns the deleted course name
-pub async fn delete_course(id: i32) -> Result<String> {
+pub async fn delete_course_with_id(id: i32) -> Result<String> {
     let pool = db::get_pool();
     let result = sqlx::query!(r#"DELETE FROM courses WHERE id = $1 RETURNING name"#, id)
         .fetch_one(pool)

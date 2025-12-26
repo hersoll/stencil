@@ -6,7 +6,7 @@ use crate::{
 use axum::{
     Router,
     http::Request,
-    routing::{get, post},
+    routing::{delete, get, patch, post},
 };
 use std::time::Duration;
 use tower_governor::GovernorLayer;
@@ -31,8 +31,24 @@ pub fn create_router() -> Router {
         .route("/pdf/example", get(pdf_generation::generate_example_pdf));
     //.layer(GovernorLayer::new(middleware::rate_limiting::pdf_limit()))
     let protected_routes = Router::new()
-        .route("/admin/login", get(middleware::auth::login))
-        .route("/admin", get(text_endpoints::protected))
+        .route("/edit/login", get(middleware::auth::login))
+        .route("/edit", get(text_endpoints::protected))
+        .route("/edit/problem", get(db::edit::get_problems))
+        .route("/edit/problem", post(db::edit::create_problem))
+        .route("/edit/problem", patch(db::edit::update_problem))
+        .route("/edit/problem", delete(db::edit::delete_problem))
+        .route("/edit/topic", get(db::edit::get_topics))
+        .route("/edit/topic", post(db::edit::create_topic))
+        .route("/edit/topic", patch(db::edit::update_topic))
+        .route("/edit/topic", delete(db::edit::delete_topic))
+        .route("/edit/chapter", get(db::edit::get_chapters))
+        .route("/edit/chapter", post(db::edit::create_chapter))
+        .route("/edit/chapter", patch(db::edit::update_chapter))
+        .route("/edit/chapter", delete(db::edit::delete_chapter))
+        .route("/edit/course", get(db::edit::get_courses))
+        .route("/edit/course", post(db::edit::create_course))
+        .route("/edit/course", patch(db::edit::update_course))
+        .route("/edit/course", delete(db::edit::delete_course))
         .layer(GovernorLayer::new(middleware::rate_limiting::auth_limit()))
         .layer(axum::middleware::from_fn(authenticate))
         .layer(axum::middleware::from_fn(|req, next| {

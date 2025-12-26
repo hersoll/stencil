@@ -1,4 +1,5 @@
-use crate::Language;
+use crate::{Language, db::common::DbDescRow};
+use serde::{Deserialize, Serialize};
 use tracing::error;
 
 // ###########################
@@ -18,32 +19,34 @@ pub trait HasDesc {
 // ###########################
 // Nested structs
 // ###########################
-#[derive(Debug, Clone)]
+//
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct DescriptionTranslations {
     pub sv: String,
     pub en: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ProblemTranslations {
     pub sv: TranslatedProblem,
     pub en: TranslatedProblem,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct TranslatedProblem {
     pub question: Option<String>,
     pub answer: Option<String>,
     pub solution: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PrefixTranslations {
     pub sv: TranslatedPrefix,
     pub en: TranslatedPrefix,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct TranslatedPrefix {
     pub text: String,
     pub group_text: String,
@@ -53,18 +56,25 @@ pub struct TranslatedPrefix {
 // Entry structs
 // ###########################
 
+#[derive(Serialize, Deserialize)]
 pub struct CourseEntry {
     pub id: i32,
     pub name: String,
     pub desc: DescriptionTranslations,
 }
-
 impl HasDesc for CourseEntry {
     fn desc(&self) -> &DescriptionTranslations {
         &self.desc
     }
 }
+impl From<DbDescRow> for CourseEntry {
+    fn from(row: DbDescRow) -> Self {
+        let (id, name, desc) = row.into_desc_translations();
+        CourseEntry { id, name, desc }
+    }
+}
 
+#[derive(Serialize, Deserialize)]
 pub struct ChapterEntry {
     pub id: i32,
     pub name: String,
@@ -75,8 +85,14 @@ impl HasDesc for ChapterEntry {
         &self.desc
     }
 }
+impl From<DbDescRow> for ChapterEntry {
+    fn from(row: DbDescRow) -> Self {
+        let (id, name, desc) = row.into_desc_translations();
+        ChapterEntry { id, name, desc }
+    }
+}
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct TopicEntry {
     pub id: i32,
     pub name: String,
@@ -87,8 +103,14 @@ impl HasDesc for TopicEntry {
         &self.desc
     }
 }
+impl From<DbDescRow> for TopicEntry {
+    fn from(row: DbDescRow) -> Self {
+        let (id, name, desc) = row.into_desc_translations();
+        TopicEntry { id, name, desc }
+    }
+}
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ProblemEntry {
     pub id: i32,
     pub name: String,
@@ -148,7 +170,7 @@ impl ProblemEntry {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PrefixEntry {
     pub id: i32,
     pub name: String,

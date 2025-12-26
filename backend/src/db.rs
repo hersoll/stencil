@@ -2,6 +2,7 @@ pub mod api;
 mod chapters;
 mod common;
 mod courses;
+pub mod edit;
 pub mod i18n;
 mod prefixes;
 mod problems;

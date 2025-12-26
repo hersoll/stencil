@@ -125,7 +125,7 @@ pub async fn get_translation(Path(lang_code): Path<String>) -> Result<impl IntoR
 
 pub async fn get_courses(Path(lang_code): Path<String>) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
-    let courses = db::get_all_courses().await?;
+    let courses = db::get_all_course_data().await?;
     let mut course_data: HashMap<String, CourseData> = HashMap::new();
     for course in courses {
         course_data.insert(
@@ -201,7 +201,7 @@ pub async fn get_problems(
         }
     };
     let lang = parse_language(&lang_code)?;
-    let topics = db::get_topics(&topic_ids).await?;
+    let topics = db::get_topics_from_ids(&topic_ids).await?;
     let mut topic_vec = Vec::new();
     for topic in topics {
         let problems = db::get_topic_problems(topic.id).await?;
