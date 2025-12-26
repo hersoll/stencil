@@ -3,7 +3,6 @@ use super::relationships::{CourseChapters, update_relationships};
 use crate::db::{self, CourseEntry};
 use anyhow::{Context, Result};
 
-/// Get all courses ordered by name
 pub async fn get_all_course_data() -> Result<Vec<CourseEntry>> {
     let pool = db::get_pool();
     let courses = sqlx::query_as!(
@@ -17,7 +16,6 @@ pub async fn get_all_course_data() -> Result<Vec<CourseEntry>> {
     Ok(courses.into_iter().map(CourseEntry::from).collect())
 }
 
-/// Get a single course by ID
 pub async fn get_course_by_id(id: i32) -> Result<CourseEntry> {
     let pool = db::get_pool();
     let course = sqlx::query_as!(
@@ -34,7 +32,6 @@ pub async fn get_course_by_id(id: i32) -> Result<CourseEntry> {
     Ok(CourseEntry::from(course))
 }
 
-/// Get a single course by name
 pub async fn get_course_by_name(name: &str) -> Result<CourseEntry> {
     let pool = db::get_pool();
     let course = sqlx::query_as!(
@@ -51,7 +48,6 @@ pub async fn get_course_by_name(name: &str) -> Result<CourseEntry> {
     Ok(CourseEntry::from(course))
 }
 
-/// Create a new course
 pub async fn create_course_from_entry(course: CourseEntry) -> Result<i32> {
     let pool = db::get_pool();
     let created = sqlx::query!(
@@ -68,7 +64,6 @@ pub async fn create_course_from_entry(course: CourseEntry) -> Result<i32> {
     Ok(created.id)
 }
 
-/// Update an existing course
 pub async fn update_course_from_entry(course: CourseEntry) -> Result<String> {
     let pool = db::get_pool();
     let updated = sqlx::query!(
@@ -86,7 +81,6 @@ pub async fn update_course_from_entry(course: CourseEntry) -> Result<String> {
     Ok(updated.name)
 }
 
-/// Delete a course by ID, returns the deleted course name
 pub async fn delete_course_with_id(id: i32) -> Result<String> {
     let pool = db::get_pool();
     let result = sqlx::query!(r#"DELETE FROM courses WHERE id = $1 RETURNING name"#, id)
@@ -97,7 +91,6 @@ pub async fn delete_course_with_id(id: i32) -> Result<String> {
     Ok(result.name)
 }
 
-/// Update the chapters associated with a course
 pub async fn update_course_chapters(course_id: i32, chapter_ids: Vec<i32>) -> Result<()> {
     let pool = db::get_pool();
     update_relationships::<CourseChapters>(pool, course_id, &chapter_ids).await

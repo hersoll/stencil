@@ -5,7 +5,6 @@ use super::relationships::{TopicProblems, update_relationships};
 use crate::db::{self, DescriptionTranslations, TopicEntry};
 use anyhow::{Context, Result};
 
-/// Get all topics ordered by name
 pub async fn get_all_topic_data() -> Result<Vec<TopicEntry>> {
     let pool = db::get_pool();
     let topics = sqlx::query_as!(
@@ -35,7 +34,7 @@ pub async fn get_topics_from_ids(topic_ids: &[i32]) -> Result<Vec<TopicEntry>> {
     Ok(topics.into_iter().map(TopicEntry::from).collect())
 }
 
-/// Get all topics for a specific chapter, ordered by chapter order_index
+/// Ordered by chapter order_index
 pub async fn get_chapter_topics(chapter_id: i32) -> Result<Vec<TopicEntry>> {
     let pool = db::get_pool();
     let topics = sqlx::query_as!(
@@ -99,7 +98,6 @@ pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32,
     Ok(map)
 }
 
-/// Create a new topic
 pub async fn create_topic_from_entry(topic: TopicEntry) -> Result<i32> {
     let pool = db::get_pool();
     let desc = topic.desc;
@@ -117,7 +115,6 @@ pub async fn create_topic_from_entry(topic: TopicEntry) -> Result<i32> {
     Ok(created.id)
 }
 
-/// Update an existing topic
 pub async fn update_topic_from_entry(topic: TopicEntry) -> Result<String> {
     let pool = db::get_pool();
     let desc = topic.desc;
@@ -136,7 +133,6 @@ pub async fn update_topic_from_entry(topic: TopicEntry) -> Result<String> {
     Ok(updated.name)
 }
 
-/// Delete a topic by ID, returns the deleted topic name
 pub async fn delete_topic_with_id(id: i32) -> Result<String> {
     let pool = db::get_pool();
     let result = sqlx::query!(r#"DELETE FROM topics WHERE id = $1 RETURNING name"#, id)
@@ -147,7 +143,6 @@ pub async fn delete_topic_with_id(id: i32) -> Result<String> {
     Ok(result.name)
 }
 
-/// Update the problems associated with a topic
 pub async fn update_topic_problems(topic_id: i32, problem_ids: Vec<i32>) -> Result<()> {
     let pool = db::get_pool();
     update_relationships::<TopicProblems>(pool, topic_id, &problem_ids).await

@@ -48,7 +48,6 @@ impl From<DbProblemRow> for ProblemEntry {
     }
 }
 
-/// Get all problems ordered by module
 pub async fn get_all_problem_data() -> Result<Vec<ProblemEntry>> {
     let pool = db::get_pool();
     let problems = sqlx::query_as!(
@@ -63,7 +62,6 @@ pub async fn get_all_problem_data() -> Result<Vec<ProblemEntry>> {
     Ok(problems.into_iter().map(ProblemEntry::from).collect())
 }
 
-/// Get all problems for a specific topic, ordered by topic order_index
 pub async fn get_topic_problems(topic_id: i32) -> Result<Vec<ProblemEntry>> {
     let pool = db::get_pool();
     let problems = sqlx::query_as!(
@@ -116,9 +114,6 @@ pub async fn get_problem_names_and_difficulties_from_topics(
         .collect())
 }
 
-/// Create a new problem
-///
-/// Returns the new hot fresh id of the created problem
 pub async fn create_problem_from_entry(problem: ProblemEntry) -> Result<i32> {
     let pool = db::get_pool();
     let translations = problem.translations;
@@ -147,9 +142,6 @@ pub async fn create_problem_from_entry(problem: ProblemEntry) -> Result<i32> {
     Ok(result.id)
 }
 
-/// Update an existing problem
-///
-/// Returns the name of the updated problem if OK
 pub async fn update_problem_from_entry(problem: ProblemEntry) -> Result<String> {
     let pool = db::get_pool();
     let translations = problem.translations;
@@ -179,7 +171,6 @@ pub async fn update_problem_from_entry(problem: ProblemEntry) -> Result<String> 
     Ok(result.name)
 }
 
-/// Delete a problem by ID, returns the deleted problem name
 pub async fn delete_problem_with_id(id: i32) -> Result<String> {
     let pool = db::get_pool();
     let result = sqlx::query!(r#"DELETE FROM problems WHERE id = $1 RETURNING name"#, id)

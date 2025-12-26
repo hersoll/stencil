@@ -49,6 +49,10 @@ pub fn create_router() -> Router {
         .route("/edit/course", post(db::edit::create_course))
         .route("/edit/course", patch(db::edit::update_course))
         .route("/edit/course", delete(db::edit::delete_course))
+        .route("/edit/prefix", get(db::edit::get_prefixes))
+        .route("/edit/prefix", post(db::edit::create_prefix))
+        .route("/edit/prefix", patch(db::edit::update_prefix))
+        .route("/edit/prefix", delete(db::edit::delete_prefix))
         .layer(GovernorLayer::new(middleware::rate_limiting::auth_limit()))
         .layer(axum::middleware::from_fn(authenticate))
         .layer(axum::middleware::from_fn(|req, next| {

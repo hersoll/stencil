@@ -30,7 +30,6 @@ impl From<DbPrefixRow> for PrefixEntry {
     }
 }
 
-/// Get all prefixes
 pub async fn get_all_prefix_data() -> Result<Vec<PrefixEntry>> {
     let pool = db::get_pool();
     let prefixes = sqlx::query_as!(
@@ -43,8 +42,7 @@ pub async fn get_all_prefix_data() -> Result<Vec<PrefixEntry>> {
     Ok(prefixes.into_iter().map(PrefixEntry::from).collect())
 }
 
-/// Create a new prefix
-pub async fn create_prefix(prefix: PrefixEntry) -> Result<i32> {
+pub async fn create_prefix_from_entry(prefix: PrefixEntry) -> Result<i32> {
     let pool = db::get_pool();
     let translations = prefix.translations;
     let result = sqlx::query!(
@@ -64,14 +62,13 @@ pub async fn create_prefix(prefix: PrefixEntry) -> Result<i32> {
     Ok(result.id)
 }
 
-/// Update an existing prefix
-pub async fn update_prefix(prefix: PrefixEntry) -> Result<i32> {
+pub async fn update_prefix_from_entry(prefix: PrefixEntry) -> Result<String> {
     let pool = db::get_pool();
     let translations = prefix.translations;
     let result = sqlx::query!(
             r#"UPDATE prefixes SET name = $2, text_sv = $3, text_en = $4, group_text_sv = $5, group_text_en = $6 
             WHERE id = $1
-            RETURNING id"#,
+            RETURNING name"#,
             prefix.id,
             prefix.name,
             translations.sv.text,
@@ -83,5 +80,15 @@ pub async fn update_prefix(prefix: PrefixEntry) -> Result<i32> {
         .await
         .with_context(|| error_context("update", "prefix", prefix.id))?;
 
-    Ok(result.id)
+    Ok(result.name)
+}
+
+pub async fn delete_prefix_with_id(id: i32) -> Result<String> {
+    let pool = db::get_pool();
+    let result = sqlx::query!(r#"DELETE FROM prefixes WHERE id = $1 RETURNING name"#, id)
+        .fetch_one(pool)
+        .await
+        .with_context(|| error_context("delete", "prefix", id))?;
+
+    Ok(result.name)
 }
