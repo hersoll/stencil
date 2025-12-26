@@ -104,7 +104,8 @@
   .problem-grid {
     padding: 0.1rem 0;
     display: grid;
-    grid-template-columns: 35rem 4.5rem;
+    grid-template-columns: 35rem 3.5rem;
+    padding-right: 1rem;
     border: 2px solid transparent;
     p {
       color: var(--text-muted);
