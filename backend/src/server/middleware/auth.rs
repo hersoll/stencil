@@ -24,7 +24,7 @@ use tracing::warn;
 use crate::db;
 use crate::errors::ApiError;
 
-pub async fn login(Query(params): Query<HashMap<String, String>>) -> impl IntoResponse {
+pub async fn login(Query(params): Query<HashMap<String, String>>) -> Response {
     let return_to = params
         .get("return")
         .map(String::as_str)
@@ -33,12 +33,14 @@ pub async fn login(Query(params): Query<HashMap<String, String>>) -> impl IntoRe
     // TODO: Only bounce back if allowed URL (localhost or actual URL)
     if !return_to.starts_with("http://localhost:5173") {
         warn!("The redirect is {return_to}");
+    } else {
+        return (
+            StatusCode::FOUND,
+            [(header::LOCATION, return_to.to_string())],
+        )
+            .into_response();
     }
-
-    (
-        StatusCode::FOUND,
-        [(header::LOCATION, return_to.to_string())],
-    )
+    unauthorized()
 }
 
 pub async fn authenticate(req: Request<Body>, next: Next) -> Response {
