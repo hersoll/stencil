@@ -31,7 +31,11 @@
         entry =>
           entry.name.toLowerCase().includes(search.toLowerCase()) ||
           (entry.kind == 'problem' &&
-            entry.module.toLowerCase().includes(search.toLowerCase()))
+            entry.module.toLowerCase().includes(search.toLowerCase())) ||
+          (entry.kind == 'prefix' &&
+            entry.translations.sv.text
+              .toLowerCase()
+              .includes(search.toLowerCase()))
       );
     }
   });
@@ -150,13 +154,13 @@
 
 <div class="container">
   <div class="list-header">
-    <h3 class="header-text">Module</h3>
-    <h3 class="header-text">Name</h3>
+    <h3 class="header-text">{kind == 'problem' ? 'Module' : 'Name'}</h3>
+    <h3 class="header-text">{kind == 'problem' ? 'Name' : 'Description'}</h3>
     <button class="reset-btn" onclick={resetList}>⟳</button>
   </div>
   <div class="list-grid" bind:this={listElement}>
     <button
-      class="list-entry no-select {false ? 'dragging' : ''}"
+      class="list-entry no-select new-entry {false ? 'dragging' : ''}"
       draggable="true"
       in:fly={{ y: 40, duration: 400 }}
       ondragstart={e => {
@@ -165,7 +169,7 @@
       }}
       ondragend={e => e.currentTarget.classList.remove('dragging')}
     >
-      <p class="list-text placeholder-text">New problem</p>
+      <p class="list-text placeholder-text">New {kind}</p>
     </button>
     {#each foundEntries as entry, i}
       <button
@@ -220,6 +224,10 @@
   }
   .list-header {
     margin-bottom: 0.5rem;
+  }
+  .new-entry {
+    grid-template-columns: 35.5rem;
+    justify-items: center;
   }
 
   .reset-btn {
