@@ -106,6 +106,7 @@
   });
 
   $effect(() => {
+    entries = [];
     switch (kind) {
       case 'problem':
         getProblems();
