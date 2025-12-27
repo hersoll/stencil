@@ -105,30 +105,46 @@
     return () => document.removeEventListener('click', handleOutsideClick);
   });
 
-  $effect(() => {
+  async function resetList() {
     entries = [];
     switch (kind) {
       case 'problem':
-        getProblems();
+        await getProblems();
+        break;
+      case 'topic':
+        await getTopics();
+        break;
+      case 'chapter':
+        await getChapters();
+        break;
+      case 'course':
+        await getCourses();
+        break;
+      case 'prefix':
+        await getPrefixes();
+        break;
+    }
+  }
+
+  $effect(() => {
+    switch (kind) {
+      case 'problem':
         defaultEntry = { ...defaultProblemEntry };
         break;
       case 'topic':
-        getTopics();
         defaultEntry = { ...defaultTopicEntry };
         break;
       case 'chapter':
-        getChapters();
         defaultEntry = { ...defaultChapterEntry };
         break;
       case 'course':
-        getCourses();
         defaultEntry = { ...defaultCourseEntry };
         break;
       case 'prefix':
-        getPrefixes();
         defaultEntry = { ...defaultPrefixEntry };
         break;
     }
+    resetList();
   });
 </script>
 
@@ -136,7 +152,7 @@
   <div class="list-header">
     <h3 class="header-text">Module</h3>
     <h3 class="header-text">Name</h3>
-    <button class="reset-btn" onclick={getProblems}>⟳</button>
+    <button class="reset-btn" onclick={resetList}>⟳</button>
   </div>
   <div class="list-grid" bind:this={listElement}>
     <button
@@ -176,10 +192,14 @@
       </button>
     {/each}
   </div>
-  <p class="counter">
-    {foundEntries.length}
-    {kind}{kind == 'prefix' ? 'es' : 's'} found
-  </p>
+  <div class="counter-container">
+    {#if entries.length > 0}
+      <p class="counter" in:fly={{ y: -10, duration: 400 }}>
+        {foundEntries.length}
+        {kind}{kind == 'prefix' ? 'es' : 's'} found
+      </p>
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -253,6 +273,9 @@
     color: var(--text-muted);
   }
 
+  .counter-container {
+    height: 1.2rem;
+  }
   .counter {
     text-align: center;
   }
