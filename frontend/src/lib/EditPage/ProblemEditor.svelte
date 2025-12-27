@@ -35,8 +35,8 @@
 <div
   class="container"
   class:dragged-over={draggedOver}
-  in:fly={{ y: 10, duration: 200 }}
-  out:fly={{ y: 10, duration: 200 }}
+  in:fly={{ y: -15, duration: 200 }}
+  out:fly={{ y: 15, duration: 200 }}
 >
   {#if problem.id >= 0}
     <h3 class="heading existing">Editing problem</h3>

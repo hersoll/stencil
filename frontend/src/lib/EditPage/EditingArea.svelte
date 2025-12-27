@@ -28,7 +28,10 @@
       if (activeEntry) {
         temp_storage = { ...activeEntry };
       }
-      if (clickedEntry) {
+      if (
+        clickedEntry &&
+        (activeEntry?.kind == clickedEntry.kind || !activeEntry)
+      ) {
         activeEntry = { ...clickedEntry };
       }
       draggedOver = true;
