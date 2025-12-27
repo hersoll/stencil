@@ -3,7 +3,7 @@
   import { API_URL } from '$src/main';
   import ContextMenu from './ContextMenu.svelte';
   import ServerMessage from './ServerMessage.svelte';
-  import ProblemList from './ProblemList.svelte';
+  import EntryList from './EntryList.svelte';
   import EditingArea from './EditingArea.svelte';
   import { fly } from 'svelte/transition';
 
@@ -82,7 +82,7 @@
   />
 
   <div class="major-grid">
-    <ProblemList
+    <EntryList
       {kind}
       {handleEntryClick}
       {handleEntryDrag}
