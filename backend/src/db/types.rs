@@ -19,7 +19,6 @@ pub trait HasDesc {
 // ###########################
 // Nested structs
 // ###########################
-//
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct DescriptionTranslations {
