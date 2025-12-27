@@ -3,8 +3,7 @@
   import { sets } from '$src/states.svelte';
   import { fly } from 'svelte/transition';
   import SetDisplay from './SetCard.svelte';
-
-  let dialogElement: HTMLDialogElement;
+  import ConfirmDialog from '../ConfirmDialog.svelte';
 
   function deleteSet(id: number) {
     document.getElementById(`set-editor-${id}`)?.hidePopover();
@@ -14,7 +13,15 @@
   function deleteSets() {
     sets.set_states = [];
   }
+
+  let confirmDialog: ConfirmDialog;
 </script>
+
+<ConfirmDialog
+  bind:this={confirmDialog}
+  onConfirm={deleteSets}
+  message={i18n.t('are_you_sure')}
+/>
 
 <aside
   class="set-container"
@@ -25,7 +32,7 @@
     <h2>{i18n.t('sets')}</h2>
     <p>{i18n.t('click_to_edit')}</p>
   </div>
-  <button class="delete-all" onclick={() => dialogElement.showModal()}
+  <button class="delete-all" onclick={() => confirmDialog.show()}
     >{i18n.t('clear')}</button
   >
   {#each sets.set_states as set_state}
@@ -36,32 +43,6 @@
     />
   {/each}
 </aside>
-
-<dialog class="confirm-dialog" bind:this={dialogElement}>
-  <form>
-    <p>{i18n.t('are_you_sure')}</p>
-    <div class="confirm-btn-container">
-      <button
-        value="no"
-        formmethod="dialog"
-        class="dialog-btn"
-        onclick={() => dialogElement.close()}
-      >
-        {i18n.t('no')}
-      </button>
-      <button
-        value="yes"
-        formmethod="dialog"
-        class="dialog-btn highlighted"
-        onclick={() => {
-          deleteSets();
-          dialogElement.close();
-        }}
-        >{i18n.t('yes')}
-      </button>
-    </div>
-  </form>
-</dialog>
 
 <style>
   .set-container {
@@ -92,37 +73,6 @@
     border: 2px solid transparent;
     &:hover {
       border: 2px solid var(--primary);
-    }
-  }
-
-  .confirm-dialog {
-    align-items: center;
-    padding: 2rem;
-    border-radius: 1rem;
-    border: none;
-    margin: auto;
-    background-color: var(--bg);
-    box-shadow: var(--shadow-elevation-medium);
-    text-align: center;
-  }
-  .confirm-btn-container {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-
-    & > button {
-      box-shadow: var(--shadow-elevation-low);
-      &:hover {
-        background-color: var(--bg);
-      }
-    }
-
-    & > .highlighted {
-      background-color: var(--primary);
-      &:hover {
-        background-color: var(--secondary);
-      }
     }
   }
 </style>

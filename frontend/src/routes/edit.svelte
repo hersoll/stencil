@@ -1,5 +1,8 @@
 <script lang="ts">
+  import ProblemPage from '$src/lib/EditPage/ProblemPage.svelte';
+  import ErrorPage from '$src/lib/ErrorPage.svelte';
   import { API_URL } from '$src/main';
+  import { error } from '$src/states.svelte';
   import { onMount } from 'svelte';
 
   let data = $state('');
@@ -24,10 +27,11 @@
   onMount(() => accessAdminPage());
 </script>
 
-<p>{data}</p>
+{#if error.message}
+  <ErrorPage />
+{:else}
+  <ProblemPage />
+{/if}
 
 <style>
-  p {
-    margin: 5rem;
-  }
 </style>
