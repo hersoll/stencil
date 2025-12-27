@@ -33,7 +33,6 @@ pub fn create_router() -> Router {
     let protected_routes = Router::new()
         .route("/edit/login", get(middleware::auth::login))
         .route("/edit", get(text_endpoints::protected))
-        .layer(GovernorLayer::new(middleware::rate_limiting::auth_limit()))
         .route("/edit/problem", get(db::edit::get_problems))
         .route("/edit/problem", post(db::edit::create_problem))
         .route("/edit/problem", patch(db::edit::update_problem))
@@ -54,7 +53,6 @@ pub fn create_router() -> Router {
         .route("/edit/prefix", post(db::edit::create_prefix))
         .route("/edit/prefix", patch(db::edit::update_prefix))
         .route("/edit/prefix", delete(db::edit::delete_prefix))
-        .layer(GovernorLayer::new(middleware::rate_limiting::json_limit()))
         .layer(axum::middleware::from_fn(authenticate))
         .layer(axum::middleware::from_fn(|req, next| {
             restrict_ip(req, next, vec!["127.0.0.1".parse().unwrap()])
