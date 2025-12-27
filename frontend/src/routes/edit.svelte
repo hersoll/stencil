@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ProblemPage from '$src/lib/EditPage/ProblemPage.svelte';
+  import EditPage from '$src/lib/EditPage/EditPage.svelte';
   import ErrorPage from '$src/lib/ErrorPage.svelte';
   import { API_URL } from '$src/main';
   import { error } from '$src/states.svelte';
@@ -30,7 +30,7 @@
 {#if error.message}
   <ErrorPage />
 {:else}
-  <ProblemPage />
+  <EditPage />
 {/if}
 
 <style>

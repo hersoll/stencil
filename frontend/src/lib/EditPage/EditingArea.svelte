@@ -1,36 +1,38 @@
 <script lang="ts">
   import ProblemEditor from './ProblemEditor.svelte';
-  import type { ProblemEntry } from './types';
+  import type { Entry } from './types';
 
   let {
-    activeProblem = $bindable(),
-    clickedProblem
+    activeEntry = $bindable(),
+    clickedEntry
   }: {
-    activeProblem: ProblemEntry | null;
-    clickedProblem: ProblemEntry;
+    activeEntry: Entry | null;
+    clickedEntry: Entry | null;
   } = $props();
 
   let draggedOver = $state(false);
 
   /// used to store the "real" value while drag preview is showing
-  let temp_storage: ProblemEntry;
+  let temp_storage: Entry | null;
   let dragDepth = $state(0);
+
+  //Required for handling child components
+  function handleDragOver(e: DragEvent) {
+    e.preventDefault();
+  }
 
   function handleDragEnter(e: DragEvent) {
     e.preventDefault();
     dragDepth++;
     if (dragDepth === 1) {
-      if (activeProblem) {
-        temp_storage = { ...activeProblem };
+      if (activeEntry) {
+        temp_storage = { ...activeEntry };
       }
-      activeProblem = { ...clickedProblem };
+      if (clickedEntry) {
+        activeEntry = { ...clickedEntry };
+      }
       draggedOver = true;
     }
-  }
-
-  //Required for handling child components
-  function handleDragOver(e: DragEvent) {
-    e.preventDefault();
   }
 
   function handleDragLeave() {
@@ -38,18 +40,22 @@
     if (dragDepth == 0) {
       draggedOver = false;
       if (temp_storage) {
-        activeProblem = { ...temp_storage };
+        activeEntry = { ...temp_storage };
       } else {
-        activeProblem = null;
+        activeEntry = null;
       }
+      temp_storage = null;
     }
   }
 
   function handleDrop(e: DragEvent) {
     dragDepth--;
     e.preventDefault();
-    activeProblem = { ...clickedProblem };
+    if (clickedEntry) {
+      activeEntry = { ...clickedEntry };
+    }
     draggedOver = false;
+    temp_storage = null;
   }
 </script>
 
@@ -62,8 +68,8 @@
   ondragleave={handleDragLeave}
   ondrop={handleDrop}
 >
-  {#if activeProblem}
-    <ProblemEditor bind:problem={activeProblem} {draggedOver} />
+  {#if activeEntry?.kind == 'problem'}
+    <ProblemEditor bind:problem={activeEntry} {draggedOver} />
   {/if}
 </div>
 

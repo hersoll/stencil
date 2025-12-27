@@ -1,17 +1,17 @@
 <script lang="ts">
   import ConfirmDialog from '../ConfirmDialog.svelte';
-  import type { ProblemEntry } from './types';
+  import type { Entry } from './types';
 
   let {
     editFunc,
     copyFunc,
     deleteFunc,
-    clickedProblem
+    clickedEntry
   }: {
     editFunc: () => void;
     copyFunc: () => void;
     deleteFunc: () => void;
-    clickedProblem: ProblemEntry;
+    clickedEntry: Entry | null;
   } = $props();
 
   let popoverElement: HTMLDivElement;
@@ -54,7 +54,7 @@
     deleteFunc();
     hide();
   }}
-  message={`Are you sure you want to delete ${clickedProblem.name}?`}
+  message={`Are you sure you want to delete ${clickedEntry?.name}?`}
 />
 
 <style>

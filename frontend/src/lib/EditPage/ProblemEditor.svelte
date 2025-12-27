@@ -1,5 +1,6 @@
 <script lang="ts">
   import { API_URL } from '$src/main';
+  import { fly } from 'svelte/transition';
   import ServerMessage from './ServerMessage.svelte';
   import type { ProblemEntry } from './types';
 
@@ -31,9 +32,14 @@
 
 <ServerMessage bind:this={serverMessage} />
 
-<div class="container" class:dragged-over={draggedOver}>
+<div
+  class="container"
+  class:dragged-over={draggedOver}
+  in:fly={{ y: 10, duration: 200 }}
+  out:fly={{ y: 10, duration: 200 }}
+>
   {#if problem.id >= 0}
-    <h3 class="heading existing">Editing problem ({problem.id})</h3>
+    <h3 class="heading existing">Editing problem</h3>
   {:else}
     <h3 class="heading new">New problem</h3>
   {/if}

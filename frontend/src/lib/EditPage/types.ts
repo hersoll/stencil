@@ -1,3 +1,13 @@
+type WithoutKind<T> = Omit<T, 'kind'>;
+
+export function stripKind<T extends { kind: string }>(
+  entry: T
+): WithoutKind<T> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { kind, ...rest } = entry;
+  return rest;
+}
+
 //==========================================
 //  "Enum"
 //==========================================
@@ -40,28 +50,28 @@ export type TranslatedPrefix = {
 };
 
 //==========================================
-//  Entries
+//  Entries (raw, backend copies)
 //==========================================
 
-export type CourseEntry = {
+export type CourseEntryRaw = {
   id: number;
   name: string;
   desc: DescriptionTranslations;
 };
 
-export type ChapterEntry = {
+export type ChapterEntryRaw = {
   id: number;
   name: string;
   desc: DescriptionTranslations;
 };
 
-export type TopicEntry = {
+export type TopicEntryRaw = {
   id: number;
   name: string;
   desc: DescriptionTranslations;
 };
 
-export type ProblemEntry = {
+export type ProblemEntryRaw = {
   id: number;
   module: string;
   name: string;
@@ -71,25 +81,107 @@ export type ProblemEntry = {
   translations: ProblemTranslations;
 };
 
-export type PrefixEntry = {
+export type PrefixEntryRaw = {
   id: number;
   name: string;
   translations: PrefixTranslations;
 };
 
 //==========================================
-//  Defaults
+//  Entries (enriched with kind for discrimination)
 //==========================================
 
-export const defaultProblemEntry: ProblemEntry = {
+export type CourseEntry = CourseEntryRaw & {
+  kind: 'course';
+};
+
+export type ChapterEntry = ChapterEntryRaw & {
+  kind: 'chapter';
+};
+
+export type TopicEntry = TopicEntryRaw & {
+  kind: 'topic';
+};
+
+export type ProblemEntry = ProblemEntryRaw & {
+  kind: 'problem';
+};
+
+export type PrefixEntry = PrefixEntryRaw & {
+  kind: 'prefix';
+};
+
+//==========================================
+//  Entries (enriched with kind for discrimination)
+//==========================================
+
+export const defaultDescriptionTranslations = {
+  sv: '',
+  en: ''
+};
+
+export const defaultTranslatedProblem = {
+  question: null,
+  answer: null,
+  solution: null
+};
+
+export const defaultProblemTranslations = {
+  sv: { ...defaultTranslatedProblem },
+  en: { ...defaultTranslatedProblem }
+};
+
+export const defaultTranslatedPrefix = {
+  text: '',
+  group_text: ''
+};
+
+export const defaultPrefixTranslations = {
+  sv: { ...defaultTranslatedPrefix },
+  en: { ...defaultTranslatedPrefix }
+};
+
+export const defaultCourseEntry = {
+  kind: 'course',
+  id: -1,
+  name: '',
+  desc: { ...defaultDescriptionTranslations }
+} satisfies CourseEntry;
+
+export const defaultChapterEntry = {
+  kind: 'chapter',
+  id: -1,
+  name: '',
+  desc: { ...defaultDescriptionTranslations }
+} satisfies ChapterEntry;
+
+export const defaultTopicEntry = {
+  kind: 'topic',
+  id: -1,
+  name: '',
+  desc: { ...defaultDescriptionTranslations }
+} satisfies TopicEntry;
+
+export const defaultProblemEntry = {
+  kind: 'problem',
   id: -1,
   module: '',
   name: '',
+  desc: { ...defaultDescriptionTranslations },
   difficulty: 0,
   prefix_id: null,
-  desc: { sv: '', en: '' },
   translations: {
-    sv: { question: null, answer: null, solution: null },
-    en: { question: null, answer: null, solution: null }
+    sv: { ...defaultTranslatedProblem },
+    en: { ...defaultTranslatedProblem }
   }
-};
+} satisfies ProblemEntry;
+
+export const defaultPrefixEntry = {
+  kind: 'prefix',
+  id: -1,
+  name: '',
+  translations: {
+    sv: { ...defaultTranslatedPrefix },
+    en: { ...defaultTranslatedPrefix }
+  }
+} satisfies PrefixEntry;

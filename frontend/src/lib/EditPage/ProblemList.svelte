@@ -1,33 +1,92 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { defaultProblemEntry, type ProblemEntry } from './types';
+  import {
+    defaultChapterEntry,
+    defaultCourseEntry,
+    defaultPrefixEntry,
+    defaultProblemEntry,
+    defaultTopicEntry,
+    type ChapterEntryRaw,
+    type CourseEntryRaw,
+    type Entry,
+    type PrefixEntryRaw,
+    type ProblemEntryRaw,
+    type TopicEntryRaw
+  } from './types';
   import { API_URL } from '$src/main';
   import { error } from '$src/states.svelte';
   import { fly } from 'svelte/transition';
 
-  let { search, handleProblemClick, handleProblemDrag, onClickOutsideList } =
+  let { kind, search, handleEntryClick, handleEntryDrag, onClickOutsideList } =
     $props();
-  let problems = $state<ProblemEntry[]>([]);
+  let entries = $state<Entry[]>([]);
   let listElement: HTMLDivElement;
+  let defaultEntry: Entry;
 
-  let foundProblems = $derived.by(() => {
+  let foundEntries = $derived.by(() => {
     if (search == '') {
-      return problems;
+      return entries;
     } else {
-      return problems.filter(
-        problem =>
-          problem.module.toLowerCase().includes(search.toLowerCase()) ||
-          problem.name.toLowerCase().includes(search.toLowerCase())
+      return entries.filter(
+        entry =>
+          entry.name.toLowerCase().includes(search.toLowerCase()) ||
+          (entry.kind == 'problem' &&
+            entry.module.toLowerCase().includes(search.toLowerCase()))
       );
     }
   });
 
-  async function getProblems() {
-    const response = await fetch(`${API_URL}/edit/problem`);
+  async function fetchEntries() {
+    const response = await fetch(`${API_URL}/edit/${kind}`);
     if (!response.ok) {
       error.message = `Status code ${response.status} \n ${await response.text()}`;
     }
-    problems = await response.json();
+    return response;
+  }
+
+  async function getProblems() {
+    const response = await fetchEntries();
+    const rawEntries: ProblemEntryRaw[] = await response.json();
+    entries = rawEntries.map(p => ({
+      ...p,
+      kind: 'problem'
+    }));
+  }
+
+  async function getTopics() {
+    const response = await fetchEntries();
+    const rawEntries: TopicEntryRaw[] = await response.json();
+    entries = rawEntries.map(p => ({
+      ...p,
+      kind: 'topic'
+    }));
+  }
+
+  async function getChapters() {
+    const response = await fetchEntries();
+    const rawEntries: ChapterEntryRaw[] = await response.json();
+    entries = rawEntries.map(p => ({
+      ...p,
+      kind: 'chapter'
+    }));
+  }
+
+  async function getCourses() {
+    const response = await fetchEntries();
+    const rawEntries: CourseEntryRaw[] = await response.json();
+    entries = rawEntries.map(p => ({
+      ...p,
+      kind: 'course'
+    }));
+  }
+
+  async function getPrefixes() {
+    const response = await fetchEntries();
+    const rawEntries: PrefixEntryRaw[] = await response.json();
+    entries = rawEntries.map(p => ({
+      ...p,
+      kind: 'prefix'
+    }));
   }
 
   function handleOutsideClick(e: Event) {
@@ -41,10 +100,34 @@
   }
 
   onMount(() => {
-    getProblems();
     document.addEventListener('click', handleOutsideClick);
 
     return () => document.removeEventListener('click', handleOutsideClick);
+  });
+
+  $effect(() => {
+    switch (kind) {
+      case 'problem':
+        getProblems();
+        defaultEntry = { ...defaultProblemEntry };
+        break;
+      case 'topic':
+        getTopics();
+        defaultEntry = { ...defaultTopicEntry };
+        break;
+      case 'chapter':
+        getChapters();
+        defaultEntry = { ...defaultChapterEntry };
+        break;
+      case 'course':
+        getCourses();
+        defaultEntry = { ...defaultCourseEntry };
+        break;
+      case 'prefix':
+        getPrefixes();
+        defaultEntry = { ...defaultPrefixEntry };
+        break;
+    }
   });
 </script>
 
@@ -61,30 +144,41 @@
       in:fly={{ y: 40, duration: 400 }}
       ondragstart={e => {
         e.currentTarget.classList.add('dragging');
-        handleProblemDrag(defaultProblemEntry);
+        handleEntryDrag(defaultEntry);
       }}
       ondragend={e => e.currentTarget.classList.remove('dragging')}
     >
       <p class="list-text placeholder-text">New problem</p>
     </button>
-    {#each foundProblems as problem, i}
+    {#each foundEntries as entry, i}
       <button
         class="list-entry no-select {false ? 'dragging' : ''}"
-        onclick={e => handleProblemClick(e, problem)}
+        onclick={e => handleEntryClick(e, entry)}
         draggable="true"
         in:fly={{ y: 40, duration: 400, delay: 20 * i }}
         ondragstart={e => {
           e.currentTarget.classList.add('dragging');
-          handleProblemDrag(problem);
+          handleEntryDrag(entry);
         }}
         ondragend={e => e.currentTarget.classList.remove('dragging')}
       >
-        <p class="list-text">{problem.module.replaceAll('_', ' ')}</p>
-        <p class="list-text">{problem.name.replaceAll('_', ' ')}</p>
+        {#if entry.kind == 'problem'}
+          <p class="list-text">{entry.module.replaceAll('_', ' ')}</p>
+          <p class="list-text">{entry.name.replaceAll('_', ' ')}</p>
+        {:else if entry.kind == 'prefix'}
+          <p class="list-text">{entry.name.replaceAll('_', ' ')}</p>
+          <p class="list-text">{entry.translations.sv.text}</p>
+        {:else}
+          <p class="list-text">{entry.name.replaceAll('_', ' ')}</p>
+          <p class="list-text">{entry.desc.sv}</p>
+        {/if}
       </button>
     {/each}
   </div>
-  <p class="counter">{foundProblems.length} problems found</p>
+  <p class="counter">
+    {foundEntries.length}
+    {kind}{kind == 'prefix' ? 'es' : 's'} found
+  </p>
 </div>
 
 <style>
