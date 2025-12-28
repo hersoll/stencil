@@ -133,8 +133,8 @@
   <div
     class="prefix-container"
     class:available={draggedEntry?.kind == 'prefix'}
+    class:no-prefix={problem.prefix_id == null} 
   >
-    <!-- TODO: Grayed out if no prefix -->
     <!-- TODO: Drag functions on prefix div -->
     {#if problem.prefix_id}
       <p>Yep this guy sure has a prefix ({problem.prefix_id})</p>
@@ -190,14 +190,21 @@
     height: 4rem;
     background-color: var(--bg-light);
     border-radius: 1rem;
-    box-shadow: var(--shadow-elevation-medium);
+    box-shadow: var(--shadow-elevation-low);
     border: 2px dashed transparent;
     transition:
       border-color 0.2s ease,
       background-color 0.4s;
 
+    &.no-prefix {
+      background-color: var(--bg);
+      border-color: var(--bg-dark);
+      box-shadow: none;
+    }
+
     &.available {
       border-color: blueviolet;
+      box-shadow: var(--shadow-elevation-medium);
     }
   }
 
