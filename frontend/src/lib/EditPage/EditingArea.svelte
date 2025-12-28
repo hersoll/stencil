@@ -14,6 +14,8 @@
 
   /// used to store the "real" value while drag preview is showing
   let temp_storage: Entry | null;
+  /// Keep track of drags over children to know when there is an
+  /// actual enter/exit
   let dragDepth = $state(0);
 
   //Required for handling child components

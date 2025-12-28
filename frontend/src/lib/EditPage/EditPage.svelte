@@ -53,7 +53,7 @@
     clickedEntry = entry;
   }
 
-  function handleEntryDrop(entry: Entry) {
+  function handleEntryDrop() {
     clickedEntry = null;
   }
 
