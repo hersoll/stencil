@@ -72,7 +72,11 @@
   ondrop={handleDrop}
 >
   {#if activeEntry?.kind == 'problem'}
-    <ProblemEditor bind:problem={activeEntry} {draggedOver} />
+    <ProblemEditor
+      bind:problem={activeEntry}
+      {draggedOver}
+      draggedEntry={clickedEntry}
+    />
   {/if}
 </div>
 

@@ -2,12 +2,17 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from './ServerMessage.svelte';
-  import type { ProblemEntry } from './types';
+  import type { Entry, ProblemEntry } from './types';
 
   let {
     problem = $bindable(),
+    draggedEntry,
     draggedOver
-  }: { problem: ProblemEntry; draggedOver: boolean } = $props();
+  }: {
+    problem: ProblemEntry;
+    draggedOver: boolean;
+    draggedEntry: Entry | null;
+  } = $props();
 
   let serverMessage: ServerMessage;
 
@@ -125,6 +130,18 @@
       bind:value={problem.translations.en.solution}
     />
   </div>
+  <div
+    class="prefix-container"
+    class:available={draggedEntry?.kind == 'prefix'}
+  >
+    <!-- TODO: Grayed out if no prefix -->
+    <!-- TODO: Drag functions on prefix div -->
+    {#if problem.prefix_id}
+      <p>Yep this guy sure has a prefix ({problem.prefix_id})</p>
+    {:else}
+      <p>No prefix</p>
+    {/if}
+  </div>
   <button class="submit-btn primary" onclick={handleSubmit}>Submit</button>
 </div>
 
@@ -134,6 +151,11 @@
     &.dragged-over {
       input {
         color: var(--text-muted);
+        background-color: var(--bg);
+      }
+
+      .prefix-container:not(.available) {
+        background-color: var(--bg);
       }
     }
   }
@@ -158,6 +180,25 @@
     grid-template-columns: 6rem 1fr 1fr;
     column-gap: 1rem;
     row-gap: 0.5rem;
+  }
+
+  .prefix-container {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    margin-top: 2rem;
+    height: 4rem;
+    background-color: var(--bg-light);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-elevation-medium);
+    border: 2px dashed transparent;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.4s;
+
+    &.available {
+      border-color: blueviolet;
+    }
   }
 
   .text-input {

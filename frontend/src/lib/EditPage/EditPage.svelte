@@ -53,6 +53,10 @@
     clickedEntry = entry;
   }
 
+  function handleEntryDrop(entry: Entry) {
+    clickedEntry = null;
+  }
+
   function handleEntryClick(e: MouseEvent, entry: Entry) {
     clickedEntry = entry;
     contextMenu.show({ x: e.x, y: e.y });
@@ -86,6 +90,7 @@
       {kind}
       {handleEntryClick}
       {handleEntryDrag}
+      {handleEntryDrop}
       {onClickOutsideList}
       {search}
     />

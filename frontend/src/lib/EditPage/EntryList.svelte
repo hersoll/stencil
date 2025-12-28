@@ -17,8 +17,14 @@
   import { error } from '$src/states.svelte';
   import { fly } from 'svelte/transition';
 
-  let { kind, search, handleEntryClick, handleEntryDrag, onClickOutsideList } =
-    $props();
+  let {
+    kind,
+    search,
+    handleEntryClick,
+    handleEntryDrag,
+    handleEntryDrop,
+    onClickOutsideList
+  } = $props();
   let entries = $state<Entry[]>([]);
   let listElement: HTMLDivElement;
   let defaultEntry: Entry;
@@ -167,7 +173,10 @@
         e.currentTarget.classList.add('dragging');
         handleEntryDrag(defaultEntry);
       }}
-      ondragend={e => e.currentTarget.classList.remove('dragging')}
+      ondragend={e => {
+        e.currentTarget.classList.remove('dragging');
+        handleEntryDrop();
+      }}
     >
       <p class="list-text placeholder-text">New {kind}</p>
     </button>
@@ -181,7 +190,10 @@
           e.currentTarget.classList.add('dragging');
           handleEntryDrag(entry);
         }}
-        ondragend={e => e.currentTarget.classList.remove('dragging')}
+        ondragend={e => {
+          e.currentTarget.classList.remove('dragging');
+          handleEntryDrop();
+        }}
       >
         {#if entry.kind == 'problem'}
           <p class="list-text">{entry.module.replaceAll('_', ' ')}</p>
