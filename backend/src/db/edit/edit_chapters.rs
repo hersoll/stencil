@@ -16,6 +16,7 @@ pub async fn get_chapters() -> Result<impl IntoResponse, ApiError> {
 pub async fn create_chapter(
     Json(payload): Json<ChapterEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {payload:#?}");
     match db::chapters::create_chapter_from_entry(payload).await {
         Ok(id) => Ok((
             StatusCode::CREATED,
@@ -28,6 +29,7 @@ pub async fn create_chapter(
 pub async fn update_chapter(
     Json(payload): Json<ChapterEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {payload:#?}");
     match db::chapters::update_chapter_from_entry(payload).await {
         Ok(name) => Ok((StatusCode::OK, format!("Successfully updated {name}"))),
         Err(e) => Err(ApiError::Database(e.to_string())),
@@ -39,6 +41,7 @@ pub async fn update_chapter(
 pub async fn delete_chapter(
     Json(payload): Json<ChapterEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {payload:#?}");
     let id = payload.id;
     match db::chapters::delete_chapter_with_id(id).await {
         Ok(name) => Ok((StatusCode::OK, format!("Successfully deleted {name}"))),

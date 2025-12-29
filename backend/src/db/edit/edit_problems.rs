@@ -16,6 +16,7 @@ pub async fn get_problems() -> Result<impl IntoResponse, ApiError> {
 pub async fn create_problem(
     Json(payload): Json<ProblemEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {payload:#?}");
     match db::problems::create_problem_from_entry(payload).await {
         Ok(id) => Ok((
             StatusCode::CREATED,
@@ -28,6 +29,7 @@ pub async fn create_problem(
 pub async fn update_problem(
     Json(payload): Json<(ProblemEntry, Vec<i32>)>,
 ) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {payload:#?}");
     let (problem, topic_ids) = payload;
     db::relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem.id)
         .await
@@ -43,6 +45,7 @@ pub async fn update_problem(
 pub async fn delete_problem(
     Json(payload): Json<ProblemEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {payload:#?}");
     let id = payload.id;
     match db::problems::delete_problem_with_id(id).await {
         Ok(name) => Ok((StatusCode::OK, format!("Successfully deleted {name}"))),
