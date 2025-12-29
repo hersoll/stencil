@@ -7,11 +7,13 @@
   let {
     problem = $bindable(),
     draggedEntry,
-    draggedOver
+    draggedOver,
+    dropPriority = $bindable()
   }: {
     problem: ProblemEntry;
     draggedOver: boolean;
     draggedEntry: Entry | null;
+    dropPriority: boolean;
   } = $props();
 
   let serverMessage: ServerMessage;
@@ -32,6 +34,32 @@
     });
 
     serverMessage.show(response);
+  }
+
+  let prefixDragDepth = $state(0);
+  let prefixDraggedOver = $state(false);
+  function handlePrefixDragEnter(e: DragEvent) {
+    e.preventDefault();
+    prefixDragDepth++;
+    dropPriority = true;
+    prefixDraggedOver = true;
+  }
+
+  function handlePrefixDragLeave() {
+    prefixDragDepth--;
+    if (prefixDragDepth == 0) {
+      dropPriority = false;
+      prefixDraggedOver = false;
+    }
+  }
+
+  function handlePrefixDrop(e: DragEvent) {
+    e.preventDefault();
+    if (draggedEntry?.kind === 'prefix') {
+      problem.prefix_id = draggedEntry.id;
+    }
+    prefixDragDepth--;
+    // Don't relinquish dropPriority here; let the parent handle it
   }
 </script>
 
@@ -131,11 +159,15 @@
     />
   </div>
   <div
+    role="status"
     class="prefix-container"
-    class:available={draggedEntry?.kind == 'prefix'}
-    class:no-prefix={problem.prefix_id == null} 
+    class:available={draggedEntry?.kind === 'prefix'}
+    class:no-prefix={problem.prefix_id === null}
+    class:droppable={draggedEntry?.kind === 'prefix' && prefixDraggedOver}
+    ondragenter={handlePrefixDragEnter}
+    ondragleave={handlePrefixDragLeave}
+    ondrop={handlePrefixDrop}
   >
-    <!-- TODO: Drag functions on prefix div -->
     {#if problem.prefix_id}
       <p>Yep this guy sure has a prefix ({problem.prefix_id})</p>
     {:else}
@@ -205,6 +237,11 @@
     &.available {
       border-color: blueviolet;
       box-shadow: var(--shadow-elevation-medium);
+    }
+
+    &.droppable {
+      cursor: copy;
+      border-color: lightgreen;
     }
   }
 

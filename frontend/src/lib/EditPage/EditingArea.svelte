@@ -17,6 +17,9 @@
   /// Keep track of drags over children to know when there is an
   /// actual enter/exit
   let dragDepth = $state(0);
+  /// We might want to drop something into a child component.
+  /// This prevents the parent (this) from overriding those areas
+  let childHasDropPriority = $state(false);
 
   //Required for handling child components
   function handleDragOver(e: DragEvent) {
@@ -56,11 +59,13 @@
   function handleDrop(e: DragEvent) {
     dragDepth--;
     e.preventDefault();
-    if (clickedEntry) {
+    // Drop is on parent area and not child area
+    if (!childHasDropPriority && clickedEntry) {
       activeEntry = { ...clickedEntry };
     }
     draggedOver = false;
     temp_storage = null;
+    childHasDropPriority = false;
   }
 </script>
 
@@ -78,6 +83,7 @@
       bind:problem={activeEntry}
       {draggedOver}
       draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
     />
   {/if}
 </div>
