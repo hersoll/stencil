@@ -98,7 +98,7 @@
     />
     <EditingArea {clickedEntry} bind:activeEntry />
   </div>
-  <button class="clear-btn" onclick={(activeEntry = null)}>Clear</button>
+  <button class="clear-btn" onclick={() => (activeEntry = null)}>Clear</button>
 </main>
 
 <ContextMenu

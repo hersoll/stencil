@@ -1,4 +1,5 @@
 <script lang="ts">
+  import './editingArea.css';
   import ProblemEditor from './ProblemEditor.svelte';
   import type { Entry } from './types';
 
@@ -71,7 +72,8 @@
 
 <div
   role="region"
-  class="container"
+  id="editing-area"
+  class="editing-area"
   class:drag-over={draggedOver}
   ondragover={handleDragOver}
   ondragenter={handleDragEnter}
@@ -89,7 +91,7 @@
 </div>
 
 <style>
-  .container {
+  .editing-area {
     width: 53.5rem;
     padding: 1rem;
     border-radius: 1rem;

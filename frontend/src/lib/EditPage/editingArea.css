@@ -1,0 +1,26 @@
+.editing-area-container {
+  display: grid;
+  &.dragged-over {
+    input {
+      color: var(--text-muted);
+      background-color: var(--bg);
+    }
+  }
+}
+
+.translation-grid {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 6rem 1fr 1fr;
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+}
+
+.editing-text-input {
+  background-color: var(--bg-light);
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  box-shadow: var(--shadow-elevation-low);
+}

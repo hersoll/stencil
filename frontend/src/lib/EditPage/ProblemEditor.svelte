@@ -2,7 +2,14 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from './ServerMessage.svelte';
-  import type { Entry, ProblemEntry } from './types';
+  import type { Entry, PrefixEntryRaw, ProblemEntry } from './types';
+  import PrefixField from './EditingComponents/PrefixField.svelte';
+  import DescriptionField from './EditingComponents/DescriptionField.svelte';
+  import ProblemTranslationsField from './EditingComponents/ProblemTranslationsField.svelte';
+  import LanguageHeader from './EditingComponents/LanguageHeader.svelte';
+  import NewOrEditingLabel from './EditingComponents/NewOrEditingLabel.svelte';
+  import SubmitButton from './EditingComponents/SubmitButton.svelte';
+  import TopicsField from './EditingComponents/TopicsField.svelte';
 
   let {
     problem = $bindable(),
@@ -17,6 +24,7 @@
   } = $props();
 
   let serverMessage: ServerMessage;
+  let currentPrefix: PrefixEntryRaw | null = $state(null);
 
   async function handleSubmit() {
     const method =
@@ -36,46 +44,33 @@
     serverMessage.show(response);
   }
 
-  let prefixDragDepth = $state(0);
-  let prefixDraggedOver = $state(false);
-  function handlePrefixDragEnter(e: DragEvent) {
-    e.preventDefault();
-    prefixDragDepth++;
-    dropPriority = true;
-    prefixDraggedOver = true;
-  }
-
-  function handlePrefixDragLeave() {
-    prefixDragDepth--;
-    if (prefixDragDepth == 0) {
-      dropPriority = false;
-      prefixDraggedOver = false;
+  async function loadPrefixData() {
+    const res = await fetch(`${API_URL}/edit/prefix/id/${problem.prefix_id}`);
+    if (res.ok) {
+      currentPrefix = await res.json();
+    } else {
+      await serverMessage.show(res);
     }
   }
 
-  function handlePrefixDrop(e: DragEvent) {
-    e.preventDefault();
-    if (draggedEntry?.kind === 'prefix') {
-      problem.prefix_id = draggedEntry.id;
+  $effect(() => {
+    if (problem.prefix_id) {
+      loadPrefixData();
+    } else {
+      currentPrefix = null;
     }
-    prefixDragDepth--;
-    // Don't relinquish dropPriority here; let the parent handle it
-  }
+  });
 </script>
 
 <ServerMessage bind:this={serverMessage} />
 
 <div
-  class="container"
+  class="editing-area-container"
   class:dragged-over={draggedOver}
   in:fly={{ y: -15, duration: 200 }}
   out:fly={{ y: 15, duration: 200 }}
 >
-  {#if problem.id >= 0}
-    <h3 class="heading existing">Editing problem</h3>
-  {:else}
-    <h3 class="heading new">New problem</h3>
-  {/if}
+  <NewOrEditingLabel entry={problem} />
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">
@@ -88,175 +83,48 @@
     <input
       name="module"
       type="text"
-      class="text-input"
+      class="editing-text-input"
       bind:value={problem.module}
     />
     <input
       name="name"
       type="text"
-      class="text-input"
+      class="editing-text-input"
       bind:value={problem.name}
     />
 
-    <span></span>
-    <h4 class="language-label">Svenska</h4>
-    <h4 class="language-label">English</h4>
-
-    <label for="desc_sv">Description</label>
-    <input
-      name="desc_sv"
-      type="text"
-      class="text-input"
-      bind:value={problem.desc.sv}
-    />
-    <input
-      name="desc_en"
-      type="text"
-      class="text-input"
-      bind:value={problem.desc.en}
-    />
-
-    <label for="question_sv">Question</label>
-    <input
-      name="question_sv"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.sv.question}
-    />
-    <input
-      name="question_en"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.en.question}
-    />
-
-    <label for="answer_sv">Answer</label>
-    <input
-      name="answer_sv"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.sv.answer}
-    />
-    <input
-      name="answer_en"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.en.answer}
-    />
-
-    <label for="solution_sv">Solution</label>
-    <input
-      name="solution_sv"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.sv.solution}
-    />
-    <input
-      name="solution_en"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.en.solution}
-    />
+    <LanguageHeader />
+    <DescriptionField entry={problem} />
+    <ProblemTranslationsField {problem} />
   </div>
-  <div
-    role="status"
-    class="prefix-container"
-    class:available={draggedEntry?.kind === 'prefix'}
-    class:no-prefix={problem.prefix_id === null}
-    class:droppable={draggedEntry?.kind === 'prefix' && prefixDraggedOver}
-    ondragenter={handlePrefixDragEnter}
-    ondragleave={handlePrefixDragLeave}
-    ondrop={handlePrefixDrop}
-  >
-    {#if problem.prefix_id}
-      <p>Yep this guy sure has a prefix ({problem.prefix_id})</p>
-    {:else}
-      <p>No prefix</p>
-    {/if}
+  <div class="attachments-grid">
+    <TopicsField />
+    <div class="prefix-col">
+      <PrefixField
+        {currentPrefix}
+        bind:dropPriority
+        bind:problem
+        {draggedEntry}
+        bind:parentDraggedOver={draggedOver}
+      />
+      <SubmitButton {handleSubmit} />
+    </div>
   </div>
-  <button class="submit-btn primary" onclick={handleSubmit}>Submit</button>
 </div>
 
 <style>
-  .container {
+  @import './editingArea.css';
+
+  .attachments-grid {
+    margin-top: 2rem;
     display: grid;
-    &.dragged-over {
-      input {
-        color: var(--text-muted);
-        background-color: var(--bg);
-      }
-
-      .prefix-container:not(.available) {
-        background-color: var(--bg);
-      }
-    }
-  }
-
-  .heading {
-    text-align: right;
-    &.existing {
-      color: var(--secondary);
-    }
-    &.new {
-      color: var(--primary);
-    }
-  }
-
-  .language-label {
-    margin-top: 1rem;
-  }
-
-  .translation-grid {
-    display: grid;
-    align-items: center;
     grid-template-columns: 6rem 1fr 1fr;
     column-gap: 1rem;
-    row-gap: 0.5rem;
   }
 
-  .prefix-container {
+  .prefix-col {
     display: grid;
     align-items: center;
-    justify-items: center;
-    margin-top: 2rem;
-    height: 4rem;
-    background-color: var(--bg-light);
-    border-radius: 1rem;
-    box-shadow: var(--shadow-elevation-low);
-    border: 2px dashed transparent;
-    transition:
-      border-color 0.2s ease,
-      background-color 0.4s;
-
-    &.no-prefix {
-      background-color: var(--bg);
-      border-color: var(--bg-dark);
-      box-shadow: none;
-    }
-
-    &.available {
-      border-color: blueviolet;
-      box-shadow: var(--shadow-elevation-medium);
-    }
-
-    &.droppable {
-      cursor: copy;
-      border-color: lightgreen;
-    }
-  }
-
-  .text-input {
-    background-color: var(--bg-light);
-    font-size: 1rem;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    border: none;
-    box-shadow: var(--shadow-elevation-low);
-  }
-
-  .submit-btn {
-    margin: 2rem auto;
-    width: 15rem;
-    box-shadow: var(--shadow-elevation-medium);
+    width: 100%;
   }
 </style>
