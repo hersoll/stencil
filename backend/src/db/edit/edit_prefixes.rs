@@ -1,4 +1,4 @@
-use axum::{Json, http::StatusCode, response::IntoResponse};
+use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
 use crate::{
@@ -9,6 +9,13 @@ use crate::{
 pub async fn get_prefixes() -> Result<impl IntoResponse, ApiError> {
     match db::prefixes::get_all_prefix_data().await {
         Ok(prefixes) => Ok((StatusCode::OK, Json(json!(prefixes)))),
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}
+
+pub async fn get_prefix_from_id(Path(prefix_id): Path<i32>) -> Result<impl IntoResponse, ApiError> {
+    match db::prefixes::get_prefix_from_id(&prefix_id).await {
+        Ok(prefix) => Ok((StatusCode::OK, Json(json!(prefix)))),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }

@@ -42,6 +42,18 @@ pub async fn get_all_prefix_data() -> Result<Vec<PrefixEntry>> {
     Ok(prefixes.into_iter().map(PrefixEntry::from).collect())
 }
 
+pub async fn get_prefix_from_id(id: &i32) -> Result<PrefixEntry> {
+    let pool = db::get_pool();
+    let prefix_row = sqlx::query_as!(
+        DbPrefixRow,
+        r#"SELECT id, name, text_sv, text_en, group_text_sv, group_text_en FROM prefixes WHERE id = $1"#, id
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(PrefixEntry::from(prefix_row))
+}
+
 pub async fn create_prefix_from_entry(prefix: PrefixEntry) -> Result<i32> {
     let pool = db::get_pool();
     let translations = prefix.translations;

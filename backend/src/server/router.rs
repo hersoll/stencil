@@ -53,6 +53,10 @@ pub fn create_router() -> Router {
         .route("/edit/prefix", post(db::edit::create_prefix))
         .route("/edit/prefix", patch(db::edit::update_prefix))
         .route("/edit/prefix", delete(db::edit::delete_prefix))
+        .route(
+            "/edit/prefix/id/{prefix_id}",
+            get(db::edit::get_prefix_from_id),
+        )
         .layer(axum::middleware::from_fn(authenticate))
         .layer(axum::middleware::from_fn(|req, next| {
             restrict_ip(req, next, vec!["127.0.0.1".parse().unwrap()])
