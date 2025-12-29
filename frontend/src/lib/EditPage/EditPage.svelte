@@ -80,6 +80,7 @@
     class="search-bar"
     type="search"
     placeholder="Search"
+    autocorrect="off"
     bind:value={search}
     onkeydown={e =>
       e.key === 'Enter' && (e.preventDefault(), e.currentTarget?.blur())}

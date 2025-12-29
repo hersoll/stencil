@@ -261,7 +261,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 0.25rem;
-    height: calc(100vh - 30rem);
+    height: calc(100vh - 25rem);
     overflow-y: auto;
     width: fit-content;
     padding-right: 1rem;
