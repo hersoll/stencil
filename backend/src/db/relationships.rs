@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
-use sqlx::PgPool;
+
+use crate::db;
 
 /// Generic trait for handling methods that update relationships (linking tables).
 pub(crate) trait Relationship {
@@ -30,11 +31,11 @@ impl Relationship for TopicProblems {
 }
 
 /// Generic helper for updating many-to-many relationships with ordering
-pub(crate) async fn update_relationships<R: Relationship>(
-    pool: &PgPool,
-    parent_id: i32,
+pub(crate) async fn update_children_for_parent<R: Relationship>(
+    parent_id: &i32,
     child_ids: &[i32],
 ) -> Result<()> {
+    let pool = db::get_pool();
     // Clear existing relationships
     let delete_query = format!(
         "DELETE FROM {} WHERE {} = $1",
@@ -82,6 +83,75 @@ pub(crate) async fn update_relationships<R: Relationship>(
                 )
             })?;
     }
+
+    tx.commit().await.context("Failed to commit transaction")?;
+
+    Ok(())
+}
+
+/// Sync parents for a given child while preserving per-parent order_index.
+/// - Removes parents not in `parent_ids`
+/// - Keeps existing order_index values
+/// - Appends the child to new parents at the end
+pub(crate) async fn update_parents_for_child<R: Relationship>(
+    parent_ids: &[i32],
+    child_id: &i32,
+) -> Result<()> {
+    let pool = db::get_pool();
+
+    let mut tx = pool.begin().await.context("Failed to start transaction")?;
+
+    // 1. Delete relationships for this child that are NOT in parent_ids
+    let delete_query = format!(
+        "DELETE FROM {table}
+         WHERE {child_col} = $1
+           AND {parent_col} <> ALL($2)",
+        table = R::TABLE_NAME,
+        parent_col = R::PARENT_COLUMN,
+        child_col = R::CHILD_COLUMN,
+    );
+
+    sqlx::query(&delete_query)
+        .bind(child_id)
+        .bind(parent_ids)
+        .execute(&mut *tx)
+        .await
+        .context("Failed to delete removed parent relationships")?;
+
+    // 2. Insert missing (parent, child) relationships
+    let insert_query = format!(
+        r#"
+        INSERT INTO {table} ({parent_col}, {child_col}, order_index)
+        SELECT
+            p.parent_id,
+            $1,
+            COALESCE(
+                (
+                    SELECT MAX(order_index) + 1
+                    FROM {table} t
+                    WHERE t.{parent_col} = p.parent_id
+                ),
+                1
+            )
+        FROM UNNEST($2::int[]) AS p(parent_id)
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM {table} t
+            WHERE t.{parent_col} = p.parent_id
+              AND t.{child_col} = $1
+        )
+        "#,
+        table = R::TABLE_NAME,
+        parent_col = R::PARENT_COLUMN,
+        child_col = R::CHILD_COLUMN,
+    );
+
+    sqlx::query(&insert_query)
+        .bind(child_id)
+        .bind(parent_ids)
+        .execute(&mut *tx)
+        .await
+        .context("Failed to insert new parent relationships")?;
 
     tx.commit().await.context("Failed to commit transaction")?;
 

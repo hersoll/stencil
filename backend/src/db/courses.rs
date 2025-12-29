@@ -1,5 +1,4 @@
 use super::common::{DbDescRow, error_context, error_context_by_name};
-use super::relationships::{CourseChapters, update_relationships};
 use crate::db::{self, CourseEntry};
 use anyhow::{Context, Result};
 
@@ -89,9 +88,4 @@ pub async fn delete_course_with_id(id: i32) -> Result<String> {
         .with_context(|| error_context("delete", "course", id))?;
 
     Ok(result.name)
-}
-
-pub async fn update_course_chapters(course_id: i32, chapter_ids: Vec<i32>) -> Result<()> {
-    let pool = db::get_pool();
-    update_relationships::<CourseChapters>(pool, course_id, &chapter_ids).await
 }

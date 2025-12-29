@@ -33,22 +33,41 @@ pub fn create_router() -> Router {
     let protected_routes = Router::new()
         .route("/edit/login", get(middleware::auth::login))
         .route("/edit", get(text_endpoints::protected))
+        // ========================================
+        //      PROBLEMS
+        // ========================================
         .route("/edit/problem", get(db::edit::get_problems))
         .route("/edit/problem", post(db::edit::create_problem))
         .route("/edit/problem", patch(db::edit::update_problem))
         .route("/edit/problem", delete(db::edit::delete_problem))
+        .route(
+            "/edit/problem/{id}/topics",
+            get(db::edit::get_topics_from_problem),
+        )
+        // ========================================
+        //      TOPICS
+        // ========================================
         .route("/edit/topic", get(db::edit::get_topics))
         .route("/edit/topic", post(db::edit::create_topic))
         .route("/edit/topic", patch(db::edit::update_topic))
         .route("/edit/topic", delete(db::edit::delete_topic))
+        // ========================================
+        //      CHAPTERS
+        // ========================================
         .route("/edit/chapter", get(db::edit::get_chapters))
         .route("/edit/chapter", post(db::edit::create_chapter))
         .route("/edit/chapter", patch(db::edit::update_chapter))
         .route("/edit/chapter", delete(db::edit::delete_chapter))
+        // ========================================
+        //      COURSES
+        // ========================================
         .route("/edit/course", get(db::edit::get_courses))
         .route("/edit/course", post(db::edit::create_course))
         .route("/edit/course", patch(db::edit::update_course))
         .route("/edit/course", delete(db::edit::delete_course))
+        // ========================================
+        //      PREFIXES
+        // ========================================
         .route("/edit/prefix", get(db::edit::get_prefixes))
         .route("/edit/prefix", post(db::edit::create_prefix))
         .route("/edit/prefix", patch(db::edit::update_prefix))

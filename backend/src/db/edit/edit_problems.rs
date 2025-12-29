@@ -2,7 +2,7 @@ use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
 use crate::{
-    db::{self, ProblemEntry},
+    db::{self, ProblemEntry, relationships::TopicProblems},
     errors::ApiError,
 };
 
@@ -26,9 +26,13 @@ pub async fn create_problem(
 }
 
 pub async fn update_problem(
-    Json(payload): Json<ProblemEntry>,
+    Json(payload): Json<(ProblemEntry, Vec<i32>)>,
 ) -> Result<impl IntoResponse, ApiError> {
-    match db::problems::update_problem_from_entry(payload).await {
+    let (problem, topic_ids) = payload;
+    db::relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem.id)
+        .await
+        .or_else(|e| Err(ApiError::Database(e.to_string())))?;
+    match db::problems::update_problem_from_entry(problem).await {
         Ok(name) => Ok((StatusCode::OK, format!("Successfully updated {name}"))),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
