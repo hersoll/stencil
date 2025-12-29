@@ -48,10 +48,13 @@
     dragDepth--;
     if (dragDepth == 0) {
       draggedOver = false;
-      if (temp_storage) {
-        activeEntry = { ...temp_storage };
-      } else {
-        activeEntry = null;
+      // Are we actually dragging an entry?
+      if (clickedEntry) {
+        if (temp_storage) {
+          activeEntry = { ...temp_storage };
+        } else {
+          activeEntry = null;
+        }
       }
       temp_storage = null;
     }

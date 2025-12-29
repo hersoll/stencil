@@ -2,7 +2,12 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from './ServerMessage.svelte';
-  import type { Entry, PrefixEntryRaw, ProblemEntry } from './types';
+  import type {
+    Entry,
+    PrefixEntryRaw,
+    ProblemEntry,
+    TopicEntryRaw
+  } from './types';
   import PrefixField from './EditingComponents/PrefixField.svelte';
   import DescriptionField from './EditingComponents/DescriptionField.svelte';
   import ProblemTranslationsField from './EditingComponents/ProblemTranslationsField.svelte';
@@ -25,6 +30,7 @@
 
   let serverMessage: ServerMessage;
   let currentPrefix: PrefixEntryRaw | null = $state(null);
+  let problem_topics: TopicEntryRaw[] = $state([]);
 
   async function handleSubmit() {
     const method =
@@ -33,12 +39,13 @@
           'POST'
         : // Existing problem
           'PATCH';
+    const topic_ids = problem_topics.map(t => t.id);
     const response = await fetch(`${API_URL}/edit/problem`, {
       method,
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(problem)
+      body: JSON.stringify([problem, topic_ids])
     });
 
     serverMessage.show(response);
@@ -98,17 +105,22 @@
     <ProblemTranslationsField {problem} />
   </div>
   <div class="attachments-grid">
-    <TopicsField />
-    <div class="prefix-col">
-      <PrefixField
-        {currentPrefix}
-        bind:dropPriority
-        bind:problem
-        {draggedEntry}
-        bind:parentDraggedOver={draggedOver}
-      />
-      <SubmitButton {handleSubmit} />
-    </div>
+    <TopicsField
+      bind:topics={problem_topics}
+      {serverMessage}
+      bind:problem
+      {draggedEntry}
+      bind:dropPriority
+      parentDraggedOver={draggedOver}
+    />
+    <PrefixField
+      {currentPrefix}
+      bind:dropPriority
+      bind:problem
+      {draggedEntry}
+      bind:parentDraggedOver={draggedOver}
+    />
+    <SubmitButton {handleSubmit} />
   </div>
 </div>
 
@@ -119,12 +131,7 @@
     margin-top: 2rem;
     display: grid;
     grid-template-columns: 6rem 1fr 1fr;
+    grid-template-rows: 8rem auto;
     column-gap: 1rem;
-  }
-
-  .prefix-col {
-    display: grid;
-    align-items: center;
-    width: 100%;
   }
 </style>

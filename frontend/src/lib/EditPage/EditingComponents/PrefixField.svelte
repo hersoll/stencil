@@ -93,7 +93,6 @@
     grid-template-columns: 4rem 1fr;
     column-gap: 1rem;
     align-items: center;
-    margin-bottom: 4rem;
     height: 8rem;
     background-color: var(--bg-light);
     border-radius: 1rem;
