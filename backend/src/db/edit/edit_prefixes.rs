@@ -14,6 +14,7 @@ pub async fn get_prefixes() -> Result<impl IntoResponse, ApiError> {
 }
 
 pub async fn get_prefix_from_id(Path(prefix_id): Path<i32>) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {prefix_id:#?}");
     match db::prefixes::get_prefix_from_id(&prefix_id).await {
         Ok(prefix) => Ok((StatusCode::OK, Json(json!(prefix)))),
         Err(e) => Err(ApiError::Database(e.to_string())),
@@ -23,6 +24,7 @@ pub async fn get_prefix_from_id(Path(prefix_id): Path<i32>) -> Result<impl IntoR
 pub async fn create_prefix(
     Json(payload): Json<PrefixEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {payload:#?}");
     match db::prefixes::create_prefix_from_entry(payload).await {
         Ok(id) => Ok((
             StatusCode::CREATED,
@@ -35,6 +37,7 @@ pub async fn create_prefix(
 pub async fn update_prefix(
     Json(payload): Json<PrefixEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {payload:#?}");
     match db::prefixes::update_prefix_from_entry(payload).await {
         Ok(name) => Ok((StatusCode::OK, format!("Successfully updated {name}"))),
         Err(e) => Err(ApiError::Database(e.to_string())),
