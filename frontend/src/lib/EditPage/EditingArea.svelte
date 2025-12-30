@@ -98,6 +98,7 @@
 
 <style>
   .editing-area {
+    min-height: 20rem;
     width: 53.5rem;
     padding: 1rem;
     border-radius: 1rem;
