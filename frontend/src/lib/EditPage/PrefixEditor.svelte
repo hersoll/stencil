@@ -83,6 +83,5 @@
     margin-top: 2rem;
     display: flex;
     align-items: center;
-    margin-bottom: 1rem;
   }
 </style>

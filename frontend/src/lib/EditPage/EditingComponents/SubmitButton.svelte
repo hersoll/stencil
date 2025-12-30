@@ -8,6 +8,7 @@
 <style>
   .editing-submit-btn {
     margin: 0 auto;
+    margin-bottom: 1rem;
     width: 15rem;
     box-shadow: var(--shadow-elevation-medium);
     align-self: center;
