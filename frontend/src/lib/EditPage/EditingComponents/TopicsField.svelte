@@ -107,6 +107,7 @@
   {#each topics as topic, i}
     <button
       class="topic-entry no-select"
+      class:parent-dragged={parentDraggedOver}
       id={topic.name}
       draggable="true"
       in:fly={{ y: 40, duration: 400, delay: 20 * i }}
@@ -157,5 +158,15 @@
     border: 2px solid var(--bg-dark);
     box-shadow: var(--shadow-elevation-low);
     width: 100%;
+    &:hover {
+      border-color: var(--primary);
+    }
+    &:active {
+      background-color: var(--bg-light);
+      &:not(.parent-dragged) {
+        background-color: var(--bg);
+        opacity: 0.3;
+      }
+    }
   }
 </style>
