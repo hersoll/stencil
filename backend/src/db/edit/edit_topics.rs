@@ -43,7 +43,7 @@ pub async fn delete_topic(Json(payload): Json<TopicEntry>) -> Result<impl IntoRe
     }
 }
 
-/// Find and get all topic associated with a certain problem ID
+/// Find and get all topics associated with a certain problem ID
 pub async fn get_topics_from_problem(
     Path(problem_id): Path<i32>,
 ) -> Result<impl IntoResponse, ApiError> {

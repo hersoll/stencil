@@ -9,7 +9,6 @@ use axum::{
     routing::{delete, get, patch, post},
 };
 use std::time::Duration;
-use tower_governor::GovernorLayer;
 use tower_http::trace::TraceLayer;
 
 pub fn create_router() -> Router {
@@ -52,6 +51,10 @@ pub fn create_router() -> Router {
         .route("/edit/topic", post(db::edit::create_topic))
         .route("/edit/topic", patch(db::edit::update_topic))
         .route("/edit/topic", delete(db::edit::delete_topic))
+        .route(
+            "/edit/topic/{id}/problems",
+            get(db::edit::get_problems_from_topic),
+        )
         // ========================================
         //      CHAPTERS
         // ========================================
@@ -82,9 +85,13 @@ pub fn create_router() -> Router {
     #[cfg(feature = "docker")]
     let api_router = Router::new()
         .merge(standard_routes)
-        .layer(GovernorLayer::new(middleware::rate_limiting::json_limit()))
+        .layer(tower_governor::GovernorLayer::new(
+            middleware::rate_limiting::json_limit(),
+        ))
         .merge(pdf_routes)
-        .layer(GovernorLayer::new(middleware::rate_limiting::pdf_limit()));
+        .layer(tower_governor::GovernorLayer::new(
+            middleware::rate_limiting::pdf_limit(),
+        ));
 
     #[cfg(not(feature = "docker"))]
     let api_router = Router::new()

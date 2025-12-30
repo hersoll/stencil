@@ -1,4 +1,4 @@
-use axum::{Json, http::StatusCode, response::IntoResponse};
+use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
 use crate::{
@@ -49,6 +49,17 @@ pub async fn delete_problem(
     let id = payload.id;
     match db::problems::delete_problem_with_id(id).await {
         Ok(name) => Ok((StatusCode::OK, format!("Successfully deleted {name}"))),
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}
+
+/// Find and get all problems associated with a certain topic ID
+pub async fn get_problems_from_topic(
+    Path(topic_id): Path<i32>,
+) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {topic_id:#?}");
+    match db::problems::get_topic_problems(&topic_id).await {
+        Ok(problems) => Ok((StatusCode::OK, Json(json!(problems)))),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }

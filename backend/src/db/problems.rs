@@ -62,7 +62,7 @@ pub async fn get_all_problem_data() -> Result<Vec<ProblemEntry>> {
     Ok(problems.into_iter().map(ProblemEntry::from).collect())
 }
 
-pub async fn get_topic_problems(topic_id: i32) -> Result<Vec<ProblemEntry>> {
+pub async fn get_topic_problems(topic_id: &i32) -> Result<Vec<ProblemEntry>> {
     let pool = db::get_pool();
     let problems = sqlx::query_as!(
             DbProblemRow,

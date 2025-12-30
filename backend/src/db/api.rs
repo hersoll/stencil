@@ -204,7 +204,7 @@ pub async fn get_problems(
     let topics = db::get_topics_from_ids(&topic_ids).await?;
     let mut topic_vec = Vec::new();
     for topic in topics {
-        let problems = db::get_topic_problems(topic.id).await?;
+        let problems = db::get_topic_problems(&topic.id).await?;
         let topic = TopicWithProblems::from(&topic, &problems, &lang);
         topic_vec.push(topic);
     }
