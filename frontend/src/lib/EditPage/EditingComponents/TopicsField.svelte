@@ -57,10 +57,11 @@
       if (!inTopics(draggedEntry)) {
         addTopic(draggedEntry);
       }
+    } else {
+      dropPriority = false;
     }
     topicDragDepth--;
     topicsDraggedOver = false;
-    // Don't relinquish dropPriority here; let the parent handle it
   }
 
   let topicWillBeRemoved = $state(false);

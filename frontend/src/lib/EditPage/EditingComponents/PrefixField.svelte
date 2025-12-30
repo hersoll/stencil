@@ -33,10 +33,11 @@
     e.preventDefault();
     if (draggedEntry?.kind === 'prefix') {
       problem.prefix_id = draggedEntry.id;
+    } else {
+      dropPriority = false;
     }
     prefixDragDepth--;
     prefixDraggedOver = false;
-    // Don't relinquish dropPriority here; let the parent handle it
   }
 
   // The prefix area itself is dragged
