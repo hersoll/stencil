@@ -1,5 +1,7 @@
 <script lang="ts">
-  let { problem } = $props();
+  import type { ProblemEntry } from '../types';
+
+  let { problem }: { problem: ProblemEntry } = $props();
 </script>
 
 <label for="question_sv">Question</label>

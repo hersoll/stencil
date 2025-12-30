@@ -108,6 +108,7 @@
     <button
       class="topic-entry no-select"
       class:parent-dragged={parentDraggedOver}
+      class:available={draggedEntry?.kind === 'topic'}
       id={topic.name}
       draggable="true"
       in:fly={{ y: 40, duration: 400, delay: 20 * i }}
@@ -146,7 +147,7 @@
     }
 
     &.droppable {
-      border: 2px solid black;
+      box-shadow: var(--shadow-elevation-high);
     }
   }
 
@@ -160,6 +161,12 @@
     width: 100%;
     &:hover {
       border-color: var(--primary);
+    }
+    &.parent-dragged {
+      background-color: var(--bg);
+    }
+    &.available {
+      background-color: var(--bg-light);
     }
     &:active {
       background-color: var(--bg-light);
