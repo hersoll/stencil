@@ -1,47 +1,62 @@
 <script lang="ts">
   import type { ProblemEntry } from '../types';
 
-  let { problem }: { problem: ProblemEntry } = $props();
+  let { problem = $bindable() }: { problem: ProblemEntry } = $props();
+
+  function autoResize(e: Event) {
+    const target = e.target;
+    if (target instanceof HTMLTextAreaElement) {
+      target.style.height = 'auto';
+      target.style.height = target.scrollHeight + 'px';
+    }
+  }
 </script>
 
 <label for="question_sv">Question</label>
-<input
+<textarea
   name="question_sv"
-  type="text"
   class="editing-text-input"
+  oninput={autoResize}
   bind:value={problem.translations.sv.question}
-/>
-<input
+></textarea>
+<textarea
   name="question_en"
-  type="text"
   class="editing-text-input"
+  oninput={autoResize}
   bind:value={problem.translations.en.question}
-/>
+></textarea>
 
 <label for="answer_sv">Answer</label>
-<input
+<textarea
   name="answer_sv"
-  type="text"
   class="editing-text-input"
+  oninput={autoResize}
   bind:value={problem.translations.sv.answer}
-/>
-<input
+></textarea>
+<textarea
   name="answer_en"
-  type="text"
   class="editing-text-input"
+  oninput={autoResize}
   bind:value={problem.translations.en.answer}
-/>
+></textarea>
 
 <label for="solution_sv">Solution</label>
-<input
+<textarea
   name="solution_sv"
-  type="text"
   class="editing-text-input"
+  oninput={autoResize}
   bind:value={problem.translations.sv.solution}
-/>
-<input
+></textarea>
+<textarea
   name="solution_en"
-  type="text"
   class="editing-text-input"
+  oninput={autoResize}
   bind:value={problem.translations.en.solution}
-/>
+></textarea>
+
+<style>
+  textarea {
+    resize: none;
+    height: auto;
+  }
+</style>

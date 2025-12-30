@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { entry } = $props();
+  let { entry = $bindable() } = $props();
 </script>
 
 <label for="desc_sv">Description</label>

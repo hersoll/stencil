@@ -101,8 +101,8 @@
     />
 
     <LanguageHeader />
-    <DescriptionField entry={problem} />
-    <ProblemTranslationsField {problem} />
+    <DescriptionField bind:entry={problem} />
+    <ProblemTranslationsField bind:problem />
   </div>
   <div class="attachments-grid">
     <TopicsField
