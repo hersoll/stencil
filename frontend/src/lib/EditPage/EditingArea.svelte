@@ -1,5 +1,6 @@
 <script lang="ts">
   import './editingArea.css';
+  import PrefixEditor from './PrefixEditor.svelte';
   import ProblemEditor from './ProblemEditor.svelte';
   import type { Entry } from './types';
 
@@ -90,6 +91,8 @@
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
     />
+  {:else if activeEntry?.kind == 'prefix'}
+    <PrefixEditor bind:prefix={activeEntry} {draggedOver} />
   {/if}
 </div>
 

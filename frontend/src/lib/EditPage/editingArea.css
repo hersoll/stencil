@@ -1,7 +1,8 @@
 .editing-area-container {
   display: grid;
   &.dragged-over {
-    input {
+    input,
+    textarea {
       color: var(--text-muted);
       background-color: var(--bg);
     }
