@@ -102,6 +102,7 @@
     padding: 1rem;
     border-radius: 1rem;
     box-shadow: 6px 4px 20px oklch(from var(--bg) calc(l - 0.1) c h) inset;
+    height: min-content;
   }
 
   .drag-over {
