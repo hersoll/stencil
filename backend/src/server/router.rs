@@ -1,6 +1,6 @@
 use crate::{
     db, pdf_generation,
-    server::middleware::{self, auth::authenticate, ip_restriction::restrict_ip},
+    server::middleware::{self, auth::authenticate},
     text_endpoints,
 };
 use axum::{
@@ -23,16 +23,17 @@ pub fn create_router() -> Router {
             "/{lang}/course/{course}/{chapter}",
             get(db::api::get_chapter),
         )
-        //.route("/create/{user}/{pass}", post(middleware::auth::create_user))
         .route("/{lang}/problems", post(db::api::get_problems));
-    //.layer(GovernorLayer::new(middleware::rate_limiting::json_limit()))
     let pdf_routes = Router::new()
         .route("/pdf", post(pdf_generation::generate_pdf_from_http))
         .route("/pdf/example", get(pdf_generation::generate_example_pdf));
-    //.layer(GovernorLayer::new(middleware::rate_limiting::pdf_limit()))
+
+    // Only included in dev build
+    #[cfg(not(feature = "docker"))]
     let protected_routes = Router::new()
         .route("/edit/login", get(middleware::auth::login))
         .route("/edit", get(text_endpoints::protected))
+        .route("/create/{user}/{pass}", post(middleware::auth::create_user))
         // ========================================
         //      PROBLEMS
         // ========================================
@@ -76,11 +77,16 @@ pub fn create_router() -> Router {
             "/edit/prefix/id/{prefix_id}",
             get(db::edit::get_prefix_from_id),
         )
-        .layer(axum::middleware::from_fn(authenticate))
-        .layer(axum::middleware::from_fn(|req, next| {
-            restrict_ip(req, next, vec!["127.0.0.1".parse().unwrap()])
-        }));
+        .layer(axum::middleware::from_fn(authenticate));
 
+    #[cfg(feature = "docker")]
+    let api_router = Router::new()
+        .merge(standard_routes)
+        .layer(GovernorLayer::new(middleware::rate_limiting::json_limit()))
+        .merge(pdf_routes)
+        .layer(GovernorLayer::new(middleware::rate_limiting::pdf_limit()));
+
+    #[cfg(not(feature = "docker"))]
     let api_router = Router::new()
         .merge(standard_routes)
         .merge(pdf_routes)

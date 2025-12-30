@@ -19,7 +19,6 @@ use axum::response::Response;
 use base64::Engine;
 use tracing::error;
 use tracing::info;
-use tracing::warn;
 
 use crate::db;
 use crate::errors::ApiError;
@@ -30,17 +29,11 @@ pub async fn login(Query(params): Query<HashMap<String, String>>) -> Response {
         .map(String::as_str)
         .unwrap_or("http://localhost:5173");
 
-    // TODO: Only bounce back if allowed URL (localhost or actual URL)
-    if !return_to.starts_with("http://localhost:5173") {
-        warn!("The redirect is {return_to}");
-    } else {
-        return (
-            StatusCode::FOUND,
-            [(header::LOCATION, return_to.to_string())],
-        )
-            .into_response();
-    }
-    unauthorized()
+    return (
+        StatusCode::FOUND,
+        [(header::LOCATION, return_to.to_string())],
+    )
+        .into_response();
 }
 
 pub async fn authenticate(req: Request<Body>, next: Next) -> Response {
