@@ -152,7 +152,7 @@ pub async fn get_course(
 ) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
     let course = parse_course_path(&course_path).await?;
-    let chapters = db::get_course_chapters(course.id).await?;
+    let chapters = db::get_course_chapters(&course.id).await?;
     let chapter_ids: Vec<i32> = chapters.iter().map(|c| c.id).collect();
     let topics_by_chapter = db::get_topics_for_chapters(&chapter_ids).await?;
     // If a chapter has no topics, it will not be included in the topics_by_chapter.
@@ -184,7 +184,7 @@ pub async fn get_chapter(
 ) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
     let chapter_entry = validate_chapter(&course_path, &chapter_path).await?;
-    let topics = db::get_chapter_topics(chapter_entry.id).await?;
+    let topics = db::get_chapter_topics(&chapter_entry.id).await?;
     let chapter = ChapterHierarchy::from(&chapter_entry, &topics, &lang);
 
     Ok((StatusCode::OK, Json(json!(chapter))))
@@ -223,7 +223,7 @@ async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
 
 async fn validate_chapter(course_path: &str, chapter_path: &str) -> Result<ChapterEntry, ApiError> {
     let course = parse_course_path(&course_path).await?;
-    let valid_chapters = db::get_course_chapters(course.id).await?;
+    let valid_chapters = db::get_course_chapters(&course.id).await?;
     let chapter_entry = valid_chapters
         .into_iter()
         // chapter_path can be either an ID or a name

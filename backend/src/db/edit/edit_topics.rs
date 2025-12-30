@@ -1,8 +1,12 @@
 use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
+use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
-    db::{self, TopicEntry},
+    db::{
+        self, TopicEntry,
+        relationships::{ChapterTopics, TopicProblems},
+    },
     errors::ApiError,
 };
 
@@ -24,9 +28,35 @@ pub async fn create_topic(Json(payload): Json<TopicEntry>) -> Result<impl IntoRe
     }
 }
 
-pub async fn update_topic(Json(payload): Json<TopicEntry>) -> Result<impl IntoResponse, ApiError> {
-    tracing::debug!("Recieved: {payload:#?}");
-    match db::topics::update_topic_from_entry(payload).await {
+#[derive(Debug, Deserialize)]
+pub struct UpdateTopicPayload {
+    topic: TopicEntry,
+    chapters: Vec<i32>,
+    problems: Vec<i32>,
+}
+
+pub async fn update_topic(
+    Json(payload): Json<UpdateTopicPayload>,
+) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!(
+        "Recieved: {:#?} {:#?} {:#?}",
+        payload.topic,
+        payload.chapters,
+        payload.problems
+    );
+    db::relationships::update_children_for_parent::<TopicProblems>(
+        &payload.topic.id,
+        &payload.problems,
+    )
+    .await
+    .or_else(|e| Err(ApiError::Database(e.to_string())))?;
+    db::relationships::update_parents_for_child::<ChapterTopics>(
+        &payload.chapters,
+        &payload.topic.id,
+    )
+    .await
+    .or_else(|e| Err(ApiError::Database(e.to_string())))?;
+    match db::topics::update_topic_from_entry(payload.topic).await {
         Ok(name) => Ok((StatusCode::OK, format!("Successfully updated {name}"))),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
@@ -49,6 +79,17 @@ pub async fn get_topics_from_problem(
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {problem_id:#?}");
     match db::topics::get_topics_from_problem(&problem_id).await {
+        Ok(topics) => Ok((StatusCode::OK, Json(json!(topics)))),
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}
+
+/// Find and get all topics associated with a certain chapter ID
+pub async fn get_topics_from_chapter(
+    Path(chapter_id): Path<i32>,
+) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {chapter_id:#?}");
+    match db::topics::get_chapter_topics(&chapter_id).await {
         Ok(topics) => Ok((StatusCode::OK, Json(json!(topics)))),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }

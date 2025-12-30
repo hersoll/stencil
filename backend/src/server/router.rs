@@ -55,6 +55,10 @@ pub fn create_router() -> Router {
             "/edit/topic/{id}/problems",
             get(db::edit::get_problems_from_topic),
         )
+        .route(
+            "/edit/topic/{id}/chapters",
+            get(db::edit::get_chapters_from_topic),
+        )
         // ========================================
         //      CHAPTERS
         // ========================================
@@ -62,6 +66,14 @@ pub fn create_router() -> Router {
         .route("/edit/chapter", post(db::edit::create_chapter))
         .route("/edit/chapter", patch(db::edit::update_chapter))
         .route("/edit/chapter", delete(db::edit::delete_chapter))
+        .route(
+            "/edit/chapter/{id}/topics",
+            get(db::edit::get_topics_from_chapter),
+        )
+        .route(
+            "/edit/chapter/{id}/courses",
+            get(db::edit::get_courses_from_chapter),
+        )
         // ========================================
         //      COURSES
         // ========================================
@@ -69,6 +81,10 @@ pub fn create_router() -> Router {
         .route("/edit/course", post(db::edit::create_course))
         .route("/edit/course", patch(db::edit::update_course))
         .route("/edit/course", delete(db::edit::delete_course))
+        .route(
+            "/edit/course/{id}/chapters",
+            get(db::edit::get_chapters_from_course),
+        )
         // ========================================
         //      PREFIXES
         // ========================================

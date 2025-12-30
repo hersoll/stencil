@@ -34,7 +34,7 @@ pub async fn get_topics_from_ids(topic_ids: &[i32]) -> Result<Vec<TopicEntry>> {
 }
 
 /// Ordered by chapter order_index
-pub async fn get_chapter_topics(chapter_id: i32) -> Result<Vec<TopicEntry>> {
+pub async fn get_chapter_topics(chapter_id: &i32) -> Result<Vec<TopicEntry>> {
     let pool = db::get_pool();
     let topics = sqlx::query_as!(
         DbDescRow,
