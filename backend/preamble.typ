@@ -30,11 +30,16 @@
 
     // Push to next page if it's relatively small and we can't fit it on the page
     // OR if we can't fit at least three rows of a long set
-    let pre_spacing = if (min_height > spare_height and min_height < size.height / 4) or (title_height + calc.max(..heights)) * 3 > spare_height {
+    let at_page_top = start_height <= 1pt
+
+    let pre_spacing = if not at_page_top and (
+      (min_height > spare_height and min_height < size.height / 4) or (title_height + calc.max(..heights)) * 3 > spare_height
+    ) {
       spare_height
     } else {
       0pt
     }
+
     // Adjust spacing if we push to next page
     let effective_spare_height = if pre_spacing > 0pt {
       size.height

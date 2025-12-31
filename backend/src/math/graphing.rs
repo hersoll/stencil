@@ -40,7 +40,7 @@ impl Graph {
 
     pub fn render(&self) -> Result<String> {
         let mut out = String::with_capacity(256);
-        write!(out, "#cetz.canvas({{")?;
+        write!(out, "#block(height: 5cm)[#cetz.canvas({{")?;
         write!(out, "plot.plot(")?;
         write!(out, "axis-style: \"school-book\",")?;
         write!(out, "size: (4, 4),")?;
@@ -51,7 +51,7 @@ impl Graph {
         write!(out, "x-tick-step: {},", self.x_tick)?;
         write!(out, "y-tick-step: {},", self.y_tick)?;
         write!(out, "{{ plot.add(domain: (-2, 2), x => 2 * x + 1) }},")?;
-        write!(out, ")}})")?;
+        write!(out, ")}})]")?;
         Ok(out)
     }
 }
