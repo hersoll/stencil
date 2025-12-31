@@ -2,54 +2,42 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from './ServerMessage.svelte';
-  import type {
-    ChapterEntryRaw,
-    Entry,
-    ProblemEntryRaw,
-    TopicEntry
-  } from './types';
+  import type { Entry, ChapterEntryRaw, CourseEntry } from './types';
   import DescriptionField from './EditingComponents/DescriptionField.svelte';
   import LanguageHeader from './EditingComponents/LanguageHeader.svelte';
   import NewOrEditingLabel from './EditingComponents/NewOrEditingLabel.svelte';
   import SubmitButton from './EditingComponents/SubmitButton.svelte';
-  import ProblemsField from './EditingComponents/ProblemsField.svelte';
   import ChaptersField from './EditingComponents/ChaptersField.svelte';
 
   let {
-    topic = $bindable(),
+    course = $bindable(),
     draggedEntry,
     draggedOver,
     dropPriority = $bindable()
   }: {
-    topic: TopicEntry;
+    course: CourseEntry;
     draggedOver: boolean;
     draggedEntry: Entry | null;
     dropPriority: boolean;
   } = $props();
 
   let serverMessage: ServerMessage;
-  let topic_problems: ProblemEntryRaw[] = $state([]);
-  let topic_chapters: ChapterEntryRaw[] = $state([]);
+  let course_chapters: ChapterEntryRaw[] = $state([]);
 
   async function handleSubmit() {
     const method =
-      topic.id < 0
-        ? // New problem
+      course.id < 0
+        ? // New chapter
           'POST'
-        : // Existing problem
+        : // Existing chapter
           'PATCH';
-    const problem_ids = topic_problems.map(p => p.id);
-    const chapter_ids = topic_chapters.map(c => c.id);
-    const response = await fetch(`${API_URL}/edit/topic`, {
+    const chapter_ids = course_chapters.map(p => p.id);
+    const response = await fetch(`${API_URL}/edit/course`, {
       method,
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        topic,
-        problems: problem_ids,
-        chapters: chapter_ids
-      })
+      body: JSON.stringify([course, chapter_ids])
     });
 
     serverMessage.show(response);
@@ -63,7 +51,7 @@
   class:dragged-over={draggedOver}
   in:fly={{ y: -15, duration: 600 }}
 >
-  <NewOrEditingLabel entry={topic} />
+  <NewOrEditingLabel entry={course} />
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">
@@ -75,30 +63,21 @@
       name="name"
       type="text"
       class="editing-text-input name-input"
-      bind:value={topic.name}
+      bind:value={course.name}
     />
 
     <LanguageHeader />
-    <DescriptionField bind:entry={topic} />
+    <DescriptionField bind:entry={course} />
   </div>
-  <div class="attachments-grid">
-    <ProblemsField
-      --height="26rem"
-      {topic}
-      bind:problems={topic_problems}
-      bind:dropPriority
-      {serverMessage}
-      parentDraggedOver={draggedOver}
-      {draggedEntry}
-    />
+  <div class="chapter-container">
     <ChaptersField
-      --height="26rem"
-      bind:chapters={topic_chapters}
-      {serverMessage}
-      {draggedEntry}
-      parentDraggedOver={draggedOver}
+      --height="28rem"
+      entry={course}
+      bind:chapters={course_chapters}
       bind:dropPriority
-      bind:entry={topic}
+      {serverMessage}
+      parentDraggedOver={draggedOver}
+      {draggedEntry}
     />
   </div>
   <SubmitButton {handleSubmit} />
@@ -116,12 +95,8 @@
     grid-column: 2/4;
   }
 
-  .attachments-grid {
+  .chapter-container {
     margin-top: 2rem;
-    margin-bottom: 2rem;
-    display: grid;
-    grid-template-columns: 36rem 1fr;
-    grid-template-rows: 8rem auto;
-    column-gap: 1rem;
+    margin-bottom: 1rem;
   }
 </style>

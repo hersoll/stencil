@@ -2,41 +2,41 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from '../ServerMessage.svelte';
-  import { type Entry, type ProblemEntryRaw, type TopicEntry } from '../types';
+  import { type CourseEntryRaw, type Entry } from '../types';
 
   let {
-    topic = $bindable(),
-    problems = $bindable(),
+    courses = $bindable(),
     serverMessage,
     draggedEntry,
     dropPriority = $bindable(),
-    parentDraggedOver = $bindable()
+    parentDraggedOver,
+    entry = $bindable()
   }: {
-    topic: TopicEntry;
-    problems: ProblemEntryRaw[];
+    courses: CourseEntryRaw[];
     serverMessage: ServerMessage;
     draggedEntry: Entry | null;
     dropPriority: boolean;
     parentDraggedOver: boolean;
+    entry: Entry;
   } = $props();
   let draggedOver = $state(false);
   let dragDepth = $state(0);
-  let draggedProblem = $state<ProblemEntryRaw | null>(null);
+  let draggedCourse = $state<CourseEntryRaw | null>(null);
   let draggedIndex = $state(-1);
 
-  function inProblems(problem: ProblemEntryRaw): boolean {
-    return problems.find(p => p.id == problem.id) !== undefined;
+  function inCourses(course: CourseEntryRaw): boolean {
+    return courses.find(c => c.id == course.id) !== undefined;
   }
 
-  function addProblem(problem: ProblemEntryRaw) {
-    problems.push(problem);
+  function addCourse(course: CourseEntryRaw) {
+    courses.push(course);
   }
 
-  function removeProblem(problem: ProblemEntryRaw) {
-    problems = problems.filter(p => p.id !== problem.id);
+  function removeCourse(course: CourseEntryRaw) {
+    courses = courses.filter(c => c.id !== course.id);
   }
 
-  // The area is entered while dragging
+  // The topic area is entered while dragging
   function handleDragEnter(e: DragEvent) {
     e.preventDefault();
     dragDepth++;
@@ -54,10 +54,10 @@
 
   function handleDrop(e: DragEvent) {
     e.preventDefault();
-    // Only allow non-empty problems
-    if (draggedEntry?.kind === 'problem' && draggedEntry?.id >= 0) {
-      if (!inProblems(draggedEntry)) {
-        addProblem(draggedEntry);
+    // Only allow non-empty topics
+    if (draggedEntry?.kind === 'course' && draggedEntry?.id >= 0) {
+      if (!inCourses(draggedEntry)) {
+        addCourse(draggedEntry);
       }
     } else {
       dropPriority = false;
@@ -66,95 +66,90 @@
     draggedOver = false;
   }
 
-  function handleProblemDragStart(problem: ProblemEntryRaw, index: number) {
-    draggedProblem = problem;
+  function handleCourseDragStart(course: CourseEntryRaw, index: number) {
+    draggedCourse = course;
     draggedIndex = index;
   }
 
-  function handleProblemDragOver(e: DragEvent, targetIndex: number) {
+  function handleCourseDragOver(e: DragEvent, targetIndex: number) {
     e.preventDefault();
 
     if (draggedIndex === -1 || draggedIndex === targetIndex) return;
 
-    const newOrder = [...problems];
+    const newOrder = [...courses];
     const [removed] = newOrder.splice(draggedIndex, 1);
     newOrder.splice(targetIndex, 0, removed);
-    problems = newOrder;
+    courses = newOrder;
 
     draggedIndex = targetIndex;
   }
 
-  let problemWillBeRemoved = $state(false);
-  function handleProblemDrag() {
+  let courseWillBeRemoved = $state(false);
+  function handleCourseDrag() {
     if (parentDraggedOver) {
-      problemWillBeRemoved = false;
+      courseWillBeRemoved = false;
     } else if (!parentDraggedOver) {
-      problemWillBeRemoved = true;
+      courseWillBeRemoved = true;
     }
   }
 
-  function handleProblemDragEnd(problem: ProblemEntryRaw) {
-    if (problemWillBeRemoved) {
-      removeProblem(problem);
+  function handleCourseDragEnd(course: CourseEntryRaw) {
+    if (courseWillBeRemoved) {
+      removeCourse(course);
     }
-    problemWillBeRemoved = false;
-    draggedProblem = null;
+    courseWillBeRemoved = false;
+    draggedCourse = null;
     draggedIndex = -1;
   }
-
-  async function fetchProblems() {
-    let res = await fetch(`${API_URL}/edit/topic/${topic.id}/problems`);
+  async function fetchCourse() {
+    let res = await fetch(`${API_URL}/edit/${entry.kind}/${entry.id}/courses`);
     if (res.ok) {
-      problems = await res.json();
+      courses = await res.json();
     } else {
       serverMessage.show(res);
     }
   }
 
   $effect(() => {
-    if (topic) fetchProblems();
+    if (entry) fetchCourse();
   });
 </script>
 
 <div
   role="status"
-  class="problems-container"
+  class="courses-container"
   class:parent-dragged={parentDraggedOver}
-  class:available={draggedEntry?.kind === 'problem'}
-  class:droppable={draggedEntry?.kind === 'problem' && draggedOver}
+  class:available={draggedEntry?.kind === 'course'}
+  class:droppable={draggedEntry?.kind === 'course' && draggedOver}
   ondragenter={handleDragEnter}
   ondragleave={handleDragLeave}
   ondrop={handleDrop}
 >
-  <h3 class="problem-header">Problems</h3>
-  {#each problems as problem, i (problem.id)}
+  <h3 class="course-header">Courses</h3>
+  {#each courses as course, i (course.id)}
     <button
-      class="problem-entry no-select"
+      class="course-entry no-select"
       class:parent-dragged={parentDraggedOver}
-      class:available={draggedEntry?.kind === 'problem'}
-      id={problem.name}
+      class:available={draggedEntry?.kind === 'course'}
+      id={course.name}
       draggable="true"
       in:fly={{ y: 40, duration: 400, delay: 20 * i }}
-      ondrag={handleProblemDrag}
-      ondragstart={() => handleProblemDragStart(problem, i)}
-      ondragover={e => handleProblemDragOver(e, i)}
-      ondragend={() => handleProblemDragEnd(problem)}
+      ondrag={handleCourseDrag}
+      ondragend={() => handleCourseDragEnd(course)}
+      ondragstart={() => handleCourseDragStart(course, i)}
+      ondragover={e => handleCourseDragOver(e, i)}
     >
-      <p>{problem.difficulty}</p>
-      <p>{problem.module}</p>
-      <p>
-        {problem.desc.sv}
-      </p>
+      {course.desc.sv}
     </button>
   {/each}
 </div>
 
 <style>
-  .problems-container {
-    grid-row: 1/3;
+  .courses-container {
+    grid-row: 1 / 3;
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.25rem;
     width: 100%;
     height: var(--height);
     padding: 1rem;
@@ -179,29 +174,14 @@
     }
   }
 
-  .problem-header {
+  .course-header {
     margin-bottom: 1rem;
   }
 
-  .problem-entry {
-    display: grid;
-    grid-template-columns: 0.5rem min-content 1fr;
-    gap: 1rem;
-    justify-items: self-start;
+  .course-entry {
     border: 2px solid var(--bg-dark);
     box-shadow: var(--shadow-elevation-low);
     width: 100%;
-    padding: 0.5rem;
-
-    p {
-      font-size: 0.8rem;
-      text-align: left;
-      width: 100%;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
     &:hover {
       border-color: var(--primary);
     }

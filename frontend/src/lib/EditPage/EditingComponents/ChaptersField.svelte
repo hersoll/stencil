@@ -2,11 +2,7 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from '../ServerMessage.svelte';
-  import {
-    type ChapterEntryRaw,
-    type Entry,
-    type TopicEntryRaw
-  } from '../types';
+  import { type ChapterEntryRaw, type Entry } from '../types';
 
   let {
     chapters = $bindable(),
@@ -16,7 +12,7 @@
     parentDraggedOver,
     entry = $bindable()
   }: {
-    chapters: TopicEntryRaw[];
+    chapters: ChapterEntryRaw[];
     serverMessage: ServerMessage;
     draggedEntry: Entry | null;
     dropPriority: boolean;
@@ -58,7 +54,7 @@
 
   function handleDrop(e: DragEvent) {
     e.preventDefault();
-    // Only allow non-empty topics
+    // Only allow non-empty chapters
     if (draggedEntry?.kind === 'chapter' && draggedEntry?.id >= 0) {
       if (!inChapters(draggedEntry)) {
         addChapter(draggedEntry);
@@ -130,7 +126,7 @@
   ondrop={handleDrop}
 >
   <h3 class="chapter-header">Chapters</h3>
-  {#each chapters as chapter, i}
+  {#each chapters as chapter, i (chapter.id)}
     <button
       class="chapter-entry no-select"
       class:parent-dragged={parentDraggedOver}
@@ -155,6 +151,7 @@
     flex-direction: column;
     gap: 0.25rem;
     width: 100%;
+    height: var(--height);
     padding: 1rem;
     overflow-y: auto;
 

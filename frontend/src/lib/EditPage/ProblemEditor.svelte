@@ -111,9 +111,10 @@
   </div>
   <div class="attachments-grid">
     <TopicsField
+      --height="20.5rem"
       bind:topics={problem_topics}
       {serverMessage}
-      bind:problem
+      bind:entry={problem}
       {draggedEntry}
       bind:dropPriority
       parentDraggedOver={draggedOver}

@@ -2,7 +2,7 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from '../ServerMessage.svelte';
-  import { type Entry, type ProblemEntry, type TopicEntryRaw } from '../types';
+  import { type Entry, type TopicEntryRaw } from '../types';
 
   let {
     topics = $bindable(),
@@ -10,14 +10,14 @@
     draggedEntry,
     dropPriority = $bindable(),
     parentDraggedOver = $bindable(),
-    problem = $bindable()
+    entry = $bindable()
   }: {
     topics: TopicEntryRaw[];
     serverMessage: ServerMessage;
     draggedEntry: Entry | null;
     dropPriority: boolean;
     parentDraggedOver: boolean;
-    problem: ProblemEntry;
+    entry: Entry;
   } = $props();
   let topicsDraggedOver = $state(false);
   let topicDragDepth = $state(0);
@@ -103,7 +103,7 @@
   }
 
   async function fetchTopics() {
-    let res = await fetch(`${API_URL}/edit/problem/${problem.id}/topics`);
+    let res = await fetch(`${API_URL}/edit/${entry.kind}/${entry.id}/topics`);
     if (res.ok) {
       topics = await res.json();
     } else {
@@ -112,7 +112,7 @@
   }
 
   $effect(() => {
-    if (problem) fetchTopics();
+    if (entry) fetchTopics();
   });
 </script>
 
@@ -153,7 +153,7 @@
     flex-direction: column;
     gap: 0.25rem;
     width: 100%;
-    height: 20rem;
+    height: var(--height);
     padding: 1rem;
     overflow-y: auto;
 
