@@ -21,6 +21,8 @@
   } = $props();
   let topicsDraggedOver = $state(false);
   let topicDragDepth = $state(0);
+  let draggedTopic = $state<TopicEntryRaw | null>(null);
+  let draggedIndex = $state(-1);
 
   function inTopics(topic: TopicEntryRaw): boolean {
     return topics.find(t => t.id == topic.id) !== undefined;
@@ -64,6 +66,24 @@
     topicsDraggedOver = false;
   }
 
+  function handleTopicDragStart(topic: TopicEntryRaw, index: number) {
+    draggedTopic = topic;
+    draggedIndex = index;
+  }
+
+  function handleTopicDragOver(e: DragEvent, targetIndex: number) {
+    e.preventDefault();
+
+    if (draggedIndex === -1 || draggedIndex === targetIndex) return;
+
+    const newOrder = [...topics];
+    const [removed] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, removed);
+    topics = newOrder;
+
+    draggedIndex = targetIndex;
+  }
+
   let topicWillBeRemoved = $state(false);
   function handleTopicDrag() {
     if (parentDraggedOver) {
@@ -78,6 +98,8 @@
       removeTopic(topic);
     }
     topicWillBeRemoved = false;
+    draggedTopic = null;
+    draggedIndex = -1;
   }
 
   async function fetchTopics() {
@@ -105,7 +127,7 @@
   ondrop={handleDrop}
 >
   <h3 class="topic-header">Topics</h3>
-  {#each topics as topic, i}
+  {#each topics as topic, i (topic.id)}
     <button
       class="topic-entry no-select"
       class:parent-dragged={parentDraggedOver}
@@ -115,6 +137,8 @@
       in:fly={{ y: 40, duration: 400, delay: 20 * i }}
       ondrag={handleTopicDrag}
       ondragend={() => handleTopicDragEnd(topic)}
+      ondragstart={() => handleTopicDragStart(topic, i)}
+      ondragover={e => handleTopicDragOver(e, i)}
     >
       {topic.desc.sv}
     </button>

@@ -21,6 +21,8 @@
   } = $props();
   let draggedOver = $state(false);
   let dragDepth = $state(0);
+  let draggedProblem = $state<ProblemEntryRaw | null>(null);
+  let draggedIndex = $state(-1);
 
   function inProblems(problem: ProblemEntryRaw): boolean {
     return problems.find(p => p.id == problem.id) !== undefined;
@@ -34,7 +36,7 @@
     problems = problems.filter(p => p.id !== problem.id);
   }
 
-  // The topic area is entered while dragging
+  // The area is entered while dragging
   function handleDragEnter(e: DragEvent) {
     e.preventDefault();
     dragDepth++;
@@ -64,6 +66,24 @@
     draggedOver = false;
   }
 
+  function handleProblemDragStart(problem: ProblemEntryRaw, index: number) {
+    draggedProblem = problem;
+    draggedIndex = index;
+  }
+
+  function handleProblemDragOver(e: DragEvent, targetIndex: number) {
+    e.preventDefault();
+
+    if (draggedIndex === -1 || draggedIndex === targetIndex) return;
+
+    const newOrder = [...problems];
+    const [removed] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, removed);
+    problems = newOrder;
+
+    draggedIndex = targetIndex;
+  }
+
   let problemWillBeRemoved = $state(false);
   function handleProblemDrag() {
     if (parentDraggedOver) {
@@ -78,6 +98,8 @@
       removeProblem(problem);
     }
     problemWillBeRemoved = false;
+    draggedProblem = null;
+    draggedIndex = -1;
   }
 
   async function fetchProblems() {
@@ -105,7 +127,7 @@
   ondrop={handleDrop}
 >
   <h3 class="problem-header">Problems</h3>
-  {#each problems as problem, i}
+  {#each problems as problem, i (problem.id)}
     <button
       class="problem-entry no-select"
       class:parent-dragged={parentDraggedOver}
@@ -114,6 +136,8 @@
       draggable="true"
       in:fly={{ y: 40, duration: 400, delay: 20 * i }}
       ondrag={handleProblemDrag}
+      ondragstart={() => handleProblemDragStart(problem, i)}
+      ondragover={e => handleProblemDragOver(e, i)}
       ondragend={() => handleProblemDragEnd(problem)}
     >
       <p>{problem.module}</p>

@@ -25,6 +25,8 @@
   } = $props();
   let draggedOver = $state(false);
   let dragDepth = $state(0);
+  let draggedChapter = $state<ChapterEntryRaw | null>(null);
+  let draggedIndex = $state(-1);
 
   function inChapters(chapter: ChapterEntryRaw): boolean {
     return chapters.find(c => c.id == chapter.id) !== undefined;
@@ -68,6 +70,24 @@
     draggedOver = false;
   }
 
+  function handleChapterDragStart(chapter: ChapterEntryRaw, index: number) {
+    draggedChapter = chapter;
+    draggedIndex = index;
+  }
+
+  function handleChapterDragOver(e: DragEvent, targetIndex: number) {
+    e.preventDefault();
+
+    if (draggedIndex === -1 || draggedIndex === targetIndex) return;
+
+    const newOrder = [...chapters];
+    const [removed] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, removed);
+    chapters = newOrder;
+
+    draggedIndex = targetIndex;
+  }
+
   let chapterWillBeRemoved = $state(false);
   function handleChapterDrag() {
     if (parentDraggedOver) {
@@ -82,8 +102,9 @@
       removeChapter(chapter);
     }
     chapterWillBeRemoved = false;
+    draggedChapter = null;
+    draggedIndex = -1;
   }
-
   async function fetchChapter() {
     let res = await fetch(`${API_URL}/edit/${entry.kind}/${entry.id}/chapters`);
     if (res.ok) {
@@ -119,6 +140,8 @@
       in:fly={{ y: 40, duration: 400, delay: 20 * i }}
       ondrag={handleChapterDrag}
       ondragend={() => handleChapterDragEnd(chapter)}
+      ondragstart={() => handleChapterDragStart(chapter, i)}
+      ondragover={e => handleChapterDragOver(e, i)}
     >
       {chapter.desc.sv}
     </button>
