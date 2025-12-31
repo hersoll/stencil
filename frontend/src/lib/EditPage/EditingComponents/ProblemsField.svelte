@@ -140,6 +140,7 @@
       ondragover={e => handleProblemDragOver(e, i)}
       ondragend={() => handleProblemDragEnd(problem)}
     >
+      <p>{problem.difficulty}</p>
       <p>{problem.module}</p>
       <p>
         {problem.desc.sv}
@@ -184,8 +185,8 @@
 
   .problem-entry {
     display: grid;
-    grid-template-columns: min-content 1fr;
-    gap: 2rem;
+    grid-template-columns: 0.5rem min-content 1fr;
+    gap: 1rem;
     justify-items: self-start;
     border: 2px solid var(--bg-dark);
     box-shadow: var(--shadow-elevation-low);

@@ -80,12 +80,18 @@
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">
-    <span></span>
+    <label for="difficulty">Difficulty</label>
     <label for="module">Module</label>
     <label for="name">Name</label>
 
-    <span></span>
-
+    <input
+      name="difficulty"
+      type="number"
+      class="editing-text-input"
+      bind:value={problem.difficulty}
+      min="0"
+      max="10"
+    />
     <input
       name="module"
       type="text"
