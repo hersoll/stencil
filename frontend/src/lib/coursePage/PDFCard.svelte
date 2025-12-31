@@ -26,6 +26,7 @@
       if (!response.ok) {
         let text = await response.text();
         error.message = `Status: ${response.status} \n${text}`;
+        return;
       }
 
       // Get the PDF as a blob (binary data)
