@@ -31,6 +31,7 @@
   let serverMessage: ServerMessage;
   let copyDialog: ConfirmDialog;
   let editDialog: ConfirmDialog;
+  let clearDialog: ConfirmDialog;
 
   function onClickOutsideList() {
     clickedEntry = null;
@@ -136,7 +137,15 @@
       {editDialog}
     />
   </div>
-  <button class="clear-btn" onclick={() => (activeEntry = null)}>Clear</button>
+  <button
+    class="clear-btn"
+    onclick={() => {
+      if (entryHasBeenEdited) clearDialog.show();
+      else {
+        activeEntry = null;
+      }
+    }}>Clear</button
+  >
 </main>
 
 <ContextMenu
@@ -163,6 +172,14 @@
     commitEdit();
   }}
   message={`Are you sure you want to overwrite your changes?`}
+/>
+
+<ConfirmDialog
+  bind:this={clearDialog}
+  onConfirm={() => {
+    activeEntry = null;
+  }}
+  message={`Are you sure you want to clear your changes?`}
 />
 
 <style>
