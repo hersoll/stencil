@@ -14,13 +14,22 @@ pub async fn get_problems() -> Result<impl IntoResponse, ApiError> {
 }
 
 pub async fn create_problem(
-    Json(payload): Json<ProblemEntry>,
+    Json(payload): Json<(ProblemEntry, Vec<i32>)>,
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {payload:#?}");
-    match db::problems::create_problem_from_entry(payload).await {
-        Ok(id) => Ok((
-            StatusCode::CREATED,
-            format!("Created a new problem with an ID of {id}"),
+    let (problem, topic_ids) = payload;
+    let problem_id = db::problems::create_problem_from_entry(&problem)
+        .await
+        .or_else(|e| Err(ApiError::Database(e.to_string())))?;
+    match db::relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem_id)
+        .await
+    {
+        Ok(_) => Ok((
+            StatusCode::OK,
+            format!(
+                "Successfully created {} with an id of {}",
+                problem.name, problem_id
+            ),
         )),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }

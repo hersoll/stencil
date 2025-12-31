@@ -114,9 +114,8 @@ pub async fn get_problem_names_and_difficulties_from_topics(
         .collect())
 }
 
-pub async fn create_problem_from_entry(problem: ProblemEntry) -> Result<i32> {
+pub async fn create_problem_from_entry(problem: &ProblemEntry) -> Result<i32> {
     let pool = db::get_pool();
-    let translations = problem.translations;
     let result = sqlx::query!(
         r#"INSERT INTO problems (name, desc_sv, desc_en, difficulty, module,
             question_sv, question_en, answer_sv, answer_en, solution_sv, solution_en, prefix_id) 
@@ -127,12 +126,12 @@ pub async fn create_problem_from_entry(problem: ProblemEntry) -> Result<i32> {
         problem.desc.en,
         problem.difficulty,
         problem.module,
-        translations.sv.question,
-        translations.en.question,
-        translations.sv.answer,
-        translations.en.answer,
-        translations.sv.solution,
-        translations.en.solution,
+        problem.translations.sv.question,
+        problem.translations.en.question,
+        problem.translations.sv.answer,
+        problem.translations.en.answer,
+        problem.translations.sv.solution,
+        problem.translations.en.solution,
         problem.prefix_id,
     )
     .fetch_one(pool)
