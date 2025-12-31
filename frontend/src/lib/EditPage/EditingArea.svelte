@@ -1,5 +1,7 @@
 <script lang="ts">
   import ConfirmDialog from '../ConfirmDialog.svelte';
+  import ChapterEditor from './ChapterEditor.svelte';
+  import CourseEditor from './CourseEditor.svelte';
   import './editingArea.css';
   import PrefixEditor from './PrefixEditor.svelte';
   import ProblemEditor from './ProblemEditor.svelte';
@@ -60,7 +62,8 @@
     if (dragDepth == 0) {
       draggedOver = false;
       // Are we actually dragging an entry?
-      if (clickedEntry) {
+      // And are we doing a preview?
+      if (clickedEntry && clickedEntry.kind === activeEntry?.kind) {
         if (temp_storage && !entryHasBeenEdited) {
           activeEntry = { ...temp_storage };
           originalEntry = JSON.stringify(activeEntry);
@@ -112,6 +115,20 @@
   {:else if activeEntry?.kind == 'topic'}
     <TopicEditor
       bind:topic={activeEntry}
+      {draggedOver}
+      draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
+    />
+  {:else if activeEntry?.kind == 'chapter'}
+    <ChapterEditor
+      bind:chapter={activeEntry}
+      {draggedOver}
+      draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
+    />
+  {:else if activeEntry?.kind == 'course'}
+    <CourseEditor
+      bind:course={activeEntry}
       {draggedOver}
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
