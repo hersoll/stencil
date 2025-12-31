@@ -10,6 +10,13 @@ use crate::{
     errors::ApiError,
 };
 
+#[derive(Debug, Deserialize)]
+pub struct ChapterPayload {
+    chapter: ChapterEntry,
+    courses: Vec<i32>,
+    topics: Vec<i32>,
+}
+
 pub async fn get_chapters() -> Result<impl IntoResponse, ApiError> {
     match db::chapters::get_all_chapter_data().await {
         Ok(chapters) => Ok((StatusCode::OK, Json(json!(chapters)))),
@@ -18,27 +25,28 @@ pub async fn get_chapters() -> Result<impl IntoResponse, ApiError> {
 }
 
 pub async fn create_chapter(
-    Json(payload): Json<ChapterEntry>,
+    Json(payload): Json<ChapterPayload>,
 ) -> Result<impl IntoResponse, ApiError> {
-    tracing::debug!("Recieved: {payload:#?}");
-    match db::chapters::create_chapter_from_entry(payload).await {
-        Ok(id) => Ok((
-            StatusCode::CREATED,
-            format!("Created a new chapter with an ID of {id}"),
-        )),
-        Err(e) => Err(ApiError::Database(e.to_string())),
-    }
-}
+    tracing::debug!(
+        "Recieved: {:#?} {:#?} {:#?}",
+        payload.chapter,
+        payload.courses,
+        payload.topics
+    );
+    let chapter_id = db::chapters::create_chapter_from_entry(payload.chapter).await?;
+    db::relationships::update_children_for_parent::<ChapterTopics>(&chapter_id, &payload.topics)
+        .await?;
+    db::relationships::update_parents_for_child::<CourseChapters>(&payload.courses, &chapter_id)
+        .await?;
 
-#[derive(Debug, Deserialize)]
-pub struct UpdateChapterPayload {
-    chapter: ChapterEntry,
-    courses: Vec<i32>,
-    topics: Vec<i32>,
+    Ok((
+        StatusCode::OK,
+        format!("Successfully created chapter with an ID of {chapter_id}"),
+    ))
 }
 
 pub async fn update_chapter(
-    Json(payload): Json<UpdateChapterPayload>,
+    Json(payload): Json<ChapterPayload>,
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!(
         "Recieved: {:#?} {:#?} {:#?}",
@@ -50,18 +58,18 @@ pub async fn update_chapter(
         &payload.chapter.id,
         &payload.topics,
     )
-    .await
-    .or_else(|e| Err(ApiError::Database(e.to_string())))?;
+    .await?;
     db::relationships::update_parents_for_child::<CourseChapters>(
         &payload.courses,
         &payload.chapter.id,
     )
-    .await
-    .or_else(|e| Err(ApiError::Database(e.to_string())))?;
-    match db::chapters::update_chapter_from_entry(payload.chapter).await {
-        Ok(name) => Ok((StatusCode::OK, format!("Successfully updated {name}"))),
-        Err(e) => Err(ApiError::Database(e.to_string())),
-    }
+    .await?;
+    let chapter_name = db::chapters::update_chapter_from_entry(payload.chapter).await?;
+
+    Ok((
+        StatusCode::OK,
+        format!("Successfully updated {chapter_name}"),
+    ))
 }
 
 /// Accepts an entire ChapterEntry to keep ergonomics the same

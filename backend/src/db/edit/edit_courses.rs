@@ -14,16 +14,18 @@ pub async fn get_courses() -> Result<impl IntoResponse, ApiError> {
 }
 
 pub async fn create_course(
-    Json(payload): Json<CourseEntry>,
+    Json(payload): Json<(CourseEntry, Vec<i32>)>,
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {payload:#?}");
-    match db::courses::create_course_from_entry(payload).await {
-        Ok(id) => Ok((
-            StatusCode::CREATED,
-            format!("Created a new course with an ID of {id}"),
-        )),
-        Err(e) => Err(ApiError::Database(e.to_string())),
-    }
+    let (course, chapter_ids) = payload;
+    let course_id = db::courses::create_course_from_entry(course).await?;
+    db::relationships::update_children_for_parent::<CourseChapters>(&course_id, &chapter_ids)
+        .await?;
+
+    Ok((
+        StatusCode::CREATED,
+        format!("Created a new course with an ID of {course_id}"),
+    ))
 }
 
 pub async fn update_course(
@@ -32,12 +34,13 @@ pub async fn update_course(
     tracing::debug!("Recieved: {payload:#?}");
     let (course, chapter_ids) = payload;
     db::relationships::update_children_for_parent::<CourseChapters>(&course.id, &chapter_ids)
-        .await
-        .or_else(|e| Err(ApiError::Database(e.to_string())))?;
-    match db::courses::update_course_from_entry(course).await {
-        Ok(name) => Ok((StatusCode::OK, format!("Successfully updated {name}"))),
-        Err(e) => Err(ApiError::Database(e.to_string())),
-    }
+        .await?;
+    let course_name = db::courses::update_course_from_entry(course).await?;
+
+    Ok((
+        StatusCode::OK,
+        format!("Successfully updated {course_name}"),
+    ))
 }
 
 /// Accepts an entire CourseEntry to keep ergonomics the same

@@ -10,6 +10,13 @@ use crate::{
     errors::ApiError,
 };
 
+#[derive(Debug, Deserialize)]
+pub struct TopicPayload {
+    topic: TopicEntry,
+    chapters: Vec<i32>,
+    problems: Vec<i32>,
+}
+
 pub async fn get_topics() -> Result<impl IntoResponse, ApiError> {
     match db::topics::get_all_topic_data().await {
         Ok(topics) => Ok((StatusCode::OK, Json(json!(topics)))),
@@ -17,26 +24,29 @@ pub async fn get_topics() -> Result<impl IntoResponse, ApiError> {
     }
 }
 
-pub async fn create_topic(Json(payload): Json<TopicEntry>) -> Result<impl IntoResponse, ApiError> {
-    tracing::debug!("Recieved: {payload:#?}");
-    match db::topics::create_topic_from_entry(payload).await {
-        Ok(id) => Ok((
-            StatusCode::CREATED,
-            format!("Created a new topic with an ID of {id}"),
-        )),
-        Err(e) => Err(ApiError::Database(e.to_string())),
-    }
-}
+pub async fn create_topic(
+    Json(payload): Json<TopicPayload>,
+) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!(
+        "Recieved: {:#?} {:#?} {:#?}",
+        payload.topic,
+        payload.chapters,
+        payload.problems
+    );
+    let topic_id = db::topics::create_topic_from_entry(payload.topic).await?;
+    db::relationships::update_children_for_parent::<TopicProblems>(&topic_id, &payload.problems)
+        .await?;
+    db::relationships::update_parents_for_child::<ChapterTopics>(&payload.chapters, &topic_id)
+        .await?;
 
-#[derive(Debug, Deserialize)]
-pub struct UpdateTopicPayload {
-    topic: TopicEntry,
-    chapters: Vec<i32>,
-    problems: Vec<i32>,
+    Ok((
+        StatusCode::CREATED,
+        format!("Created a new topic with an ID of {topic_id}"),
+    ))
 }
 
 pub async fn update_topic(
-    Json(payload): Json<UpdateTopicPayload>,
+    Json(payload): Json<TopicPayload>,
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!(
         "Recieved: {:#?} {:#?} {:#?}",
@@ -48,18 +58,15 @@ pub async fn update_topic(
         &payload.topic.id,
         &payload.problems,
     )
-    .await
-    .or_else(|e| Err(ApiError::Database(e.to_string())))?;
+    .await?;
     db::relationships::update_parents_for_child::<ChapterTopics>(
         &payload.chapters,
         &payload.topic.id,
     )
-    .await
-    .or_else(|e| Err(ApiError::Database(e.to_string())))?;
-    match db::topics::update_topic_from_entry(payload.topic).await {
-        Ok(name) => Ok((StatusCode::OK, format!("Successfully updated {name}"))),
-        Err(e) => Err(ApiError::Database(e.to_string())),
-    }
+    .await?;
+    let topic_name = db::topics::update_topic_from_entry(payload.topic).await?;
+
+    Ok((StatusCode::OK, format!("Successfully updated {topic_name}")))
 }
 
 /// Accepts an entire TopicEntry to keep ergonomics the same

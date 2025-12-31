@@ -18,21 +18,15 @@ pub async fn create_problem(
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {payload:#?}");
     let (problem, topic_ids) = payload;
-    let problem_id = db::problems::create_problem_from_entry(&problem)
-        .await
-        .or_else(|e| Err(ApiError::Database(e.to_string())))?;
-    match db::relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem_id)
-        .await
-    {
-        Ok(_) => Ok((
-            StatusCode::OK,
-            format!(
-                "Successfully created {} with an id of {}",
-                problem.name, problem_id
-            ),
-        )),
-        Err(e) => Err(ApiError::Database(e.to_string())),
-    }
+    let problem_id = db::problems::create_problem_from_entry(&problem).await?;
+    db::relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem_id).await?;
+    Ok((
+        StatusCode::OK,
+        format!(
+            "Successfully created {} with an id of {}",
+            problem.name, problem_id
+        ),
+    ))
 }
 
 pub async fn update_problem(
@@ -40,13 +34,13 @@ pub async fn update_problem(
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {payload:#?}");
     let (problem, topic_ids) = payload;
-    db::relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem.id)
-        .await
-        .or_else(|e| Err(ApiError::Database(e.to_string())))?;
-    match db::problems::update_problem_from_entry(problem).await {
-        Ok(name) => Ok((StatusCode::OK, format!("Successfully updated {name}"))),
-        Err(e) => Err(ApiError::Database(e.to_string())),
-    }
+    db::relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem.id).await?;
+    let problem_name = db::problems::update_problem_from_entry(problem).await?;
+
+    Ok((
+        StatusCode::OK,
+        format!("Successfully updated {problem_name}"),
+    ))
 }
 
 /// Accepts an entire ProblemEntry to keep ergonomics the same
