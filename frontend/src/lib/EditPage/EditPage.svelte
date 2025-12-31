@@ -6,9 +6,12 @@
   import EntryList from './EntryList.svelte';
   import EditingArea from './EditingArea.svelte';
   import { fly } from 'svelte/transition';
+  import ConfirmDialog from '../ConfirmDialog.svelte';
 
   let clickedEntry = $state<Entry | null>(null);
   let activeEntry = $state<Entry | null>(null);
+  let originalEntry = $state('');
+  let entryHasBeenEdited = $state(false);
 
   type Kind = 'problem' | 'topic' | 'chapter' | 'course' | 'prefix';
   let kind = $state<Kind>('problem');
@@ -26,21 +29,43 @@
 
   let contextMenu: ContextMenu;
   let serverMessage: ServerMessage;
+  let copyDialog: ConfirmDialog;
+  let editDialog: ConfirmDialog;
 
   function onClickOutsideList() {
     clickedEntry = null;
   }
 
   function editEntry() {
-    if (clickedEntry) {
-      activeEntry = { ...clickedEntry };
+    if (entryHasBeenEdited) {
+      editDialog.show();
+    } else {
+      commitEdit();
     }
   }
 
+  function commitEdit() {
+    if (clickedEntry) {
+      activeEntry = { ...clickedEntry };
+      originalEntry = JSON.stringify(activeEntry);
+    }
+    clickedEntry = null;
+  }
+
   function copyEntry() {
+    if (entryHasBeenEdited) {
+      copyDialog.show();
+    } else {
+      commitCopy();
+    }
+  }
+
+  function commitCopy() {
     if (clickedEntry) {
       activeEntry = { ...clickedEntry, id: -1 };
+      originalEntry = JSON.stringify(activeEntry);
     }
+    clickedEntry = null;
   }
 
   async function deleteEntry() {
@@ -62,13 +87,20 @@
   }
 
   function handleEntryDrop() {
-    clickedEntry = null;
+    if (!entryHasBeenEdited) {
+      clickedEntry = null;
+    }
   }
 
   function handleEntryClick(e: MouseEvent, entry: Entry) {
     clickedEntry = entry;
     contextMenu.show({ x: e.x, y: e.y });
   }
+
+  $effect(() => {
+    entryHasBeenEdited =
+      activeEntry !== null && JSON.stringify(activeEntry) !== originalEntry;
+  });
 </script>
 
 <main in:fly={{ y: 60, duration: 600 }}>
@@ -96,7 +128,13 @@
       {handleEntryDrop}
       {onClickOutsideList}
     />
-    <EditingArea {clickedEntry} bind:activeEntry />
+    <EditingArea
+      {clickedEntry}
+      bind:activeEntry
+      bind:originalEntry
+      {entryHasBeenEdited}
+      {editDialog}
+    />
   </div>
   <button class="clear-btn" onclick={() => (activeEntry = null)}>Clear</button>
 </main>
@@ -110,6 +148,22 @@
 />
 
 <ServerMessage bind:this={serverMessage} />
+
+<ConfirmDialog
+  bind:this={copyDialog}
+  onConfirm={() => {
+    commitCopy();
+  }}
+  message={`Are you sure you want to overwrite your changes?`}
+/>
+
+<ConfirmDialog
+  bind:this={editDialog}
+  onConfirm={() => {
+    commitEdit();
+  }}
+  message={`Are you sure you want to overwrite your changes?`}
+/>
 
 <style>
   main {

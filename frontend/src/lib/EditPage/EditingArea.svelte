@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ConfirmDialog from '../ConfirmDialog.svelte';
   import './editingArea.css';
   import PrefixEditor from './PrefixEditor.svelte';
   import ProblemEditor from './ProblemEditor.svelte';
@@ -6,11 +7,17 @@
   import type { Entry } from './types';
 
   let {
+    originalEntry = $bindable(),
     activeEntry = $bindable(),
-    clickedEntry
+    clickedEntry,
+    entryHasBeenEdited,
+    editDialog
   }: {
+    originalEntry: string;
     activeEntry: Entry | null;
     clickedEntry: Entry | null;
+    entryHasBeenEdited: boolean;
+    editDialog: ConfirmDialog;
   } = $props();
 
   let draggedOver = $state(false);
@@ -38,9 +45,11 @@
       }
       if (
         clickedEntry &&
+        !entryHasBeenEdited &&
         (activeEntry?.kind == clickedEntry.kind || !activeEntry)
       ) {
         activeEntry = { ...clickedEntry };
+        originalEntry = JSON.stringify(activeEntry);
       }
       draggedOver = true;
     }
@@ -52,8 +61,9 @@
       draggedOver = false;
       // Are we actually dragging an entry?
       if (clickedEntry) {
-        if (temp_storage) {
+        if (temp_storage && !entryHasBeenEdited) {
           activeEntry = { ...temp_storage };
+          originalEntry = JSON.stringify(activeEntry);
         } else {
           activeEntry = null;
         }
@@ -67,7 +77,12 @@
     e.preventDefault();
     // Drop is on parent area and not child area
     if (!childHasDropPriority && clickedEntry) {
-      activeEntry = { ...clickedEntry };
+      if (entryHasBeenEdited) {
+        editDialog.show();
+      } else {
+        activeEntry = { ...clickedEntry };
+        originalEntry = JSON.stringify(activeEntry);
+      }
     }
     draggedOver = false;
     temp_storage = null;
