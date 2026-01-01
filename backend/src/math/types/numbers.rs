@@ -1,3 +1,5 @@
+use crate::math::utils::simplified_fraction;
+use anyhow::{Result, anyhow};
 /// The numbers module handles calculations between different types of numbers
 /// (Integers, Decimals, Fractions, Irrationals) and formats them for Typst.
 ///
@@ -8,8 +10,6 @@
 /// otherwise you're better of just treating pi as a variable in the problem.
 use std::fmt::Display;
 
-use crate::math::utils::simplified_fraction;
-
 // This limits all numbers to 3 decimals.
 const DECIMAL_FACTOR: i32 = 1_000;
 pub const PI: Number = Number::Irrational(std::f64::consts::PI, "pi");
@@ -18,7 +18,7 @@ pub const E: Number = Number::Irrational(std::f64::consts::E, "e");
 /// The Number enum is used to properly display numbers in Typst while
 /// still being able to do calculations.
 /// Note that decimal numbers are limited to display (and use) 3 decimals.
-#[derive(Debug, PartialOrd, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum Number {
     Integer(i32),
     /// The decimal value multiplied by DECIMAL_FACTOR (1 000)
@@ -87,6 +87,30 @@ impl Number {
             Number::Irrational(val, s) => Number::Irrational(val.abs(), s),
         }
     }
+
+    /// Inside the function expressions in plots, decimals can't be output
+    /// as num(1.2), like they normally do in Display. This function accounts for that.
+    ///
+    /// Is (probably) only used in PlotType.to_typst()
+    pub fn for_plots(&self) -> String {
+        match self {
+            Number::Decimal(_) => strip_num(format!("{self}")).unwrap_or_else(|_| {
+                tracing::error!("Called strip_num on a Number which does not contain num");
+                String::from("0")
+            }),
+            _ => format!("{self}"),
+        }
+    }
+}
+
+fn strip_num(s: String) -> Result<String> {
+    // Proper error message in for_plots()
+    return Ok(s
+        .strip_prefix("num(\"")
+        .ok_or(anyhow!("err"))?
+        .strip_suffix("\")")
+        .ok_or(anyhow!("err"))?
+        .to_string());
 }
 
 impl Display for Number {
@@ -122,6 +146,12 @@ impl Ord for Number {
         self.value()
             .partial_cmp(&other.value())
             .unwrap_or_else(|| panic!("Cannot compare NaN values"))
+    }
+}
+
+impl PartialOrd for Number {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.value().partial_cmp(&other.value())
     }
 }
 
@@ -295,6 +325,22 @@ mod tests {
         assert_eq!(format!("{irrational:+}"), "+pi");
         assert_eq!(format!("{negative}"), "-2");
         assert_eq!(format!("{negative:+}"), "-2");
+    }
+
+    #[test]
+    fn number_comparison() {
+        let integer = Number::Integer(3);
+        let decimal_lower = Number::Decimal(2900);
+        let decimal_higher = Number::Decimal(3100);
+        let fraction_lowest = Number::Fraction(8, 3);
+        let fraction_highest = Number::Fraction(10, 3);
+
+        assert!(integer > decimal_lower);
+        assert!(integer < decimal_higher);
+        assert!(integer > fraction_lowest);
+        assert!(integer < fraction_highest);
+        assert!(decimal_lower > fraction_lowest);
+        assert!(decimal_higher < fraction_highest);
     }
 
     #[test]

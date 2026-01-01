@@ -1,7 +1,7 @@
 use crate::Language;
 use crate::math::IntRange;
 use crate::math::symbols;
-use crate::math::types::{Polynomial, Term, Variables};
+use crate::math::{Polynomial, Term, Variables};
 use crate::problems::Problem;
 use crate::registry::{get_problem_data, replace_placeholders};
 use anyhow::Result;

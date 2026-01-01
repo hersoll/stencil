@@ -2,7 +2,7 @@ use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
 use crate::{
-    math::types::{Number, terms::Term},
+    math::{Number, Term},
     typst_utils,
 };
 
@@ -349,7 +349,7 @@ impl Display for Polynomial {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::math::types::Variables;
+    use crate::math::Variables;
 
     #[test]
     fn expression_creation() {

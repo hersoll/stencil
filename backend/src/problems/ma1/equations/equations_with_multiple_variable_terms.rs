@@ -1,6 +1,6 @@
 use crate::{
     Language,
-    math::{IntRange, symbols, types::Term},
+    math::{IntRange, Term, symbols},
     problems::Problem,
     typst_utils::{self, formatting::equation_solution},
 };

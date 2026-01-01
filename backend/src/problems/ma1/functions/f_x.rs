@@ -1,9 +1,6 @@
 use crate::{
     Language,
-    math::{
-        IntRange, symbols,
-        types::{Polynomial, Term},
-    },
+    math::{IntRange, Polynomial, Term, symbols},
     problems::Problem,
     registry::{self, replace_placeholders},
     typst_utils::{self, formatting::equation_solution},

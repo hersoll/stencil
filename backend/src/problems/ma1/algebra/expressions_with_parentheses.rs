@@ -1,9 +1,6 @@
 use crate::{
     Language,
-    math::{
-        IntRange, symbols,
-        types::{Number, Polynomial, Term},
-    },
+    math::{IntRange, Number, Polynomial, Term, symbols},
     problems::Problem,
     typst_utils,
 };
