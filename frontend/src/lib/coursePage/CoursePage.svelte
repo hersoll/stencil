@@ -266,6 +266,6 @@
   }
 
   :global(body) {
-    padding-bottom: 4rem;
+    padding-bottom: 1rem;
   }
 </style>

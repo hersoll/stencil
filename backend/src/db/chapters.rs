@@ -1,5 +1,4 @@
 use super::common::{DbDescRow, error_context, error_context_by_name};
-use super::relationships::{ChapterTopics, update_relationships};
 use crate::db::{self, ChapterEntry};
 use anyhow::{Context, Result};
 
@@ -16,7 +15,7 @@ pub async fn get_all_chapter_data() -> Result<Vec<ChapterEntry>> {
     Ok(chapter_data.into_iter().map(ChapterEntry::from).collect())
 }
 
-pub async fn get_course_chapters(course_id: i32) -> Result<Vec<ChapterEntry>> {
+pub async fn get_course_chapters(course_id: &i32) -> Result<Vec<ChapterEntry>> {
     let pool = db::get_pool();
     let chapters = sqlx::query_as!(
         DbDescRow,
@@ -30,6 +29,24 @@ pub async fn get_course_chapters(course_id: i32) -> Result<Vec<ChapterEntry>> {
     .fetch_all(pool)
     .await
     .with_context(|| format!("Failed to get chapters for course {}", course_id))?;
+
+    Ok(chapters.into_iter().map(ChapterEntry::from).collect())
+}
+
+pub async fn get_chapters_from_topic(topic_id: &i32) -> Result<Vec<ChapterEntry>> {
+    let pool = db::get_pool();
+    let chapters = sqlx::query_as!(
+        DbDescRow,
+        r#"SELECT c.id, c.name, c.desc_sv, c.desc_en
+        FROM chapters c
+        JOIN chapter_topics ct ON c.id = ct.chapter_id
+        WHERE ct.topic_id = $1
+        ORDER BY c.name"#,
+        topic_id
+    )
+    .fetch_all(pool)
+    .await
+    .with_context(|| format!("Failed to get chapters from topic {}", topic_id))?;
 
     Ok(chapters.into_iter().map(ChapterEntry::from).collect())
 }
@@ -75,9 +92,4 @@ pub async fn delete_chapter_with_id(id: i32) -> Result<String> {
         .with_context(|| error_context("delete", "chapter", id))?;
 
     Ok(result.name)
-}
-
-pub async fn update_chapter_topics(chapter_id: i32, topic_ids: Vec<i32>) -> Result<()> {
-    let pool = db::get_pool();
-    update_relationships::<ChapterTopics>(pool, chapter_id, &topic_ids).await
 }

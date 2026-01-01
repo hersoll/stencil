@@ -19,12 +19,12 @@
 
   let {
     kind,
-    search,
     handleEntryClick,
     handleEntryDrag,
     handleEntryDrop,
     onClickOutsideList
   } = $props();
+  let search = $state('');
   let entries = $state<Entry[]>([]);
   let listElement: HTMLDivElement;
   let defaultEntry: Entry;
@@ -159,10 +159,21 @@
 </script>
 
 <div class="container">
+  <div class="utility-grid">
+    <input
+      class="search-bar"
+      type="search"
+      placeholder="Search"
+      autocorrect="off"
+      bind:value={search}
+      onkeydown={e =>
+        e.key === 'Enter' && (e.preventDefault(), e.currentTarget?.blur())}
+    />
+    <button class="reset-btn" onclick={resetList}>⟳</button>
+  </div>
   <div class="list-header">
     <h3 class="header-text">{kind == 'problem' ? 'Module' : 'Name'}</h3>
     <h3 class="header-text">{kind == 'problem' ? 'Name' : 'Description'}</h3>
-    <button class="reset-btn" onclick={resetList}>⟳</button>
   </div>
   <div class="list-grid" bind:this={listElement}>
     <button
@@ -227,6 +238,22 @@
     box-shadow: 6px 4px 20px oklch(from var(--bg) calc(l - 0.1) c h) inset;
   }
 
+  .utility-grid {
+    display: flex;
+    justify-content: space-between;
+  }
+  .search-bar {
+    width: 19rem;
+    background-color: var(--bg-light);
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+    box-shadow: var(--shadow-elevation-low);
+  }
+
   .list-entry,
   .list-header {
     display: grid;
@@ -243,12 +270,11 @@
   }
 
   .reset-btn {
-    position: absolute;
-    top: 0.75rem;
-    right: 1rem;
-    font-size: 1.5rem;
+    font-size: 2rem;
     padding: 0;
     margin: 0;
+    padding-right: 0.5rem;
+    padding-bottom: 1rem;
     background: none;
     border: none;
     &:hover {
@@ -261,7 +287,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 0.25rem;
-    height: calc(100vh - 30rem);
+    height: calc(100vh - 28.5rem);
     overflow-y: auto;
     width: fit-content;
     padding-right: 1rem;

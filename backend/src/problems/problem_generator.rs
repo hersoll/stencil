@@ -169,6 +169,7 @@ fn get_unique_problem(candidate: &mut ProblemCandidate, lang: &Language) -> Resu
         problem = (generator)(candidate.name.clone(), lang)?;
         tries += 1;
         if tries >= u16::MAX {
+            tracing::error!("Stuck while generating problem {}!", candidate.name);
             return Err(anyhow!(
                 "Stuck while generating problem {}!",
                 candidate.name

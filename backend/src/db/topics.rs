@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use super::common::{DbDescRow, error_context, error_context_by_name};
-use super::relationships::{TopicProblems, update_relationships};
 use crate::db::{self, DescriptionTranslations, TopicEntry};
 use anyhow::{Context, Result};
 
@@ -35,7 +34,7 @@ pub async fn get_topics_from_ids(topic_ids: &[i32]) -> Result<Vec<TopicEntry>> {
 }
 
 /// Ordered by chapter order_index
-pub async fn get_chapter_topics(chapter_id: i32) -> Result<Vec<TopicEntry>> {
+pub async fn get_chapter_topics(chapter_id: &i32) -> Result<Vec<TopicEntry>> {
     let pool = db::get_pool();
     let topics = sqlx::query_as!(
         DbDescRow,
@@ -98,6 +97,24 @@ pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32,
     Ok(map)
 }
 
+pub async fn get_topics_from_problem(problem_id: &i32) -> Result<Vec<TopicEntry>> {
+    let pool = db::get_pool();
+    let topics = sqlx::query_as!(
+        DbDescRow,
+        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en
+        FROM topics t
+        JOIN topic_problems tp ON t.id = tp.topic_id
+        WHERE tp.problem_id = $1
+        ORDER BY t.name"#,
+        problem_id
+    )
+    .fetch_all(pool)
+    .await
+    .with_context(|| format!("Failed to get topics from problem {}", problem_id))?;
+
+    Ok(topics.into_iter().map(TopicEntry::from).collect())
+}
+
 pub async fn create_topic_from_entry(topic: TopicEntry) -> Result<i32> {
     let pool = db::get_pool();
     let desc = topic.desc;
@@ -141,9 +158,4 @@ pub async fn delete_topic_with_id(id: i32) -> Result<String> {
         .with_context(|| error_context("delete", "topic", id))?;
 
     Ok(result.name)
-}
-
-pub async fn update_topic_problems(topic_id: i32, problem_ids: Vec<i32>) -> Result<()> {
-    let pool = db::get_pool();
-    update_relationships::<TopicProblems>(pool, topic_id, &problem_ids).await
 }

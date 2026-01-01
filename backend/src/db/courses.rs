@@ -1,5 +1,4 @@
 use super::common::{DbDescRow, error_context, error_context_by_name};
-use super::relationships::{CourseChapters, update_relationships};
 use crate::db::{self, CourseEntry};
 use anyhow::{Context, Result};
 
@@ -48,6 +47,24 @@ pub async fn get_course_by_name(name: &str) -> Result<CourseEntry> {
     Ok(CourseEntry::from(course))
 }
 
+pub async fn get_courses_from_chapter(chapter_id: &i32) -> Result<Vec<CourseEntry>> {
+    let pool = db::get_pool();
+    let courses = sqlx::query_as!(
+        DbDescRow,
+        r#"SELECT co.id, co.name, co.desc_sv, co.desc_en
+        FROM courses co
+        JOIN course_chapters coch ON co.id = coch.course_id
+        WHERE coch.chapter_id = $1
+        ORDER BY co.name"#,
+        chapter_id
+    )
+    .fetch_all(pool)
+    .await
+    .with_context(|| format!("Failed to get courses from chapter {}", chapter_id))?;
+
+    Ok(courses.into_iter().map(CourseEntry::from).collect())
+}
+
 pub async fn create_course_from_entry(course: CourseEntry) -> Result<i32> {
     let pool = db::get_pool();
     let created = sqlx::query!(
@@ -89,9 +106,4 @@ pub async fn delete_course_with_id(id: i32) -> Result<String> {
         .with_context(|| error_context("delete", "course", id))?;
 
     Ok(result.name)
-}
-
-pub async fn update_course_chapters(course_id: i32, chapter_ids: Vec<i32>) -> Result<()> {
-    let pool = db::get_pool();
-    update_relationships::<CourseChapters>(pool, course_id, &chapter_ids).await
 }

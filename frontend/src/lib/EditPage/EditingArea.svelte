@@ -1,13 +1,25 @@
 <script lang="ts">
+  import ConfirmDialog from '../ConfirmDialog.svelte';
+  import ChapterEditor from './ChapterEditor.svelte';
+  import CourseEditor from './CourseEditor.svelte';
+  import './editingArea.css';
+  import PrefixEditor from './PrefixEditor.svelte';
   import ProblemEditor from './ProblemEditor.svelte';
+  import TopicEditor from './TopicEditor.svelte';
   import type { Entry } from './types';
 
   let {
+    originalEntry = $bindable(),
     activeEntry = $bindable(),
-    clickedEntry
+    clickedEntry,
+    entryHasBeenEdited,
+    editDialog
   }: {
+    originalEntry: string;
     activeEntry: Entry | null;
     clickedEntry: Entry | null;
+    entryHasBeenEdited: boolean;
+    editDialog: ConfirmDialog;
   } = $props();
 
   let draggedOver = $state(false);
@@ -17,6 +29,9 @@
   /// Keep track of drags over children to know when there is an
   /// actual enter/exit
   let dragDepth = $state(0);
+  /// We might want to drop something into a child component.
+  /// This prevents the parent (this) from overriding those areas
+  let childHasDropPriority = $state(false);
 
   //Required for handling child components
   function handleDragOver(e: DragEvent) {
@@ -32,9 +47,11 @@
       }
       if (
         clickedEntry &&
+        !entryHasBeenEdited &&
         (activeEntry?.kind == clickedEntry.kind || !activeEntry)
       ) {
         activeEntry = { ...clickedEntry };
+        originalEntry = JSON.stringify(activeEntry);
       }
       draggedOver = true;
     }
@@ -44,10 +61,15 @@
     dragDepth--;
     if (dragDepth == 0) {
       draggedOver = false;
-      if (temp_storage) {
-        activeEntry = { ...temp_storage };
-      } else {
-        activeEntry = null;
+      // Are we actually dragging an entry?
+      // And are we doing a preview?
+      if (clickedEntry && clickedEntry.kind === activeEntry?.kind) {
+        if (temp_storage && !entryHasBeenEdited) {
+          activeEntry = { ...temp_storage };
+          originalEntry = JSON.stringify(activeEntry);
+        } else {
+          activeEntry = null;
+        }
       }
       temp_storage = null;
     }
@@ -56,17 +78,25 @@
   function handleDrop(e: DragEvent) {
     dragDepth--;
     e.preventDefault();
-    if (clickedEntry) {
-      activeEntry = { ...clickedEntry };
+    // Drop is on parent area and not child area
+    if (!childHasDropPriority && clickedEntry) {
+      if (entryHasBeenEdited) {
+        editDialog.show();
+      } else {
+        activeEntry = { ...clickedEntry };
+        originalEntry = JSON.stringify(activeEntry);
+      }
     }
     draggedOver = false;
     temp_storage = null;
+    childHasDropPriority = false;
   }
 </script>
 
 <div
   role="region"
-  class="container"
+  id="editing-area"
+  class="editing-area"
   class:drag-over={draggedOver}
   ondragover={handleDragOver}
   ondragenter={handleDragEnter}
@@ -78,16 +108,42 @@
       bind:problem={activeEntry}
       {draggedOver}
       draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
+    />
+  {:else if activeEntry?.kind == 'prefix'}
+    <PrefixEditor bind:prefix={activeEntry} {draggedOver} />
+  {:else if activeEntry?.kind == 'topic'}
+    <TopicEditor
+      bind:topic={activeEntry}
+      {draggedOver}
+      draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
+    />
+  {:else if activeEntry?.kind == 'chapter'}
+    <ChapterEditor
+      bind:chapter={activeEntry}
+      {draggedOver}
+      draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
+    />
+  {:else if activeEntry?.kind == 'course'}
+    <CourseEditor
+      bind:course={activeEntry}
+      {draggedOver}
+      draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
     />
   {/if}
 </div>
 
 <style>
-  .container {
+  .editing-area {
+    min-height: 20rem;
     width: 53.5rem;
     padding: 1rem;
     border-radius: 1rem;
     box-shadow: 6px 4px 20px oklch(from var(--bg) calc(l - 0.1) c h) inset;
+    height: min-content;
   }
 
   .drag-over {

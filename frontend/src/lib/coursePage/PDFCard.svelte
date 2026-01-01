@@ -26,6 +26,7 @@
       if (!response.ok) {
         let text = await response.text();
         error.message = `Status: ${response.status} \n${text}`;
+        return;
       }
 
       // Get the PDF as a blob (binary data)
@@ -37,6 +38,15 @@
       loading = false;
     }
   };
+
+  function downloadPDF(e: Event) {
+    e.preventDefault();
+    if (!pdfUrl) return;
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = 'stencil.pdf';
+    link.click();
+  }
 
   $effect(() => {
     if (pdfUrl != '') {
@@ -69,6 +79,14 @@
       {i18n.t('create_pdf')}
     </button>
     {#if pdfUrl != ''}
+      <button
+        disabled={!pdfUrl}
+        onclick={downloadPDF}
+        type="button"
+        class="download-btn"
+      >
+        {i18n.t('download')}
+      </button>
       <div class="iframe-container">
         <iframe
           src={pdfUrl}
@@ -89,6 +107,7 @@
 
 <style>
   .pdf-container {
+    position: relative;
     margin-top: 1rem;
     padding: 1rem;
     border-radius: 2rem;
@@ -135,6 +154,11 @@
       background-color: var(--secondary);
       color: var(--text);
     }
+  }
+  .download-btn {
+    position: absolute;
+    right: 2rem;
+    top: 8rem;
   }
 
   .iframe-container {

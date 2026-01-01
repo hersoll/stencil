@@ -55,7 +55,7 @@ pub struct TranslatedPrefix {
 // Entry structs
 // ###########################
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CourseEntry {
     pub id: i32,
     pub name: String,
@@ -73,7 +73,7 @@ impl From<DbDescRow> for CourseEntry {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ChapterEntry {
     pub id: i32,
     pub name: String,

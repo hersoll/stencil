@@ -2,19 +2,35 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from './ServerMessage.svelte';
-  import type { Entry, ProblemEntry } from './types';
+  import type {
+    Entry,
+    PrefixEntryRaw,
+    ProblemEntry,
+    TopicEntryRaw
+  } from './types';
+  import PrefixField from './EditingComponents/PrefixField.svelte';
+  import DescriptionField from './EditingComponents/DescriptionField.svelte';
+  import ProblemTranslationsField from './EditingComponents/ProblemTranslationsField.svelte';
+  import LanguageHeader from './EditingComponents/LanguageHeader.svelte';
+  import NewOrEditingLabel from './EditingComponents/NewOrEditingLabel.svelte';
+  import SubmitButton from './EditingComponents/SubmitButton.svelte';
+  import TopicsField from './EditingComponents/TopicsField.svelte';
 
   let {
     problem = $bindable(),
     draggedEntry,
-    draggedOver
+    draggedOver,
+    dropPriority = $bindable()
   }: {
     problem: ProblemEntry;
     draggedOver: boolean;
     draggedEntry: Entry | null;
+    dropPriority: boolean;
   } = $props();
 
   let serverMessage: ServerMessage;
+  let currentPrefix: PrefixEntryRaw | null = $state(null);
+  let problem_topics: TopicEntryRaw[] = $state([]);
 
   async function handleSubmit() {
     const method =
@@ -23,203 +39,105 @@
           'POST'
         : // Existing problem
           'PATCH';
+    const topic_ids = problem_topics.map(t => t.id);
     const response = await fetch(`${API_URL}/edit/problem`, {
       method,
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(problem)
+      body: JSON.stringify([problem, topic_ids])
     });
 
     serverMessage.show(response);
   }
+
+  async function loadPrefixData() {
+    const res = await fetch(`${API_URL}/edit/prefix/id/${problem.prefix_id}`);
+    if (res.ok) {
+      currentPrefix = await res.json();
+    } else {
+      await serverMessage.show(res);
+    }
+  }
+
+  $effect(() => {
+    if (problem.prefix_id) {
+      loadPrefixData();
+    } else {
+      currentPrefix = null;
+    }
+  });
 </script>
 
 <ServerMessage bind:this={serverMessage} />
 
 <div
-  class="container"
+  class="editing-area-container"
   class:dragged-over={draggedOver}
-  in:fly={{ y: -15, duration: 200 }}
-  out:fly={{ y: 15, duration: 200 }}
+  in:fly={{ y: -15, duration: 600 }}
 >
-  {#if problem.id >= 0}
-    <h3 class="heading existing">Editing problem</h3>
-  {:else}
-    <h3 class="heading new">New problem</h3>
-  {/if}
+  <NewOrEditingLabel entry={problem} />
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">
-    <span></span>
+    <label for="difficulty">Difficulty</label>
     <label for="module">Module</label>
     <label for="name">Name</label>
 
-    <span></span>
-
+    <input
+      name="difficulty"
+      type="number"
+      class="editing-text-input"
+      bind:value={problem.difficulty}
+      min="0"
+      max="10"
+    />
     <input
       name="module"
       type="text"
-      class="text-input"
+      class="editing-text-input"
       bind:value={problem.module}
     />
     <input
       name="name"
       type="text"
-      class="text-input"
+      class="editing-text-input"
       bind:value={problem.name}
     />
 
-    <span></span>
-    <h4 class="language-label">Svenska</h4>
-    <h4 class="language-label">English</h4>
-
-    <label for="desc_sv">Description</label>
-    <input
-      name="desc_sv"
-      type="text"
-      class="text-input"
-      bind:value={problem.desc.sv}
-    />
-    <input
-      name="desc_en"
-      type="text"
-      class="text-input"
-      bind:value={problem.desc.en}
-    />
-
-    <label for="question_sv">Question</label>
-    <input
-      name="question_sv"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.sv.question}
-    />
-    <input
-      name="question_en"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.en.question}
-    />
-
-    <label for="answer_sv">Answer</label>
-    <input
-      name="answer_sv"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.sv.answer}
-    />
-    <input
-      name="answer_en"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.en.answer}
-    />
-
-    <label for="solution_sv">Solution</label>
-    <input
-      name="solution_sv"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.sv.solution}
-    />
-    <input
-      name="solution_en"
-      type="text"
-      class="text-input"
-      bind:value={problem.translations.en.solution}
-    />
+    <LanguageHeader />
+    <DescriptionField bind:entry={problem} />
+    <ProblemTranslationsField bind:problem />
   </div>
-  <div
-    class="prefix-container"
-    class:available={draggedEntry?.kind == 'prefix'}
-    class:no-prefix={problem.prefix_id == null} 
-  >
-    <!-- TODO: Drag functions on prefix div -->
-    {#if problem.prefix_id}
-      <p>Yep this guy sure has a prefix ({problem.prefix_id})</p>
-    {:else}
-      <p>No prefix</p>
-    {/if}
+  <div class="attachments-grid">
+    <TopicsField
+      --height="20.5rem"
+      bind:topics={problem_topics}
+      {serverMessage}
+      bind:entry={problem}
+      {draggedEntry}
+      bind:dropPriority
+      parentDraggedOver={draggedOver}
+    />
+    <PrefixField
+      {currentPrefix}
+      bind:dropPriority
+      bind:problem
+      {draggedEntry}
+      bind:parentDraggedOver={draggedOver}
+    />
+    <SubmitButton {handleSubmit} />
   </div>
-  <button class="submit-btn primary" onclick={handleSubmit}>Submit</button>
 </div>
 
 <style>
-  .container {
-    display: grid;
-    &.dragged-over {
-      input {
-        color: var(--text-muted);
-        background-color: var(--bg);
-      }
+  @import './editingArea.css';
 
-      .prefix-container:not(.available) {
-        background-color: var(--bg);
-      }
-    }
-  }
-
-  .heading {
-    text-align: right;
-    &.existing {
-      color: var(--secondary);
-    }
-    &.new {
-      color: var(--primary);
-    }
-  }
-
-  .language-label {
-    margin-top: 1rem;
-  }
-
-  .translation-grid {
-    display: grid;
-    align-items: center;
-    grid-template-columns: 6rem 1fr 1fr;
-    column-gap: 1rem;
-    row-gap: 0.5rem;
-  }
-
-  .prefix-container {
-    display: grid;
-    align-items: center;
-    justify-items: center;
+  .attachments-grid {
     margin-top: 2rem;
-    height: 4rem;
-    background-color: var(--bg-light);
-    border-radius: 1rem;
-    box-shadow: var(--shadow-elevation-low);
-    border: 2px dashed transparent;
-    transition:
-      border-color 0.2s ease,
-      background-color 0.4s;
-
-    &.no-prefix {
-      background-color: var(--bg);
-      border-color: var(--bg-dark);
-      box-shadow: none;
-    }
-
-    &.available {
-      border-color: blueviolet;
-      box-shadow: var(--shadow-elevation-medium);
-    }
-  }
-
-  .text-input {
-    background-color: var(--bg-light);
-    font-size: 1rem;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    border: none;
-    box-shadow: var(--shadow-elevation-low);
-  }
-
-  .submit-btn {
-    margin: 2rem auto;
-    width: 15rem;
-    box-shadow: var(--shadow-elevation-medium);
+    display: grid;
+    grid-template-columns: 6rem 1fr 1fr;
+    grid-template-rows: 8rem auto;
+    column-gap: 1rem;
   }
 </style>

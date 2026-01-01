@@ -6,33 +6,67 @@
   import EntryList from './EntryList.svelte';
   import EditingArea from './EditingArea.svelte';
   import { fly } from 'svelte/transition';
-
-  let search = $state('');
+  import ConfirmDialog from '../ConfirmDialog.svelte';
 
   let clickedEntry = $state<Entry | null>(null);
   let activeEntry = $state<Entry | null>(null);
+  let originalEntry = $state('');
+  let entryHasBeenEdited = $state(false);
 
-  let kind = $state<'problem' | 'topic' | 'chapter' | 'course' | 'prefix'>(
-    'problem'
-  );
+  type Kind = 'problem' | 'topic' | 'chapter' | 'course' | 'prefix';
+  let kind = $state<Kind>('problem');
+  let kinds = [
+    { name: 'course', desc: 'Courses' },
+    { name: 'chapter', desc: 'Chapters' },
+    { name: 'topic', desc: 'Topics' },
+    { name: 'problem', desc: 'Problems' },
+    { name: 'prefix', desc: 'Prefixes' }
+  ];
+
+  function isKind(s: string): s is Kind {
+    return ['problem', 'topic', 'chapter', 'course', 'prefix'].includes(s);
+  }
 
   let contextMenu: ContextMenu;
   let serverMessage: ServerMessage;
+  let copyDialog: ConfirmDialog;
+  let editDialog: ConfirmDialog;
+  let clearDialog: ConfirmDialog;
 
   function onClickOutsideList() {
     clickedEntry = null;
   }
 
   function editEntry() {
-    if (clickedEntry) {
-      activeEntry = { ...clickedEntry };
+    if (entryHasBeenEdited) {
+      editDialog.show();
+    } else {
+      commitEdit();
     }
   }
 
+  function commitEdit() {
+    if (clickedEntry) {
+      activeEntry = { ...clickedEntry };
+      originalEntry = JSON.stringify(activeEntry);
+    }
+    clickedEntry = null;
+  }
+
   function copyEntry() {
+    if (entryHasBeenEdited) {
+      copyDialog.show();
+    } else {
+      commitCopy();
+    }
+  }
+
+  function commitCopy() {
     if (clickedEntry) {
       activeEntry = { ...clickedEntry, id: -1 };
+      originalEntry = JSON.stringify(activeEntry);
     }
+    clickedEntry = null;
   }
 
   async function deleteEntry() {
@@ -54,36 +88,38 @@
   }
 
   function handleEntryDrop() {
-    clickedEntry = null;
+    if (!entryHasBeenEdited) {
+      clickedEntry = null;
+    }
   }
 
   function handleEntryClick(e: MouseEvent, entry: Entry) {
     clickedEntry = entry;
     contextMenu.show({ x: e.x, y: e.y });
   }
+
+  $effect(() => {
+    entryHasBeenEdited =
+      activeEntry !== null && JSON.stringify(activeEntry) !== originalEntry;
+  });
 </script>
 
 <main in:fly={{ y: 60, duration: 600 }}>
-  <select
-    name="select-kind"
-    id="select-kind"
-    class="select-kind"
-    bind:value={kind}
-  >
-    <option value="problem">Problems</option>
-    <option value="topic">Topics</option>
-    <option value="chapter">Chapters</option>
-    <option value="course">Courses</option>
-    <option value="prefix">Prefixes</option>
-  </select>
-  <input
-    class="search-bar"
-    type="search"
-    placeholder="Search"
-    bind:value={search}
-    onkeydown={e =>
-      e.key === 'Enter' && (e.preventDefault(), e.currentTarget?.blur())}
-  />
+  <div class="btn-container">
+    {#each kinds as k}
+      <button
+        class="kind-switcher"
+        value={k.name}
+        class:current-kind={kind === k.name}
+        disabled={kind === k.name}
+        onclick={() => {
+          if (isKind(k.name)) kind = k.name;
+        }}
+      >
+        {k.desc}
+      </button>
+    {/each}
+  </div>
 
   <div class="major-grid">
     <EntryList
@@ -92,11 +128,24 @@
       {handleEntryDrag}
       {handleEntryDrop}
       {onClickOutsideList}
-      {search}
     />
-    <EditingArea {clickedEntry} bind:activeEntry />
+    <EditingArea
+      {clickedEntry}
+      bind:activeEntry
+      bind:originalEntry
+      {entryHasBeenEdited}
+      {editDialog}
+    />
   </div>
-  <button class="clear-btn" onclick={(activeEntry = null)}>Clear</button>
+  <button
+    class="clear-btn"
+    onclick={() => {
+      if (entryHasBeenEdited) clearDialog.show();
+      else {
+        activeEntry = null;
+      }
+    }}>Clear</button
+  >
 </main>
 
 <ContextMenu
@@ -109,6 +158,30 @@
 
 <ServerMessage bind:this={serverMessage} />
 
+<ConfirmDialog
+  bind:this={copyDialog}
+  onConfirm={() => {
+    commitCopy();
+  }}
+  message={`Are you sure you want to overwrite your changes?`}
+/>
+
+<ConfirmDialog
+  bind:this={editDialog}
+  onConfirm={() => {
+    commitEdit();
+  }}
+  message={`Are you sure you want to overwrite your changes?`}
+/>
+
+<ConfirmDialog
+  bind:this={clearDialog}
+  onConfirm={() => {
+    activeEntry = null;
+  }}
+  message={`Are you sure you want to clear your changes?`}
+/>
+
 <style>
   main {
     position: relative;
@@ -119,30 +192,32 @@
     box-shadow: var(--shadow-elevation-low);
   }
 
+  .btn-container {
+    display: flex;
+    width: 40rem;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+  }
+
+  .kind-switcher {
+    box-shadow: var(--shadow-elevation-low);
+
+    &:active {
+      box-shadow: none;
+    }
+    &:disabled {
+      box-shadow: none;
+      background-color: var(--primary);
+      color: var(--text);
+      cursor: default;
+    }
+  }
+
   .major-grid {
     display: grid;
     justify-content: start;
     grid-template-columns: auto auto;
     gap: 2rem;
-  }
-
-  .search-bar {
-    width: 19rem;
-    background-color: var(--bg-light);
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 0.5rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow-elevation-low);
-  }
-
-  select {
-    font-size: 1.1rem;
-    background-color: var(--bg-light);
-    border: none;
-    border-radius: 0.5rem;
-    margin-right: 2rem;
   }
 
   .clear-btn {
