@@ -3,7 +3,7 @@ use std::{fmt::Write, i32};
 
 use crate::math::Number;
 
-pub struct Graph {
+pub struct Plot {
     x_min: Number,
     x_max: Number,
     y_min: Number,
@@ -17,9 +17,9 @@ pub struct Graph {
     plots: Vec<PlotType>,
 }
 
-impl Default for Graph {
+impl Default for Plot {
     fn default() -> Self {
-        Graph {
+        Plot {
             x_min: Number::Integer(-1),
             x_max: Number::Integer(1),
             y_min: -Number::Integer(-1),
@@ -73,9 +73,9 @@ impl PlotType {
     }
 }
 
-impl Graph {
+impl Plot {
     pub fn new() -> Self {
-        Graph::default()
+        Plot::default()
     }
 
     pub fn x_range<T: Into<Number>, U: Into<Number>>(&mut self, min: T, max: U) -> &mut Self {

@@ -2,7 +2,7 @@ use macros::problem;
 
 use crate::{
     Language,
-    math::{self, IntRange, Number, graphing::PlotType},
+    math::{self, IntRange, Number, plots::PlotType},
     problems::Problem,
 };
 use anyhow::Result;
@@ -15,7 +15,7 @@ fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
     let (m, m_range) = IntRange::with_zero(-3, 3)?.and_random();
     let x_min = -1;
     let x_max = 2;
-    let graph = math::Graph::new()
+    let graph = math::Plot::new()
         .x_range(x_min, x_max)
         .add_plot(PlotType::Linear(Number::Integer(k), Number::Integer(m)))
         .auto_y_range()?
@@ -41,7 +41,7 @@ fn linear_graph_with_decimals(name: String, _lang: &Language) -> Result<Problem>
     let m = Number::Decimal(1500); // 1.5
     let x_min = Number::Decimal(-500);
     let x_max = Number::Decimal(1200);
-    let graph = math::Graph::new()
+    let graph = math::Plot::new()
         .x_range(x_min, x_max)
         .add_plot(PlotType::Linear(k, m))
         .auto_y_range()?
@@ -67,7 +67,7 @@ fn linear_graph_with_fractions(name: String, _lang: &Language) -> Result<Problem
     let m = Number::Integer(-1); // 1.5
     let x_min = Number::Integer(-1);
     let x_max = Number::Fraction(13, 3);
-    let graph = math::Graph::new()
+    let graph = math::Plot::new()
         .x_range(x_min, x_max)
         .add_plot(PlotType::Linear(k, m))
         .auto_y_range()?
@@ -95,7 +95,7 @@ fn exponential_graph(name: String, _lang: &Language) -> Result<Problem> {
     let (a, a_range) = IntRange::with_zero(2, 3)?.and_random();
     let x_min = 0;
     let x_max = 2;
-    let graph = math::graphing::Graph::new()
+    let graph = math::plots::Plot::new()
         .x_range(x_min as i32, x_max as i32)
         .add_plot(PlotType::Exponential(
             Number::Integer(c),
