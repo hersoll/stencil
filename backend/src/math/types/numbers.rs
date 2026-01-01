@@ -1,3 +1,11 @@
+/// The numbers module handles calculations between different types of numbers
+/// (Integers, Decimals, Fractions, Irrationals) and formats them for Typst.
+///
+/// The main point was to handle decimal numbers (Rust doesn't even have a round(3) method),
+/// but since fractions also need to be formatted it became suitable to handle it all in one place.
+///
+/// The Number::Irrational variant is used when their values are actually needed for calcuations,
+/// otherwise you're better of just treating pi as a variable in the problem.
 use std::fmt::Display;
 
 use crate::math::utils::simplified_fraction;
@@ -7,14 +15,22 @@ const DECIMAL_FACTOR: i32 = 1_000;
 pub const PI: Number = Number::Irrational(std::f64::consts::PI, "pi");
 pub const E: Number = Number::Irrational(std::f64::consts::E, "e");
 
+/// The Number enum is used to properly display numbers in Typst while
+/// still being able to do calculations.
+/// Note that decimal numbers are limited to display (and use) 3 decimals.
 #[derive(Debug, PartialOrd, Clone)]
 pub enum Number {
     Integer(i32),
+    /// The decimal value multiplied by DECIMAL_FACTOR (1 000)
     Decimal(i32),
     Fraction(i32, i32),
     Irrational(f64, &'static str),
 }
 
+/// These implementations lets us do 1.into() or (1,3).into(),
+/// but calling the variant, like Number::Fraction(1, 3), is preferred.
+///
+/// Note that the signature is different for Number::Decimal(1300) and 1.3.into().
 impl From<i32> for Number {
     fn from(value: i32) -> Self {
         Self::Integer(value)
@@ -37,6 +53,8 @@ impl From<(f64, &'static str)> for Number {
 }
 
 impl Number {
+    /// Calling value() is useful even for integers, since it lets us do things like
+    /// num.value().pow(-2), which will be a float.
     pub fn value(&self) -> f64 {
         match self {
             Number::Integer(val) => *val as f64,
@@ -46,6 +64,7 @@ impl Number {
         }
     }
 
+    /// If the Number is a Fraction, simplifies it (maybe to an Integer)
     fn simplify(self) -> Number {
         match self {
             Number::Fraction(num, denom) => {
@@ -76,12 +95,14 @@ impl Display for Number {
             write!(f, "+")?;
         }
         match self {
-            Number::Integer(val) => write!(f, "{val}"),
-            Number::Decimal(val) => {
-                if val % DECIMAL_FACTOR == 0 {
-                    write!(f, "{}", *val / DECIMAL_FACTOR)
+            Number::Integer(int) => write!(f, "{int}"),
+            Number::Decimal(large_val) => {
+                // The decimal value is actually an integer
+                if large_val % DECIMAL_FACTOR == 0 {
+                    write!(f, "{}", *large_val / DECIMAL_FACTOR)
                 } else {
-                    write!(f, "num(\"{}\")", *val as f64 / DECIMAL_FACTOR as f64)
+                    // num() is a formatting library which outputs the decimals with commas
+                    write!(f, "num(\"{}\")", *large_val as f64 / DECIMAL_FACTOR as f64)
                 }
             }
             Number::Fraction(num, denom) => write!(f, "{num}/{denom}"),
