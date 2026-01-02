@@ -2,7 +2,7 @@ use macros::problem;
 
 use crate::{
     Language,
-    math::{self, IntRange, Number, plots::PlotType},
+    math::{self, IntRange, Number, Term, plots::PlotType},
     problems::Problem,
 };
 use anyhow::Result;
@@ -44,7 +44,7 @@ fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
         .render()?;
 
     let question = format!("Här är en rät linje: \n {graph}");
-    let answer = format!("$y = {k}x {m:+}$");
+    let answer = format!("$y = {} {:+}$", Term::from((k, 'x')), Term::from(m));
     let solution = String::from("look at the fucking line");
 
     Ok(Problem {
