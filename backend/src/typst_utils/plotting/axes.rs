@@ -1,9 +1,8 @@
-use anyhow::{Result, anyhow};
-use std::{fmt::Write, i32};
+use crate::{math::Number, typst_utils::plotting::plots::Plot};
+use anyhow::{anyhow, Result};
+use std::fmt::Write;
 
-use crate::math::Number;
-
-pub struct Plot {
+pub struct Axes {
     x_min: Number,
     x_max: Number,
     y_min: Option<Number>,
@@ -13,12 +12,12 @@ pub struct Plot {
     grid: GridType,
     /// Can the graph start at a non-zero value and "break" to the x-axis?
     can_break: bool,
-    plots: Vec<PlotType>,
+    plots: Vec<Plot>,
 }
 
-impl Default for Plot {
+impl Default for Axes {
     fn default() -> Self {
-        Plot {
+        Axes {
             x_min: Number::Integer(-1),
             x_max: Number::Integer(1),
             y_min: None,
@@ -48,32 +47,9 @@ impl GridType {
     }
 }
 
-pub enum PlotType {
-    /// k, m
-    Linear(Number, Number),
-    Polynomial(Vec<Number>),
-    /// start, change
-    Exponential(Number, Number),
-}
-
-impl PlotType {
-    fn to_typst(&self) -> String {
-        match self {
-            PlotType::Linear(k, m) => format!("{} * float(t) + {}", k.for_plots(), m.for_plots()),
-            PlotType::Exponential(start, change) => format!(
-                "{} * calc.pow({}, t)",
-                start.for_plots(),
-                change.for_plots()
-            ),
-            // TODO:
-            PlotType::Polynomial(_) => format!("3"),
-        }
-    }
-}
-
-impl Plot {
+impl Axes {
     pub fn new() -> Self {
-        Plot::default()
+        Axes::default()
     }
 
     pub fn x_range<T: Into<Number>, U: Into<Number>>(&mut self, min: T, max: U) -> &mut Self {
@@ -98,7 +74,7 @@ impl Plot {
         self
     }
 
-    pub fn add_plot(&mut self, plot: PlotType) -> &mut Self {
+    pub fn add_plot(&mut self, plot: Plot) -> &mut Self {
         self.plots.push(plot);
         self
     }
@@ -167,9 +143,9 @@ impl Plot {
         for plot in self.plots.iter() {
             for val in [self.x_min, self.x_max].iter() {
                 let extreme = match plot {
-                    PlotType::Linear(k, m) => k * &val + m,
-                    PlotType::Exponential(c, a) => c * &a.value().powf(val.value()).into(),
-                    PlotType::Polynomial(_) => Number::Integer(0),
+                    Plot::Linear(k, m) => k * &val + m,
+                    Plot::Exponential(c, a) => c * &a.value().powf(val.value()).into(),
+                    Plot::Polynomial(_) => Number::Integer(0),
                 };
 
                 if extreme < min {

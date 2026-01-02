@@ -1,9 +1,10 @@
 use macros::problem;
 
 use crate::{
-    Language,
-    math::{self, IntRange, Number, Term, plots::PlotType},
+    math::{IntRange, Number, Term},
     problems::Problem,
+    typst_utils::plotting::{Axes, Plot},
+    Language,
 };
 use anyhow::Result;
 
@@ -11,10 +12,10 @@ use anyhow::Result;
 fn empty_graph(name: String, _lang: &Language) -> Result<Problem> {
     let x_min = -1;
     let x_max = 2;
-    let graph = math::Plot::new()
+    let graph = Axes::new()
         .x_range(x_min, x_max)
         .y_range(-3, 4)
-        .add_plot(PlotType::Linear(Number::Integer(0), Number::Integer(1000)))
+        .add_plot(Plot::linear(Number::Integer(0), Number::Integer(1000)))
         .render()?;
 
     let question = format!("Här är ett tomt koordinatsystem: \n {graph}");
@@ -37,9 +38,9 @@ fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
     let (m, m_range) = IntRange::with_zero(-3, 3)?.and_random();
     let x_min = -1;
     let x_max = 2;
-    let graph = math::Plot::new()
+    let graph = Axes::new()
         .x_range(x_min, x_max)
-        .add_plot(PlotType::Linear(Number::Integer(k), Number::Integer(m)))
+        .add_plot(Plot::linear(Number::Integer(k), Number::Integer(m)))
         .render()?;
 
     let question = format!("Här är en rät linje: \n {graph}");
@@ -62,9 +63,9 @@ fn linear_graph_with_decimals(name: String, _lang: &Language) -> Result<Problem>
     let m = Number::Decimal(1500); // 1.5
     let x_min = Number::Decimal(-500);
     let x_max = Number::Decimal(1200);
-    let graph = math::Plot::new()
+    let graph = Axes::new()
         .x_range(x_min, x_max)
-        .add_plot(PlotType::Linear(k, m))
+        .add_plot(Plot::linear(k, m))
         .render()?;
 
     let question = format!("Här är en rät linje med decimaltal: \n {graph}");
@@ -87,9 +88,9 @@ fn linear_graph_with_fractions(name: String, _lang: &Language) -> Result<Problem
     let m = Number::Integer(-1); // 1.5
     let x_min = Number::Integer(-1);
     let x_max = Number::Fraction(13, 3);
-    let graph = math::Plot::new()
+    let graph = Axes::new()
         .x_range(x_min, x_max)
-        .add_plot(PlotType::Linear(k, m))
+        .add_plot(Plot::linear(k, m))
         .render()?;
 
     let question = format!("Här är en rät linje med bråk: \n {graph}");
@@ -114,12 +115,9 @@ fn exponential_graph(name: String, _lang: &Language) -> Result<Problem> {
     let (a, a_range) = IntRange::with_zero(2, 3)?.and_random();
     let x_min = 0;
     let x_max = 2;
-    let graph = math::plots::Plot::new()
+    let graph = Axes::new()
         .x_range(x_min as i32, x_max as i32)
-        .add_plot(PlotType::Exponential(
-            Number::Integer(c),
-            Number::Integer(a),
-        ))
+        .add_plot(Plot::exponential(Number::Integer(c), Number::Integer(a)))
         .render()?;
 
     let question = format!("Här är en exponentialfunktion: \n {graph}");
