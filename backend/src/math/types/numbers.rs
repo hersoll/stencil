@@ -1,5 +1,4 @@
 use crate::math::utils::simplified_fraction;
-use anyhow::{Result, anyhow};
 /// The numbers module handles calculations between different types of numbers
 /// (Integers, Decimals, Fractions, Irrationals) and formats them for Typst.
 ///
