@@ -94,23 +94,20 @@ impl Number {
     /// Is (probably) only used in PlotType.to_typst()
     pub fn for_plots(&self) -> String {
         match self {
-            Number::Decimal(_) => strip_num(format!("{self}")).unwrap_or_else(|_| {
-                tracing::error!("Called strip_num on a Number which does not contain num()");
-                String::from("0")
-            }),
+            Number::Decimal(_) => strip_num(format!("{self}")),
             _ => format!("{self}"),
         }
     }
 }
 
-fn strip_num(s: String) -> Result<String> {
-    // Proper error message in for_plots()
-    return Ok(s
+fn strip_num(s: String) -> String {
+    match s
         .strip_prefix("num(\"")
-        .ok_or(anyhow!("err"))?
-        .strip_suffix("\")")
-        .ok_or(anyhow!("err"))?
-        .to_string());
+        .and_then(|strip| strip.strip_suffix("\""))
+    {
+        Some(stripped) => stripped.to_string(),
+        None => s,
+    }
 }
 
 impl Display for Number {

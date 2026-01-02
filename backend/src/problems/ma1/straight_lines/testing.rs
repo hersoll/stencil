@@ -40,7 +40,6 @@ fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
     let graph = math::Plot::new()
         .x_range(x_min, x_max)
         .add_plot(PlotType::Linear(Number::Integer(k), Number::Integer(m)))
-        .auto_y_range()?
         .render()?;
 
     let question = format!("Här är en rät linje: \n {graph}");
@@ -66,7 +65,6 @@ fn linear_graph_with_decimals(name: String, _lang: &Language) -> Result<Problem>
     let graph = math::Plot::new()
         .x_range(x_min, x_max)
         .add_plot(PlotType::Linear(k, m))
-        .auto_y_range()?
         .render()?;
 
     let question = format!("Här är en rät linje med decimaltal: \n {graph}");
@@ -92,7 +90,6 @@ fn linear_graph_with_fractions(name: String, _lang: &Language) -> Result<Problem
     let graph = math::Plot::new()
         .x_range(x_min, x_max)
         .add_plot(PlotType::Linear(k, m))
-        .auto_y_range()?
         .render()?;
 
     let question = format!("Här är en rät linje med bråk: \n {graph}");
@@ -123,7 +120,6 @@ fn exponential_graph(name: String, _lang: &Language) -> Result<Problem> {
             Number::Integer(c),
             Number::Integer(a),
         ))
-        .auto_y_range()?
         .render()?;
 
     let question = format!("Här är en exponentialfunktion: \n {graph}");
