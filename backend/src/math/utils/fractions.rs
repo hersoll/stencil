@@ -4,11 +4,11 @@ pub fn simplified_fraction(numerator: i32, denominator: i32) -> (i32, i32) {
     let mut new_numerator = numerator;
     let mut new_denominator = denominator;
     if new_numerator < 0 && new_denominator < 0 {
+        // abs() since one negative fucks it up
         new_numerator = new_numerator.abs();
         new_denominator = new_denominator.abs();
     }
 
-    // abs() since one negative fucks it up
     let gcd = math::utils::gcd(new_numerator, new_denominator);
     (new_numerator / gcd, new_denominator / gcd)
 }

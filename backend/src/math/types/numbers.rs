@@ -27,7 +27,7 @@ pub enum Number {
     Irrational(f64, &'static str),
 }
 
-/// These implementations lets us do 1.into() or (1,3).into(),
+/// These implementations lets us do 1.into() or (1, 3).into(),
 /// but calling the variant, like Number::Fraction(1, 3), is preferred.
 ///
 /// Note that the signature is different for Number::Decimal(1300) and 1.3.into().
@@ -64,7 +64,7 @@ impl Number {
         }
     }
 
-    /// If the Number is a Fraction, simplifies it (maybe to an Integer)
+    /// If the Number is a Fraction, simplifies it (to an Integer if possible)
     fn simplify(self) -> Number {
         match self {
             Number::Fraction(num, denom) => {
@@ -88,14 +88,14 @@ impl Number {
         }
     }
 
-    /// Inside the function expressions in plots, decimals can't be output
-    /// as num(1.2), like they normally do in Display. This function accounts for that.
+    /// Inside plot strings we need actual numbers, decimals can't be output
+    /// as num("1.2"), like they normally do in Display. This function accounts for that.
     ///
     /// Is (probably) only used in PlotType.to_typst()
     pub fn for_plots(&self) -> String {
         match self {
             Number::Decimal(_) => strip_num(format!("{self}")).unwrap_or_else(|_| {
-                tracing::error!("Called strip_num on a Number which does not contain num");
+                tracing::error!("Called strip_num on a Number which does not contain num()");
                 String::from("0")
             }),
             _ => format!("{self}"),

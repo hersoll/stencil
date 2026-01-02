@@ -7,8 +7,30 @@ use crate::{
 };
 use anyhow::Result;
 
-/// Test linear graph
-/// Difficulty: 2
+#[problem]
+fn empty_graph(name: String, _lang: &Language) -> Result<Problem> {
+    let x_min = -1;
+    let x_max = 2;
+    let graph = math::Plot::new()
+        .x_range(x_min, x_max)
+        .y_range(-3, 4)
+        .add_plot(PlotType::Linear(Number::Integer(0), Number::Integer(1000)))
+        .render()?;
+
+    let question = format!("Här är ett tomt koordinatsystem: \n {graph}");
+    let answer = format!("Tom");
+    let solution = String::from("look at the fucking line");
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![1],
+        combinations: 1,
+    })
+}
+
 #[problem]
 fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
     let (k, k_range) = IntRange::with_zero(-3, 3)?.and_random();

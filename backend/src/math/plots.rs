@@ -10,8 +10,7 @@ pub struct Plot {
     y_max: Number,
     x_tick: Number,
     y_tick: Number,
-    x_grid: GridType,
-    y_grid: GridType,
+    grid: GridType,
     /// Can the graph start at a non-zero value and "break" to the x-axis?
     can_break: bool,
     plots: Vec<PlotType>,
@@ -26,15 +25,14 @@ impl Default for Plot {
             y_max: Number::Integer(1),
             x_tick: Number::Integer(1),
             y_tick: Number::Integer(1),
-            x_grid: GridType::Major,
-            y_grid: GridType::Major,
+            grid: GridType::Major,
             can_break: false,
             plots: Vec::new(),
         }
     }
 }
 
-enum GridType {
+pub enum GridType {
     Both,
     Major,
     None,
@@ -61,9 +59,9 @@ pub enum PlotType {
 impl PlotType {
     fn to_typst(&self) -> String {
         match self {
-            PlotType::Linear(k, m) => format!("{} * float(x) + {}", k.for_plots(), m.for_plots()),
+            PlotType::Linear(k, m) => format!("{} * float(t) + {}", k.for_plots(), m.for_plots()),
             PlotType::Exponential(start, change) => format!(
-                "{} * calc.pow({}, x)",
+                "{} * calc.pow({}, t)",
                 start.for_plots(),
                 change.for_plots()
             ),
@@ -123,6 +121,16 @@ impl Plot {
         self
     }
 
+    pub fn grid(&mut self, grid: GridType) -> &mut Self {
+        self.grid = grid;
+        self
+    }
+
+    pub fn add_break(&mut self) -> &mut Self {
+        self.can_break = true;
+        self
+    }
+
     pub fn add_plot(&mut self, plot: PlotType) -> &mut Self {
         self.plots.push(plot);
         self
@@ -133,28 +141,29 @@ impl Plot {
             self.move_y_range_to_axis();
         }
         let mut out = String::with_capacity(256);
-        write!(out, "#block(height: 5cm)[#cetz.canvas({{\n")?;
-        write!(out, "plot.plot(")?;
-        write!(out, "axis-style: \"school-book\",")?;
-        write!(out, "size: (4, 4),")?;
-        write!(out, "x-min: {},", self.x_min.for_plots())?;
-        write!(out, "x-max: {},", self.x_max.for_plots())?;
-        write!(out, "y-min: {},", self.y_min.for_plots())?;
-        write!(out, "y-max: {},", self.y_max.for_plots())?;
-        write!(out, "x-grid: \"{}\",", self.x_grid.to_typst())?;
-        write!(out, "y-grid: \"{}\",", self.y_grid.to_typst())?;
-        write!(out, "x-tick-step: {},", self.x_tick.for_plots())?;
-        write!(out, "y-tick-step: {},\n", self.y_tick.for_plots())?;
+        writeln!(out, "#block(height: 5cm)[#cetz.canvas({{")?;
+        writeln!(out, "plot.plot(")?;
+        writeln!(out, "axis-style: \"school-book\",")?;
+        writeln!(out, "size: (4, 4),")?;
+        writeln!(out, "x-min: {},", self.x_min.for_plots())?;
+        writeln!(out, "x-max: {},", self.x_max.for_plots())?;
+        //writeln!(out, "y-min: {},", self.y_min.for_plots())?;
+        //writeln!(out, "y-max: {},", self.y_max.for_plots())?;
+        writeln!(out, "x-grid: \"{}\",", self.grid.to_typst())?;
+        writeln!(out, "y-grid: \"{}\",", self.grid.to_typst())?;
+        writeln!(out, "x-tick-step: {},", self.x_tick.for_plots())?;
+        writeln!(out, "y-tick-step: {},", self.y_tick.for_plots())?;
+        writeln!(out, "{{")?;
         for plot in self.plots.iter() {
-            write!(
+            writeln!(
                 out,
-                "plot.add(domain: ({}, {}), x => {}),",
+                "plot.add(domain: ({}, {}), t => {})",
                 self.x_min.for_plots(),
                 self.x_max.for_plots(),
                 plot.to_typst()
             )?;
         }
-        write!(out, ")}})]")?;
+        writeln!(out, "}})}})]")?;
         Ok(out)
     }
 
