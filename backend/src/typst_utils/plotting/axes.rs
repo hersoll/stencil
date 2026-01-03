@@ -1,5 +1,5 @@
 use crate::{math::Number, typst_utils::plotting::plots::Plot};
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use std::fmt::Write;
 
 pub struct Axes {
@@ -143,9 +143,9 @@ impl Axes {
         for plot in self.plots.iter() {
             for val in [self.x_min, self.x_max].iter() {
                 let extreme = match plot {
-                    Plot::Linear(k, m) => k * &val + m,
-                    Plot::Exponential(c, a) => c * &a.value().powf(val.value()).into(),
-                    Plot::Polynomial(_) => Number::Integer(0),
+                    Plot::Linear(k, m, _) => k * &val + m,
+                    Plot::Exponential(c, a, _) => c * &a.value().powf(val.value()).into(),
+                    Plot::Polynomial(_, _) => Number::Integer(0),
                 };
 
                 if extreme < min {

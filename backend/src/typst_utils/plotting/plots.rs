@@ -2,7 +2,7 @@ use crate::math::Number;
 
 /// Additional elements that need to be added to the plot,
 /// like dots, dashed lines, labels
-struct PlotElements {
+pub struct PlotElements {
     /// Elements where the coordinates matter,
     /// like dots and lines
     axis_relative: Vec<String>,
