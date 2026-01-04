@@ -1,4 +1,7 @@
-use crate::{math::Number, typst_utils::plotting::plots::Plot};
+use crate::{
+    math::Number,
+    typst_utils::plotting::{PlotKind, plots::Plot},
+};
 use anyhow::{Result, anyhow};
 use std::fmt::Write;
 
@@ -79,14 +82,16 @@ impl Axes {
         self
     }
 
-    pub fn render(&mut self) -> Result<String> {
+    pub fn build_string(&mut self) -> Result<String> {
         // Make sure the y_range is set if not manually set
         self.set_y_range()?;
 
         let mut out = String::with_capacity(256);
         writeln!(out, "#block(height: 5cm)[#cetz.canvas({{")?;
+        writeln!(out, "import cetz.draw: *")?;
         writeln!(out, "plot.plot(")?;
         writeln!(out, "axis-style: \"school-book\",")?;
+        writeln!(out, "name: \"plot\",")?;
         writeln!(out, "size: (4, 4),")?;
         writeln!(out, "x-min: {},", self.x_min.for_plots())?;
         writeln!(out, "x-max: {},", self.x_max.for_plots())?;
@@ -105,8 +110,18 @@ impl Axes {
                 self.x_max.for_plots(),
                 plot.to_typst()
             )?;
+            for add in plot.additions.axis_relative.iter() {
+                writeln!(out, "{add}")?;
+            }
         }
-        writeln!(out, "}})}})]")?;
+        writeln!(out, "}})")?;
+        // Need to loop through the plots again to get all the canvas-relative additions
+        for plot in self.plots.iter() {
+            for add in plot.additions.canvas_relative.iter() {
+                writeln!(out, "{add}")?;
+            }
+        }
+        writeln!(out, "}})]")?;
         Ok(out)
     }
 
@@ -142,10 +157,10 @@ impl Axes {
         let mut max = Number::Integer(i32::MIN);
         for plot in self.plots.iter() {
             for val in [self.x_min, self.x_max].iter() {
-                let extreme = match plot {
-                    Plot::Linear(k, m, _) => k * &val + m,
-                    Plot::Exponential(c, a, _) => c * &a.value().powf(val.value()).into(),
-                    Plot::Polynomial(_, _) => Number::Integer(0),
+                let extreme = match plot.kind {
+                    PlotKind::Linear(k, m) => k * val + &m,
+                    PlotKind::Exponential(c, a) => c * &a.value().powf(val.value()).into(),
+                    PlotKind::Polynomial(_) => Number::Integer(0),
                 };
 
                 if extreme < min {

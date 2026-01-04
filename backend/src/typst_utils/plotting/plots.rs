@@ -1,50 +1,139 @@
-use crate::math::Number;
+use crate::math::{Number, ZERO};
+
+pub struct Plot {
+    pub name: Option<String>,
+    pub kind: PlotKind,
+    pub additions: PlotAdditions,
+}
+
+/// The PlotKind enum contains information about which kind of plot it is (duh), but also numbers
+/// that are specific to that kind of plot. This makes ergonomics easier when matching over the
+/// kinds since you can do PlotKind::Linear(k, m) => ... and then use k and m by those names.
+pub enum PlotKind {
+    /// k, m
+    Linear(Number, Number),
+    Polynomial(Vec<Number>),
+    /// start, change
+    Exponential(Number, Number),
+}
 
 /// Additional elements that need to be added to the plot,
 /// like dots, dashed lines, labels
-pub struct PlotElements {
-    /// Elements where the coordinates matter,
-    /// like dots and lines
-    axis_relative: Vec<String>,
-    /// Elements where the distances need to be the same
-    /// no matter the plot, like labels.
-    canvas_relative: Vec<String>,
-}
-
-pub enum Plot {
-    /// k, m
-    Linear(Number, Number, PlotElements),
-    Polynomial(Vec<Number>, PlotElements),
-    /// start, change
-    Exponential(Number, Number, PlotElements),
+pub struct PlotAdditions {
+    /// Elements where the coordinates matter, like dots and lines
+    pub axis_relative: Vec<String>,
+    /// Elements where the distances need to be the same no matter the plot, like labels.
+    /// (We don't want the label further from the graph just because the coordinates are further
+    /// apart, for example)
+    pub canvas_relative: Vec<String>,
 }
 
 impl Plot {
     pub fn linear(k: Number, m: Number) -> Plot {
-        Plot::Linear(k, m, PlotElements::default())
+        Plot {
+            name: None,
+            kind: PlotKind::Linear(k, m),
+            additions: PlotAdditions::default(),
+        }
     }
 
     pub fn exponential(start: Number, change: Number) -> Plot {
-        Plot::Exponential(start, change, PlotElements::default())
+        Plot {
+            name: None,
+            kind: PlotKind::Exponential(start, change),
+            additions: PlotAdditions::default(),
+        }
+    }
+
+    /// Must be called if and only if there are more than one Plot in the same Axes.
+    /// Used by additional elements (labels, dots) to know which plot to reference
+    pub fn with_name(mut self, name: &str) -> Self {
+        let name_string = name.to_string();
+        self.name = Some(name_string);
+        self
+    }
+
+    /// Adds dashed lines in a linear plot showing how to calculate the slope
+    /// Automatically calculates the dy depending on k and m
+    pub fn with_slope_hint(
+        mut self,
+        x_start: impl Into<Number>,
+        x_step: impl Into<Number>,
+        variables: (&str, &str),
+    ) -> Self {
+        let x_start = x_start.into();
+        let x_step = x_step.into();
+        match self.kind {
+            PlotKind::Linear(k, m) => {
+                let color = "black";
+                let label_padding = "0.2";
+                let x_label_dir = if k > ZERO { "north" } else { "south" };
+                let dashed_style = format!("style: (stroke: (paint: {color}, dash: \"dashed\"))");
+                let x_var = variables.0;
+                let y_var = variables.1;
+                let x_end = x_start + &x_step;
+                let y_start = k * &x_start + &m;
+                let y_end = k * &x_end + &m;
+                let y_step = y_end - &y_start;
+
+                let mut x_label_pos = x_start + &(x_step / 2);
+                let mut y_label_pos = y_start + &(y_step / 2);
+
+                // Prevent the labels being smack on the axes
+                if x_label_pos == ZERO {
+                    x_label_pos = x_start + &(x_step / 4)
+                }
+                if y_label_pos == ZERO {
+                    y_label_pos = y_start + &(y_step * 3 / 4)
+                }
+
+                // Used to differentiate between multiple plots in the same Axes
+                let anchor_suffix = match self.name {
+                    Some(ref name) => "-".to_string() + &name,
+                    None => String::new(),
+                };
+
+                let lines = format!(
+                    "
+plot.add((({x_start}, {y_start}), ({x_end}, {y_start})), {dashed_style})
+plot.add((({x_end}, {y_start}), ({x_end}, {y_end})), {dashed_style})
+plot.add-anchor(\"dx-lbl{anchor_suffix}\", ({x_label_pos}, {y_start}))
+plot.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_end}, {y_label_pos}))"
+                );
+
+                let labels = format!(
+                    "
+  content(\"plot.dx-lbl{anchor_suffix}\", [$Delta {x_var} = {x_step}$], anchor: \"{x_label_dir}\", padding: {label_padding})
+  content(\"plot.dy-lbl{anchor_suffix}\", [$Delta {y_var} = {y_step}$], anchor: \"west\", padding: {label_padding})
+"
+                );
+
+                self.additions.axis_relative.push(lines);
+                self.additions.canvas_relative.push(labels);
+            }
+            // Don't add the slope to non-linear plots
+            _ => (),
+        }
+        self
     }
 
     pub fn to_typst(&self) -> String {
-        match self {
-            Plot::Linear(k, m, _) => format!("{} * float(t) + {}", k.for_plots(), m.for_plots()),
-            Plot::Exponential(start, change, _) => format!(
+        match self.kind {
+            PlotKind::Linear(k, m) => format!("{} * float(t) + {}", k.for_plots(), m.for_plots()),
+            PlotKind::Exponential(start, change) => format!(
                 "{} * calc.pow({}, t)",
                 start.for_plots(),
                 change.for_plots()
             ),
             // TODO:
-            Plot::Polynomial(_, _) => format!("3"),
+            PlotKind::Polynomial(_) => format!("3"),
         }
     }
 }
 
-impl Default for PlotElements {
+impl Default for PlotAdditions {
     fn default() -> Self {
-        PlotElements {
+        PlotAdditions {
             axis_relative: Vec::new(),
             canvas_relative: Vec::new(),
         }

@@ -13,6 +13,7 @@ use std::fmt::Display;
 const DECIMAL_FACTOR: i32 = 1_000;
 pub const PI: Number = Number::Irrational(std::f64::consts::PI, "pi");
 pub const E: Number = Number::Irrational(std::f64::consts::E, "e");
+pub const ZERO: Number = Number::Integer(0);
 
 /// The Number enum is used to properly display numbers in Typst while
 /// still being able to do calculations.
@@ -186,6 +187,13 @@ impl std::ops::Add<&Number> for &Number {
     }
 }
 
+impl std::ops::Add<i32> for Number {
+    type Output = Number;
+    fn add(self, rhs: i32) -> Self::Output {
+        self + &Number::Integer(rhs)
+    }
+}
+
 impl std::ops::Add<&Number> for Number {
     type Output = Number;
     fn add(self, rhs: &Number) -> Self::Output {
@@ -227,6 +235,13 @@ impl std::ops::Sub<&Number> for Number {
     }
 }
 
+impl std::ops::Sub<i32> for Number {
+    type Output = Number;
+    fn sub(self, rhs: i32) -> Self::Output {
+        self - &Number::Integer(rhs)
+    }
+}
+
 impl std::ops::SubAssign for Number {
     fn sub_assign(&mut self, rhs: Self) {
         *self = self.clone() - &rhs;
@@ -260,6 +275,13 @@ impl std::ops::Mul<&Number> for Number {
     }
 }
 
+impl std::ops::Mul<i32> for Number {
+    type Output = Number;
+    fn mul(self, rhs: i32) -> Self::Output {
+        self * &Number::Integer(rhs)
+    }
+}
+
 impl std::ops::MulAssign for Number {
     fn mul_assign(&mut self, rhs: Self) {
         *self = self.clone() * &rhs;
@@ -289,7 +311,14 @@ impl std::ops::Div<&Number> for &Number {
 impl std::ops::Div<&Number> for Number {
     type Output = Number;
     fn div(self, rhs: &Number) -> Self::Output {
-        &self * rhs
+        &self / rhs
+    }
+}
+
+impl std::ops::Div<i32> for Number {
+    type Output = Number;
+    fn div(self, rhs: i32) -> Self::Output {
+        self / &Number::Integer(rhs)
     }
 }
 
