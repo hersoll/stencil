@@ -7,7 +7,6 @@ use crate::{
 };
 use anyhow::Result;
 use macros::problem;
-use std::collections::HashMap;
 
 // In this module, problems in the form of f(3) is known as "calculating y"
 // and problems like f(x) = 3 are known as "calculating x"
@@ -22,9 +21,11 @@ fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
     let y = coefficient * x + constant;
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
-    let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
     let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &map);
+    let question = replace_placeholders(
+        problem_data.get_question(lang),
+        &[("expression", expression), ("x", x.to_string())],
+    );
 
     let solution = format!(
         "y &= {coefficient}x {constant:+} \\x={x} \\
@@ -55,9 +56,11 @@ fn without_notation_x(name: String, lang: &Language) -> Result<Problem> {
     let y = coefficient * answer + constant;
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
-    let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
     let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &map);
+    let question = replace_placeholders(
+        problem_data.get_question(lang),
+        &[("expression", expression), ("y", y.to_string())],
+    );
 
     let solution = equation_solution(format!(
         "y &= {coefficient}x {constant:+} \\ y={y} \\
@@ -90,9 +93,11 @@ fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
     let y = coefficient * x + constant;
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
-    let map = HashMap::from([("expression", expression), ("x", x.to_string())]);
     let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &map);
+    let question = replace_placeholders(
+        problem_data.get_question(lang),
+        &[("expression", expression), ("x", x.to_string())],
+    );
 
     let solution = format!(
         "f(x) &= {coefficient}x {constant:+} \\x={x} \\
@@ -124,9 +129,11 @@ fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
     let y = coefficient * x + constant;
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
-    let map = HashMap::from([("expression", expression), ("y", y.to_string())]);
     let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &map);
+    let question = replace_placeholders(
+        problem_data.get_question(lang),
+        &[("expression", expression), ("y", y.to_string())],
+    );
 
     let solution = format!(
         "f(x) &= {coefficient}x {constant:+} \\f(x)={y} \\
@@ -161,14 +168,16 @@ fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
     let var = symbols::get_variable()?;
 
     let expression = format!("{f_name}({var}) = {coefficient}{var} {constant:+}");
-    let map = HashMap::from([
-        ("expression", expression),
-        ("y", y.to_string()),
-        ("var", var.to_string()),
-        ("f", f_name.to_string()),
-    ]);
     let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &map);
+    let question = replace_placeholders(
+        problem_data.get_question(lang),
+        &[
+            ("expression", expression),
+            ("y", y.to_string()),
+            ("var", var.to_string()),
+            ("f", f_name.to_string()),
+        ],
+    );
 
     let solution = format!(
         "{f_name}({var}) &= {coefficient}{var} {constant:+} \\{f_name}({var})={y} \\
@@ -203,14 +212,16 @@ fn find_y(name: String, lang: &Language) -> Result<Problem> {
     let var = symbols::get_variable()?;
 
     let expression = format!("{f_name}({var}) = {coefficient}{var} {constant:+}");
-    let map = HashMap::from([
-        ("expression", expression),
-        ("x", x.to_string()),
-        ("var", var.to_string()),
-        ("f", f_name.to_string()),
-    ]);
     let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &map);
+    let question = replace_placeholders(
+        problem_data.get_question(lang),
+        &[
+            ("expression", expression),
+            ("x", x.to_string()),
+            ("var", var.to_string()),
+            ("f", f_name.to_string()),
+        ],
+    );
 
     let solution = format!(
         "{f_name}({var}) &= {coefficient}{var} {constant:+} \\{var}={x} \\
@@ -256,9 +267,11 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
 
     let function_string = format!("{f_name}({var}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
-    let map = HashMap::from([("function", function_string), ("algebra", algebra_string)]);
     let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &map);
+    let question = replace_placeholders(
+        problem_data.get_question(lang),
+        &[("function", function_string), ("algebra", algebra_string)],
+    );
     let answer = function_coefficient * algebra_expression.clone() + function_constant;
 
     let solution = format!(
@@ -304,9 +317,11 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
 
     let function_string = format!("{f_name}({var}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
-    let map = HashMap::from([("function", function_string), ("algebra", algebra_string)]);
     let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(&problem_data.get_question(&lang), &map);
+    let question = replace_placeholders(
+        &problem_data.get_question(&lang),
+        &[("function", function_string), ("algebra", algebra_string)],
+    );
     let answer = (function_coefficient * algebra_expression.clone() + function_constant).simplify();
 
     let solution = format!(

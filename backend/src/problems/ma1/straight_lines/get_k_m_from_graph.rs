@@ -2,6 +2,7 @@ use crate::{
     Language,
     math::IntRange,
     problems::Problem,
+    registry,
     typst_utils::graphing::{Axes, Graph},
 };
 use anyhow::Result;
@@ -10,7 +11,7 @@ use macros::problem;
 /// Find m in graph
 /// Difficulty: 0
 #[problem]
-fn find_m(name: String, _lang: &Language) -> Result<Problem> {
+fn find_m(name: String, lang: &Language) -> Result<Problem> {
     // k = -1 makes x-intersect and y-intersect the same - not ideal for learning
     let (k, k_range) = IntRange::without_zero(-3, 3)?.exclude(-1).and_random();
     // We want the x-intersect to be an integer, easiest way is to make sure m is a multiple of k
@@ -35,9 +36,13 @@ fn find_m(name: String, _lang: &Language) -> Result<Problem> {
     let question_graph = axes.add_graph(Graph::linear(k, m)).build_string()?;
     let solution_graph = axes.add_graph(Graph::linear(k, m)).build_string()?;
 
-    let question = question_graph;
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = problem_data.get_question(lang);
+    let solution = problem_data.get_solution(lang);
+
+    let question = format!("{question}\n{question_graph}");
     let answer = format!("$m = {m}$");
-    let solution = format!("Blabla\n{solution_graph}");
+    let solution = format!("{solution}\n{solution_graph}");
 
     Ok(Problem {
         name,

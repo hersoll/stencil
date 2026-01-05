@@ -86,11 +86,11 @@ pub fn get_prefix_data(id: i32) -> Result<PrefixEntry> {
 /// "Use the function {f} to solve..."
 ///
 /// TODO: Find a more appropriate module for this function
-pub fn replace_placeholders(template: &str, values: &HashMap<&str, String>) -> String {
+pub fn replace_placeholders(template: &str, values: &[(&str, String)]) -> String {
     let mut result = template.to_string();
     for (key, value) in values {
         let placeholder = format!("{{{}}}", key);
-        result = result.replace(&placeholder, value);
+        result = result.replace(&placeholder, &value);
     }
     result
 }

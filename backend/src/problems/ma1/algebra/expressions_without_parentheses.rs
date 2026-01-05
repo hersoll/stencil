@@ -7,7 +7,6 @@ use crate::registry::{get_problem_data, replace_placeholders};
 use anyhow::Result;
 use macros::problem;
 use rand::seq::IndexedRandom;
-use std::collections::HashMap;
 
 /// 3x + 4 + 2x + 1
 /// Difficulty: 0
@@ -161,11 +160,11 @@ fn evaluate_simple(name: String, lang: &Language) -> Result<Problem> {
     let const_term: Term = constant.into();
 
     let expression: Polynomial = vec![&first_term, &const_term].into();
-    let map = HashMap::from([
+    let map = vec![
         ("expression", expression.to_string()),
         ("unknown", unknown.to_string()),
         ("value", value.to_string()),
-    ]);
+    ];
     let problem_data = get_problem_data(&name)?;
     let question = replace_placeholders(problem_data.get_question(lang), &map);
     let replacements = vec![(unknown, value)];
@@ -205,15 +204,17 @@ fn evaluate_intermediate(name: String, lang: &Language) -> Result<Problem> {
     let const_term: Term = constant.into();
 
     let expression: Polynomial = vec![&first_term, &second_term, &const_term].into();
-    let map = HashMap::from([
-        ("expression", expression.to_string()),
-        ("unknown_a", first_unknown.to_string()),
-        ("unknown_b", second_unknown.to_string()),
-        ("value_x", value_x.to_string()),
-        ("value_y", value_y.to_string()),
-    ]);
     let problem_data = get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &map);
+    let question = replace_placeholders(
+        problem_data.get_question(lang),
+        &[
+            ("expression", expression.to_string()),
+            ("unknown_a", first_unknown.to_string()),
+            ("unknown_b", second_unknown.to_string()),
+            ("value_x", value_x.to_string()),
+            ("value_y", value_y.to_string()),
+        ],
+    );
     let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
     let answer = expression.evaluate(&replacements);
 
@@ -355,15 +356,17 @@ fn evaluate_advanced(name: String, lang: &Language) -> Result<Problem> {
     let value_x = IntRange::without_zero(-2, -1)?.random();
     let value_y = IntRange::without_zero(-2, -1)?.random();
 
-    let map = HashMap::from([
-        ("expression", expression.to_string()),
-        ("unknown_a", first_unknown.to_string()),
-        ("unknown_b", second_unknown.to_string()),
-        ("value_x", value_x.to_string()),
-        ("value_y", value_y.to_string()),
-    ]);
     let problem_data = get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &map);
+    let question = replace_placeholders(
+        problem_data.get_question(lang),
+        &[
+            ("expression", expression.to_string()),
+            ("unknown_a", first_unknown.to_string()),
+            ("unknown_b", second_unknown.to_string()),
+            ("value_x", value_x.to_string()),
+            ("value_y", value_y.to_string()),
+        ],
+    );
     let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
     let answer = expression.evaluate(&replacements);
 

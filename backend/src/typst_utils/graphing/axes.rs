@@ -92,6 +92,7 @@ impl Axes {
     pub fn build_string(&mut self) -> Result<String> {
         // Make sure the y_range is set if not manually set
         self.set_y_range()?;
+        self.auto_fit_range();
 
         let mut out = String::with_capacity(256);
         writeln!(
@@ -198,5 +199,34 @@ impl Axes {
         if min > zero && max > zero {
             self.y_min = Some(zero)
         };
+    }
+
+    /// Makes the ratio between the x-axis and y-axis closer to 1
+    /// to make the graph look good
+    fn auto_fit_range(&mut self) {
+        let max_ratio = Number::Integer(2);
+        // Alternate between increasing to the right and to the left
+        let mut go_right = true;
+        while (self.y_max.unwrap() - &self.y_min.unwrap()) / &(self.x_max - &self.x_min) > max_ratio
+        {
+            if go_right {
+                self.x_max = self.x_max + 1;
+            } else {
+                self.x_min = self.x_min - 1;
+            }
+            go_right = !go_right;
+        }
+
+        let mut go_up = true;
+        while (self.x_max - &self.x_min) / &(self.y_max.unwrap() - &self.y_min.unwrap()) > max_ratio
+        {
+            if go_up {
+                self.y_max = Some(self.y_max.unwrap() + 1);
+            } else {
+                self.y_min = Some(self.y_min.unwrap() - 1);
+            }
+
+            go_up = !go_up;
+        }
     }
 }
