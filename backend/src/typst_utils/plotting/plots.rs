@@ -60,57 +60,54 @@ impl Plot {
     ) -> Self {
         let x_start = x_start.into();
         let x_step = x_step.into();
-        match self.function {
-            Function::Linear(k, _) => {
-                let color = "black";
-                let label_padding = "0.2";
-                let x_label_dir = if k > ZERO { "north" } else { "south" };
-                let dashed_style = format!("style: (stroke: (paint: {color}, dash: \"dashed\"))");
-                let x_var = variables.0;
-                let y_var = variables.1;
-                let x_end = x_start + &x_step;
-                let y_start = self.function.get_y(&x_start);
-                let y_end = self.function.get_y(&x_end);
-                let y_step = y_end - &y_start;
 
-                let mut x_label_pos = x_start + &(x_step / 2);
-                let mut y_label_pos = y_start + &(y_step / 2);
+        let color = "black";
+        let label_padding = "0.2";
+        let dashed_style = format!("style: (stroke: (paint: {color}, dash: \"dashed\"))");
 
-                // Prevent the labels being smack on the axes
-                if x_label_pos == ZERO {
-                    x_label_pos = x_start + &(x_step / 4)
-                }
-                if y_label_pos == ZERO {
-                    y_label_pos = y_start + &(y_step * 3 / 4)
-                }
+        let x_var = variables.0;
+        let y_var = variables.1;
+        let x_end = x_start + &x_step;
+        let y_start = self.function.get_y(&x_start);
+        let y_end = self.function.get_y(&x_end);
+        let y_step = y_end - &y_start;
+        let x_label_dir = if y_step > ZERO { "north" } else { "south" };
 
-                // Used to differentiate between multiple plots in the same Axes
-                let anchor_suffix = match self.name {
-                    Some(ref name) => "-".to_string() + &name,
-                    None => String::new(),
-                };
+        let mut x_label_pos = x_start + &(x_step / 2);
+        let mut y_label_pos = y_start + &(y_step / 2);
 
-                let lines = format!(
-                    "
+        // Prevent the labels being smack on the axes
+        if x_label_pos == ZERO {
+            x_label_pos = x_start + &(x_step / 4)
+        }
+        if y_label_pos == ZERO {
+            y_label_pos = y_start + &(y_step * 3 / 4)
+        }
+
+        // Used to differentiate between multiple plots in the same Axes
+        let anchor_suffix = match self.name {
+            Some(ref name) => "-".to_string() + &name,
+            None => String::new(),
+        };
+
+        let lines = format!(
+            "
 plot.add((({x_start}, {y_start}), ({x_end}, {y_start})), {dashed_style})
 plot.add((({x_end}, {y_start}), ({x_end}, {y_end})), {dashed_style})
 plot.add-anchor(\"dx-lbl{anchor_suffix}\", ({x_label_pos}, {y_start}))
 plot.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_end}, {y_label_pos}))"
-                );
+        );
 
-                let labels = format!(
+        let labels = format!(
                     "
   content(\"plot.dx-lbl{anchor_suffix}\", [$Delta {x_var} = {x_step}$], anchor: \"{x_label_dir}\", padding: {label_padding})
   content(\"plot.dy-lbl{anchor_suffix}\", [$Delta {y_var} = {y_step}$], anchor: \"west\", padding: {label_padding})
 "
                 );
 
-                self.additions.axis_relative.push(lines);
-                self.additions.canvas_relative.push(labels);
-            }
-            // Don't add the slope to non-linear plots
-            _ => (),
-        }
+        self.additions.axis_relative.push(lines);
+        self.additions.canvas_relative.push(labels);
+
         self
     }
 
