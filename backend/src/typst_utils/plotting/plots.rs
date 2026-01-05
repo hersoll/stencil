@@ -45,6 +45,15 @@ impl Plot {
         }
     }
 
+    pub fn get_y(&self, x: &Number) -> Number {
+        match self.kind {
+            PlotKind::Linear(k, m) => k * x + &m,
+            PlotKind::Exponential(start, change) => start * change.value().powf(x.value()),
+            // TODO:
+            PlotKind::Polynomial(_) => ZERO,
+        }
+    }
+
     /// Must be called if and only if there are more than one Plot in the same Axes.
     /// Used by additional elements (labels, dots) to know which plot to reference
     pub fn with_name(mut self, name: &str) -> Self {
@@ -64,7 +73,7 @@ impl Plot {
         let x_start = x_start.into();
         let x_step = x_step.into();
         match self.kind {
-            PlotKind::Linear(k, m) => {
+            PlotKind::Linear(k, _) => {
                 let color = "black";
                 let label_padding = "0.2";
                 let x_label_dir = if k > ZERO { "north" } else { "south" };
@@ -72,8 +81,8 @@ impl Plot {
                 let x_var = variables.0;
                 let y_var = variables.1;
                 let x_end = x_start + &x_step;
-                let y_start = k * &x_start + &m;
-                let y_end = k * &x_end + &m;
+                let y_start = self.get_y(&x_start);
+                let y_end = self.get_y(&x_end);
                 let y_step = y_end - &y_start;
 
                 let mut x_label_pos = x_start + &(x_step / 2);
