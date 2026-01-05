@@ -55,7 +55,7 @@ impl Axes {
         Axes::default()
     }
 
-    pub fn x_range<T: Into<Number>, U: Into<Number>>(&mut self, min: T, max: U) -> &mut Self {
+    pub fn x_range(&mut self, min: impl Into<Number>, max: impl Into<Number>) -> &mut Self {
         self.x_min = min.into();
         self.x_max = max.into();
         self
@@ -144,7 +144,7 @@ impl Axes {
     /// Finds the highest and lowest y-values among the plots
     /// and sets y_min and y_max acccordingly
     ///
-    /// TODO: Add padding, handle polynomials
+    /// TODO: Add padding
     fn auto_y_range(&mut self) -> Result<()> {
         // If you want to draw an empty plot, specify y_min and y_max yourself
         if self.plots.len() == 0 {

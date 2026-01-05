@@ -18,8 +18,9 @@ pub struct PlotAdditions {
 }
 
 impl Plot {
-    // NOTE: Should use Into<Number> for ergonomics
-    pub fn linear(k: Number, m: Number) -> Plot {
+    pub fn linear(k: impl Into<Number>, m: impl Into<Number>) -> Plot {
+        let k = k.into();
+        let m = m.into();
         Plot {
             name: None,
             function: Function::Linear(k, m),
@@ -27,7 +28,9 @@ impl Plot {
         }
     }
 
-    pub fn exponential(c: Number, a: Number) -> Plot {
+    pub fn exponential(c: impl Into<Number>, a: impl Into<Number>) -> Plot {
+        let c = c.into();
+        let a = a.into();
         if a <= ZERO {
             tracing::error!("a in an exponential function can't be negative (or 0)");
         }

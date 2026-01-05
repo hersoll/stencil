@@ -15,7 +15,7 @@ fn empty_graph(name: String, _lang: &Language) -> Result<Problem> {
     let graph = Axes::new()
         .x_range(x_min, x_max)
         .y_range(-3, 4)
-        .add_plot(Plot::linear(Number::Integer(0), Number::Integer(1000)))
+        .add_plot(Plot::linear(0, 1000))
         .build_string()?;
 
     let question = format!("Här är ett tomt koordinatsystem: \n {graph}");
@@ -40,13 +40,11 @@ fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
     let x_max = 2;
     let graph = Axes::new()
         .x_range(x_min, x_max)
-        .add_plot(Plot::linear(Number::Integer(k), Number::Integer(m)))
+        .add_plot(Plot::linear(k, m))
         .build_string()?;
     let graph_solution = Axes::new()
         .x_range(x_min, x_max)
-        .add_plot(
-            Plot::linear(Number::Integer(k), Number::Integer(m)).with_slope_hint(0, 1, ("x", "y")),
-        )
+        .add_plot(Plot::linear(k, m).with_slope_hint(0, 1, ("x", "y")))
         .build_string()?;
 
     let question = format!("Här är en rät linje: \n {graph}");
@@ -65,10 +63,10 @@ fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
 
 #[problem]
 fn linear_graph_with_decimals(name: String, _lang: &Language) -> Result<Problem> {
-    let k = Number::Decimal(500); // 0.5
-    let m = Number::Decimal(1500); // 1.5
-    let x_min = Number::Decimal(-500);
-    let x_max = Number::Decimal(1200);
+    let k = 0.5;
+    let m = 1.5;
+    let x_min = -0.5;
+    let x_max = 1.2;
     let graph = Axes::new()
         .x_range(x_min, x_max)
         .add_plot(Plot::linear(k, m))
@@ -91,8 +89,8 @@ fn linear_graph_with_decimals(name: String, _lang: &Language) -> Result<Problem>
 #[problem]
 fn linear_graph_with_fractions(name: String, _lang: &Language) -> Result<Problem> {
     let k = Number::Fraction(1, 3);
-    let m = Number::Integer(-1); // 1.5
-    let x_min = Number::Integer(-1);
+    let m = -1;
+    let x_min = -1;
     let x_max = Number::Fraction(13, 3);
     let graph = Axes::new()
         .x_range(x_min, x_max)
@@ -123,7 +121,7 @@ fn exponential_graph(name: String, _lang: &Language) -> Result<Problem> {
     let x_max = 2;
     let graph = Axes::new()
         .x_range(x_min as i32, x_max as i32)
-        .add_plot(Plot::exponential(Number::Integer(c), Number::Integer(a)))
+        .add_plot(Plot::exponential(c, a))
         .build_string()?;
 
     let question = format!("Här är en exponentialfunktion: \n {graph}");
