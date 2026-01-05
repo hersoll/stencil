@@ -20,6 +20,7 @@ pub struct PlotAdditions {
 }
 
 impl Plot {
+    /// Constructor that simplifies the creation of a plot of a linear function
     pub fn linear(k: impl Into<Number>, m: impl Into<Number>) -> Plot {
         let k = k.into();
         let m = m.into();
@@ -30,6 +31,7 @@ impl Plot {
         }
     }
 
+    /// Constructor that simplifies the creation of a plot of a exponential function
     pub fn exponential(c: impl Into<Number>, a: impl Into<Number>) -> Plot {
         let c = c.into();
         let mut a = a.into();
@@ -52,6 +54,12 @@ impl Plot {
         self
     }
 
+    /// Adds horizontal and vertical lines to show where one can calculate the slope.
+    ///
+    /// Note that you need to know where (x-wise) there are good spots to get the slope from.
+    /// This method does not calculate it for you.
+    ///
+    /// Example: y = 4x/3 + 2 => x_step should be 3 (or a multiple of it)
     fn add_dashed_slope_hints(&mut self, x_start: Number, x_step: Number) {
         let color = "black";
         let dashed_style = format!("style: (stroke: (paint: {color}, dash: \"dashed\"))");
@@ -74,6 +82,8 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         self.additions.axis_relative.push(lines);
     }
 
+    /// The anchor suffix is used by plots to give anchors unique names,
+    /// in case there are multiple plots with similar elements
     fn get_anchor_suffix(&self) -> String {
         match self.name {
             Some(ref name) => "-".to_string() + name,
@@ -81,6 +91,9 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         }
     }
 
+    /// Adds a label halfway across the specified x-step
+    ///
+    /// Used for labelling dashed slope hints. Does not need to contain "dx"
     fn add_dx_label(
         &mut self,
         label_content: String,
@@ -113,6 +126,9 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         self.additions.canvas_relative.push(label);
     }
 
+    /// Adds a label halfway up the specified y-step
+    ///
+    /// Used for labelling dashed slope hints. Does not need to contain "dy"
     fn add_dy_label(
         &mut self,
         label_content: String,
@@ -193,6 +209,10 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         self
     }
 
+    /// Formats the function to a proper typst output
+    ///
+    /// Even though this only concerns the function and nothing else about the plot,
+    /// the method lives here due to it being typst (and therefore plot) related, not mathematical
     pub fn to_typst(&self) -> String {
         match self.function {
             Function::Linear(k, m) => format!("{} * float(t) + {}", k.for_plots(), m.for_plots()),
