@@ -1,6 +1,6 @@
 use crate::{
     math::{Number, ZERO, functions::Function},
-    typst_utils::plotting::plots::Plot,
+    typst_utils::graphing::graphs::Graph,
 };
 use anyhow::{Result, anyhow};
 use std::fmt::Write;
@@ -15,7 +15,7 @@ pub struct Axes {
     grid: GridType,
     /// Can the graph start at a non-zero value and "break" to the x-axis?
     can_break: bool,
-    plots: Vec<Plot>,
+    graphs: Vec<Graph>,
     padding: Number,
 }
 
@@ -30,7 +30,7 @@ impl Default for Axes {
             y_tick: Number::Integer(1),
             grid: GridType::Major,
             can_break: false,
-            plots: Vec::new(),
+            graphs: Vec::new(),
             padding: ZERO,
         }
     }
@@ -84,8 +84,8 @@ impl Axes {
         self
     }
 
-    pub fn add_plot(&mut self, plot: Plot) -> &mut Self {
-        self.plots.push(plot);
+    pub fn add_graph(&mut self, graph: Graph) -> &mut Self {
+        self.graphs.push(graph);
         self
     }
 
@@ -96,35 +96,35 @@ impl Axes {
         let mut out = String::with_capacity(256);
         writeln!(out, "#block(height: 5cm)[#cetz.canvas({{")?;
         writeln!(out, "import cetz.draw: *")?;
-        writeln!(out, "plot.plot(")?;
+        writeln!(out, "graph.graph(")?;
         writeln!(out, "axis-style: \"school-book\",")?;
-        writeln!(out, "name: \"plot\",")?;
+        writeln!(out, "name: \"graph\",")?;
         writeln!(out, "size: (4, 4),")?;
-        writeln!(out, "x-min: {},", self.x_min.for_plots())?;
-        writeln!(out, "x-max: {},", self.x_max.for_plots())?;
-        writeln!(out, "y-min: {},", self.y_min.unwrap().for_plots())?;
-        writeln!(out, "y-max: {},", self.y_max.unwrap().for_plots())?;
+        writeln!(out, "x-min: {},", self.x_min.for_graphs())?;
+        writeln!(out, "x-max: {},", self.x_max.for_graphs())?;
+        writeln!(out, "y-min: {},", self.y_min.unwrap().for_graphs())?;
+        writeln!(out, "y-max: {},", self.y_max.unwrap().for_graphs())?;
         writeln!(out, "x-grid: \"{}\",", self.grid.to_typst())?;
         writeln!(out, "y-grid: \"{}\",", self.grid.to_typst())?;
-        writeln!(out, "x-tick-step: {},", self.x_tick.for_plots())?;
-        writeln!(out, "y-tick-step: {},", self.y_tick.for_plots())?;
+        writeln!(out, "x-tick-step: {},", self.x_tick.for_graphs())?;
+        writeln!(out, "y-tick-step: {},", self.y_tick.for_graphs())?;
         writeln!(out, "{{")?;
-        for plot in self.plots.iter() {
+        for graph in self.graphs.iter() {
             writeln!(
                 out,
-                "plot.add(domain: ({}, {}), t => {})",
-                self.x_min.for_plots(),
-                self.x_max.for_plots(),
-                plot.to_typst()
+                "graph.add(domain: ({}, {}), t => {})",
+                self.x_min.for_graphs(),
+                self.x_max.for_graphs(),
+                graph.to_typst()
             )?;
-            for add in plot.additions.axis_relative.iter() {
+            for add in graph.additions.axis_relative.iter() {
                 writeln!(out, "{add}")?;
             }
         }
         writeln!(out, "}})")?;
-        // Need to loop through the plots again to get all the canvas-relative additions
-        for plot in self.plots.iter() {
-            for add in plot.additions.canvas_relative.iter() {
+        // Need to loop through the graphs again to get all the canvas-relative additions
+        for graph in self.graphs.iter() {
+            for add in graph.additions.canvas_relative.iter() {
                 writeln!(out, "{add}")?;
             }
         }
@@ -148,21 +148,21 @@ impl Axes {
         Ok(())
     }
 
-    /// Finds the highest and lowest y-values among the plots
+    /// Finds the highest and lowest y-values among the graphs
     /// and sets y_min and y_max acccordingly
     fn auto_y_range(&mut self) -> Result<()> {
-        // If you want to draw an empty plot, specify y_min and y_max yourself
-        if self.plots.len() == 0 {
+        // If you want to draw an empty graph, specify y_min and y_max yourself
+        if self.graphs.len() == 0 {
             return Err(anyhow!(
-                "Tried to call auto_y_range() without adding a plot first.",
+                "Tried to call auto_y_range() without adding a graph first.",
             ));
         }
 
         let mut min = Number::Integer(i32::MAX);
         let mut max = Number::Integer(i32::MIN);
-        for plot in self.plots.iter() {
+        for graph in self.graphs.iter() {
             for val in [self.x_min, self.x_max].iter() {
-                let extreme = match plot.function {
+                let extreme = match graph.function {
                     Function::Linear(k, m) => k * val + &m,
                     Function::Exponential(c, a) => c * &a.value().powf(val.value()).into(),
                 };

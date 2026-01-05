@@ -1,5 +1,5 @@
 mod axes;
-mod plots;
+mod graphs;
 
 pub use axes::Axes;
-pub use plots::*;
+pub use graphs::*;

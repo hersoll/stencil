@@ -88,11 +88,11 @@ impl Number {
         }
     }
 
-    /// Inside plot strings we need actual numbers, decimals can't be output
+    /// Inside graph strings we need actual numbers, decimals can't be output
     /// as num("1.2"), like they normally do in Display. This function accounts for that.
     ///
-    /// Is (probably) only used in PlotType.to_typst()
-    pub fn for_plots(&self) -> String {
+    /// Is (probably) only used in Graph.to_typst()
+    pub fn for_graphs(&self) -> String {
         match self {
             Number::Decimal(_) => strip_num(format!("{self}")),
             _ => format!("{self}"),

@@ -2,7 +2,7 @@ use crate::{
     Language,
     math::IntRange,
     problems::Problem,
-    typst_utils::plotting::{Axes, Plot},
+    typst_utils::graphing::{Axes, Graph},
 };
 use anyhow::Result;
 use macros::problem;
@@ -30,8 +30,8 @@ fn find_m(name: String, _lang: &Language) -> Result<Problem> {
     let mut axes = Axes::new();
     axes.x_range(x_min, x_max).padding(1); // Show y-values over/under graph
 
-    let question_graph = axes.add_plot(Plot::linear(k, m)).build_string()?;
-    let solution_graph = axes.add_plot(Plot::linear(k, m)).build_string()?;
+    let question_graph = axes.add_graph(Graph::linear(k, m)).build_string()?;
+    let solution_graph = axes.add_graph(Graph::linear(k, m)).build_string()?;
 
     let question = question_graph;
     let answer = format!("$m = {m}$");

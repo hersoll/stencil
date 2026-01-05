@@ -2,52 +2,52 @@ use crate::math::{Number, ZERO, functions::Function};
 
 const LABEL_PADDING: f64 = 0.2;
 
-pub struct Plot {
+pub struct Graph {
     pub name: Option<String>,
     pub function: Function,
-    pub additions: PlotAdditions,
+    pub additions: GraphAdditions,
 }
 
-/// Additional elements that need to be added to the plot,
+/// Additional elements that need to be added to the graph,
 /// like dots, dashed lines, labels
-pub struct PlotAdditions {
+pub struct GraphAdditions {
     /// Elements where the coordinates matter, like dots and lines
     pub axis_relative: Vec<String>,
-    /// Elements where the distances need to be the same no matter the plot, like labels.
+    /// Elements where the distances need to be the same no matter the graph, like labels.
     /// (We don't want the label further from the graph just because the coordinates are further
     /// apart, for example)
     pub canvas_relative: Vec<String>,
 }
 
-impl Plot {
-    /// Constructor that simplifies the creation of a plot of a linear function
-    pub fn linear(k: impl Into<Number>, m: impl Into<Number>) -> Plot {
+impl Graph {
+    /// Constructor that simplifies the creation of a graph of a linear function
+    pub fn linear(k: impl Into<Number>, m: impl Into<Number>) -> Graph {
         let k = k.into();
         let m = m.into();
-        Plot {
+        Graph {
             name: None,
             function: Function::Linear(k, m),
-            additions: PlotAdditions::default(),
+            additions: GraphAdditions::default(),
         }
     }
 
-    /// Constructor that simplifies the creation of a plot of a exponential function
-    pub fn exponential(c: impl Into<Number>, a: impl Into<Number>) -> Plot {
+    /// Constructor that simplifies the creation of a graph of a exponential function
+    pub fn exponential(c: impl Into<Number>, a: impl Into<Number>) -> Graph {
         let c = c.into();
         let mut a = a.into();
         if a <= ZERO {
             tracing::error!("a in an exponential function can't be negative (or 0)");
             a = Number::Integer(1)
         }
-        Plot {
+        Graph {
             name: None,
             function: Function::Exponential(c, a),
-            additions: PlotAdditions::default(),
+            additions: GraphAdditions::default(),
         }
     }
 
-    /// Must be called if and only if there are more than one Plot in the same Axes.
-    /// Used by additional elements (labels, dots) to know which plot to reference
+    /// Must be called if and only if there are more than one graph in the same Axes.
+    /// Used by additional elements (labels, dots) to know which graph to reference
     pub fn with_name(mut self, name: &str) -> Self {
         let name_string = name.to_string();
         self.name = Some(name_string);
@@ -66,24 +66,24 @@ impl Plot {
         let x_end = x_start + &x_step;
         let y_start = self.function.get_y(&x_start);
         let y_end = self.function.get_y(&x_end);
-        // Need to use for_plots for every printed Number variable, to make sure
+        // Need to use for_graphs for every printed Number variable, to make sure
         // decimal numbers are formatted correctly
-        let x_0 = x_start.for_plots();
-        let x_1 = x_end.for_plots();
-        let y_0 = y_start.for_plots();
-        let y_1 = y_end.for_plots();
+        let x_0 = x_start.for_graphs();
+        let x_1 = x_end.for_graphs();
+        let y_0 = y_start.for_graphs();
+        let y_1 = y_end.for_graphs();
 
         let lines = format!(
             "
-plot.add((({x_0}, {y_0}), ({x_1}, {y_0})), {dashed_style})
-plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
+graph.add((({x_0}, {y_0}), ({x_1}, {y_0})), {dashed_style})
+graph.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         );
 
         self.additions.axis_relative.push(lines);
     }
 
-    /// The anchor suffix is used by plots to give anchors unique names,
-    /// in case there are multiple plots with similar elements
+    /// The anchor suffix is used by graphs to give anchors unique names,
+    /// in case there are multiple graphs with similar elements
     fn get_anchor_suffix(&self) -> String {
         match self.name {
             Some(ref name) => "-".to_string() + name,
@@ -112,14 +112,14 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
                 "south"
             };
 
-        let x_label_pos = x_label_pos.for_plots();
-        let y_pos = y_pos.for_plots();
+        let x_label_pos = x_label_pos.for_graphs();
+        let y_pos = y_pos.for_graphs();
 
         let anchor_suffix = self.get_anchor_suffix();
         let anchor =
-            format!("plot.add-anchor(\"dx-lbl{anchor_suffix}\", ({x_label_pos}, {y_pos}))");
+            format!("graph.add-anchor(\"dx-lbl{anchor_suffix}\", ({x_label_pos}, {y_pos}))");
         let label = format!(
-            "content(\"plot.dx-lbl{anchor_suffix}\", [${label_content}$], 
+            "content(\"graph.dx-lbl{anchor_suffix}\", [${label_content}$], 
             anchor: \"{x_label_dir}\", padding: {LABEL_PADDING})"
         );
         self.additions.axis_relative.push(anchor);
@@ -141,21 +141,21 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
             y_label_pos = y_start + &(y_step / 4)
         }
 
-        let y_label_pos = y_label_pos.for_plots();
-        let x_pos = x_pos.for_plots();
+        let y_label_pos = y_label_pos.for_graphs();
+        let x_pos = x_pos.for_graphs();
 
         let anchor_suffix = self.get_anchor_suffix();
         let anchor =
-            format!("plot.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_pos}, {y_label_pos}))");
+            format!("graph.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_pos}, {y_label_pos}))");
         let label = format!(
-            "content(\"plot.dy-lbl{anchor_suffix}\", [${label_content}$], 
+            "content(\"graph.dy-lbl{anchor_suffix}\", [${label_content}$], 
             anchor: \"west\", padding: {LABEL_PADDING})"
         );
         self.additions.axis_relative.push(anchor);
         self.additions.canvas_relative.push(label);
     }
 
-    /// Adds dashed lines in a plot showing how to calculate the slope,
+    /// Adds dashed lines in a graph showing how to calculate the slope,
     /// with dx and dy labels.
     pub fn with_slope_hint(
         mut self,
@@ -173,8 +173,8 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         let y_end = self.function.get_y(&x_end);
         let y_step = y_end - &y_start;
 
-        let x_step_str = x_step.for_plots();
-        let y_step_str = y_step.for_plots();
+        let x_step_str = x_step.for_graphs();
+        let y_step_str = y_step.for_graphs();
 
         self.add_dashed_slope_hints(x_start, x_step);
         self.add_dx_label(
@@ -201,7 +201,7 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         let y_start = self.function.get_y(&x_start);
         let y_end = self.function.get_y(&x_end);
         let y_step = y_end - &y_start;
-        let y_step_str = y_step.for_plots();
+        let y_step_str = y_step.for_graphs();
 
         self.add_dashed_slope_hints(x_start, x_end);
         self.add_dy_label(format!("k = {y_step_str}"), y_start, y_step, x_end);
@@ -211,23 +211,23 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
 
     /// Formats the function to a proper typst output
     ///
-    /// Even though this only concerns the function and nothing else about the plot,
-    /// the method lives here due to it being typst (and therefore plot) related, not mathematical
+    /// Even though this only concerns the function and nothing else about the graph,
+    /// the method lives here due to it being typst (and therefore graph) related, not mathematical
     pub fn to_typst(&self) -> String {
         match self.function {
-            Function::Linear(k, m) => format!("{} * float(t) + {}", k.for_plots(), m.for_plots()),
+            Function::Linear(k, m) => format!("{} * float(t) + {}", k.for_graphs(), m.for_graphs()),
             Function::Exponential(start, change) => format!(
                 "{} * calc.pow({}, t)",
-                start.for_plots(),
-                change.for_plots()
+                start.for_graphs(),
+                change.for_graphs()
             ),
         }
     }
 }
 
-impl Default for PlotAdditions {
+impl Default for GraphAdditions {
     fn default() -> Self {
-        PlotAdditions {
+        GraphAdditions {
             axis_relative: Vec::new(),
             canvas_relative: Vec::new(),
         }
