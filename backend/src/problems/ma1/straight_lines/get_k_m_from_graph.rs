@@ -11,14 +11,16 @@ use macros::problem;
 /// Difficulty: 0
 #[problem]
 fn find_m(name: String, _lang: &Language) -> Result<Problem> {
-    let (k, k_range) = IntRange::without_zero(-3, 3)?.and_random();
-    let (m, m_range) = IntRange::with_zero(-5, 5)?.and_random();
+    // k = -1 makes x-intersect and y-intersect the same - not ideal for learning
+    let (k, k_range) = IntRange::without_zero(-3, 3)?.exclude(-1).and_random();
+    // We want the x-intersect to be an integer, easiest way is to make sure m is a multiple of k
+    let multiplier = IntRange::with_zero(-2, 2)?.random();
+    let m = k * multiplier;
 
     // Always show the intersection with the x-axis.
-    // y = kx + m => x = (y - m) / k with y = 0
-    let x_0 = -m / k;
-    let mut x_min = if x_0 < 0 { x_0 - 1 } else { -1 };
-    let mut x_max = if x_0 > 0 { x_0 + 1 } else { 1 };
+    let x_intersect = -multiplier;
+    let mut x_min = if x_intersect < 0 { x_intersect - 1 } else { -1 };
+    let mut x_max = if x_intersect > 0 { x_intersect + 1 } else { 1 };
 
     // The graph (currently) looks weird when there is only one step.
     // Will be fixed if I autosize the grid
@@ -42,7 +44,7 @@ fn find_m(name: String, _lang: &Language) -> Result<Problem> {
         question,
         answer,
         solution,
-        identifiers: vec![k, m],
-        combinations: k_range.len() * m_range.len(),
+        identifiers: vec![k],
+        combinations: k_range.len(),
     })
 }

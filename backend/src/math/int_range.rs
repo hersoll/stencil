@@ -36,7 +36,7 @@ impl IntRange {
         })
     }
 
-    pub fn exclude(&mut self, value: i32) -> &mut Self {
+    pub fn exclude(mut self, value: i32) -> Self {
         self.exclude.append(&mut Self::get_exclusions_in_range(
             vec![value],
             &self.min,
