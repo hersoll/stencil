@@ -1,5 +1,5 @@
 use crate::{
-    math::{Number, functions::Function},
+    math::{Number, ZERO, functions::Function},
     typst_utils::plotting::plots::Plot,
 };
 use anyhow::{Result, anyhow};
@@ -16,6 +16,7 @@ pub struct Axes {
     /// Can the graph start at a non-zero value and "break" to the x-axis?
     can_break: bool,
     plots: Vec<Plot>,
+    padding: Number,
 }
 
 impl Default for Axes {
@@ -30,6 +31,7 @@ impl Default for Axes {
             grid: GridType::Major,
             can_break: false,
             plots: Vec::new(),
+            padding: ZERO,
         }
     }
 }
@@ -69,6 +71,11 @@ impl Axes {
 
     pub fn grid(&mut self, grid: GridType) -> &mut Self {
         self.grid = grid;
+        self
+    }
+
+    pub fn padding(&mut self, padding: impl Into<Number>) -> &mut Self {
+        self.padding = padding.into();
         self
     }
 
@@ -143,8 +150,6 @@ impl Axes {
 
     /// Finds the highest and lowest y-values among the plots
     /// and sets y_min and y_max acccordingly
-    ///
-    /// TODO: Add padding
     fn auto_y_range(&mut self) -> Result<()> {
         // If you want to draw an empty plot, specify y_min and y_max yourself
         if self.plots.len() == 0 {
@@ -171,8 +176,8 @@ impl Axes {
             }
         }
 
-        self.y_min = Some(min);
-        self.y_max = Some(max);
+        self.y_min = Some(min - &self.padding);
+        self.y_max = Some(max + &self.padding);
 
         Ok(())
     }

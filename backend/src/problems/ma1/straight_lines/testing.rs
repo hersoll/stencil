@@ -40,10 +40,12 @@ fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
     let x_max = 2;
     let graph = Axes::new()
         .x_range(x_min, x_max)
+        .padding(1)
         .add_plot(Plot::linear(k, m))
         .build_string()?;
     let graph_solution = Axes::new()
         .x_range(x_min, x_max)
+        .padding(1)
         .add_plot(Plot::linear(k, m).with_simple_slope_hint())
         .build_string()?;
 
