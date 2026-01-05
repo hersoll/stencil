@@ -30,9 +30,10 @@ impl Plot {
 
     pub fn exponential(c: impl Into<Number>, a: impl Into<Number>) -> Plot {
         let c = c.into();
-        let a = a.into();
+        let mut a = a.into();
         if a <= ZERO {
             tracing::error!("a in an exponential function can't be negative (or 0)");
+            a = Number::Integer(1)
         }
         Plot {
             name: None,
