@@ -12,7 +12,6 @@ pub struct Plot {
 pub enum PlotKind {
     /// k, m
     Linear(Number, Number),
-    Polynomial(Vec<Number>),
     /// start, change
     Exponential(Number, Number),
 }
@@ -49,8 +48,6 @@ impl Plot {
         match self.kind {
             PlotKind::Linear(k, m) => k * x + &m,
             PlotKind::Exponential(start, change) => start * change.value().powf(x.value()),
-            // TODO:
-            PlotKind::Polynomial(_) => ZERO,
         }
     }
 
@@ -134,8 +131,6 @@ plot.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_end}, {y_label_pos}))"
                 start.for_plots(),
                 change.for_plots()
             ),
-            // TODO:
-            PlotKind::Polynomial(_) => format!("3"),
         }
     }
 }

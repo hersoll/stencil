@@ -160,7 +160,6 @@ impl Axes {
                 let extreme = match plot.kind {
                     PlotKind::Linear(k, m) => k * val + &m,
                     PlotKind::Exponential(c, a) => c * &a.value().powf(val.value()).into(),
-                    PlotKind::Polynomial(_) => Number::Integer(0),
                 };
 
                 if extreme < min {
