@@ -34,8 +34,8 @@ fn empty_graph(name: String, _lang: &Language) -> Result<Problem> {
 
 #[problem]
 fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
-    let (k, k_range) = IntRange::with_zero(-3, 3)?.and_random();
-    let (m, m_range) = IntRange::with_zero(-3, 3)?.and_random();
+    let (k, k_range) = IntRange::without_zero(-3, 3)?.and_random();
+    let (m, m_range) = IntRange::without_zero(-3, 3)?.and_random();
     let x_min = -1;
     let x_max = 2;
     let graph = Axes::new()
@@ -44,7 +44,7 @@ fn linear_graph(name: String, _lang: &Language) -> Result<Problem> {
         .build_string()?;
     let graph_solution = Axes::new()
         .x_range(x_min, x_max)
-        .add_plot(Plot::linear(k, m).with_slope_hint(0, 1, ("x", "y")))
+        .add_plot(Plot::linear(k, m).with_simple_slope_hint())
         .build_string()?;
 
     let question = format!("Här är en rät linje: \n {graph}");
@@ -69,7 +69,7 @@ fn linear_graph_with_decimals(name: String, _lang: &Language) -> Result<Problem>
     let x_max = 1.2;
     let graph = Axes::new()
         .x_range(x_min, x_max)
-        .add_plot(Plot::linear(k, m))
+        .add_plot(Plot::linear(k, m).with_slope_hint(0, 1, ("x", "y")))
         .build_string()?;
 
     let question = format!("Här är en rät linje med decimaltal: \n {graph}");
@@ -94,7 +94,7 @@ fn linear_graph_with_fractions(name: String, _lang: &Language) -> Result<Problem
     let x_max = Number::Fraction(13, 3);
     let graph = Axes::new()
         .x_range(x_min, x_max)
-        .add_plot(Plot::linear(k, m))
+        .add_plot(Plot::linear(k, m).with_slope_hint(0, 3, ("s", "t")))
         .build_string()?;
 
     let question = format!("Här är en rät linje med bråk: \n {graph}");
@@ -121,7 +121,7 @@ fn exponential_graph(name: String, _lang: &Language) -> Result<Problem> {
     let x_max = 2;
     let graph = Axes::new()
         .x_range(x_min as i32, x_max as i32)
-        .add_plot(Plot::exponential(c, a))
+        .add_plot(Plot::exponential(c, a).with_slope_hint(1, 1, ("x", "y")))
         .build_string()?;
 
     let question = format!("Här är en exponentialfunktion: \n {graph}");

@@ -1,5 +1,7 @@
 use crate::math::{Number, ZERO, functions::Function};
 
+const LABEL_PADDING: f64 = 0.2;
+
 pub struct Plot {
     pub name: Option<String>,
     pub function: Function,
@@ -50,8 +52,81 @@ impl Plot {
         self
     }
 
-    /// Adds dashed lines in a linear plot showing how to calculate the slope
-    /// Automatically calculates the dy depending on k and m
+    fn add_dashed_slope_hints(&mut self, x_start: Number, x_step: Number) {
+        let color = "black";
+        let dashed_style = format!("style: (stroke: (paint: {color}, dash: \"dashed\"))");
+        let x_end = x_start + &x_step;
+        let y_start = self.function.get_y(&x_start);
+        let y_end = self.function.get_y(&x_end);
+
+        let lines = format!(
+            "
+plot.add((({x_start}, {y_start}), ({x_end}, {y_start})), {dashed_style})
+plot.add((({x_end}, {y_start}), ({x_end}, {y_end})), {dashed_style})"
+        );
+
+        self.additions.axis_relative.push(lines);
+    }
+
+    fn get_anchor_suffix(&self) -> String {
+        match self.name {
+            Some(ref name) => "-".to_string() + name,
+            None => String::new(),
+        }
+    }
+
+    fn add_dx_label(
+        &mut self,
+        label_content: String,
+        x_start: Number,
+        x_step: Number,
+        y_pos: Number,
+    ) {
+        let mut x_label_pos = x_start + &(x_step / 2);
+        if x_label_pos == ZERO {
+            x_label_pos = x_start + &(x_step / 4)
+        }
+        let x_label_dir =
+            if self.function.get_y(&x_start) < self.function.get_y(&(x_start + &x_step)) {
+                "north"
+            } else {
+                "south"
+            };
+        let anchor_suffix = self.get_anchor_suffix();
+        let anchor =
+            format!("plot.add-anchor(\"dx-lbl{anchor_suffix}\", ({x_label_pos}, {y_pos}))");
+        let label = format!(
+            "content(\"plot.dx-lbl{anchor_suffix}\", [${label_content}$], 
+            anchor: \"{x_label_dir}\", padding: {LABEL_PADDING})"
+        );
+        self.additions.axis_relative.push(anchor);
+        self.additions.canvas_relative.push(label);
+    }
+
+    fn add_dy_label(
+        &mut self,
+        label_content: String,
+        y_start: Number,
+        y_step: Number,
+        x_pos: Number,
+    ) {
+        let mut y_label_pos = y_start + &(y_step / 2);
+        if y_label_pos == ZERO {
+            y_label_pos = y_start + &(y_step / 4)
+        }
+        let anchor_suffix = self.get_anchor_suffix();
+        let anchor =
+            format!("plot.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_pos}, {y_label_pos}))");
+        let label = format!(
+            "content(\"plot.dy-lbl{anchor_suffix}\", [${label_content}$], 
+            anchor: \"west\", padding: {LABEL_PADDING})"
+        );
+        self.additions.axis_relative.push(anchor);
+        self.additions.canvas_relative.push(label);
+    }
+
+    /// Adds dashed lines in a plot showing how to calculate the slope,
+    /// with dx and dy labels.
     pub fn with_slope_hint(
         mut self,
         x_start: impl Into<Number>,
@@ -61,52 +136,36 @@ impl Plot {
         let x_start = x_start.into();
         let x_step = x_step.into();
 
-        let color = "black";
-        let label_padding = "0.2";
-        let dashed_style = format!("style: (stroke: (paint: {color}, dash: \"dashed\"))");
-
         let x_var = variables.0;
         let y_var = variables.1;
         let x_end = x_start + &x_step;
         let y_start = self.function.get_y(&x_start);
         let y_end = self.function.get_y(&x_end);
         let y_step = y_end - &y_start;
-        let x_label_dir = if y_step > ZERO { "north" } else { "south" };
 
-        let mut x_label_pos = x_start + &(x_step / 2);
-        let mut y_label_pos = y_start + &(y_step / 2);
-
-        // Prevent the labels being smack on the axes
-        if x_label_pos == ZERO {
-            x_label_pos = x_start + &(x_step / 4)
-        }
-        if y_label_pos == ZERO {
-            y_label_pos = y_start + &(y_step * 3 / 4)
-        }
-
-        // Used to differentiate between multiple plots in the same Axes
-        let anchor_suffix = match self.name {
-            Some(ref name) => "-".to_string() + &name,
-            None => String::new(),
-        };
-
-        let lines = format!(
-            "
-plot.add((({x_start}, {y_start}), ({x_end}, {y_start})), {dashed_style})
-plot.add((({x_end}, {y_start}), ({x_end}, {y_end})), {dashed_style})
-plot.add-anchor(\"dx-lbl{anchor_suffix}\", ({x_label_pos}, {y_start}))
-plot.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_end}, {y_label_pos}))"
+        self.add_dashed_slope_hints(x_start, x_step);
+        self.add_dx_label(
+            format!("Delta {x_var} = {x_step}"),
+            x_start,
+            x_step,
+            y_start,
         );
+        self.add_dy_label(format!("Delta {y_var} = {y_step}"), y_start, y_step, x_end);
 
-        let labels = format!(
-                    "
-  content(\"plot.dx-lbl{anchor_suffix}\", [$Delta {x_var} = {x_step}$], anchor: \"{x_label_dir}\", padding: {label_padding})
-  content(\"plot.dy-lbl{anchor_suffix}\", [$Delta {y_var} = {y_step}$], anchor: \"west\", padding: {label_padding})
-"
-                );
+        self
+    }
 
-        self.additions.axis_relative.push(lines);
-        self.additions.canvas_relative.push(labels);
+    /// Like with_slope_hint(), but used for functions where the slope (k) and start (m) are whole numbers.
+    /// Assumes the x_start is 0, x_step is 1 and only labels the dy (with a "k")
+    pub fn with_simple_slope_hint(mut self) -> Self {
+        let x_start = Number::Integer(0);
+        let x_end = Number::Integer(1);
+        let y_start = self.function.get_y(&x_start);
+        let y_end = self.function.get_y(&x_end);
+        let y_step = y_end - &y_start;
+
+        self.add_dashed_slope_hints(x_start, x_end);
+        self.add_dy_label(format!("k = {y_step}"), y_start, y_step, x_end);
 
         self
     }

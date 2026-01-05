@@ -61,7 +61,7 @@ impl Axes {
         self
     }
 
-    pub fn y_range<T: Into<Number>, U: Into<Number>>(&mut self, min: T, max: U) -> &mut Self {
+    pub fn y_range(&mut self, min: impl Into<Number>, max: impl Into<Number>) -> &mut Self {
         self.y_min = Some(min.into());
         self.y_max = Some(max.into());
         self
