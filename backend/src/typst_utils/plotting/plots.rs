@@ -1,4 +1,5 @@
 use crate::math::{Number, ZERO};
+use anyhow::{Result, anyhow};
 
 pub struct Plot {
     pub name: Option<String>,
@@ -28,6 +29,7 @@ pub struct PlotAdditions {
 }
 
 impl Plot {
+    // NOTE: Should use Into<Number> for ergonomics
     pub fn linear(k: Number, m: Number) -> Plot {
         Plot {
             name: None,
@@ -36,18 +38,39 @@ impl Plot {
         }
     }
 
-    pub fn exponential(start: Number, change: Number) -> Plot {
-        Plot {
+    pub fn exponential(c: Number, a: Number) -> Result<Plot> {
+        if a <= ZERO {
+            return Err(anyhow!(
+                "a in an exponential function can't be negative (or 0)"
+            ));
+        }
+        Ok(Plot {
             name: None,
-            kind: PlotKind::Exponential(start, change),
+            kind: PlotKind::Exponential(c, a),
             additions: PlotAdditions::default(),
+        })
+    }
+
+    // NOTE: Move all actual calculations to some kind of module inside ```math```
+    pub fn get_x(&self, y: &Number) -> Option<Number> {
+        match self.kind {
+            PlotKind::Linear(k, m) => Some((y - &m) / &k),
+            PlotKind::Exponential(c, a) => {
+                // No solution if y and c have opposite signs
+                if y * &c < ZERO {
+                    None
+                } else {
+                    // y = c a^x => x = lg(y/c) / lg(a)
+                    Some(((y / &c).value().log2() / a.value().log2()).into())
+                }
+            }
         }
     }
 
     pub fn get_y(&self, x: &Number) -> Number {
         match self.kind {
             PlotKind::Linear(k, m) => k * x + &m,
-            PlotKind::Exponential(start, change) => start * change.value().powf(x.value()),
+            PlotKind::Exponential(c, a) => c * a.value().powf(x.value()),
         }
     }
 
