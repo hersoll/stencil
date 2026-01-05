@@ -1,6 +1,6 @@
 use crate::{
-    math::Number,
-    typst_utils::plotting::{PlotKind, plots::Plot},
+    math::{Number, functions::Function},
+    typst_utils::plotting::plots::Plot,
 };
 use anyhow::{Result, anyhow};
 use std::fmt::Write;
@@ -157,9 +157,9 @@ impl Axes {
         let mut max = Number::Integer(i32::MIN);
         for plot in self.plots.iter() {
             for val in [self.x_min, self.x_max].iter() {
-                let extreme = match plot.kind {
-                    PlotKind::Linear(k, m) => k * val + &m,
-                    PlotKind::Exponential(c, a) => c * &a.value().powf(val.value()).into(),
+                let extreme = match plot.function {
+                    Function::Linear(k, m) => k * val + &m,
+                    Function::Exponential(c, a) => c * &a.value().powf(val.value()).into(),
                 };
 
                 if extreme < min {
