@@ -94,9 +94,12 @@ impl Axes {
         self.set_y_range()?;
 
         let mut out = String::with_capacity(256);
-        writeln!(out, "#block(height: 5cm)[#cetz.canvas({{")?;
+        writeln!(
+            out,
+            "#block(height: 5cm)[#set text(size: 0.75em)\n#cetz.canvas({{"
+        )?;
         writeln!(out, "import cetz.draw: *")?;
-        writeln!(out, "graph.graph(")?;
+        writeln!(out, "plot.plot(")?;
         writeln!(out, "axis-style: \"school-book\",")?;
         writeln!(out, "name: \"graph\",")?;
         writeln!(out, "size: (4, 4),")?;
@@ -112,7 +115,7 @@ impl Axes {
         for graph in self.graphs.iter() {
             writeln!(
                 out,
-                "graph.add(domain: ({}, {}), t => {})",
+                "plot.add(domain: ({}, {}), t => {})",
                 self.x_min.for_graphs(),
                 self.x_max.for_graphs(),
                 graph.to_typst()
