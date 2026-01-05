@@ -103,7 +103,7 @@ impl Number {
 fn strip_num(s: String) -> String {
     match s
         .strip_prefix("num(\"")
-        .and_then(|strip| strip.strip_suffix("\""))
+        .and_then(|strip| strip.strip_suffix("\")"))
     {
         Some(stripped) => stripped.to_string(),
         None => s,

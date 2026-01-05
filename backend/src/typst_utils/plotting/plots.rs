@@ -58,11 +58,17 @@ impl Plot {
         let x_end = x_start + &x_step;
         let y_start = self.function.get_y(&x_start);
         let y_end = self.function.get_y(&x_end);
+        // Need to use for_plots for every printed Number variable, to make sure
+        // decimal numbers are formatted correctly
+        let x_0 = x_start.for_plots();
+        let x_1 = x_end.for_plots();
+        let y_0 = y_start.for_plots();
+        let y_1 = y_end.for_plots();
 
         let lines = format!(
             "
-plot.add((({x_start}, {y_start}), ({x_end}, {y_start})), {dashed_style})
-plot.add((({x_end}, {y_start}), ({x_end}, {y_end})), {dashed_style})"
+plot.add((({x_0}, {y_0}), ({x_1}, {y_0})), {dashed_style})
+plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         );
 
         self.additions.axis_relative.push(lines);
@@ -92,6 +98,10 @@ plot.add((({x_end}, {y_start}), ({x_end}, {y_end})), {dashed_style})"
             } else {
                 "south"
             };
+
+        let x_label_pos = x_label_pos.for_plots();
+        let y_pos = y_pos.for_plots();
+
         let anchor_suffix = self.get_anchor_suffix();
         let anchor =
             format!("plot.add-anchor(\"dx-lbl{anchor_suffix}\", ({x_label_pos}, {y_pos}))");
@@ -114,6 +124,10 @@ plot.add((({x_end}, {y_start}), ({x_end}, {y_end})), {dashed_style})"
         if y_label_pos == ZERO {
             y_label_pos = y_start + &(y_step / 4)
         }
+
+        let y_label_pos = y_label_pos.for_plots();
+        let x_pos = x_pos.for_plots();
+
         let anchor_suffix = self.get_anchor_suffix();
         let anchor =
             format!("plot.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_pos}, {y_label_pos}))");
@@ -143,14 +157,22 @@ plot.add((({x_end}, {y_start}), ({x_end}, {y_end})), {dashed_style})"
         let y_end = self.function.get_y(&x_end);
         let y_step = y_end - &y_start;
 
+        let x_step_str = x_step.for_plots();
+        let y_step_str = y_step.for_plots();
+
         self.add_dashed_slope_hints(x_start, x_step);
         self.add_dx_label(
-            format!("Delta {x_var} = {x_step}"),
+            format!("Delta {x_var} = {x_step_str}"),
             x_start,
             x_step,
             y_start,
         );
-        self.add_dy_label(format!("Delta {y_var} = {y_step}"), y_start, y_step, x_end);
+        self.add_dy_label(
+            format!("Delta {y_var} = {y_step_str}"),
+            y_start,
+            y_step,
+            x_end,
+        );
 
         self
     }
@@ -163,9 +185,10 @@ plot.add((({x_end}, {y_start}), ({x_end}, {y_end})), {dashed_style})"
         let y_start = self.function.get_y(&x_start);
         let y_end = self.function.get_y(&x_end);
         let y_step = y_end - &y_start;
+        let y_step_str = y_step.for_plots();
 
         self.add_dashed_slope_hints(x_start, x_end);
-        self.add_dy_label(format!("k = {y_step}"), y_start, y_step, x_end);
+        self.add_dy_label(format!("k = {y_step_str}"), y_start, y_step, x_end);
 
         self
     }
