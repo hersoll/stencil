@@ -1,3 +1,4 @@
+pub mod functions;
 mod int_range;
 pub mod symbols;
 mod types;

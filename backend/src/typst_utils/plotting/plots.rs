@@ -1,20 +1,9 @@
-use crate::math::{Number, ZERO};
-use anyhow::{Result, anyhow};
+use crate::math::{Number, ZERO, functions::Function};
 
 pub struct Plot {
     pub name: Option<String>,
-    pub kind: PlotKind,
+    pub function: Function,
     pub additions: PlotAdditions,
-}
-
-/// The PlotKind enum contains information about which kind of plot it is (duh), but also numbers
-/// that are specific to that kind of plot. This makes ergonomics easier when matching over the
-/// kinds since you can do PlotKind::Linear(k, m) => ... and then use k and m by those names.
-pub enum PlotKind {
-    /// k, m
-    Linear(Number, Number),
-    /// start, change
-    Exponential(Number, Number),
 }
 
 /// Additional elements that need to be added to the plot,
@@ -33,44 +22,19 @@ impl Plot {
     pub fn linear(k: Number, m: Number) -> Plot {
         Plot {
             name: None,
-            kind: PlotKind::Linear(k, m),
+            function: Function::Linear(k, m),
             additions: PlotAdditions::default(),
         }
     }
 
-    pub fn exponential(c: Number, a: Number) -> Result<Plot> {
+    pub fn exponential(c: Number, a: Number) -> Plot {
         if a <= ZERO {
-            return Err(anyhow!(
-                "a in an exponential function can't be negative (or 0)"
-            ));
+            tracing::error!("a in an exponential function can't be negative (or 0)");
         }
-        Ok(Plot {
+        Plot {
             name: None,
-            kind: PlotKind::Exponential(c, a),
+            function: Function::Exponential(c, a),
             additions: PlotAdditions::default(),
-        })
-    }
-
-    // NOTE: Move all actual calculations to some kind of module inside ```math```
-    pub fn get_x(&self, y: &Number) -> Option<Number> {
-        match self.kind {
-            PlotKind::Linear(k, m) => Some((y - &m) / &k),
-            PlotKind::Exponential(c, a) => {
-                // No solution if y and c have opposite signs
-                if y * &c < ZERO {
-                    None
-                } else {
-                    // y = c a^x => x = lg(y/c) / lg(a)
-                    Some(((y / &c).value().log2() / a.value().log2()).into())
-                }
-            }
-        }
-    }
-
-    pub fn get_y(&self, x: &Number) -> Number {
-        match self.kind {
-            PlotKind::Linear(k, m) => k * x + &m,
-            PlotKind::Exponential(c, a) => c * a.value().powf(x.value()),
         }
     }
 
@@ -92,8 +56,8 @@ impl Plot {
     ) -> Self {
         let x_start = x_start.into();
         let x_step = x_step.into();
-        match self.kind {
-            PlotKind::Linear(k, _) => {
+        match self.function {
+            Function::Linear(k, _) => {
                 let color = "black";
                 let label_padding = "0.2";
                 let x_label_dir = if k > ZERO { "north" } else { "south" };
@@ -101,8 +65,8 @@ impl Plot {
                 let x_var = variables.0;
                 let y_var = variables.1;
                 let x_end = x_start + &x_step;
-                let y_start = self.get_y(&x_start);
-                let y_end = self.get_y(&x_end);
+                let y_start = self.function.get_y(&x_start);
+                let y_end = self.function.get_y(&x_end);
                 let y_step = y_end - &y_start;
 
                 let mut x_label_pos = x_start + &(x_step / 2);
@@ -147,9 +111,9 @@ plot.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_end}, {y_label_pos}))"
     }
 
     pub fn to_typst(&self) -> String {
-        match self.kind {
-            PlotKind::Linear(k, m) => format!("{} * float(t) + {}", k.for_plots(), m.for_plots()),
-            PlotKind::Exponential(start, change) => format!(
+        match self.function {
+            Function::Linear(k, m) => format!("{} * float(t) + {}", k.for_plots(), m.for_plots()),
+            Function::Exponential(start, change) => format!(
                 "{} * calc.pow({}, t)",
                 start.for_plots(),
                 change.for_plots()

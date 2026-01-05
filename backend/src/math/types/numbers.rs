@@ -281,6 +281,12 @@ impl std::ops::Mul<i32> for Number {
         self * &Number::Integer(rhs)
     }
 }
+impl std::ops::Mul<f64> for &Number {
+    type Output = Number;
+    fn mul(self, rhs: f64) -> Self::Output {
+        self * &rhs.into()
+    }
+}
 
 impl std::ops::Mul<f64> for Number {
     type Output = Number;

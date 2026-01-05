@@ -123,7 +123,7 @@ fn exponential_graph(name: String, _lang: &Language) -> Result<Problem> {
     let x_max = 2;
     let graph = Axes::new()
         .x_range(x_min as i32, x_max as i32)
-        .add_plot(Plot::exponential(Number::Integer(c), Number::Integer(a))?)
+        .add_plot(Plot::exponential(Number::Integer(c), Number::Integer(a)))
         .build_string()?;
 
     let question = format!("Här är en exponentialfunktion: \n {graph}");
