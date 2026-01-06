@@ -20,21 +20,18 @@ fn find_m(name: String, lang: &Language) -> Result<Problem> {
 
     // Always show the intersection with the x-axis.
     let x_intersect = -multiplier;
-    let mut x_min = if x_intersect < 0 { x_intersect - 1 } else { -1 };
-    let mut x_max = if x_intersect > 0 { x_intersect + 1 } else { 1 };
+    let x_min = if x_intersect < 0 { x_intersect - 1 } else { -1 };
+    let x_max = if x_intersect > 0 { x_intersect + 1 } else { 1 };
 
-    // The graph (currently) looks weird when there is only one step.
-    // Will be fixed if I autosize the grid
-    if x_min == -1 && x_max == 1 {
-        x_min = -2;
-        x_max = 2;
-    }
-
-    let mut axes = Axes::new();
-    axes.x_range(x_min, x_max).padding(1); // Show y-values over/under graph
-
-    let question_graph = axes.add_graph(Graph::linear(k, m)).build_string()?;
-    let solution_graph = axes.add_graph(Graph::linear(k, m)).build_string()?;
+    let question_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .padding(1)
+        .add_graph(Graph::linear(k, m))
+        .build_string()?;
+    let solution_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .add_graph(Graph::linear(k, m).with_dot_at(0, m))
+        .build_string()?;
 
     let problem_data = registry::get_problem_data(&name)?;
     let question = problem_data.get_question(lang);

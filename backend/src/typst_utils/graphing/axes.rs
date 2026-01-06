@@ -209,10 +209,9 @@ impl Axes {
         let mut go_right = true;
         while (self.y_max.unwrap() - &self.y_min.unwrap()) / &(self.x_max - &self.x_min) > max_ratio
         {
-            if go_right {
-                self.x_max = self.x_max + 1;
-            } else {
-                self.x_min = self.x_min - 1;
+            match go_right {
+                true => self.x_max = self.x_max + 1,
+                false => self.x_min = self.x_min - 1,
             }
             go_right = !go_right;
         }
@@ -220,12 +219,10 @@ impl Axes {
         let mut go_up = true;
         while (self.x_max - &self.x_min) / &(self.y_max.unwrap() - &self.y_min.unwrap()) > max_ratio
         {
-            if go_up {
-                self.y_max = Some(self.y_max.unwrap() + 1);
-            } else {
-                self.y_min = Some(self.y_min.unwrap() - 1);
+            match go_up {
+                true => self.y_max = Some(self.y_max.unwrap() + 1),
+                false => self.y_min = Some(self.y_min.unwrap() - 1),
             }
-
             go_up = !go_up;
         }
     }

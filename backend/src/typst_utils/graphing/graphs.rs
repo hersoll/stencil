@@ -54,6 +54,20 @@ impl Graph {
         self
     }
 
+    /// Add a single dot to the graph.
+    ///
+    /// If you need multiple dots, use with_dots_at() instead.
+    pub fn with_dot_at(mut self, x: impl Into<Number>, y: impl Into<Number>) -> Self {
+        let x = x.into().for_graphs();
+        let y = y.into().for_graphs();
+        let color = "red";
+        let dot_anchor = format!("plot.add-anchor(\"dot\", ({x}, {y}))");
+        let dot = format!("circle(\"graph.dot\", radius: 0.07, fill: {color})");
+        self.additions.axis_relative.push(dot_anchor);
+        self.additions.canvas_relative.push(dot);
+        self
+    }
+
     /// Adds horizontal and vertical lines to show where one can calculate the slope.
     ///
     /// Note that you need to know where (x-wise) there are good spots to get the slope from.
@@ -75,8 +89,8 @@ impl Graph {
 
         let lines = format!(
             "
-graph.add((({x_0}, {y_0}), ({x_1}, {y_0})), {dashed_style})
-graph.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
+plot.add((({x_0}, {y_0}), ({x_1}, {y_0})), {dashed_style})
+plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         );
 
         self.additions.axis_relative.push(lines);
@@ -117,7 +131,7 @@ graph.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
 
         let anchor_suffix = self.get_anchor_suffix();
         let anchor =
-            format!("graph.add-anchor(\"dx-lbl{anchor_suffix}\", ({x_label_pos}, {y_pos}))");
+            format!("plot.add-anchor(\"dx-lbl{anchor_suffix}\", ({x_label_pos}, {y_pos}))");
         let label = format!(
             "content(\"graph.dx-lbl{anchor_suffix}\", [${label_content}$], 
             anchor: \"{x_label_dir}\", padding: {LABEL_PADDING})"
@@ -146,7 +160,7 @@ graph.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
 
         let anchor_suffix = self.get_anchor_suffix();
         let anchor =
-            format!("graph.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_pos}, {y_label_pos}))");
+            format!("plot.add-anchor(\"dy-lbl{anchor_suffix}\", ({x_pos}, {y_label_pos}))");
         let label = format!(
             "content(\"graph.dy-lbl{anchor_suffix}\", [${label_content}$], 
             anchor: \"west\", padding: {LABEL_PADDING})"
