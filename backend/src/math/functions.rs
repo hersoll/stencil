@@ -33,3 +33,18 @@ impl Function {
         }
     }
 }
+
+mod tests {
+    use crate::{math::Number, typst_utils::graphing::Graph};
+
+    #[test]
+    fn linear_function_integers_get_y() {
+        let f = Graph::linear(1, 2);
+        let g = Graph::linear(0, 2);
+        let h = Graph::linear(-3, -5);
+        let x = Number::Integer(-1);
+        assert_eq!(f.function.get_y(&x), Number::Integer(1));
+        assert_eq!(g.function.get_y(&x), Number::Integer(2));
+        assert_eq!(h.function.get_y(&x), Number::Integer(-2));
+    }
+}
