@@ -6,6 +6,7 @@ use anyhow::{Result, anyhow};
 use std::fmt::Write;
 
 pub struct Axes {
+    font_size: &'static str,
     x_min: Number,
     x_max: Number,
     y_min: Option<Number>,
@@ -22,6 +23,7 @@ pub struct Axes {
 impl Default for Axes {
     fn default() -> Self {
         Axes {
+            font_size: "0.75em",
             x_min: Number::Integer(-1),
             x_max: Number::Integer(1),
             y_min: None,
@@ -55,6 +57,12 @@ impl GridType {
 impl Axes {
     pub fn new() -> Self {
         Axes::default()
+    }
+
+    pub fn new_solution() -> Self {
+        let mut axes = Axes::default();
+        axes.font_size = "1em";
+        axes
     }
 
     pub fn x_range(&mut self, min: impl Into<Number>, max: impl Into<Number>) -> &mut Self {
@@ -97,7 +105,8 @@ impl Axes {
         let mut out = String::with_capacity(256);
         writeln!(
             out,
-            "#block(height: 5cm)[#set text(size: 0.75em)\n#cetz.canvas({{"
+            "#block(height: 5cm)[#set text(size: {})\n#cetz.canvas({{",
+            self.font_size
         )?;
         writeln!(out, "import cetz.draw: *")?;
         writeln!(out, "plot.plot(")?;

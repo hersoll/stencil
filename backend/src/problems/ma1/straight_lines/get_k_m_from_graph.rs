@@ -28,7 +28,7 @@ fn find_m(name: String, lang: &Language) -> Result<Problem> {
         .padding(1)
         .add_graph(Graph::linear(k, m))
         .build_string()?;
-    let solution_graph = Axes::new()
+    let solution_graph = Axes::new_solution()
         .x_range(x_min, x_max)
         .add_graph(Graph::linear(k, m).with_dot_at(0, m))
         .build_string()?;
@@ -67,7 +67,7 @@ fn find_k(name: String, lang: &Language) -> Result<Problem> {
         .x_range(x_min, x_max)
         .add_graph(Graph::linear(k, m))
         .build_string()?;
-    let solution_graph = Axes::new()
+    let solution_graph = Axes::new_solution()
         .x_range(x_min, x_max)
         .add_graph(Graph::linear(k, m).with_simple_slope_hint())
         .build_string()?;
