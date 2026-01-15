@@ -34,8 +34,10 @@ impl Function {
     }
 }
 
+#[cfg(test)]
 mod tests {
-    use crate::{math::Number, typst_utils::graphing::Graph};
+    use super::*;
+    use crate::typst_utils::graphing::Graph;
 
     #[test]
     fn linear_function_integers_get_y() {
