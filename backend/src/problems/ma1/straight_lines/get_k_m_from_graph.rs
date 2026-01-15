@@ -50,3 +50,42 @@ fn find_m(name: String, lang: &Language) -> Result<Problem> {
         combinations: k_range.len(),
     })
 }
+
+/// Find k in graph
+/// Difficulty: 1
+#[problem]
+fn find_k(name: String, lang: &Language) -> Result<Problem> {
+    let (k, k_range) = IntRange::without_zero(-3, 3)?.and_random();
+    // We want the x-intersect to be an integer, easiest way is to make sure m is a multiple of k
+    let multiplier = IntRange::with_zero(-2, 2)?.random();
+    let m = k * multiplier;
+
+    let x_min = -1;
+    let x_max = 2;
+
+    let question_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .add_graph(Graph::linear(k, m))
+        .build_string()?;
+    let solution_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .add_graph(Graph::linear(k, m).with_simple_slope_hint())
+        .build_string()?;
+
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = problem_data.get_question(lang);
+    let solution = problem_data.get_solution(lang);
+
+    let question = format!("{question}\n{question_graph}");
+    let answer = format!("$k = {k}$");
+    let solution = format!("{solution}\n{solution_graph}");
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k],
+        combinations: k_range.len(),
+    })
+}
