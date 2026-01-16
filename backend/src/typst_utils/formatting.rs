@@ -20,53 +20,6 @@ static SOLUTION_OUTSET: &'static str = "1.7em";
 static SOLUTION_NESTED_OUTSET: &'static str = "3em";
 static SOLUTION_BACKGROUND_PADDING: &'static str = "0.5em";
 
-/// Used for setting colors in the typst file
-#[derive(Debug, Clone)]
-struct Color {
-    r: u8,
-    g: u8,
-    b: u8,
-}
-
-impl Color {
-    fn new(r: u8, g: u8, b: u8) -> Color {
-        Color { r, g, b }
-    }
-}
-
-impl Display for Color {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}%, {}%, {}%", self.r, self.g, self.b)
-    }
-}
-
-pub fn colors(has_color: bool) -> String {
-    let colored: Color;
-    // Graphing colors
-    let primary: Color;
-    let secondary: Color;
-    let tertiary: Color;
-    if has_color {
-        colored = Color::new(22, 10, 33); // Purple
-        primary = Color::new(9, 3, 18); // Dark purple
-        secondary = colored.clone();
-        tertiary = Color::new(30, 23, 39); // Light purple
-    } else {
-        colored = Color::new(10, 10, 10); // Gray
-        primary = Color::new(0, 0, 0); // Black
-        secondary = Color::new(8, 8, 8); // Gray?
-        tertiary = Color::new(16, 16, 16); // Grayer?
-    };
-
-    format!(
-        "
-#let colored(x) = text(fill: color.linear-rgb({colored}), $#x$)
-#let primary(x) = text(fill: color.linear-rgb({primary}), $#x$)
-#let secondary(x) = text(fill: color.linear-rgb({secondary}), $#x$)
-#let tertiary(x) = text(fill: color.linear-rgb({tertiary}), $#x$)"
-    )
-}
-
 // item = unbreakable, block = breakable
 pub fn list_item(s: &String) -> String {
     String::from("item[") + s + "],"

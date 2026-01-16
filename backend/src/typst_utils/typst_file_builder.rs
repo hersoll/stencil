@@ -1,7 +1,7 @@
 use crate::{
     Language, db,
     problems::Problem,
-    typst_utils::{formatting, preamble::PREAMBLE_STR, prefix_handler},
+    typst_utils::{colors, formatting, preamble::PREAMBLE_STR, prefix_handler},
 };
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -237,7 +237,7 @@ impl TypstFileBuilder {
 
     fn build_preamble(&self) -> Result<String> {
         let mut parts = Vec::with_capacity(7);
-        parts.push(formatting::colors(self.options.color));
+        parts.push(colors::get_color_preamble(self.options.color));
         parts.push(formatting::page_size(
             &self.options.paper_size.to_str(),
             self.options.x_margin,

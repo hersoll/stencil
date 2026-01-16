@@ -1,3 +1,4 @@
+pub mod colors;
 pub mod formatting;
 pub mod graphing;
 pub mod preamble;
