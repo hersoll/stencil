@@ -5,19 +5,38 @@ use crate::{
 use anyhow::{Result, anyhow};
 use std::fmt::Write;
 
+pub enum GridType {
+    Both,
+    Major,
+    None,
+}
+
 pub struct Axes {
     font_size: &'static str,
+
+    // Coordinates for the viewport
     x_min: Number,
     x_max: Number,
     y_min: Option<Number>,
     y_max: Option<Number>,
+
+    /// The amount of padding to add the y-axis after auto-fitting the range. Having some padding
+    /// makes the graph look a bit more aesthetically pleasing, instead of the graph hitting the
+    /// corner EVERY time which can look sterile
+    padding: Number,
+
+    // Distance between each major tick
     x_tick: Number,
     y_tick: Number,
+
+    /// Where should grid lines be drawn?
     grid: GridType,
+
     /// Can the graph start at a non-zero value and "break" to the x-axis?
     can_break: bool,
+
+    /// The actual graphs (plots) to be drawn in the coordinate system
     graphs: Vec<Graph>,
-    padding: Number,
 }
 
 impl Default for Axes {
@@ -36,12 +55,6 @@ impl Default for Axes {
             padding: ZERO,
         }
     }
-}
-
-pub enum GridType {
-    Both,
-    Major,
-    None,
 }
 
 impl GridType {
