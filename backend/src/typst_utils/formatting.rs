@@ -67,6 +67,7 @@ pub fn colors(has_color: bool) -> String {
     )
 }
 
+// item = unbreakable, block = breakable
 pub fn list_item(s: &String) -> String {
     String::from("item[") + s + "],"
 }
