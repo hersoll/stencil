@@ -1,6 +1,6 @@
 use crate::{
     Language,
-    math::IntRange,
+    math::{IntRange, Polynomial, Term},
     problems::Problem,
     registry,
     typst_utils::graphing::{Axes, Graph},
@@ -79,6 +79,43 @@ fn find_k(name: String, lang: &Language) -> Result<Problem> {
     let question = format!("{question}\n{question_graph}");
     let answer = format!("$k = {k}$");
     let solution = format!("{solution}\n{solution_graph}");
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k],
+        combinations: k_range.len(),
+    })
+}
+
+/// Find k and m in graph (k and m are integers)
+/// Difficulty: 2
+#[problem]
+fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
+    let (k, k_range) = IntRange::without_zero(-3, 3)?.and_random();
+    let m = IntRange::with_zero(-3, 3)?.random();
+
+    let x_min = -1;
+    let x_max = 2;
+
+    let question_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .add_graph(Graph::linear(k, m))
+        .build_string()?;
+    let solution_graph = Axes::new_solution()
+        .x_range(x_min, x_max)
+        .add_graph(
+            Graph::linear(k, m)
+                .with_simple_slope_hint()
+                .with_dot_at(0, m),
+        )
+        .build_string()?;
+
+    let question = question_graph;
+    let answer = format!("$y = {k}x {m:+}$");
+    let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
     Ok(Problem {
         name,
