@@ -2,7 +2,7 @@ use crate::math::{Number, ZERO};
 
 /// The Function enum contains information about which kind of function it is (duh), but also numbers
 /// that are specific to that kind of plot. This makes ergonomics easier when matching over the
-/// kinds since you can do Function::Linear(k, m) => ... and then use k and m by those names.
+/// kinds since you can do Function::Linear(k, m) => ...
 pub enum Function {
     /// k, m
     Linear(Number, Number),
@@ -18,8 +18,8 @@ impl Function {
                 if *k == ZERO { None } else { Some((y - m) / k) }
             }
             Function::Exponential(c, a) => {
-                // No solution if y and c have opposite signs,
-                // since a positive value can't become negative through exponentiation
+                // No solution if y and c have opposite signs, since a positive value can't become
+                // negative through exponentiation
                 if y * c < ZERO {
                     None
                 } else {
@@ -37,6 +37,10 @@ impl Function {
         }
     }
 }
+
+// ===================================================
+// TESTS
+// ===================================================
 
 #[cfg(test)]
 mod linear_function_tests {
