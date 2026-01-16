@@ -342,7 +342,7 @@ impl std::ops::DivAssign for Number {
 }
 
 #[cfg(test)]
-mod number_tests {
+mod tests {
     use super::*;
 
     #[test]
