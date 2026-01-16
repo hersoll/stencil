@@ -342,11 +342,11 @@ impl std::ops::DivAssign for Number {
 }
 
 #[cfg(test)]
-mod tests {
+mod number_tests {
     use super::*;
 
     #[test]
-    fn number_creation_and_display() {
+    fn creation_and_display() {
         let integer: Number = 3.into();
         let decimal: Number = 1.2.into();
         let fraction: Number = (3, 4).into();
@@ -366,7 +366,7 @@ mod tests {
     }
 
     #[test]
-    fn number_comparison() {
+    fn comparison() {
         let integer = Number::Integer(3);
         let decimal_lower = Number::Decimal(2900);
         let decimal_higher = Number::Decimal(3100);
@@ -382,7 +382,7 @@ mod tests {
     }
 
     #[test]
-    fn number_addition() {
+    fn addition() {
         let integer: Number = 3.into();
         let decimal: Number = 1.2.into();
         let decimal_2: Number = 1.8.into();
@@ -397,7 +397,7 @@ mod tests {
     }
 
     #[test]
-    fn number_subtraction() {
+    fn subtraction() {
         let integer: Number = 3.into();
         let decimal: Number = 1.2.into();
         let fraction: Number = (3, 4).into();
@@ -410,7 +410,7 @@ mod tests {
     }
 
     #[test]
-    fn number_multiplication() {
+    fn multiplication() {
         let integer: Number = 3.into();
         let decimal: Number = 1.2.into();
         let fraction: Number = (3, 4).into();
@@ -423,7 +423,7 @@ mod tests {
     }
 
     #[test]
-    fn number_division() {
+    fn division() {
         let integer: Number = 3.into();
         let decimal: Number = 1.2.into();
         let fraction: Number = (3, 4).into();
