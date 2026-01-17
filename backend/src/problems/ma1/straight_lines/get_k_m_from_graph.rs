@@ -1,6 +1,6 @@
 use crate::{
     Language,
-    math::{IntRange, Polynomial, Term},
+    math::{IntRange, Number, Polynomial, Term},
     problems::Problem,
     registry,
     typst_utils::graphing::{Axes, Graph},
@@ -127,5 +127,45 @@ fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
         solution,
         identifiers: vec![k],
         combinations: k_range.len(),
+    })
+}
+
+/// Find k and m in graph (k is a fraction)
+/// Difficulty: 4
+#[problem]
+fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
+    let (k_num, k_num_range) = IntRange::without_zero(-5, 5)?.and_random();
+    let (k_denom, k_denom_range) = IntRange::without_zero(3, 5)?.and_random();
+    let m = IntRange::with_zero(-3, 3)?.random();
+    let k = Number::Fraction(k_num, k_denom);
+
+    let x_min = -1;
+    // With some random padding
+    let x_max = k_denom + IntRange::with_zero(0, 3)?.random();
+
+    let question_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .add_graph(Graph::linear(k, m))
+        .build_string()?;
+    let solution_graph = Axes::new_solution()
+        .x_range(x_min, x_max)
+        .add_graph(Graph::linear(k, m).with_slope_hint(0, k_denom, ("x", "y")))
+        .build_string()?;
+
+    let k_term = Term::from((k, 'x'));
+    let m_term = Term::from(m);
+    let expr: Polynomial = vec![k_term, m_term].into();
+
+    let question = question_graph;
+    let answer = format!("$y = {}$", expr.sorted());
+    let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k_num, k_denom],
+        combinations: k_num_range.len() * k_denom_range.len(),
     })
 }
