@@ -23,7 +23,7 @@ impl Term {
         let mut result = self.coefficient.clone();
         self.variables.list.iter().for_each(|v| {
             match replacements.iter().find(|pair| pair.0 == v.symbol) {
-                Some(pair) => result *= pair.1.value().pow(v.exponent as i32).into(),
+                Some(pair) => result *= Number::from(pair.1.value().pow(v.exponent as i32)),
                 None => panic!("Variable {v} not in replacements {replacements:#?}. (Panic should not be reached if called from polynomial.evaluate())"),
             }
         });
@@ -296,7 +296,7 @@ impl std::ops::Mul<i32> for Term {
 }
 impl std::ops::MulAssign<i32> for Term {
     fn mul_assign(&mut self, rhs: i32) {
-        self.coefficient *= rhs.into();
+        self.coefficient *= rhs;
     }
 }
 

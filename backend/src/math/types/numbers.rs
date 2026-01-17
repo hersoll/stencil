@@ -295,9 +295,15 @@ impl std::ops::Mul<f64> for Number {
     }
 }
 
-impl std::ops::MulAssign for Number {
+impl std::ops::MulAssign<Number> for Number {
     fn mul_assign(&mut self, rhs: Self) {
         *self = self.clone() * &rhs;
+    }
+}
+
+impl std::ops::MulAssign<i32> for Number {
+    fn mul_assign(&mut self, rhs: i32) {
+        *self = self.clone() * rhs;
     }
 }
 
@@ -338,6 +344,12 @@ impl std::ops::Div<i32> for Number {
 impl std::ops::DivAssign for Number {
     fn div_assign(&mut self, rhs: Self) {
         *self = self.clone() / &rhs;
+    }
+}
+
+impl std::ops::DivAssign<i32> for Number {
+    fn div_assign(&mut self, rhs: i32) {
+        *self = self.clone() / rhs;
     }
 }
 

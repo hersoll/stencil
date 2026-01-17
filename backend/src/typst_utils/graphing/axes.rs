@@ -1,5 +1,5 @@
 use crate::{
-    math::{Number, ZERO, functions::Function},
+    math::{Number, ZERO},
     typst_utils::graphing::graphs::Graph,
 };
 use anyhow::{Result, anyhow};
@@ -25,9 +25,11 @@ pub struct Axes {
     /// corner EVERY time which can look sterile
     padding: Number,
 
-    // Distance between each major tick
-    x_tick: Number,
-    y_tick: Number,
+    // Distance between each tick
+    x_tick: Option<Number>,
+    y_tick: Option<Number>,
+    x_minor_tick: Option<Number>,
+    y_minor_tick: Option<Number>,
 
     /// Where should grid lines be drawn?
     grid: GridType,
@@ -47,9 +49,11 @@ impl Default for Axes {
             x_max: Number::Integer(1),
             y_min: None,
             y_max: None,
-            x_tick: Number::Integer(1),
-            y_tick: Number::Integer(1),
-            grid: GridType::Major,
+            x_tick: None,
+            y_tick: None,
+            x_minor_tick: None,
+            y_minor_tick: None,
+            grid: GridType::Both,
             can_break: false,
             graphs: Vec::new(),
             padding: ZERO,
@@ -90,6 +94,26 @@ impl Axes {
         self
     }
 
+    pub fn x_tick(&mut self, distance: impl Into<Number>) -> &mut Self {
+        self.x_tick = Some(distance.into());
+        self
+    }
+
+    pub fn y_tick(&mut self, distance: impl Into<Number>) -> &mut Self {
+        self.y_tick = Some(distance.into());
+        self
+    }
+
+    pub fn minor_x_tick(&mut self, distance: impl Into<Number>) -> &mut Self {
+        self.x_minor_tick = Some(distance.into());
+        self
+    }
+
+    pub fn minor_y_tick(&mut self, distance: impl Into<Number>) -> &mut Self {
+        self.y_minor_tick = Some(distance.into());
+        self
+    }
+
     pub fn grid(&mut self, grid: GridType) -> &mut Self {
         self.grid = grid;
         self
@@ -113,7 +137,8 @@ impl Axes {
     pub fn build_string(&mut self) -> Result<String> {
         // Make sure the y_range is set if not manually set
         self.set_y_range()?;
-        self.auto_fit_range();
+        self.set_ticks();
+        //self.auto_fit_range();
 
         let mut out = String::with_capacity(256);
         writeln!(
@@ -128,12 +153,21 @@ impl Axes {
         writeln!(out, "size: (4, 4),")?;
         writeln!(out, "x-min: {},", self.x_min.for_graphs())?;
         writeln!(out, "x-max: {},", self.x_max.for_graphs())?;
+        // This will always be Some() due to set_y_range().
         writeln!(out, "y-min: {},", self.y_min.unwrap().for_graphs())?;
         writeln!(out, "y-max: {},", self.y_max.unwrap().for_graphs())?;
         writeln!(out, "x-grid: \"{}\",", self.grid.to_typst())?;
         writeln!(out, "y-grid: \"{}\",", self.grid.to_typst())?;
-        writeln!(out, "x-tick-step: {},", self.x_tick.for_graphs())?;
-        writeln!(out, "y-tick-step: {},", self.y_tick.for_graphs())?;
+        // This will always be Some() due to set_ticks().
+        writeln!(out, "x-tick-step: {},", self.x_tick.unwrap().for_graphs())?;
+        writeln!(out, "y-tick-step: {},", self.y_tick.unwrap().for_graphs())?;
+        if let Some(x_minor_tick) = self.x_minor_tick {
+            writeln!(out, "x-minor-tick-step: {},", x_minor_tick.for_graphs())?;
+        }
+        if let Some(y_minor_tick) = self.y_minor_tick {
+            writeln!(out, "y-minor-tick-step: {},", y_minor_tick.for_graphs())?;
+        }
+
         writeln!(out, "{{")?;
         for graph in self.graphs.iter() {
             writeln!(
@@ -180,18 +214,16 @@ impl Axes {
         // If you want to draw an empty graph, specify y_min and y_max yourself
         if self.graphs.len() == 0 {
             return Err(anyhow!(
-                "Tried to call auto_y_range() without adding a graph first.",
+                "Tried to call auto_y_range() without adding a graph first. Please specify y_min and y_max if you want the graph to be empty",
             ));
         }
 
         let mut min = Number::Integer(i32::MAX);
         let mut max = Number::Integer(i32::MIN);
         for graph in self.graphs.iter() {
+            // Check the endpoints of the graph
             for val in [self.x_min, self.x_max].iter() {
-                let extreme = match graph.function {
-                    Function::Linear(k, m) => k * val + &m,
-                    Function::Exponential(c, a) => c * &a.value().powf(val.value()).into(),
-                };
+                let extreme = graph.function.get_y(&val);
 
                 if extreme < min {
                     min = extreme;
@@ -200,6 +232,8 @@ impl Axes {
                     max = extreme;
                 }
             }
+            // Here we can also check for other extremes, like the extremum of a quadratic function
+            // or amplitude of a sine wave
         }
 
         self.y_min = Some(min - &self.padding);
@@ -223,29 +257,119 @@ impl Axes {
         };
     }
 
-    /// Makes the ratio between the x-axis and y-axis closer to 1
-    /// to make the graph look good
-    fn auto_fit_range(&mut self) {
-        let max_ratio = Number::Integer(2);
-        // Alternate between increasing to the right and to the left
-        let mut go_right = true;
-        while (self.y_max.unwrap() - &self.y_min.unwrap()) / &(self.x_max - &self.x_min) > max_ratio
-        {
-            match go_right {
-                true => self.x_max = self.x_max + 1,
-                false => self.x_min = self.x_min - 1,
-            }
-            go_right = !go_right;
+    // NOTE: Currently not in use, decided that the axes shouldn't be changed if explicitly set.
+    // Make sure the graph looks OK when you create a problem
+
+    // /// Makes the ratio between the x-axis and y-axis closer to 1 (including ticks)
+    // /// to make the graph look good
+    // fn auto_fit_range(&mut self) {
+    //     let max_ratio = Number::Integer(2);
+    //
+    //     // Distance between grid lines
+    //     // x_tick and y_tick will always be Some() here
+    //     let (x_dist, y_dist) = match self.grid {
+    //         GridType::Both => (
+    //             self.x_minor_tick.unwrap_or(self.x_tick.unwrap()),
+    //             self.y_minor_tick.unwrap_or(self.y_tick.unwrap()),
+    //         ),
+    //         _ => (self.x_tick.unwrap(), self.y_tick.unwrap()),
+    //     };
+    //
+    //     // Alternate between increasing to the right and to the left
+    //     let mut go_right = true;
+    //     while ((self.y_max.unwrap() - &self.y_min.unwrap()) / &y_dist)
+    //         / &((self.x_max - &self.x_min) / &x_dist)
+    //         >= max_ratio
+    //     {
+    //         match go_right {
+    //             true => self.x_max = self.x_max + 1,
+    //             false => self.x_min = self.x_min - 1,
+    //         }
+    //         go_right = !go_right;
+    //     }
+    //
+    //     let mut go_up = true;
+    //     while ((self.x_max - &self.x_min) / &x_dist)
+    //         / &((self.y_max.unwrap() - &self.y_min.unwrap()) / &y_dist)
+    //         >= max_ratio
+    //     {
+    //         match go_up {
+    //             true => self.y_max = Some(self.y_max.unwrap() + 1),
+    //             false => self.y_min = Some(self.y_min.unwrap() - 1),
+    //         }
+    //         go_up = !go_up;
+    //     }
+    // }
+
+    /// Not all ticks are created equal. When ticking a graph, we want to do jumps of:
+    /// - 1
+    /// - 5
+    /// - Powers of 10 (100, 1000, 0.1, 0.01, ...)
+    /// - 5 * powers of 10
+    ///
+    /// The maximum amount of ticks before it gets ugly should be 10
+    /// The minimum amount of ticks should be 2 (maybe 3?)
+    ///
+    /// So if (y distance)/tick > 10 => tick increases
+    /// (y distance)/tick < 2 => tick decreases
+    ///
+    /// Standard minor tick should be a fifth of the major tick, only shown if tick != 1
+    fn set_ticks(&mut self) {
+        /// We need to keep track of whether the tick starts with a 1 or 5 to know what to multiply
+        /// with (5 if it's a one, 2 if it's a five)
+        enum StartingNumber {
+            One,
+            Five,
         }
 
-        let mut go_up = true;
-        while (self.x_max - &self.x_min) / &(self.y_max.unwrap() - &self.y_min.unwrap()) > max_ratio
-        {
-            match go_up {
-                true => self.y_max = Some(self.y_max.unwrap() + 1),
-                false => self.y_min = Some(self.y_min.unwrap() - 1),
+        let mut x_tick = Number::Integer(1);
+        let mut y_tick = Number::Integer(1);
+
+        for (tick, min, max) in [
+            (&mut x_tick, self.x_min, self.x_max),
+            (&mut y_tick, self.y_min.unwrap(), self.y_max.unwrap()),
+        ] {
+            let mut starting_number = StartingNumber::One;
+            // Distance of 9 = 10 ticks
+            while (max - &min) / &*tick > Number::Integer(9) {
+                match starting_number {
+                    StartingNumber::One => {
+                        *tick *= 5;
+                        starting_number = StartingNumber::Five;
+                    }
+                    StartingNumber::Five => {
+                        *tick *= 2;
+                        starting_number = StartingNumber::One;
+                    }
+                }
             }
-            go_up = !go_up;
+
+            // Distance of 1 = 2 ticks
+            while (max - &min) / &*tick < Number::Integer(1) {
+                match starting_number {
+                    StartingNumber::One => {
+                        *tick /= 2;
+                        starting_number = StartingNumber::Five;
+                    }
+                    StartingNumber::Five => {
+                        *tick /= 5;
+                        starting_number = StartingNumber::One;
+                    }
+                }
+            }
         }
+
+        if x_tick != Number::Integer(1) {
+            self.x_minor_tick = Some(x_tick / 5);
+            self.grid = GridType::Both;
+        }
+
+        if y_tick != Number::Integer(1) {
+            self.y_minor_tick = Some(y_tick / 5);
+            self.grid = GridType::Both;
+        }
+
+        self.x_tick = Some(x_tick);
+        self.y_tick = Some(y_tick);
     }
 }

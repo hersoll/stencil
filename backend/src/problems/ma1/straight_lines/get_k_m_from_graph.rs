@@ -25,7 +25,6 @@ fn find_m(name: String, lang: &Language) -> Result<Problem> {
 
     let question_graph = Axes::new()
         .x_range(x_min, x_max)
-        .padding(1)
         .add_graph(Graph::linear(k, m))
         .build_string()?;
     let solution_graph = Axes::new_solution()
