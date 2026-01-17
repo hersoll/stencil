@@ -112,8 +112,12 @@ fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
         )
         .build_string()?;
 
+    let k_term = Term::from((k, 'x'));
+    let m_term = Term::from(m);
+    let expr: Polynomial = vec![k_term, m_term].into();
+
     let question = question_graph;
-    let answer = format!("$y = {k}x {m:+}$");
+    let answer = format!("$y = {}$", expr.sorted());
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
     Ok(Problem {
