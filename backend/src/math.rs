@@ -1,5 +1,6 @@
 pub mod functions;
 mod int_range;
+pub mod num_gen;
 pub mod symbols;
 mod types;
 pub mod utils;
