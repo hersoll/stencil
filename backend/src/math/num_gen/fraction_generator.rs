@@ -15,6 +15,8 @@ enum Kind {
 pub struct FractionGenerator {
     num: Kind,
     denom: Kind,
+    min_value: i32,
+    max_value: i32,
     reducible: bool,
 }
 
@@ -47,6 +49,8 @@ pub fn fraction() -> FractionGenerator {
     FractionGenerator {
         num: Kind::NotDefined,
         denom: Kind::NotDefined,
+        min_value: 0,
+        max_value: 1,
         reducible: false,
     }
 }
@@ -57,17 +61,15 @@ impl FractionGenerator {
     /// If the numerator is already set, it will not be touched
     pub fn denom(&mut self, denom: i32) -> &mut Self {
         self.denom = Kind::Single(denom);
-        if let Kind::NotDefined = self.num {
-            self.num = Kind::Range(1, denom.abs() - 1);
-        }
         self
     }
 
     /// Generate a random fraction from the FractionGenerator with the parameters given
     ///
     /// Non-consuming method, so the generator can be used again
-    pub fn random(&self) -> (i32, i32) {
+    pub fn random(&mut self) -> (i32, i32) {
         let denom = generate_value(&self.denom);
+
         // If the fraction is irreducible, we can't just get any old numerator
         let num = match self.reducible {
             false => generate_irreducible_numerator(&self.num, denom),
@@ -81,6 +83,13 @@ impl FractionGenerator {
     pub fn reducible(&mut self) -> &mut Self {
         self.reducible = true;
         self
+    }
+
+    /// With a given denominator, sets the numerator to make sure the fraction is between min_value and max_value
+    fn auto_set_num(&mut self, denom: i32) {
+        if let Kind::NotDefined = self.num {
+            self.num = Kind::Range(self.min_value * denom.abs(), self.max_value * denom.abs());
+        }
     }
 }
 
