@@ -1,14 +1,6 @@
-use rand::seq::IteratorRandom;
-
+use super::common::{Kind, generate_value};
 use crate::math;
-
-/// How the numerator and denominator can be defined when calling
-enum Kind {
-    NotDefined,
-    Single(i32),
-    Multiple(Vec<i32>),
-    Range(i32, i32),
-}
+use rand::seq::IteratorRandom;
 
 /// The builder type returned by the fraction() function
 pub struct FractionGenerator {
@@ -212,29 +204,6 @@ fn generate_irreducible_numerator(num: &Kind, denom: i32, exclusions: &[i32]) ->
             .unwrap(),
         Kind::Range(min, max) => (*min..=*max)
             .filter(|&n| is_irreducible(n) && !is_integer(n) && !exclusions.contains(&n))
-            .choose(&mut rng)
-            .unwrap(),
-    }
-}
-
-fn generate_value(kind: &Kind, exclusions: &[i32]) -> i32 {
-    let mut rng = rand::rng();
-
-    match kind {
-        Kind::NotDefined => {
-            tracing::error!(
-                "Called get_value() on a FractionGenerator but at least one value wasn't set"
-            );
-            0
-        }
-        Kind::Single(n) => *n,
-        Kind::Multiple(vec) => *vec
-            .iter()
-            .filter(|n| !exclusions.contains(&n))
-            .choose(&mut rng)
-            .unwrap(),
-        Kind::Range(min, max) => (*min..=*max)
-            .filter(|n| !exclusions.contains(&n))
             .choose(&mut rng)
             .unwrap(),
     }
