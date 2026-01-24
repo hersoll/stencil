@@ -140,6 +140,11 @@ impl Axes {
         self.set_ticks();
         //self.auto_fit_range();
 
+        // If we haven't passed any graphs, assume we want it empty and add an invisible line
+        if self.graphs.len() == 0 {
+            self.graphs.push(Graph::linear(0, self.y_max.unwrap() + 10));
+        }
+
         let mut out = String::with_capacity(256);
         writeln!(
             out,
