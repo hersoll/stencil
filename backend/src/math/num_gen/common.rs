@@ -1,28 +1,35 @@
 use rand::seq::IteratorRandom;
 
-pub enum Kind {
+pub enum NumberKind {
     NotDefined,
     Single(i32),
     Multiple(Vec<i32>),
     Range(i32, i32),
 }
 
-pub fn generate_value(kind: &Kind, exclusions: &[i32]) -> i32 {
+pub fn generate_value<F>(kind: &NumberKind, exclusions: &[i32], filters: &[F]) -> i32
+where
+    F: Fn(&i32) -> bool,
+{
     let mut rng = rand::rng();
 
+    let apply_filters = |n: &i32| -> bool {
+        !exclusions.contains(n) && (filters.len() == 0 || filters.iter().all(|f| f(n)))
+    };
+
     match kind {
-        Kind::NotDefined => {
+        NumberKind::NotDefined => {
             tracing::error!("Called get_value() on a generator with Kind::NotDefined");
             0
         }
-        Kind::Single(n) => *n,
-        Kind::Multiple(vec) => *vec
+        NumberKind::Single(n) => *n,
+        NumberKind::Multiple(vec) => *vec
             .iter()
-            .filter(|n| !exclusions.contains(&n))
+            .filter(|&&n| apply_filters(&n))
             .choose(&mut rng)
             .unwrap(),
-        Kind::Range(min, max) => (*min..=*max)
-            .filter(|n| !exclusions.contains(&n))
+        NumberKind::Range(min, max) => (*min..=*max)
+            .filter(apply_filters)
             .choose(&mut rng)
             .unwrap(),
     }

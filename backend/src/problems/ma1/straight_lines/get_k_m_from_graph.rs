@@ -1,6 +1,6 @@
 use crate::{
     Language,
-    math::{IntRange, Number, Polynomial, Term},
+    math::{Number, Polynomial, Term, num_gen},
     problems::Problem,
     registry,
     typst_utils::graphing::{Axes, Graph},
@@ -13,9 +13,10 @@ use macros::problem;
 #[problem]
 fn find_m(name: String, lang: &Language) -> Result<Problem> {
     // k = -1 makes x-intersect and y-intersect the same - not ideal for learning
-    let (k, k_range) = IntRange::without_zero(-3, 3)?.exclude(-1).and_random();
+    let k_range = num_gen::integer().range(-3, 3).exclude_multiple(&[0, -1]);
+    let k = k_range.random();
     // We want the x-intersect to be an integer, easiest way is to make sure m is a multiple of k
-    let multiplier = IntRange::with_zero(-2, 2)?.random();
+    let multiplier = num_gen::integer().range(-2, 2).random();
     let m = k * multiplier;
 
     // Always show the intersection with the x-axis.
@@ -54,9 +55,10 @@ fn find_m(name: String, lang: &Language) -> Result<Problem> {
 /// Difficulty: 1
 #[problem]
 fn find_k(name: String, lang: &Language) -> Result<Problem> {
-    let (k, k_range) = IntRange::without_zero(-3, 3)?.and_random();
+    let k_range = num_gen::integer().range(-3, 3).exclude(0);
+    let k = k_range.random();
     // We want the x-intersect to be an integer, easiest way is to make sure m is a multiple of k
-    let multiplier = IntRange::with_zero(-2, 2)?.random();
+    let multiplier = num_gen::integer().range(-2, 2).random();
     let m = k * multiplier;
 
     let x_min = -1;
@@ -93,8 +95,9 @@ fn find_k(name: String, lang: &Language) -> Result<Problem> {
 /// Difficulty: 2
 #[problem]
 fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
-    let (k, k_range) = IntRange::without_zero(-3, 3)?.and_random();
-    let m = IntRange::with_zero(-3, 3)?.random();
+    let k_range = num_gen::integer().range(-3, 3).exclude(0);
+    let k = k_range.random();
+    let m = num_gen::integer().range(-3, 3).random();
 
     let x_min = -1;
     let x_max = 2;
@@ -134,14 +137,14 @@ fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 4
 #[problem]
 fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
-    let (k_num, k_num_range) = IntRange::without_zero(-5, 5)?.and_random();
-    let (k_denom, k_denom_range) = IntRange::without_zero(3, 5)?.and_random();
-    let m = IntRange::with_zero(-3, 3)?.random();
-    let k = Number::Fraction(k_num, k_denom);
+    let mut frac = num_gen::fraction().denom_range(3, 5).min(-1).max(1);
+    let (num, denom) = frac.random();
+    let m = num_gen::integer().range(-3, 3).exclude(0).random();
+    let k = Number::Fraction(num, denom);
 
     let x_min = -1;
     // With some random padding
-    let x_max = k_denom + IntRange::with_zero(0, 3)?.random();
+    let x_max = denom + num_gen::integer().range(0, 3).random();
 
     let question_graph = Axes::new()
         .x_range(x_min, x_max)
@@ -149,7 +152,7 @@ fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
         .build_string()?;
     let solution_graph = Axes::new_solution()
         .x_range(x_min, x_max)
-        .add_graph(Graph::linear(k, m).with_slope_hint(0, k_denom, ("x", "y")))
+        .add_graph(Graph::linear(k, m).with_slope_hint(0, denom, ("x", "y")))
         .build_string()?;
 
     let k_term = Term::from((k, 'x'));
@@ -165,7 +168,7 @@ fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
         question,
         answer,
         solution,
-        identifiers: vec![k_num, k_denom],
-        combinations: k_num_range.len() * k_denom_range.len(),
+        identifiers: vec![num, denom],
+        combinations: frac.len(),
     })
 }

@@ -1,13 +1,11 @@
-use super::common::{Kind, generate_value};
-use crate::math;
+use super::common::{NumberKind, generate_value};
+use crate::math::{self, num_gen::IntegerGenerator};
 use rand::seq::IteratorRandom;
 
 /// The builder type returned by the fraction() function
 pub struct FractionGenerator {
-    num: Kind,
-    denom: Kind,
-    num_exclusions: Vec<i32>,
-    denom_exclusions: Vec<i32>,
+    num: IntegerGenerator,
+    denom: IntegerGenerator,
     min_value: i32,
     max_value: i32,
     reducible: bool,
@@ -66,10 +64,8 @@ pub struct FractionGenerator {
 /// ```
 pub fn fraction() -> FractionGenerator {
     FractionGenerator {
-        num: Kind::NotDefined,
-        denom: Kind::NotDefined,
-        num_exclusions: Vec::new(),
-        denom_exclusions: Vec::new(),
+        num: super::integer(),
+        denom: super::integer(),
         min_value: 0,
         max_value: 1,
         reducible: false,
@@ -79,37 +75,37 @@ pub fn fraction() -> FractionGenerator {
 impl FractionGenerator {
     /// Sets the numerator to a specific number
     pub fn num(mut self, num: i32) -> Self {
-        self.num = Kind::Single(num);
+        self.num = self.num.number(num);
         self
     }
 
     /// Sets the numerator to one of several numbers
     pub fn nums(mut self, nums: &[i32]) -> Self {
-        self.num = Kind::Multiple(Vec::from(nums));
+        self.num = self.num.numbers(nums);
         self
     }
 
     /// Sets the numerator to a number within a range
     pub fn num_range(mut self, min: i32, max: i32) -> Self {
-        self.num = Kind::Range(min, max);
+        self.num = self.num.range(min, max);
         self
     }
 
     /// Sets the denominator to a specific number
     pub fn denom(mut self, denom: i32) -> Self {
-        self.denom = Kind::Single(denom);
+        self.denom = self.denom.number(denom);
         self
     }
 
     /// Sets the denominator to one of several numbers
     pub fn denoms(mut self, denoms: &[i32]) -> Self {
-        self.denom = Kind::Multiple(Vec::from(denoms));
+        self.denom = self.denom.numbers(denoms);
         self
     }
 
     /// Sets the denominator to a number within a range
     pub fn denom_range(mut self, min: i32, max: i32) -> Self {
-        self.denom = Kind::Range(min, max);
+        self.denom = self.denom.range(min, max);
         self
     }
 
@@ -130,24 +126,22 @@ impl FractionGenerator {
     }
 
     pub fn exclude_num(mut self, num: i32) -> Self {
-        self.num_exclusions.push(num);
+        self.num = self.num.exclude(num);
         self
     }
 
     pub fn exclude_nums(mut self, nums: &[i32]) -> Self {
-        let mut nums = Vec::from(nums);
-        self.num_exclusions.append(&mut nums);
+        self.num = self.num.exclude_multiple(nums);
         self
     }
 
     pub fn exclude_denom(mut self, denom: i32) -> Self {
-        self.denom_exclusions.push(denom);
+        self.denom = self.denom.exclude(denom);
         self
     }
 
     pub fn exclude_denoms(mut self, denoms: &[i32]) -> Self {
-        let mut denoms = Vec::from(denoms);
-        self.denom_exclusions.append(&mut denoms);
+        self.denom = self.denom.exclude_multiple(denoms);
         self
     }
 
@@ -155,22 +149,34 @@ impl FractionGenerator {
     ///
     /// Non-consuming method, so the generator can be used again
     pub fn random(&mut self) -> (i32, i32) {
-        let denom = generate_value(&self.denom, &self.denom_exclusions);
+        let denom = generate_value(
+            &self.denom.numbers,
+            &self.denom.exclusions,
+            &[] as &[fn(&i32) -> bool],
+        );
         self.auto_set_num(&denom);
 
         // If the fraction is irreducible, we can't just get any old numerator
         let num = match self.reducible {
-            false => generate_irreducible_numerator(&self.num, denom, &self.num_exclusions),
-            true => generate_value(&self.num, &self.num_exclusions),
+            false => generate_irreducible_numerator(&self.num.numbers, denom, &self.num.exclusions),
+            true => generate_value(
+                &self.num.numbers,
+                &self.num.exclusions,
+                &[] as &[fn(&i32) -> bool],
+            ),
         };
 
         (num, denom)
     }
 
+    pub fn len(&self) -> usize {
+        self.num.len() * self.denom.len()
+    }
+
     /// With a given denominator, sets the numerator to make sure the fraction is between min_value and max_value
     fn auto_set_num(&mut self, denom: &i32) {
-        if let Kind::NotDefined = self.num {
-            self.num = Kind::Range(
+        if let NumberKind::NotDefined = self.num.numbers {
+            self.num.numbers = NumberKind::Range(
                 self.min_value * denom.abs() + 1,
                 self.max_value * denom.abs() - 1,
             );
@@ -183,26 +189,26 @@ impl FractionGenerator {
 /// This function is a special version of generate_value(), using gcd to make sure that the resulting
 /// fraction cannot be reduced; if a denom of 6 is given then the resulting fraction will have a
 /// denom of 6 no matter what.
-fn generate_irreducible_numerator(num: &Kind, denom: i32, exclusions: &[i32]) -> i32 {
+fn generate_irreducible_numerator(num: &NumberKind, denom: i32, exclusions: &[i32]) -> i32 {
     let is_irreducible = |n: i32| math::utils::gcd(n, denom) == 1;
     let is_integer = |n: i32| n % denom == 0;
     let mut rng = rand::rng();
 
     match num {
-        Kind::NotDefined => {
+        NumberKind::NotDefined => {
             tracing::error!(
                 "Called get_irreducible_numerator() on a FractionGenerator but numerator wasn't set"
             );
             0
         }
-        Kind::Single(n) => *n,
-        Kind::Multiple(vec) => vec
+        NumberKind::Single(n) => *n,
+        NumberKind::Multiple(vec) => vec
             .iter()
             .copied()
             .filter(|&n| is_irreducible(n) && !is_integer(n) && !exclusions.contains(&n))
             .choose(&mut rng)
             .unwrap(),
-        Kind::Range(min, max) => (*min..=*max)
+        NumberKind::Range(min, max) => (*min..=*max)
             .filter(|&n| is_irreducible(n) && !is_integer(n) && !exclusions.contains(&n))
             .choose(&mut rng)
             .unwrap(),
