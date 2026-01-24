@@ -2,7 +2,7 @@ use crate::{
     Language,
     math::{Number, Polynomial, Term, num_gen},
     problems::Problem,
-    registry,
+    registry::{self, get_problem_data, replace_placeholders},
     typst_utils::graphing::{Axes, Graph},
 };
 use anyhow::Result;
@@ -133,8 +133,156 @@ fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
     })
 }
 
-/// Find k and m in graph (k is a fraction)
+/// Draw the graph of 3x - 1
+/// Difficulty: 3
+#[problem]
+fn draw_own_easy_integers(name: String, lang: &Language) -> Result<Problem> {
+    let k_range = num_gen::integer()
+        .range(-3, 3)
+        .exclude_multiple(&[-1, 0, 1]);
+    let k = k_range.random();
+    let m = num_gen::integer().range(-3, 3).exclude(0).random();
+
+    let x_min = -3;
+    let x_max = 3;
+
+    let y_min = -6;
+    let y_max = 6;
+
+    let question_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .build_string()?;
+    let answer_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .add_graph(Graph::linear(k, m))
+        .build_string()?;
+    let solution_graph = Axes::new_solution()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .add_graph(
+            Graph::linear(k, m)
+                .with_simple_slope_hint()
+                .with_dot_at(0, m),
+        )
+        .build_string()?;
+
+    let k_term = Term::from((k, 'x'));
+    let m_term = Term::from(m);
+    let expr: Polynomial = vec![k_term, m_term].into();
+
+    let problem_data = get_problem_data(&name)?;
+    let question_text = replace_placeholders(
+        problem_data.get_question(lang),
+        &[("fn", format!("y = {expr}"))],
+    );
+    let question = format!("{question_text}\n{question_graph}");
+    let answer = format!("{answer_graph}");
+    let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k],
+        combinations: k_range.len(),
+    })
+}
+
+/// Draw the graph of y = x + 1
 /// Difficulty: 4
+#[problem]
+fn draw_own_unit_k(name: String, lang: &Language) -> Result<Problem> {
+    let k_range = num_gen::integer().numbers(&[-1, 1]);
+    let k = k_range.random();
+    let m = num_gen::integer().range(-2, 2).random();
+
+    let x_min = -2;
+    let x_max = 2;
+
+    let y_min = -3;
+    let y_max = 3;
+
+    let question_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .build_string()?;
+    let answer_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .add_graph(Graph::linear(k, m))
+        .build_string()?;
+
+    let k_term = Term::from((k, 'x'));
+    let m_term = Term::from(m);
+    let expr: Polynomial = vec![k_term, m_term].into();
+
+    let problem_data = get_problem_data(&name)?;
+    let question_text = replace_placeholders(
+        problem_data.get_question(lang),
+        &[("fn", format!("y = {}", expr.sorted()))],
+    );
+    let question = format!("{question_text}\n{question_graph}");
+    let answer = format!("{answer_graph}");
+    let solution = problem_data.get_solution(lang).to_string();
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k],
+        combinations: k_range.len(),
+    })
+}
+
+/// Draw the graph of y = 2
+/// Difficulty: 4
+#[problem]
+fn draw_own_horizontal(name: String, lang: &Language) -> Result<Problem> {
+    let k = 0;
+    let m_range = num_gen::integer().range(-2, 2);
+    let m = m_range.random();
+
+    let x_min = -3;
+    let x_max = 3;
+
+    let y_min = -4;
+    let y_max = 4;
+
+    let question_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .build_string()?;
+    let answer_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .add_graph(Graph::linear(k, m))
+        .build_string()?;
+
+    let problem_data = get_problem_data(&name)?;
+    let question_text = replace_placeholders(
+        problem_data.get_question(lang),
+        &[("fn", format!("y = {m}"))],
+    );
+    let question = format!("{question_text}\n{question_graph}");
+    let answer = format!("{answer_graph}");
+    let solution = problem_data.get_solution(lang).to_string();
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![m],
+        combinations: m_range.len(),
+    })
+}
+
+/// Find k and m in graph (k is a fraction)
+/// Difficulty: 5
 #[problem]
 fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
     let mut frac = num_gen::fraction().denom_range(3, 5).min(-1).max(1);
