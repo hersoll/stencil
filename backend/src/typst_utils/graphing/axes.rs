@@ -306,22 +306,16 @@ impl Axes {
     //     }
     // }
 
+    /// Adjust the tick distance of the axes
+    ///
     /// Not all ticks are created equal. When ticking a graph, we want to do jumps of:
     /// - 1
     /// - 5
     /// - Powers of 10 (100, 1000, 0.1, 0.01, ...)
     /// - 5 * powers of 10
-    ///
-    /// The maximum amount of ticks before it gets ugly should be 10
-    /// The minimum amount of ticks should be 2 (maybe 3?)
-    ///
-    /// So if (y distance)/tick > 10 => tick increases
-    /// (y distance)/tick < 2 => tick decreases
-    ///
-    /// Standard minor tick should be a fifth of the major tick, only shown if tick != 1
     fn set_ticks(&mut self) {
-        /// We need to keep track of whether the tick starts with a 1 or 5 to know what to multiply
-        /// with (5 if it's a one, 2 if it's a five)
+        // We need to keep track of whether the tick starts with a 1 or 5 to know what to multiply
+        // with (5 if it's a one, 2 if it's a five)
         enum StartingNumber {
             One,
             Five,
