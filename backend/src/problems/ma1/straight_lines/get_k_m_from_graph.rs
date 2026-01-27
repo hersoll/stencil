@@ -320,3 +320,51 @@ fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
         combinations: frac.len(),
     })
 }
+
+/// Draw the graph of y = 3x/5 + 2
+/// Difficulty: 6
+#[problem]
+fn draw_own_fraction(name: String, lang: &Language) -> Result<Problem> {
+    let mut k_range = num_gen::fraction().denoms(&[3, 5, 7]);
+    let (num, denom) = k_range.random();
+    let m = num_gen::integer().range(-2, 2).exclude(0).random();
+
+    let x_min = -1;
+    let x_max = denom + 1;
+
+    let y_min = 0.min(m) - 1;
+    let y_max = num * x_max / denom + 2;
+
+    let question_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .build_string()?;
+    let answer_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .add_graph(Graph::linear((num, denom), m))
+        .build_string()?;
+    let solution_graph = Axes::new_solution()
+        .x_range(x_min, x_max)
+        .y_range(y_min, y_max)
+        .add_graph(Graph::linear((num, denom), m).with_slope_hint(0, denom, ("x", "y")))
+        .build_string()?;
+
+    let problem_data = get_problem_data(&name)?;
+    let question_text = replace_placeholders(
+        problem_data.get_question(lang),
+        &[("fn", format!("y = ({num} x)/{denom} {m:+}"))],
+    );
+    let question = format!("{question_text}\n{question_graph}");
+    let answer = format!("{answer_graph}");
+    let solution = format!("{}\n{solution_graph}", problem_data.get_solution(lang));
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![num, denom],
+        combinations: k_range.len(),
+    })
+}
