@@ -358,15 +358,17 @@ impl Axes {
             }
         }
 
-        if x_tick != Number::Integer(1) {
-            self.x_minor_tick = Some(x_tick / 5);
-            self.grid = GridType::Both;
-        }
+        // Lets chill with the minor ticks for now.
 
-        if y_tick != Number::Integer(1) {
-            self.y_minor_tick = Some(y_tick / 5);
-            self.grid = GridType::Both;
-        }
+        // if x_tick != Number::Integer(1) {
+        //     self.x_minor_tick = Some(x_tick / 5);
+        //     self.grid = GridType::Both;
+        // }
+        //
+        // if y_tick != Number::Integer(1) {
+        //     self.y_minor_tick = Some(y_tick / 5);
+        //     self.grid = GridType::Both;
+        // }
 
         self.x_tick = Some(x_tick);
         self.y_tick = Some(y_tick);
