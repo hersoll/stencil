@@ -191,6 +191,44 @@ fn draw_own_easy_integers(name: String, lang: &Language) -> Result<Problem> {
     })
 }
 
+/// Find k and m in graph (k and m are large numbers), y = 40x + 300
+/// Difficulty: 4
+#[problem]
+fn find_k_and_m_large_numbers(name: String, _lang: &Language) -> Result<Problem> {
+    let k_range = num_gen::integer().range(-3, 3).exclude(0);
+    let k = k_range.random() * 20;
+    let m = num_gen::integer().range(1, 5).random() * 100;
+
+    let x_min = 0;
+    let x_max = 6;
+
+    let question_graph = Axes::new()
+        .x_range(x_min, x_max)
+        .add_graph(Graph::linear(k, m))
+        .build_string()?;
+    let solution_graph = Axes::new_solution()
+        .x_range(x_min, x_max)
+        .add_graph(Graph::linear(k, m).with_slope_hint(0, 5, ("x", "y")))
+        .build_string()?;
+
+    let k_term = Term::from((k, 'x'));
+    let m_term = Term::from(m);
+    let expr: Polynomial = vec![k_term, m_term].into();
+
+    let question = question_graph;
+    let answer = format!("$y = {}$", expr.sorted());
+    let solution = format!("$k = {five_k}/5 = {k}$\n{solution_graph}", five_k = 5 * k);
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k],
+        combinations: k_range.len(),
+    })
+}
+
 /// Draw the graph of y = x + 1
 /// Difficulty: 4
 #[problem]
