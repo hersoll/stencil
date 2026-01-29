@@ -30,6 +30,7 @@ pub struct Axes {
     y_tick: Option<Number>,
     x_minor_tick: Option<Number>,
     y_minor_tick: Option<Number>,
+    has_minor_tick: bool,
 
     /// Where should grid lines be drawn?
     grid: GridType,
@@ -51,6 +52,7 @@ impl Default for Axes {
             y_max: None,
             x_tick: None,
             y_tick: None,
+            has_minor_tick: false,
             x_minor_tick: None,
             y_minor_tick: None,
             grid: GridType::Both,
@@ -101,6 +103,11 @@ impl Axes {
 
     pub fn y_tick(&mut self, distance: impl Into<Number>) -> &mut Self {
         self.y_tick = Some(distance.into());
+        self
+    }
+
+    pub fn with_minor_tick(&mut self) -> &mut Self {
+        self.has_minor_tick = true;
         self
     }
 
@@ -358,17 +365,17 @@ impl Axes {
             }
         }
 
-        // Lets chill with the minor ticks for now.
+        if self.has_minor_tick {
+            if x_tick != Number::Integer(1) {
+                self.x_minor_tick = Some(x_tick / 5);
+                self.grid = GridType::Both;
+            }
 
-        // if x_tick != Number::Integer(1) {
-        //     self.x_minor_tick = Some(x_tick / 5);
-        //     self.grid = GridType::Both;
-        // }
-        //
-        // if y_tick != Number::Integer(1) {
-        //     self.y_minor_tick = Some(y_tick / 5);
-        //     self.grid = GridType::Both;
-        // }
+            if y_tick != Number::Integer(1) {
+                self.y_minor_tick = Some(y_tick / 5);
+                self.grid = GridType::Both;
+            }
+        }
 
         self.x_tick = Some(x_tick);
         self.y_tick = Some(y_tick);
