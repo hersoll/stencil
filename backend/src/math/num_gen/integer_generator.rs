@@ -17,7 +17,7 @@ pub struct IntegerGenerator {
 /// let nums = stencil::math::num_gen::integer().numbers(&[3, 5, 7]);
 /// let num_one = nums.random();
 /// let num_two = nums.random(); // random() can be called multiple times on the same range
-/// assert!(num_one == 3 || num_one == 5 || num_two == 7);
+/// assert!(num_one == 3 || num_one == 5 || num_one == 7);
 /// ```
 /// ```
 /// let nums = stencil::math::num_gen::integer().range(-3, 2).exclude_multiple(&[-2, -1, 0, 1]);
