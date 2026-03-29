@@ -3,21 +3,23 @@
   import {
     difficulty_in_range,
     num_to_difficulty_str,
-    type ProblemSetSpec,
+    type ProblemOptions,
     type TopicWithProblems
   } from '../types';
 
-  let { set, topic }: { set: ProblemSetSpec; topic: TopicWithProblems } =
-    $props();
+  let {
+    problems,
+    topic
+  }: { problems: ProblemOptions; topic: TopicWithProblems } = $props();
 
   let excluded_problem_count = $state(0);
 
   function excludeProblem(id: number) {
-    if (set.exclusions.includes(id)) {
-      set.exclusions = set.exclusions.filter(e => e !== id);
+    if (problems.exclusions.includes(id)) {
+      problems.exclusions = problems.exclusions.filter(e => e !== id);
       excluded_problem_count--;
     } else {
-      set.exclusions.push(id);
+      problems.exclusions.push(id);
       excluded_problem_count++;
     }
   }
@@ -47,8 +49,8 @@
       .filter(problem =>
         difficulty_in_range(
           problem.difficulty,
-          set.starting_difficulty,
-          set.ending_difficulty
+          problems.starting_difficulty,
+          problems.ending_difficulty
         )
       )
       .sort((p1, p2) => p1.difficulty - p2.difficulty)
@@ -60,7 +62,7 @@
   {#if problems_to_display.length > 0}
     {#each problems_to_display as problem}
       <button
-        class="problem-grid {set.exclusions.includes(problem.id)
+        class="problem-grid {problems.exclusions.includes(problem.id)
           ? 'excluded'
           : ''}"
         onclick={() => excludeProblem(problem.id)}

@@ -13,7 +13,7 @@
 
 <button
   class="primary create-btn"
-  disabled={sets.current_set.topics.length == 0}
+  disabled={sets.current_set.problems.topics.length == 0}
   onclick={submitSet}>{i18n.t('add_set')}</button
 >
 

@@ -1,0 +1,29 @@
+[package]
+name = "stencil"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+docker = []
+
+[dependencies]
+math = { path = "../math"}
+db = { path = "../db"}
+problem_generator = { path = "../problem_generator"}
+registry = { path = "../registry"}
+typst_writer = { path = "../typst_writer"}
+types = { path = "../types"}
+
+axum = {version = "0.8.7", features = ["macros"]}
+argon2 = "0.5.3"
+base64 = "0.22.1"
+dotenvy = "0.15.7"
+anyhow = { version = "1.0.100", features = ["backtrace"] }
+serde = { version = "1.0.219", features = ["derive"] }
+tower-http = { version = "0.6.7", features = ["cors","trace"] }
+tokio = { version = "1.46.1", features = ["full", "macros"] }
+tracing = "0.1.43"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+tempfile = "3.23.0"
+tower_governor = { version = "0.8.0", features = ["tracing"] }
+governor = "0.10.4"

@@ -1,0 +1,15 @@
+[package]
+name = "db"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+types = { path = "../types"}
+
+anyhow = { version = "1.0.100", features = ["backtrace"] }
+once_cell = "1.21.3"
+sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "postgres"]}
+axum = {version = "0.8.7", features = ["macros"]}
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+tracing = "0.1.43"

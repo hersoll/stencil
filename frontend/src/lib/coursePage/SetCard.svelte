@@ -31,7 +31,7 @@
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(set.topics)
+      body: JSON.stringify(set.problems.topics)
     });
     show_loading_message = false;
     clearTimeout(delay);
@@ -79,17 +79,17 @@
   {/if}
   <div class="set-description">
     <p in:fade={{ duration: 300 }}>
-      {set.n}
+      {set.problems.n}
       {i18n.t('problems').toLowerCase()}
     </p>
     <p in:fade={{ duration: 300 }}>
-      {set.starting_difficulty == set.ending_difficulty
-        ? i18n.t(difficulty_to_string(set.starting_difficulty))
-        : i18n.t(difficulty_to_string(set.starting_difficulty)) +
+      {set.problems.starting_difficulty == set.problems.ending_difficulty
+        ? i18n.t(difficulty_to_string(set.problems.starting_difficulty))
+        : i18n.t(difficulty_to_string(set.problems.starting_difficulty)) +
           ' ' +
           i18n.t('to') +
           ' ' +
-          i18n.t(difficulty_to_string(set.ending_difficulty))}
+          i18n.t(difficulty_to_string(set.problems.ending_difficulty))}
     </p>
   </div>
 </button>

@@ -6,11 +6,12 @@
   function handleChange(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     if (checkbox.checked) {
-      sets.current_set.topics.push(Number(checkbox.value));
+      sets.current_set.problems.topics.push(Number(checkbox.value));
     } else {
-      sets.current_set.topics = sets.current_set.topics.filter(
-        t => t != Number(checkbox.value)
-      );
+      sets.current_set.problems.topics =
+        sets.current_set.problems.topics.filter(
+          t => t != Number(checkbox.value)
+        );
     }
   }
 </script>

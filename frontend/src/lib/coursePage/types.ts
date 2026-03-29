@@ -117,24 +117,30 @@ export function difficulty_in_range(
   return difficulty >= starting_num && difficulty <= ending_num;
 }
 
-/// Should match the ProblemSetSpec of the backend
-export type ProblemSetSpec = {
+export type ProblemOptions = {
   topics: number[];
   exclusions: number[];
   starting_difficulty: Difficulty;
   ending_difficulty: Difficulty;
   n: number;
+};
+
+/// Should match the ProblemSetSpec of the backend
+export type ProblemSetSpec = {
+  problems: ProblemOptions;
   options: SetOptions;
 };
 
 export type SetState = { id: number; set: ProblemSetSpec };
 
 export const defaultProblemSet: ProblemSetSpec = {
-  topics: [],
-  exclusions: [],
-  starting_difficulty: 'Intro',
-  ending_difficulty: 'Hard',
-  n: 20,
+  problems: {
+    topics: [],
+    exclusions: [],
+    starting_difficulty: 'Intro',
+    ending_difficulty: 'Hard',
+    n: 20
+  },
   options: { question_columns: 2, heading: '', spacing: null }
 };
 

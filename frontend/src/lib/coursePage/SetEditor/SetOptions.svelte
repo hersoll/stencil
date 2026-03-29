@@ -10,9 +10,9 @@
   function handleNumberBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      set.n = Math.max(MIN_PROBLEMS, Math.min(MAX_PROBLEMS, value));
+      set.problems.n = Math.max(MIN_PROBLEMS, Math.min(MAX_PROBLEMS, value));
     } else {
-      set.n = MIN_PROBLEMS;
+      set.problems.n = MIN_PROBLEMS;
     }
   }
 
@@ -52,7 +52,7 @@
           name="n"
           id="number_picker"
           type="number"
-          bind:value={set.n}
+          bind:value={set.problems.n}
           min="1"
           max="250"
           onblur={handleNumberBlur}

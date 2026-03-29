@@ -55,7 +55,7 @@
   <div class="editing-grid">
     <div class="scrollable">
       {#each topics as topic}
-        <TopicCard {set} {topic} />
+        <TopicCard problems={set.problems} {topic} />
       {/each}
     </div>
     <div class="col">

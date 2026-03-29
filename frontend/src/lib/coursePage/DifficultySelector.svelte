@@ -1,7 +1,7 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import type { ProblemSetSpec } from '../types';
-  let { set, type }: { set: ProblemSetSpec; type: 'starting' | 'ending' } =
+  import type { ProblemOptions } from './types';
+  let { set, type }: { set: ProblemOptions; type: 'starting' | 'ending' } =
     $props();
 
   let difficulty = {

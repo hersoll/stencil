@@ -9,12 +9,12 @@
   function handleBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      sets.current_set.n = Math.max(
+      sets.current_set.problems.n = Math.max(
         MIN_PROBLEMS,
         Math.min(MAX_PROBLEMS, value)
       );
     } else {
-      sets.current_set.n = MIN_PROBLEMS;
+      sets.current_set.problems.n = MIN_PROBLEMS;
     }
   }
 </script>
@@ -26,7 +26,7 @@
       name="n"
       class="number-picker"
       type="number"
-      bind:value={sets.current_set.n}
+      bind:value={sets.current_set.problems.n}
       min="1"
       max="250"
       onblur={handleBlur}
@@ -36,9 +36,9 @@
     <label for="difficulty-row">{i18n.t('difficulty')}:</label>
     <div class="difficulty-row">
       {i18n.t('from')}
-      <DifficultySelector set={sets.current_set} type="starting" />
+      <DifficultySelector set={sets.current_set.problems} type="starting" />
       {i18n.t('to')}
-      <DifficultySelector set={sets.current_set} type="ending" />
+      <DifficultySelector set={sets.current_set.problems} type="ending" />
     </div>
   </div>
 </div>

@@ -1,33 +1,4 @@
-[package]
-name = "stencil"
-version = "0.3.0"
-authors = ["Herman <herman.sollerman@gmail.com>"]
-edition = "2024"
+[workspace]
+members = ["db", "math", "problem_generator", "registry", "server", "typst_writer", "types"]
 
-[features]
-docker = []
-
-[dependencies]
-macros = { path = "./macros" }
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.140"
-derive_more = { version = "2.0.1", features = ["from"] }
-num-traits = "0.2.19"
-sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "postgres"]}
-tokio = { version = "1.46.1", features = ["full", "macros"] }
-rand = { version = "0.9.1"}
-ctor = {version = "0.4.2"}
-once_cell = "1.21.3"  # Can be used on both, but consider std::sync::OnceLock for newer Rust
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-getrandom = "0.3.3"
-axum = {version = "0.8.7", features = ["macros"]}
-dotenvy = "0.15.7"
-tower-http = { version = "0.6.7", features = ["cors","trace"] }
-tracing = "0.1.43"
-anyhow = { version = "1.0.100", features = ["backtrace"] }
-thiserror = "2.0.17"
-tempfile = "3.23.0"
-tower_governor = { version = "0.8.0", features = ["tracing"] }
-governor = "0.10.4"
-argon2 = "0.5.3"
-base64 = "0.22.1"
+resolver = "3"

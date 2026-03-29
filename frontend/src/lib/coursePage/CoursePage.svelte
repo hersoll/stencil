@@ -92,10 +92,10 @@
         <h2 class="subtitle">{i18n.t('instructions')}</h2>
         <button
           class="select-all-btn"
-          onclick={sets.current_set.topics.length == 0
+          onclick={sets.current_set.problems.topics.length == 0
             ? selectAllTopics
             : deselectAllTopics}
-          >{sets.current_set.topics.length == 0
+          >{sets.current_set.problems.topics.length == 0
             ? i18n.t('select_all')
             : i18n.t('clear')}</button
         >
