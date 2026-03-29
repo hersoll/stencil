@@ -10,17 +10,17 @@ pub struct IntegerGenerator {
 /// # Examples
 ///
 /// ```
-/// let num = stencil::math::num_gen::integer().range(4, 9).random();
+/// let num = math::num_gen::integer().range(4, 9).random();
 /// assert!(num >= 4 && num <= 9); // Range is inclusive
 /// ```
 /// ```
-/// let nums = stencil::math::num_gen::integer().numbers(&[3, 5, 7]);
+/// let nums = math::num_gen::integer().numbers(&[3, 5, 7]);
 /// let num_one = nums.random();
 /// let num_two = nums.random(); // random() can be called multiple times on the same range
 /// assert!(num_one == 3 || num_one == 5 || num_one == 7);
 /// ```
 /// ```
-/// let nums = stencil::math::num_gen::integer().range(-3, 2).exclude_multiple(&[-2, -1, 0, 1]);
+/// let nums = math::num_gen::integer().range(-3, 2).exclude_multiple(&[-2, -1, 0, 1]);
 /// let num = nums.random();
 /// let num_positive = nums.positive();
 /// assert!(num == 2 || num == -3);

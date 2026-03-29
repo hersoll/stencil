@@ -286,7 +286,7 @@ impl Display for Polynomial {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::math::Variables;
+    use crate::Variables;
 
     #[test]
     fn expression_creation() {
@@ -351,23 +351,6 @@ mod tests {
         // assert_eq!(partial_evaluation.to_string(), "4a-5");
         let full_evaluation = exp.evaluate(&vec![('a', -2), ('x', 5)]);
         assert_eq!(full_evaluation.to_string(), "-73");
-    }
-
-    #[test]
-    fn expression_evaluation_display() {
-        let t1: Term = (2, 'x').into();
-        let t2: Term = (-3, ('x', 2)).into();
-        let vars = Variables::from(vec![('a', 3), ('x', 3), ('y', 4)]);
-        let t3: Term = (4, vars).into();
-        let exp: Polynomial = vec![&t1, &t2, &t3].into();
-        assert_eq!(
-            exp.show_replacements(&vec![('x', -1)]),
-            "2 dot colored((-1))-3 dot colored((-1))^2+4a^3 dot colored((-1))^3 dot y^4"
-        );
-        assert_eq!(
-            exp.show_replacements(&vec![('x', 4)]),
-            "2 dot colored(4)-3 dot colored(4)^2+4a^3 dot colored(4)^3 dot y^4"
-        );
     }
 
     #[test]

@@ -60,3 +60,24 @@ pub fn show_polynomial_evaluation<T: Into<Number> + Clone>(
     }
     s
 }
+mod tests {
+    use crate::custom_math::polynomials::show_polynomial_replacements;
+    use math::{Polynomial, Term, Variables};
+
+    #[test]
+    fn expression_evaluation_display() {
+        let t1: Term = (2, 'x').into();
+        let t2: Term = (-3, ('x', 2)).into();
+        let vars = Variables::from(vec![('a', 3), ('x', 3), ('y', 4)]);
+        let t3: Term = (4, vars).into();
+        let exp: Polynomial = vec![&t1, &t2, &t3].into();
+        assert_eq!(
+            show_polynomial_replacements(&exp, &vec![('x', -1)]),
+            "2 dot colored((-1))-3 dot colored((-1))^2+4a^3 dot colored((-1))^3 dot y^4"
+        );
+        assert_eq!(
+            show_polynomial_replacements(&exp, &vec![('x', 4)]),
+            "2 dot colored(4)-3 dot colored(4)^2+4a^3 dot colored(4)^3 dot y^4"
+        );
+    }
+}

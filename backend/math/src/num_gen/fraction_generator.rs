@@ -18,7 +18,7 @@ pub struct FractionGenerator {
 /// # Examples
 ///
 /// ```
-/// let (num, denom) = stencil::math::num_gen::fraction().denom(7).random();
+/// let (num, denom) = math::num_gen::fraction().denom(7).random();
 /// assert!(num >= 1 && num <= 6); // Generates a fraction between 1/7 and 6/7
 /// assert!(denom == 7);
 /// ```
@@ -26,31 +26,31 @@ pub struct FractionGenerator {
 /// Fractions are irreducible by default - if a certain denominator is given the generator is sure
 /// not to accidentally generate a fraction which can be reduced to another denominator:
 /// ```
-/// let (num, denom) = stencil::math::num_gen::fraction().denom(6).random();
+/// let (num, denom) = math::num_gen::fraction().denom(6).random();
 /// assert!(num == 1 || num == 5); // Only 1/6 and 5/6 are irreducible
 /// assert!(denom == 6);
 /// ```
 ///
 /// ```
-/// let (num, denom) = stencil::math::num_gen::fraction().denom(6).min(2).max(4).random();
+/// let (num, denom) = math::num_gen::fraction().denom(6).min(2).max(4).random();
 /// assert!(num == 13 || num == 17 || num == 19 || num == 23);
 /// assert!(denom == 6);
 /// ```
 ///
 /// ```
-/// let (num, denom) = stencil::math::num_gen::fraction().reducible().denom(6).random();
+/// let (num, denom) = math::num_gen::fraction().reducible().denom(6).random();
 /// assert!(num >= 0 && num <= 6); // All numerators are allowed now, even 0
 /// assert!(denom == 6);
 /// ```
 /// ```
-/// let (num, denom) = stencil::math::num_gen::fraction().reducible().denom(6).max(2).random();
+/// let (num, denom) = math::num_gen::fraction().reducible().denom(6).max(2).random();
 /// assert!(num >= 0 && num <= 12);
 /// assert!(denom == 6);
 /// ```
 ///
 /// The numerator can of course be set independently:
 /// ```
-/// let (num, denom) = stencil::math::num_gen::fraction().num(5).denom(6).random();
+/// let (num, denom) = math::num_gen::fraction().num(5).denom(6).random();
 /// assert_eq!(num, 5);
 /// assert_eq!(denom, 6);
 /// ```
@@ -58,7 +58,7 @@ pub struct FractionGenerator {
 /// As shown above, if the numerator isn't set it will be auto adjusted depending on the
 /// denominator. The denominator is always expected to be set though. If it isn't, the method will emit a tracing::error and set the denominator to 0:
 /// ```
-/// let (num, denom) = stencil::math::num_gen::fraction().num(5).random();
+/// let (num, denom) = math::num_gen::fraction().num(5).random();
 /// assert_eq!(num, 5);
 /// assert_eq!(denom, 0);
 /// ```
