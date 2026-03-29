@@ -11,6 +11,25 @@ pub enum Function {
 }
 
 impl Function {
+    /// Ergonomic constructor
+    pub fn linear(k: impl Into<Number>, m: impl Into<Number>) -> Function {
+        let k = k.into();
+        let m = m.into();
+
+        Function::Linear(k, m)
+    }
+
+    /// Ergonomic constructor
+    pub fn exponential(c: impl Into<Number>, a: impl Into<Number>) -> Function {
+        let c = c.into();
+        let mut a = a.into();
+        if a <= ZERO {
+            tracing::error!("a in an exponential function can't be negative (or 0)");
+            a = Number::Integer(1)
+        }
+        Function::Exponential(c, a)
+    }
+
     pub fn get_x(&self, y: &Number) -> Option<Number> {
         match self {
             Function::Linear(k, m) => {
