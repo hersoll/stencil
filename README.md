@@ -6,11 +6,11 @@ Built with Rust, Svelte and Postgres.
 ## Backend
 The backend is responsible for generating and distributing problems across the stencil, as well as writing the Typst file and compiling it.
 
-The backend consists of five main modules:
-- problems
+The backend consists of five main crates:
+- problem_generator
 - math
 - db
-- typst_utils
+- typst_writer
 - server
 
 ### server
