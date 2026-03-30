@@ -149,15 +149,21 @@ fn draw_own_easy_integers(name: String, lang: &Language) -> Result<Problem> {
     let question_graph = Axes::new()
         .x_range(x_min, x_max)
         .y_range(y_min, y_max)
+        .x_tick(1)
+        .y_tick(1)
         .build_string()?;
     let answer_graph = Axes::new()
         .x_range(x_min, x_max)
         .y_range(y_min, y_max)
+        .x_tick(1)
+        .y_tick(1)
         .add_graph(Graph::linear(k, m))
         .build_string()?;
     let solution_graph = Axes::new_solution()
         .x_range(x_min, x_max)
         .y_range(y_min, y_max)
+        .x_tick(1)
+        .y_tick(1)
         .add_graph(
             Graph::linear(k, m)
                 .with_simple_slope_hint()

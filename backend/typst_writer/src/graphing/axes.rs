@@ -311,6 +311,14 @@ impl Axes {
     //     }
     // }
 
+    // Don't change ticks if explicitly set
+    fn set_ticks(&mut self) {
+        match (self.x_tick, self.y_tick) {
+            (None, None) => self.auto_set_ticks(),
+            (_, _) => (),
+        }
+    }
+
     /// Adjust the tick distance of the axes
     ///
     /// Not all ticks are created equal. When ticking a graph, we want to do jumps of:
@@ -318,7 +326,7 @@ impl Axes {
     /// - 5
     /// - Powers of 10 (100, 1000, 0.1, 0.01, ...)
     /// - 5 * powers of 10
-    fn set_ticks(&mut self) {
+    fn auto_set_ticks(&mut self) {
         // We need to keep track of whether the tick starts with a 1 or 5 to know what to multiply
         // with (5 if it's a one, 2 if it's a five)
         enum StartingNumber {
