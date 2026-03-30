@@ -1,5 +1,5 @@
 <script>
-  import CoursePage from '$src/lib/CoursePage/CoursePage.svelte';
+  import CoursePage from '$src/lib/coursePage/CoursePage.svelte';
 </script>
 
 <CoursePage course="ma1b" />
