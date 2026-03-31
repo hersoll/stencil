@@ -37,7 +37,7 @@ fn find_k_all_positives(name: String, lang: &Language) -> Result<Problem> {
         answer,
         solution,
         identifiers: vec![x_start, x_end, y_start, y_end],
-        combinations: small_range.len().pow(4),
+        combinations: small_range.len().pow(3),
     })
 }
 
@@ -80,5 +80,44 @@ fn find_k_with_negatives(name: String, lang: &Language) -> Result<Problem> {
         solution,
         identifiers: vec![x_start, x_end, y_start, y_end],
         combinations: small_range.len().pow(2),
+    })
+}
+
+/// Calculate k between (27, 32) and (34, 18)
+/// Difficulty: 2
+#[problem]
+fn find_k_large_integers(name: String, lang: &Language) -> Result<Problem> {
+    let k = num_gen::integer().range(-3, 3).random();
+    let start_range = num_gen::integer()
+        .range(16, 34)
+        .exclude_multiple(&[20, 25, 30]);
+    let x_start = start_range.random();
+    let y_start = start_range.random();
+    let x_step = num_gen::integer().range(6, 11).exclude(10).random();
+    let y_step = x_step * k;
+    let x_end = x_start + x_step;
+    let y_end = y_start + y_step;
+
+    let problem_data = registry::get_problem_data(&name)?;
+    let question_string = problem_data.get_question(lang);
+    let question = replace_placeholders(
+        question_string,
+        &[
+            ("p1", format!("$({x_start}, {y_start})$")),
+            ("p2", format!("$({x_end}, {y_end})$")),
+        ],
+    );
+    let answer = format!("$k = {k}$");
+    let solution = format!(
+        "$ k = (y_2 - y_1)/(x_2 - x_1) =({y_end} - {y_start})/({x_end} - {x_start}) = {y_step} / {x_step} = {k} $"
+    );
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![x_start, x_end, y_start, y_end],
+        combinations: start_range.len().pow(2),
     })
 }
