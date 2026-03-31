@@ -128,7 +128,7 @@ fn find_k_large_integers(name: String, lang: &Language) -> Result<Problem> {
 #[problem]
 fn find_equation_small_positives(name: String, lang: &Language) -> Result<Problem> {
     let small_range = num_gen::integer().range(1, 5);
-    let k = small_range.random();
+    let k = num_gen::integer().range(2, 5).random();
     let m = small_range.random();
     let x_start = small_range.random();
     let y_start = k * x_start + m;
@@ -170,6 +170,6 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
         answer,
         solution,
         identifiers: vec![k, m],
-        combinations: small_range.len().pow(2),
+        combinations: small_range.len().pow(3),
     })
 }
