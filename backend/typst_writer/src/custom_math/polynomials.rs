@@ -60,6 +60,8 @@ pub fn show_polynomial_evaluation<T: Into<Number> + Clone>(
     }
     s
 }
+
+#[cfg(test)]
 mod tests {
     use crate::custom_math::polynomials::show_polynomial_replacements;
     use math::{Polynomial, Term, Variables};
