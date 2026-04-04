@@ -1,4 +1,4 @@
 [workspace]
-members = ["db", "math", "problem_generator", "registry", "server", "typst_writer", "types"]
+members = ["db", "math", "problem_generator", "registry", "server", "typst_writer", "types", "metrics"]
 
 resolver = "3"
