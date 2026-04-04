@@ -1,0 +1,92 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, name, difficulty, desc_sv, desc_en, question_sv, question_en,\n            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module\n            FROM problems ORDER BY module",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "difficulty",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "desc_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "desc_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "question_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "question_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "answer_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "answer_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "solution_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "solution_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "prefix_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 12,
+        "name": "module",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "709a8216e739643320868ce5bcd3b1db8bb7855e11012e98e46b6b8e5ec6ebe1"
+}

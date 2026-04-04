@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT CASE \n                        WHEN $1 = 'sv' THEN sv\n                        WHEN $1 = 'en' THEN en\n                        ELSE sv\n                    END as value\n            FROM i18n_pdf\n            WHERE key = $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "value",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "67e670cb1de9a41e6d160e153f97362e7169a213e031f3fe231c8817ae1e0385"
+}
