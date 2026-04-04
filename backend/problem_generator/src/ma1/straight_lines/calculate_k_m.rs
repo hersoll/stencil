@@ -157,10 +157,11 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
                 y &= k x + m \\ k = {k} \\
                 y &= colored({k})x + m \\ x = {x_start}, y = {y_start} \\
                 colored({y_start}) &= {k} dot colored({x_start}) + m \\ \\
-                {y_start} &= {mult} + m \\ \\
+                {y_start} &= {mult} + m \\ {m_mult:+}\\
                 {m} &= m \\ \\
                     ",
-                mult = k * x_start
+                mult = k * x_start,
+                m_mult = -k * x_start
             ))
             .as_str();
 
@@ -216,10 +217,11 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
                 y &= k x + m \\ k = {k} \\
                 y &= colored({k})x + m \\ x = {x_start}, y = {y_start} \\
                 colored({y_start}) &= {p_k} dot colored({p_x_start}) + m \\ \\
-                {y_start} &= {mult} + m \\ \\
+                {y_start} &= {mult} + m \\ {m_mult:+}\\
                 {m} &= m \\ \\
                     ",
         mult = k * x_start,
+        m_mult = -k * x_start,
         p_k = parentheses(k),
         p_x_start = parentheses(x_start),
     ))
@@ -232,5 +234,171 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
         solution,
         identifiers: vec![k, m],
         combinations: small_range.len().pow(3),
+    })
+}
+
+/// Find the equation of the line between (17, 30) and (29, 54)
+/// Difficulty: 4
+#[problem]
+fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem> {
+    let k = num_gen::integer()
+        .range(-3, 3)
+        .exclude_multiple(&[-1, 0, 1])
+        .random();
+    let m = num_gen::integer().range(-10, 10).random();
+    let x_start = num_gen::integer().range(11, 29).exclude(20).random();
+    let y_start = k * x_start + m;
+    let x_step = num_gen::integer().range(6, 11).exclude(10).random();
+    let x_end = x_start + x_step;
+    let y_end = k * x_end + m;
+    let y_step = y_end - y_start;
+    let k_term: Term = (k, 'x').into();
+    let m_term: Term = m.into();
+    let equation: Polynomial = vec![k_term, m_term].into();
+
+    let problem_data = registry::get_problem_data(&name)?;
+    let question_string = problem_data.get_question(lang);
+    let question = replace_placeholders(
+        question_string,
+        &[
+            ("p1", format!("$({x_start}, {y_start})$")),
+            ("p2", format!("$({x_end}, {y_end})$")),
+        ],
+    );
+    let answer = format!("$y = {equation}$");
+
+    let solution = format!(
+        "$ k = ({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
+        parentheses(y_end),
+        parentheses(y_start),
+        parentheses(x_end),
+        parentheses(x_start),
+    ) + equation_solution(format!(
+        "
+                y &= k x + m \\ k = {k} \\
+                y &= colored({k})x + m \\ x = {x_start}, y = {y_start} \\
+                colored({y_start}) &= {p_k} dot colored({p_x_start}) + m \\ \\
+                {y_start} &= {mult} + m \\ {m_mult:+}\\
+                {m} &= m \\ \\
+                    ",
+        mult = k * x_start,
+        m_mult = -k * x_start,
+        p_k = parentheses(k),
+        p_x_start = parentheses(x_start),
+    ))
+    .as_str();
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k, m],
+        combinations: 30,
+    })
+}
+
+/// Find the equation of the line between (17, 30) and (29, 30)
+/// Difficulty: 4
+#[problem]
+fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
+    let k = 0;
+    let m = num_gen::integer().range(-40, 40).random();
+    let x_start = num_gen::integer().range(11, 29).exclude(20).random();
+    let y_start = k * x_start + m;
+    let x_step = num_gen::integer().range(6, 11).exclude(10).random();
+    let x_end = x_start + x_step;
+    let y_end = k * x_end + m;
+    let y_step = y_end - y_start;
+    let k_term: Term = (k, 'x').into();
+    let m_term: Term = m.into();
+    let equation: Polynomial = vec![k_term, m_term].into();
+
+    let problem_data = registry::get_problem_data(&name)?;
+    let question_string = problem_data.get_question(lang);
+    let question = replace_placeholders(
+        question_string,
+        &[
+            ("p1", format!("$({x_start}, {y_start})$")),
+            ("p2", format!("$({x_end}, {y_end})$")),
+        ],
+    );
+    let answer = format!("$y = {equation}$");
+
+    let solution = format!(
+        "$ k = ({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
+        parentheses(y_end),
+        parentheses(y_start),
+        parentheses(x_end),
+        parentheses(x_start),
+    ) + equation_solution(format!(
+        "
+                y &= k x + m \\ k = {k} \\
+                y &= m \\ x = {x_start}, y = {y_start} \\
+                colored({y_start}) &= m \\ \\
+                {m} &= m \\ \\
+                    ",
+    ))
+    .as_str();
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k, m],
+        combinations: 30,
+    })
+}
+
+/// Find the equation of the line between (17, 30) and (29, 42)
+/// Difficulty: 4
+#[problem]
+fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
+    let k = num_gen::integer().numbers(&[-1, 1]).random();
+    let m = num_gen::integer().range(-40, 40).random();
+    let x_start = num_gen::integer().range(11, 29).exclude(20).random();
+    let y_start = k * x_start + m;
+    let x_step = num_gen::integer().range(6, 11).exclude(10).random();
+    let x_end = x_start + x_step;
+    let y_end = k * x_end + m;
+    let y_step = y_end - y_start;
+    let k_term: Term = (k, 'x').into();
+    let m_term: Term = m.into();
+    let equation: Polynomial = vec![k_term.clone(), m_term].into();
+
+    let problem_data = registry::get_problem_data(&name)?;
+    let question_string = problem_data.get_question(lang);
+    let question = replace_placeholders(
+        question_string,
+        &[
+            ("p1", format!("$({x_start}, {y_start})$")),
+            ("p2", format!("$({x_end}, {y_end})$")),
+        ],
+    );
+    let answer = format!("$y = {equation}$");
+
+    let solution = format!(
+        "$ k = ({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
+        parentheses(y_end),
+        parentheses(y_start),
+        parentheses(x_end),
+        parentheses(x_start),
+    ) + equation_solution(format!(
+        "
+                y &= k x + m \\ k = {k} \\
+                y &= colored({k_term}) + m \\ x = {x_start}, y = {y_start} \\
+                colored({y_start}) &= colored({mult}) + m \\ {m_mult:+}\\
+                {m} &= m \\ \\
+                    ",
+        mult = k * x_start,
+        m_mult = -k * x_start,
+    ))
+    .as_str();
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k, m],
+        combinations: 30,
     })
 }
