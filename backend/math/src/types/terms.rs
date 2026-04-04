@@ -19,7 +19,7 @@ impl Term {
         }
     }
 
-    pub fn evaluate(&self, replacements: &Vec<(char, Number)>) -> Number {
+    pub fn evaluate(&self, replacements: &[(char, Number)]) -> Number {
         let mut result = self.coefficient.clone();
         self.variables.list.iter().for_each(|v| {
             match replacements.iter().find(|pair| pair.0 == v.symbol) {

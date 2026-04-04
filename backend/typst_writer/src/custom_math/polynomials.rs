@@ -1,7 +1,7 @@
 use crate::formatting;
 use math::{Number, Polynomial};
 
-pub fn show_polynomial_replacements(pol: &Polynomial, replacements: &Vec<(char, i32)>) -> String {
+pub fn show_polynomial_replacements(pol: &Polynomial, replacements: &[(char, i32)]) -> String {
     use std::fmt::Write;
 
     let mut s = String::new();
@@ -42,7 +42,7 @@ pub fn show_polynomial_replacements(pol: &Polynomial, replacements: &Vec<(char, 
 
 pub fn show_polynomial_evaluation<T: Into<Number> + Clone>(
     pol: &Polynomial,
-    replacements: &Vec<(char, T)>,
+    replacements: &[(char, T)],
 ) -> String {
     use std::fmt::Write;
 
