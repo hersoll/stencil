@@ -240,15 +240,13 @@ impl std::ops::Add<&Number> for &Number {
         match (self, rhs) {
             (Number::Integer(l), Number::Integer(r)) => Number::Integer(l + r),
             (Number::Integer(l), Number::Fraction(num, denom)) => {
-                Number::Fraction(num + l * denom, *denom).simplify()
+                Number::Fraction(num + l * denom, *denom)
             }
             (Number::Fraction(num, denom), Number::Integer(r)) => {
-                Number::Fraction(num + r * denom, *denom).simplify()
+                Number::Fraction(num + r * denom, *denom)
             }
             (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
-                let frac =
-                    simplified_fraction(l_num * r_denom + r_num * l_denom, l_denom * r_denom);
-                Number::Fraction(frac.0, frac.1).simplify()
+                Number::Fraction(l_num * r_denom + r_num * l_denom, l_denom * r_denom)
             }
             (l_val, r_val) => Number::from(l_val.value() + r_val.value()),
         }
@@ -288,15 +286,13 @@ impl std::ops::Sub<&Number> for &Number {
         match (self, rhs) {
             (Number::Integer(l), Number::Integer(r)) => Number::Integer(l - r),
             (Number::Integer(l), Number::Fraction(num, denom)) => {
-                Number::Fraction(l * denom - num, *denom).simplify()
+                Number::Fraction(l * denom - num, *denom)
             }
             (Number::Fraction(num, denom), Number::Integer(r)) => {
-                Number::Fraction(num - r * denom, *denom).simplify()
+                Number::Fraction(num - r * denom, *denom)
             }
             (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
-                let frac =
-                    simplified_fraction(l_num * r_denom - r_num * l_denom, l_denom * r_denom);
-                Number::Fraction(frac.0, frac.1).simplify()
+                Number::Fraction(l_num * r_denom - r_num * l_denom, l_denom * r_denom)
             }
             (l_val, r_val) => Number::from(l_val.value() - r_val.value()),
         }
@@ -328,15 +324,10 @@ impl std::ops::Mul<&Number> for &Number {
     fn mul(self, rhs: &Number) -> Self::Output {
         match (self, rhs) {
             (Number::Integer(l), Number::Integer(r)) => Number::Integer(l * r),
-            (Number::Integer(l), Number::Fraction(num, denom)) => {
-                Number::Fraction(l * num, *denom).simplify()
-            }
-            (Number::Fraction(num, denom), Number::Integer(r)) => {
-                Number::Fraction(num * r, *denom).simplify()
-            }
+            (Number::Integer(l), Number::Fraction(num, denom)) => Number::Fraction(l * num, *denom),
+            (Number::Fraction(num, denom), Number::Integer(r)) => Number::Fraction(num * r, *denom),
             (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
-                let frac = simplified_fraction(l_num * r_num, l_denom * r_denom);
-                Number::Fraction(frac.0, frac.1).simplify()
+                Number::Fraction(l_num * r_num, l_denom * r_denom)
             }
             (l_val, r_val) => Number::from(l_val.value() * r_val.value()),
         }
@@ -394,15 +385,12 @@ impl std::ops::Div<&Number> for &Number {
     fn div(self, rhs: &Number) -> Self::Output {
         match (self, rhs) {
             (Number::Integer(l), Number::Integer(r)) => Number::Fraction(*l, *r).simplify(),
-            (Number::Integer(l), Number::Fraction(num, denom)) => {
-                Number::Fraction(l * denom, *num).simplify()
-            }
+            (Number::Integer(l), Number::Fraction(num, denom)) => Number::Fraction(l * denom, *num),
             (Number::Fraction(num, denom), Number::Integer(r)) => {
-                Number::Fraction(*num, *denom * r).simplify()
+                Number::Fraction(*num, *denom * r)
             }
             (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
-                let frac = simplified_fraction(l_num * r_denom, l_denom * r_num);
-                Number::Fraction(frac.0, frac.1).simplify()
+                Number::Fraction(l_num * r_denom, l_denom * r_num)
             }
             (l_val, r_val) => Number::from(l_val.value() / r_val.value()),
         }
