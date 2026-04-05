@@ -11,6 +11,49 @@ pub struct Term {
 }
 
 impl Term {
+    // ########## CONSTRUCTORS ###########
+
+    /// Construct a new Term with the builder pattern.
+    ///
+    /// Use with_coef() and with_variables() to add to it
+    pub fn new() -> Self {
+        Self {
+            coefficient: Number::Integer(1),
+            variables: Variables::new(),
+            colored: false,
+        }
+    }
+    pub fn with_coef<T: Into<Number>>(mut self, num: T) -> Self {
+        let num = num.into();
+        self.coefficient = num;
+        self
+    }
+    pub fn with_variables<T: Into<Variables>>(mut self, vars: T) -> Self {
+        let vars = vars.into();
+        self.variables = vars;
+        self
+    }
+
+    pub fn from_num<T: Into<Number>>(num: T) -> Self {
+        let num = num.into();
+        Self {
+            coefficient: num,
+            variables: Variables::new(),
+            colored: false,
+        }
+    }
+
+    pub fn from_num_and_vars<T: Into<Number>, U: Into<Variables>>(num: T, vars: U) -> Self {
+        let num = num.into();
+        let vars = vars.into();
+        Self {
+            coefficient: num,
+            variables: vars,
+            colored: false,
+        }
+    }
+    // ###################################
+
     pub fn abs(&self) -> Self {
         Self {
             coefficient: self.coefficient.abs(),
