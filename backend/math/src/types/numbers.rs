@@ -373,6 +373,21 @@ impl std::ops::DivAssign<i32> for Number {
     }
 }
 
+impl std::ops::Rem<Number> for Number {
+    type Output = Self;
+    fn rem(self, rhs: Number) -> Self::Output {
+        match (self, rhs) {
+            (Number::Integer(l), Number::Integer(r)) => Number::Integer(l % r),
+            (_, _) => {
+                tracing::error!(
+                    "Number % Number is currently only implemented in the case where both are Integers."
+                );
+                Number::Integer(1)
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
