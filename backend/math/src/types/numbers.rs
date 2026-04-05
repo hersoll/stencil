@@ -88,6 +88,26 @@ impl Number {
         }
     }
 
+    /// Get the numerator of the number (as a `Number`), if it is a fraction.
+    ///
+    /// Returns the Number itself if it isn't a fraction.
+    pub fn numerator(&self) -> Number {
+        match self {
+            Number::Fraction(n, _) => Number::Integer(*n),
+            _ => *self,
+        }
+    }
+
+    /// Get the denominator of the number (as a `Number`), if it is a fraction.
+    ///
+    /// Returns 1 if it isn't a fraction.
+    pub fn denominator(&self) -> Number {
+        match self {
+            Number::Fraction(_, d) => Number::Integer(*d),
+            _ => Number::Integer(1),
+        }
+    }
+
     /// Inside graph strings we need actual numbers, decimals can't be output
     /// as num("1.2"), like they normally do in Display. This function accounts for that.
     ///
