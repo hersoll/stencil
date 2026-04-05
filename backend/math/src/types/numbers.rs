@@ -1,3 +1,5 @@
+use num_traits::Zero;
+
 use crate::utils::simplified_fraction;
 /// The numbers module handles calculations between different types of numbers
 /// (Integers, Decimals, Fractions, Irrationals) and formats them for Typst.
@@ -108,6 +110,16 @@ impl Number {
         }
     }
 
+    pub fn as_i32(self) -> i32 {
+        match self {
+            Number::Integer(val) => val,
+            _ => {
+                tracing::error!("Called into<i32> on a non-Integer Number!");
+                0
+            }
+        }
+    }
+
     /// Inside graph strings we need actual numbers, decimals can't be output
     /// as num("1.2"), like they normally do in Display. This function accounts for that.
     ///
@@ -152,9 +164,45 @@ impl Display for Number {
     }
 }
 
-impl PartialEq for Number {
+impl Zero for Number {
+    fn zero() -> Self {
+        Number::Integer(0)
+    }
+    fn is_zero(&self) -> bool {
+        match self {
+            Number::Integer(l) => *l == 0,
+            Number::Decimal(l) => *l == 0,
+            Number::Fraction(n, _) => *n == 0,
+            Number::Irrational(f, _) => *f == 0.0,
+        }
+    }
+}
+
+impl PartialEq<Self> for Number {
     fn eq(&self, other: &Self) -> bool {
         self.value() == other.value()
+    }
+}
+
+impl PartialEq<i32> for Number {
+    fn eq(&self, other: &i32) -> bool {
+        match self {
+            Number::Integer(l) => l == other,
+            Number::Decimal(l) => *l == other * DECIMAL_FACTOR,
+            Number::Fraction(n, d) => *n == other * d,
+            Number::Irrational(_, _) => false,
+        }
+    }
+}
+
+impl PartialEq<Number> for i32 {
+    fn eq(&self, other: &Number) -> bool {
+        match other {
+            Number::Integer(l) => l == self,
+            Number::Decimal(l) => *l == self * DECIMAL_FACTOR,
+            Number::Fraction(n, d) => *n == self * d,
+            Number::Irrational(_, _) => false,
+        }
     }
 }
 
@@ -218,6 +266,13 @@ impl std::ops::Add<&Number> for Number {
     type Output = Number;
     fn add(self, rhs: &Number) -> Self::Output {
         &self + rhs
+    }
+}
+
+impl std::ops::Add<Number> for Number {
+    type Output = Number;
+    fn add(self, rhs: Number) -> Self::Output {
+        &self + &rhs
     }
 }
 
@@ -292,6 +347,13 @@ impl std::ops::Mul<&Number> for Number {
     type Output = Number;
     fn mul(self, rhs: &Number) -> Self::Output {
         &self * rhs
+    }
+}
+
+impl std::ops::Mul<Number> for Number {
+    type Output = Number;
+    fn mul(self, rhs: Number) -> Self::Output {
+        &self * &rhs
     }
 }
 

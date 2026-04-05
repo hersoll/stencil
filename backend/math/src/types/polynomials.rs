@@ -265,12 +265,12 @@ impl std::ops::Neg for Polynomial {
 impl Display for Polynomial {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut first_value_written = false;
-        if self.terms.len() == 1 && self.terms[0].coefficient == 0.into() {
+        if self.terms.len() == 1 && self.terms[0].coefficient == 0 {
             write!(f, "0")?;
         } else {
             for term in &self.terms {
                 if !f.sign_plus() && !first_value_written {
-                    if term.coefficient != 0.into() {
+                    if term.coefficient != 0 {
                         first_value_written = true;
                         write!(f, "{term}")?;
                     }
@@ -286,7 +286,6 @@ impl Display for Polynomial {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Variables;
 
     #[test]
     fn expression_creation() {

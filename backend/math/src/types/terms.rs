@@ -43,7 +43,7 @@ impl Term {
 }
 impl Display for Term {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.colored && self.coefficient != 0.into() {
+        if self.colored && self.coefficient != 0 {
             write!(f, " colored(")?;
         }
         if f.sign_plus() && self.coefficient.value() > 0.0 {
@@ -82,10 +82,20 @@ impl Display for Term {
                 Number::Irrational(_, s) => write!(f, "{s} {}", self.variables)?,
             };
         }
-        if self.colored && self.coefficient != 0.into() {
+        if self.colored && self.coefficient != 0 {
             write!(f, ")")?;
         }
         Ok(())
+    }
+}
+
+impl From<Number> for Term {
+    fn from(value: Number) -> Self {
+        Self {
+            coefficient: value,
+            variables: Variables::new(),
+            colored: false,
+        }
     }
 }
 
@@ -198,7 +208,7 @@ impl Zero for Term {
         }
     }
     fn is_zero(&self) -> bool {
-        self.coefficient == 0.into()
+        self.coefficient == 0
     }
 }
 
