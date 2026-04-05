@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Polynomial, Term, num_gen};
+use math::{Number, Polynomial, Term, num_gen};
 use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::{equation_solution, parentheses};
@@ -400,5 +400,93 @@ fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
         solution,
         identifiers: vec![k, m],
         combinations: 30,
+    })
+}
+
+/// Find the equation of the line between (17, 30) and (23, 40)
+/// Difficulty: 6
+#[problem]
+fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
+    let k: Number = num_gen::fraction()
+        .denoms(&[6, 9, 12])
+        .max(2)
+        .random()
+        .into();
+    let m: Number = num_gen::fraction()
+        .denom(k.denominator().as_i32() / 3) // Ensures integer coordinates
+        .min(-3)
+        .max(3)
+        .random()
+        .into();
+
+    // To find the first integer coordinates, we need to do some math.
+    // When do we "fill" a sufficient amount of the denominator in k to reach an integer?
+    let mut start = m.numerator() * 3; // Since m has a denom that is a third, we start "three steps" up per numerator
+    let mut x_start = Number::Integer(0);
+    while start % k.denominator() != 0 {
+        start += k.numerator();
+        x_start = x_start + 1;
+    }
+    let y_start = (k * x_start + m).simplify();
+
+    let mut x_end = x_start + 1;
+    let mut end = start + k.numerator();
+    while end % k.denominator() != 0 {
+        end += k.numerator();
+        x_end = x_end + 1;
+    }
+    let y_end = (k * x_end + m).simplify();
+
+    let k_term: Term = (k, 'x').into();
+    let m_term: Term = m.into();
+    let equation: Polynomial = vec![k_term.clone(), m_term].into();
+
+    let problem_data = registry::get_problem_data(&name)?;
+    let question_string = problem_data.get_question(lang);
+    let question = replace_placeholders(
+        question_string,
+        &[
+            ("p1", format!("$({x_start}, {y_start})$")),
+            ("p2", format!("$({x_end}, {y_end})$")),
+        ],
+    );
+    let answer = format!("$y = {equation}$");
+
+    let solution = format!(
+        "$ k = ({} - {})/({} - {}) = {k} $",
+        parentheses(y_end),
+        parentheses(y_start),
+        parentheses(x_end),
+        parentheses(x_start),
+    ) + equation_solution(format!(
+        "
+                y &= k x + m \\ k = {k} \\
+                y &= colored({k_term}) + m \\ x = {x_start}, y = {y_start} \\
+                colored({y_start}) &= ({num} dot colored({x_start}))/{denom} + m \\ \\
+                {y_start} &= {mult} + m \\ {y_start} = {expanded_y}\\
+                colored({expanded_y}) &= {mult} + m \\ {m_mult:+}\\
+                m &= {subtracted_fraction} = {m} \\ \\
+                    ",
+        num = k.numerator(),
+        denom = k.denominator(),
+        mult = k * x_start,
+        m_mult = -k * x_start,
+        expanded_y = Number::Fraction(
+            (y_start * k.denominator()).as_i32(),
+            k.denominator().as_i32()
+        ),
+        subtracted_fraction = Number::Fraction(
+            (y_start * k.denominator() - &(k.numerator() * x_start)).as_i32(),
+            k.denominator().as_i32()
+        ),
+    ))
+    .as_str();
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k.numerator().as_i32(), k.denominator().as_i32()],
+        combinations: 15,
     })
 }

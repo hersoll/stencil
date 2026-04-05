@@ -67,7 +67,7 @@ impl Number {
     }
 
     /// If the Number is a Fraction, simplifies it (to an Integer if possible)
-    fn simplify(self) -> Number {
+    pub fn simplify(self) -> Number {
         match self {
             Number::Fraction(num, denom) => {
                 let (s_num, s_denom) = simplified_fraction(num, denom);
