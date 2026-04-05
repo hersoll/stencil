@@ -71,13 +71,19 @@ impl Display for Term {
                 }
                 Number::Fraction(num, denom) => write!(
                     f,
-                    "({}{})/{denom}",
+                    "{sign}({}{})/{}",
                     if num != 1 || self.variables.list.is_empty() {
-                        num.to_string()
+                        num.abs().to_string()
                     } else {
                         String::new()
                     },
-                    self.variables
+                    self.variables,
+                    denom.abs(),
+                    sign = if self.coefficient.value() < 0.0 {
+                        "-"
+                    } else {
+                        ""
+                    }
                 )?,
                 Number::Irrational(_, s) => write!(f, "{s} {}", self.variables)?,
             };
