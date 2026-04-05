@@ -423,7 +423,7 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
     // When do we "fill" a sufficient amount of the denominator in k to reach an integer?
     let mut start = m.numerator() * 3; // Since m has a denom that is a third, we start "three steps" up per numerator
     let mut x_start = Number::Integer(0);
-    while start % k.denominator() != 0 {
+    while start % k.denominator() != 0 || k * x_start + m == 0 {
         start += k.numerator();
         x_start = x_start + 1;
     }
