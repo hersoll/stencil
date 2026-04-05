@@ -177,15 +177,15 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         x_step: impl Into<Number>,
         variables: (&str, &str),
     ) -> Self {
-        let x_start = x_start.into();
-        let x_step = x_step.into();
+        let x_start = x_start.into().simplify();
+        let x_step = x_step.into().simplify();
 
         let x_var = variables.0;
         let y_var = variables.1;
         let x_end = x_start + &x_step;
         let y_start = self.function.get_y(&x_start);
         let y_end = self.function.get_y(&x_end);
-        let y_step = y_end - &y_start;
+        let y_step = (y_end - &y_start).simplify();
 
         let x_step_str = x_step.for_graphs();
         let y_step_str = y_step.for_graphs();
