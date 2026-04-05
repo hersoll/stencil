@@ -37,6 +37,10 @@ impl Polynomial {
     pub fn new() -> Self {
         Self { terms: Vec::new() }
     }
+    pub fn from_terms(terms: &[&Term]) -> Self {
+        let terms: Vec<Term> = terms.iter().map(|&t| t.clone()).collect();
+        Self { terms }
+    }
 
     pub fn push(&mut self, term: Term) {
         self.terms.push(term);

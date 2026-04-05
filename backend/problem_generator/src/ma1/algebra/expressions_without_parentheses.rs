@@ -17,17 +17,16 @@ fn one_variable_and_constants_no_negatives(name: String, _lang: &Language) -> Re
     let second_coef = IntRange::without_zero(-(first_coef - 1), 6)?.random();
     let (first_const, first_const_range) = IntRange::without_zero(1, 6)?.and_random();
     let second_const = IntRange::without_zero(-(first_const - 1), 6)?.random();
-    let first_term: Term = (first_coef, unknown).into();
-    let second_term: Term = (second_coef, unknown).into();
-    let first_const_term: Term = first_const.into();
-    let second_const_term: Term = second_const.into();
-    let original_expression: Polynomial = vec![
+    let first_term = Term::from_num_and_vars(first_coef, unknown);
+    let second_term = Term::from_num_and_vars(second_coef, unknown);
+    let first_const_term = Term::from_num(first_const);
+    let second_const_term = Term::from_num(second_const);
+    let original_expression = Polynomial::from_terms(&[
         &first_term,
         &first_const_term,
         &second_term,
         &second_const_term,
-    ]
-    .into();
+    ]);
     let simplified_expression = original_expression.simplify();
 
     let question = format!("${original_expression}$");
