@@ -72,7 +72,7 @@ impl Display for Term {
                 Number::Fraction(num, denom) => write!(
                     f,
                     "{sign}({}{})/{}",
-                    if num != 1 || self.variables.list.is_empty() {
+                    if num.abs() != 1 || self.variables.list.is_empty() {
                         num.abs().to_string()
                     } else {
                         String::new()
