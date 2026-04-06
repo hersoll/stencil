@@ -45,6 +45,9 @@ impl IntegerGenerator {
     }
 
     pub fn range(mut self, min: i32, max: i32) -> Self {
+        if min > max {
+            tracing::error!("Called num_gen::integer().range() with min and max swapped!");
+        }
         self.numbers = NumberKind::Range(min, max);
         self
     }
