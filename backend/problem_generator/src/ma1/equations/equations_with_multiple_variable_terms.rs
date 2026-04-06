@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Term, num_gen, symbols};
+use math::{Polynomial, Term, num_gen, symbols};
 use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::{self, equation_solution};
 
@@ -153,5 +153,45 @@ fn one_negative_coef_rhs_greater(name: String, _lang: &Language) -> Result<Probl
         solution,
         identifiers: vec![lhs_coef, rhs_coef],
         combinations: rhs_range.len(),
+    })
+}
+
+// 4 - 4x = 8 - 2x
+/// Difficulty: 3
+#[problem]
+fn two_negative_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let answer = num_gen::integer().range(-8, 8).exclude(0).random();
+    let lhs_range = num_gen::integer().range(-9, -3);
+    let lhs_coef = lhs_range.random();
+    let lhs_term = Term::from_num_and_vars(lhs_coef, unknown);
+    let rhs_coef = num_gen::integer().range(lhs_coef + 2, -1).random();
+    let rhs_term = Term::from_num_and_vars(rhs_coef, unknown);
+    let lhs_const = num_gen::integer().range(-9, 9).random();
+    let rhs_const = (lhs_coef - rhs_coef) * answer + lhs_const;
+    let lhs_pol = Polynomial::from_terms(&[&lhs_term, &Term::from_num(lhs_const)]).sorted();
+    let rhs_pol = Polynomial::from_terms(&[&rhs_term, &Term::from_num(rhs_const)]).sorted();
+
+    let question = format!("${lhs_pol} = {rhs_pol}$");
+    let answer_str = format!("${unknown} = {answer}$");
+    let solution = equation_solution(format!(
+        "{lhs_pol} &= {rhs_pol} \\ {sub_lhs} \\
+        {lhs_const} &= {total_var}{rhs_const:+} \\ {sub_rhs} \\
+        {total_const} &= {total_var} \\ {div_coef} \\
+        {answer} &= {unknown} \\ \\",
+        sub_lhs = formatting::subtract_term(&lhs_term),
+        sub_rhs = formatting::subtract_number(rhs_const),
+        total_var = rhs_term.clone() - lhs_term.clone(),
+        div_coef = formatting::divide_number(rhs_coef - lhs_coef),
+        total_const = lhs_const - rhs_const
+    ));
+
+    Ok(Problem {
+        name,
+        question,
+        answer: answer_str,
+        solution,
+        identifiers: vec![lhs_coef, rhs_coef],
+        combinations: lhs_range.len(),
     })
 }
