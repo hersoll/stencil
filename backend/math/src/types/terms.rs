@@ -367,9 +367,9 @@ mod tests {
 
     #[test]
     fn term_creation() {
-        let t1: Term = (3, 'x').into();
+        let t1 = Term::from_num_and_vars(3, 'x');
         let t2: Term = ('x', 3).into();
-        let t3: Term = 6.into();
+        let t3 = Term::from_num(6);
 
         assert_eq!(t1.to_string(), "3x");
         assert_eq!(t2.to_string(), "x^3");

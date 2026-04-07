@@ -527,7 +527,7 @@ mod tests {
 
         assert_eq!((&integer / &integer).to_string(), "1");
         assert_eq!((&integer / &decimal).to_string(), "num(\"2.5\")");
-        assert_eq!((&integer / &fraction).to_string(), "4");
+        assert_eq!((&integer / &fraction).simplify().to_string(), "4");
         assert_eq!((&decimal / &fraction).to_string(), "num(\"1.6\")");
         assert_eq!((&PI / &integer).to_string(), "num(\"1.047\")");
     }
