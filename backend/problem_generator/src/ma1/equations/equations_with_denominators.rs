@@ -13,7 +13,7 @@ fn one_denom_one_variable(name: String, _lang: &Language) -> Result<Problem> {
     let final_answer = denominator * rhs;
     let unknown = 'x';
 
-    let question = format!("${unknown}/{denominator} &= {rhs}$");
+    let question = format!("$ {unknown}/{denominator} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
     let solution = equation_solution(format!(
         "{unknown}/{denominator} &= {rhs} \\ dot.op {denominator} \\
@@ -44,7 +44,7 @@ fn one_denom_and_unit_variable_integers_positive(
     let final_answer = n * denominator;
     let unknown = 'x';
 
-    let question = format!("${unknown}/{denominator} + {unknown} &= {rhs}$");
+    let question = format!("$ {unknown}/{denominator} + {unknown} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
     let solution = equation_solution(format!(
         "{unknown}/{denominator} + {unknown} &= {rhs} \\ dot.op {denominator} \\
@@ -78,7 +78,7 @@ fn unit_variable_and_one_denom_integers_positive(
     let final_answer = n * denominator;
     let unknown = 'x';
 
-    let question = format!("${unknown} - {unknown}/{denominator} &= {rhs}$");
+    let question = format!("$ {unknown} - {unknown}/{denominator} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
     let solution = equation_solution(format!(
         "{unknown} - {unknown}/{denominator} &= {rhs} \\ dot.op {denominator} \\
@@ -113,7 +113,7 @@ fn unit_variable_and_one_denom_integers_with_negatives(
     let final_answer = denominator * n;
     let unknown = 'x';
 
-    let question = format!("${unknown}/{denominator} - {unknown} &= {rhs}$");
+    let question = format!("$ {unknown}/{denominator} - {unknown} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
     let solution = equation_solution(format!(
         "{unknown}/{denominator} - {unknown} &= {rhs} \\ dot.op {denominator} \\
