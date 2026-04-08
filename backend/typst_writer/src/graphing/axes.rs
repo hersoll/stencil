@@ -233,13 +233,13 @@ impl Axes {
         for graph in self.graphs.iter() {
             // Check the endpoints of the graph
             for val in [self.x_min, self.x_max].iter() {
-                let extreme = graph.function.get_y(&val);
-
-                if extreme < min {
-                    min = extreme;
-                }
-                if extreme > max {
-                    max = extreme;
+                if let Some(extreme) = graph.function.get_y(&val) {
+                    if extreme < min {
+                        min = extreme;
+                    }
+                    if extreme > max {
+                        max = extreme;
+                    }
                 }
             }
             // Here we can also check for other extremes, like the extremum of a quadratic function
@@ -342,8 +342,8 @@ impl Axes {
             (&mut y_tick, self.y_min.unwrap(), self.y_max.unwrap()),
         ] {
             let mut starting_number = StartingNumber::One;
-            // Distance of 9 = 10 ticks
-            while (max - &min) / &*tick > Number::Integer(9) {
+            // Distance of 11 = 12 ticks
+            while (max - &min) / &*tick > Number::Integer(11) {
                 match starting_number {
                     StartingNumber::One => {
                         *tick *= 5;

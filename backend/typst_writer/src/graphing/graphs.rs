@@ -10,6 +10,7 @@ pub struct Graph {
 
 /// Additional elements that need to be added to the graph,
 /// like dots, dashed lines, labels
+#[derive(Default)]
 pub struct GraphAdditions {
     /// Elements where the coordinates matter, like dots and lines
     pub axis_relative: Vec<String>,
@@ -26,7 +27,7 @@ impl Graph {
         let m = m.into();
         Graph {
             name: None,
-            function: Function::Linear(k, m),
+            function: Function::Linear { k, m },
             additions: GraphAdditions::default(),
         }
     }
@@ -41,7 +42,7 @@ impl Graph {
         }
         Graph {
             name: None,
-            function: Function::Exponential(c, a),
+            function: Function::Exponential { c, a },
             additions: GraphAdditions::default(),
         }
     }
@@ -73,13 +74,15 @@ impl Graph {
     /// Note that you need to know where (x-wise) there are good spots to get the slope from.
     /// This method does not calculate it for you.
     ///
+    /// Panics if the function isn't defined at any of the given x values!
+    ///
     /// Example: y = 4x/3 + 2 => x_step should be 3 (or a multiple of it)
     fn add_dashed_slope_hints(&mut self, x_start: Number, x_step: Number) {
         let color = "black";
         let dashed_style = format!("style: (stroke: (paint: {color}, dash: \"dashed\"))");
         let x_end = x_start + &x_step;
-        let y_start = self.function.get_y(&x_start);
-        let y_end = self.function.get_y(&x_end);
+        let y_start = self.function.get_y(&x_start).unwrap();
+        let y_end = self.function.get_y(&x_end).unwrap();
         // Need to use for_graphs for every printed Number variable, to make sure
         // decimal numbers are formatted correctly
         let x_0 = x_start.for_graphs();
@@ -183,8 +186,8 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         let x_var = variables.0;
         let y_var = variables.1;
         let x_end = x_start + &x_step;
-        let y_start = self.function.get_y(&x_start);
-        let y_end = self.function.get_y(&x_end);
+        let y_start = self.function.get_y(&x_start).unwrap();
+        let y_end = self.function.get_y(&x_end).unwrap();
         let y_step = (y_end - &y_start).simplify();
 
         let x_step_str = x_step.for_graphs();
@@ -212,8 +215,8 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
     pub fn with_simple_slope_hint(mut self) -> Self {
         let x_start = Number::Integer(0);
         let x_end = Number::Integer(1);
-        let y_start = self.function.get_y(&x_start);
-        let y_end = self.function.get_y(&x_end);
+        let y_start = self.function.get_y(&x_start).unwrap();
+        let y_end = self.function.get_y(&x_end).unwrap();
         let y_step = y_end - &y_start;
         let y_step_str = y_step.for_graphs();
 
@@ -229,21 +232,12 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
     /// the method lives here due to it being typst (and therefore graph) related, not mathematical
     pub fn to_typst(&self) -> String {
         match self.function {
-            Function::Linear(k, m) => format!("{} * float(t) + {}", k.for_graphs(), m.for_graphs()),
-            Function::Exponential(start, change) => format!(
-                "{} * calc.pow({}, t)",
-                start.for_graphs(),
-                change.for_graphs()
-            ),
-        }
-    }
-}
-
-impl Default for GraphAdditions {
-    fn default() -> Self {
-        GraphAdditions {
-            axis_relative: Vec::new(),
-            canvas_relative: Vec::new(),
+            Function::Linear { k, m } => {
+                format!("{} * float(t) + {}", k.for_graphs(), m.for_graphs())
+            }
+            Function::Exponential { c, a } => {
+                format!("{} * calc.pow({}, t)", c.for_graphs(), a.for_graphs())
+            }
         }
     }
 }

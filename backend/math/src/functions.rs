@@ -4,10 +4,8 @@ use crate::{Number, ZERO};
 /// that are specific to that kind of plot. This makes ergonomics easier when matching over the
 /// kinds since you can do Function::Linear(k, m) => ...
 pub enum Function {
-    /// k, m
-    Linear(Number, Number),
-    /// start, change
-    Exponential(Number, Number),
+    Linear { k: Number, m: Number },
+    Exponential { c: Number, a: Number },
 }
 
 impl Function {
@@ -16,7 +14,7 @@ impl Function {
         let k = k.into();
         let m = m.into();
 
-        Function::Linear(k, m)
+        Function::Linear { k, m }
     }
 
     /// Ergonomic constructor
@@ -27,32 +25,42 @@ impl Function {
             tracing::error!("a in an exponential function can't be negative (or 0)");
             a = Number::Integer(1)
         }
-        Function::Exponential(c, a)
+        Function::Exponential { c, a }
     }
-
-    pub fn get_x(&self, y: &Number) -> Option<Number> {
+    /// Finds the x-value(s) of the function, given a certain y-value.
+    ///
+    /// Returns None if the y-value is outside the domain of the function
+    pub fn get_x(&self, y: &Number) -> Option<Vec<Number>> {
         match self {
-            Function::Linear(k, m) => {
+            Function::Linear { k, m } => {
                 // Don't use this when k = 0, please
-                if *k == ZERO { None } else { Some((y - m) / k) }
+                if *k == ZERO {
+                    None
+                } else {
+                    Some(vec![(y - m) / k])
+                }
             }
-            Function::Exponential(c, a) => {
+            Function::Exponential { c, a } => {
                 // No solution if y and c have opposite signs, since a positive value can't become
                 // negative through exponentiation
                 if y * c < ZERO {
                     None
                 } else {
                     // y = c a^x => x = lg(y/c) / lg(a)
-                    Some(((y / &c).value().log2() / a.value().log2()).into())
+                    Some(vec![((y / &c).value().log2() / a.value().log2()).into()])
                 }
             }
         }
     }
 
-    pub fn get_y(&self, x: &Number) -> Number {
+    /// Finds the y-value of the function, given a certain x-value.
+    ///
+    /// Returns None if the function isn't defined for that x-value, for example x = 0 and f(x) =
+    /// 1/x
+    pub fn get_y(&self, x: &Number) -> Option<Number> {
         match self {
-            Function::Linear(k, m) => k * x + m,
-            Function::Exponential(c, a) => c * a.value().powf(x.value()),
+            Function::Linear { k, m } => Some(k * x + m),
+            Function::Exponential { c, a } => Some(c * a.value().powf(x.value())),
         }
     }
 }
@@ -78,7 +86,7 @@ mod linear_function_tests {
             ];
 
             for (f, expected) in cases {
-                assert_eq!(f.get_y(&x), expected);
+                assert_eq!(f.get_y(&x).unwrap(), expected);
             }
         }
 
@@ -93,7 +101,7 @@ mod linear_function_tests {
             ];
 
             for (f, expected) in cases {
-                assert_eq!(f.get_y(&x), expected);
+                assert_eq!(f.get_y(&x).unwrap(), expected);
             }
         }
 
@@ -108,7 +116,7 @@ mod linear_function_tests {
             ];
 
             for (f, expected) in cases {
-                assert_eq!(f.get_y(&x), expected);
+                assert_eq!(f.get_y(&x).unwrap(), expected);
             }
         }
     }
@@ -121,9 +129,9 @@ mod linear_function_tests {
             let y = Number::Integer(4);
 
             let cases = [
-                (Function::linear(3, 2), Some(Number::Fraction(2, 3))),
+                (Function::linear(3, 2), Some(vec![Number::Fraction(2, 3)])),
                 (Function::linear(0, 2), None),
-                (Function::linear(-1, -5), Some(Number::Integer(-9))),
+                (Function::linear(-1, -5), Some(vec![Number::Integer(-9)])),
             ];
 
             for (f, expected) in cases {
@@ -136,9 +144,15 @@ mod linear_function_tests {
             let y = Number::Decimal(2500); // 2.5
 
             let cases = [
-                (Function::linear(1.1, 1.1), Some(Number::Decimal(1273))),
+                (
+                    Function::linear(1.1, 1.1),
+                    Some(vec![Number::Decimal(1273)]),
+                ),
                 (Function::linear(0, -3.7), None),
-                (Function::linear(1.234, 5), Some(Number::Decimal(-2026))),
+                (
+                    Function::linear(1.234, 5),
+                    Some(vec![Number::Decimal(-2026)]),
+                ),
             ];
 
             for (f, expected) in cases {
@@ -151,16 +165,16 @@ mod linear_function_tests {
             let y = Number::Fraction(2, 5);
 
             let cases = [
-                (Function::linear((3, 5), 1), Some(Number::Integer(-1))),
+                (Function::linear((3, 5), 1), Some(vec![Number::Integer(-1)])),
                 (Function::linear(0, (2, 3)), None),
                 (
                     Function::linear((-4, 3), (1, 6)),
-                    Some(Number::Fraction(-21, 120)),
+                    Some(vec![Number::Fraction(-21, 120)]),
                 ),
                 // Test another fraction representation
                 (
                     Function::linear((-4, 3), (1, 6)),
-                    Some(Number::Fraction(7, -40)),
+                    Some(vec![Number::Fraction(7, -40)]),
                 ),
             ];
 
