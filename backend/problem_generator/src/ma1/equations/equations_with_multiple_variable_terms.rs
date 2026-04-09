@@ -1,8 +1,10 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Polynomial, Term, num_gen, symbols};
+use math::{Number, Polynomial, Term, num_gen, symbols};
 use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::{self, equation_solution};
+use typst_writer::formatting::{
+    self, StructuredSolution, divide_number, equation_solution, subtract_number, subtract_term,
+};
 
 /// 4x + 1 = 2x + 3
 /// Difficulty: 1
@@ -242,35 +244,38 @@ fn two_negative_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
 fn positive_coefs_lhs_has_zero(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(-8, 8).exclude(0).random();
-    let rhs_range = num_gen::integer().range(3, 9);
+    let rhs_range = num_gen::integer().range(2, 9);
     let rhs_coef = rhs_range.random();
     let rhs_term = Term::from_num_and_vars(rhs_coef, unknown);
-    let lhs_coef = num_gen::integer().range(1, rhs_coef - 2).random();
+    let lhs_coef = num_gen::integer().range(1, rhs_coef - 1).random();
     let lhs_term = Term::from_num_and_vars(lhs_coef, unknown);
-    let rhs_const = num_gen::integer().range(-9, 9).random();
-    let lhs_const = (rhs_coef - lhs_coef) * answer + rhs_const;
-    let lhs_pol = Polynomial::from_terms(&[&lhs_term, &Term::from_num(lhs_const)]).sorted();
+    let rhs_const = (lhs_coef - rhs_coef) * answer;
+    let lhs_pol = Polynomial::from_terms(&[&lhs_term]).sorted();
     let rhs_pol = Polynomial::from_terms(&[&rhs_term, &Term::from_num(rhs_const)]).sorted();
 
     let question = format!("${lhs_pol} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
-    let solution = equation_solution(format!(
-        "{lhs_pol} &= {rhs_pol} \\ {sub_rhs} \\
-        {total_var}{lhs_const:+} &= {rhs_const} \\ {sub_lhs} \\
-        {total_var} &= {total_const} \\ {div_coef} \\
-        {unknown} &= {answer} \\ \\",
-        sub_rhs = formatting::subtract_term(&lhs_term),
-        sub_lhs = formatting::subtract_number(rhs_const),
-        total_var = lhs_term.clone() - rhs_term.clone(),
-        div_coef = formatting::divide_number(lhs_coef - rhs_coef),
-        total_const = rhs_const - lhs_const
-    ));
+
+    let mut solution = StructuredSolution::new();
+    solution
+        .add_aligned(lhs_pol, rhs_pol) // 4x = 6x - 6
+        .with_step(subtract_term(&lhs_term));
+    let total_var = rhs_term - lhs_term;
+    solution
+        .add_aligned(0, format!("{total_var}{rhs_const:+}")) // 0 = 2x - 6
+        .with_step(subtract_number(rhs_const));
+    if total_var.coefficient > Number::Integer(1) {
+        solution
+            .add_aligned(-rhs_const, total_var) // 6 = 2x
+            .with_step(divide_number(rhs_coef - lhs_coef));
+    }
+    solution.add_aligned(answer, unknown); // 3 = x
 
     Ok(Problem {
         name,
         question,
         answer: answer_str,
-        solution,
+        solution: solution.to_string(),
         identifiers: vec![lhs_coef, rhs_coef],
         combinations: rhs_range.len(),
     })

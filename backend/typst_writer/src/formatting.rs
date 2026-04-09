@@ -6,6 +6,8 @@ use std::fmt::Write;
 use std::{collections::HashMap, fmt::Display};
 use tracing::debug;
 
+pub use super::structured_solution::*;
+
 /// The space between the operator and number in the solution step-by-step
 static OPERATOR_SPACE: f32 = 0.25;
 /// Background color for the solutions

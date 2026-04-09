@@ -2,7 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::IntRange;
 use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::equation_solution;
+use typst_writer::formatting::{self, equation_solution};
 
 /// x/3 = 4
 /// Difficulty: 0
@@ -115,20 +115,22 @@ fn unit_variable_and_one_denom_integers_with_negatives(
 
     let question = format!("$ {unknown}/{denominator} - {unknown} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
-    let solution = equation_solution(format!(
-        "{unknown}/{denominator} - {unknown} &= {rhs} \\ dot.op {denominator} \\
-        {unknown} - {denominator}{unknown} &= {rhs_denom} \\ \\
-        {one_minus_denom}{unknown} &= {rhs_denom} \\ div {one_minus_denom_par}\\
-        {unknown} &= {final_answer} \\",
-        one_minus_denom = 1 - denominator,
-        one_minus_denom_par = typst_writer::formatting::parentheses(1 - denominator),
-        rhs_denom = rhs * denominator,
-    ));
+
+    let mut sol = formatting::StructuredSolution::new();
+    sol.add_aligned(format!("{unknown}/{denominator} - {unknown}"), rhs)
+        .with_step(formatting::multiply_number(denominator));
+    sol.add_aligned(
+        format!("{unknown} - {denominator}{unknown}"),
+        rhs * denominator,
+    );
+    sol.add_aligned(format!("{}{unknown}", 1 - denominator), rhs * denominator)
+        .with_step(formatting::divide_number(1 - denominator));
+    sol.add_aligned(unknown, final_answer);
 
     Ok(Problem {
         question,
         answer,
-        solution,
+        solution: sol.to_string(),
         name,
         identifiers: vec![denominator],
         combinations: denominator_range.len(),
