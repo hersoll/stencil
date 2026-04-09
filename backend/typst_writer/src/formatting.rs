@@ -118,6 +118,12 @@ pub fn parentheses<T: PartialOrd + Zero + Display>(val: T) -> String {
     }
 }
 
+//NOTE: Idea for new way to write solutions:
+// Struct which takes a list of Rows
+// Each Row has a line (String) and a step (Option<String>)
+// solution.add_line(format!("{x} + {y} &= {}", x + y))
+// solution.add_line(s).next_step(step) (or .add_line_with_step(s, step))
+
 /// Formats the solution of an equation, step by step.
 ///
 /// Do not include dollar signs ($) manually before calling this!

@@ -195,3 +195,83 @@ fn two_negative_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
         combinations: lhs_range.len(),
     })
 }
+
+// 4 - 2x = 8 - 4x
+/// Difficulty: 3
+#[problem]
+fn two_negative_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let answer = num_gen::integer().range(-8, 8).exclude(0).random();
+    let rhs_range = num_gen::integer().range(-9, -3);
+    let rhs_coef = rhs_range.random();
+    let rhs_term = Term::from_num_and_vars(rhs_coef, unknown);
+    let lhs_coef = num_gen::integer().range(rhs_coef + 2, -1).random();
+    let lhs_term = Term::from_num_and_vars(lhs_coef, unknown);
+    let rhs_const = num_gen::integer().range(-9, 9).random();
+    let lhs_const = (rhs_coef - lhs_coef) * answer + rhs_const;
+    let lhs_pol = Polynomial::from_terms(&[&lhs_term, &Term::from_num(lhs_const)]).sorted();
+    let rhs_pol = Polynomial::from_terms(&[&rhs_term, &Term::from_num(rhs_const)]).sorted();
+
+    let question = format!("${lhs_pol} = {rhs_pol}$");
+    let answer_str = format!("${unknown} = {answer}$");
+    let solution = equation_solution(format!(
+        "{lhs_pol} &= {rhs_pol} \\ {sub_rhs} \\
+        {total_var}{lhs_const:+} &= {rhs_const} \\ {sub_lhs} \\
+        {total_var} &= {total_const} \\ {div_coef} \\
+        {unknown} &= {answer} \\ \\",
+        sub_rhs = formatting::subtract_term(&lhs_term),
+        sub_lhs = formatting::subtract_number(rhs_const),
+        total_var = lhs_term.clone() - rhs_term.clone(),
+        div_coef = formatting::divide_number(lhs_coef - rhs_coef),
+        total_const = rhs_const - lhs_const
+    ));
+
+    Ok(Problem {
+        name,
+        question,
+        answer: answer_str,
+        solution,
+        identifiers: vec![lhs_coef, rhs_coef],
+        combinations: rhs_range.len(),
+    })
+}
+
+// 4x = 6x - 6
+/// Difficulty: 3
+#[problem]
+fn positive_coefs_lhs_has_zero(name: String, _lang: &Language) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let answer = num_gen::integer().range(-8, 8).exclude(0).random();
+    let rhs_range = num_gen::integer().range(3, 9);
+    let rhs_coef = rhs_range.random();
+    let rhs_term = Term::from_num_and_vars(rhs_coef, unknown);
+    let lhs_coef = num_gen::integer().range(1, rhs_coef - 2).random();
+    let lhs_term = Term::from_num_and_vars(lhs_coef, unknown);
+    let rhs_const = num_gen::integer().range(-9, 9).random();
+    let lhs_const = (rhs_coef - lhs_coef) * answer + rhs_const;
+    let lhs_pol = Polynomial::from_terms(&[&lhs_term, &Term::from_num(lhs_const)]).sorted();
+    let rhs_pol = Polynomial::from_terms(&[&rhs_term, &Term::from_num(rhs_const)]).sorted();
+
+    let question = format!("${lhs_pol} = {rhs_pol}$");
+    let answer_str = format!("${unknown} = {answer}$");
+    let solution = equation_solution(format!(
+        "{lhs_pol} &= {rhs_pol} \\ {sub_rhs} \\
+        {total_var}{lhs_const:+} &= {rhs_const} \\ {sub_lhs} \\
+        {total_var} &= {total_const} \\ {div_coef} \\
+        {unknown} &= {answer} \\ \\",
+        sub_rhs = formatting::subtract_term(&lhs_term),
+        sub_lhs = formatting::subtract_number(rhs_const),
+        total_var = lhs_term.clone() - rhs_term.clone(),
+        div_coef = formatting::divide_number(lhs_coef - rhs_coef),
+        total_const = rhs_const - lhs_const
+    ));
+
+    Ok(Problem {
+        name,
+        question,
+        answer: answer_str,
+        solution,
+        identifiers: vec![lhs_coef, rhs_coef],
+        combinations: rhs_range.len(),
+    })
+}

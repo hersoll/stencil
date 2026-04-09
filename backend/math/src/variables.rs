@@ -16,6 +16,8 @@ impl Display for Variable {
         }
     }
 }
+
+/// Simple variable
 impl From<char> for Variable {
     fn from(value: char) -> Self {
         Self {
@@ -24,6 +26,8 @@ impl From<char> for Variable {
         }
     }
 }
+
+/// Includes an exponent
 impl From<(char, i32)> for Variable {
     fn from(value: (char, i32)) -> Self {
         Self {
@@ -33,11 +37,19 @@ impl From<(char, i32)> for Variable {
     }
 }
 
+/// Ordering makes it easier to sort multivariate terms by convention:
+/// 3ab should be printed as such, not 3ba.
 impl Ord for Variable {
     fn cmp(&self, other: &Self) -> Ordering {
         other.symbol.cmp(&self.symbol)
     }
 }
+
+/// Implementing Neg this way makes it easier to define division of variables:
+/// a / b = a * (-b)
+///
+/// Note that negative variables aren't the same as negative Terms - those are negative in the
+/// normal sense. Negative variables should only be used internally
 impl std::ops::Neg for Variable {
     type Output = Self;
     fn neg(self) -> Self::Output {
@@ -56,6 +68,12 @@ pub struct Variables {
 impl Variables {
     pub fn new() -> Self {
         Self { list: Vec::new() }
+    }
+
+    pub fn from_char(c: char) -> Self {
+        Self {
+            list: vec![Variable::from(c)],
+        }
     }
 }
 
