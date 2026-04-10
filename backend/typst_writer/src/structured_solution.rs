@@ -23,13 +23,14 @@ impl StructuredSolution {
     }
 
     /// Adds a step instruction to the latest line
-    pub fn with_step(&mut self, step: impl Display) {
+    pub fn with_step(&mut self, step: impl Display) -> &mut Self {
         match self.parts.last_mut() {
             Some(part) => part.step = Some(step.to_string()),
             None => tracing::error!(
                 "Tried to call StructuredSolution.with_step() on an empty Solution!"
             ),
         }
+        self
     }
 
     /// The most generic public version of adding an Expression. Used for things that aren't

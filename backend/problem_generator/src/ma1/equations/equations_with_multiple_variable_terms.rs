@@ -204,10 +204,10 @@ fn two_negative_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
 fn two_negative_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(-8, 8).exclude(0).random();
-    let rhs_range = num_gen::integer().range(-9, -3);
+    let rhs_range = num_gen::integer().range(-9, -2);
     let rhs_coef = rhs_range.random();
     let rhs_term = Term::from_num_and_vars(rhs_coef, unknown);
-    let lhs_coef = num_gen::integer().range(rhs_coef + 2, -1).random();
+    let lhs_coef = num_gen::integer().range(rhs_coef + 1, -1).random();
     let lhs_term = Term::from_num_and_vars(lhs_coef, unknown);
     let rhs_const = num_gen::integer().range(-9, 9).random();
     let lhs_const = (rhs_coef - lhs_coef) * answer + rhs_const;
@@ -216,23 +216,25 @@ fn two_negative_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
 
     let question = format!("${lhs_pol} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
-    let solution = equation_solution(format!(
-        "{lhs_pol} &= {rhs_pol} \\ {sub_rhs} \\
-        {total_var}{lhs_const:+} &= {rhs_const} \\ {sub_lhs} \\
-        {total_var} &= {total_const} \\ {div_coef} \\
-        {unknown} &= {answer} \\ \\",
-        sub_rhs = formatting::subtract_term(&lhs_term),
-        sub_lhs = formatting::subtract_number(rhs_const),
-        total_var = lhs_term.clone() - rhs_term.clone(),
-        div_coef = formatting::divide_number(lhs_coef - rhs_coef),
-        total_const = rhs_const - lhs_const
-    ));
+
+    let total_var = lhs_term.clone() - rhs_term.clone();
+    let total_coef = lhs_coef - rhs_coef;
+    let mut sol = StructuredSolution::new();
+    sol.add_aligned(&lhs_pol, &rhs_pol) // 4 - 2x = 8 - 4x
+        .with_step(subtract_term(&rhs_term))
+        .add_aligned(format!("{total_var}{lhs_const:+}"), rhs_const) // 4 + 2x = 8
+        .with_step(subtract_number(lhs_const));
+    if total_coef > 1 {
+        sol.add_aligned(total_var, rhs_const - lhs_const) // 2x = 4
+            .with_step(divide_number(total_coef));
+    }
+    sol.add_aligned(unknown, answer); // x = 2
 
     Ok(Problem {
         name,
         question,
         answer: answer_str,
-        solution,
+        solution: sol.to_string(),
         identifiers: vec![lhs_coef, rhs_coef],
         combinations: rhs_range.len(),
     })
@@ -250,15 +252,14 @@ fn positive_coefs_lhs_has_zero(name: String, _lang: &Language) -> Result<Problem
     let lhs_coef = num_gen::integer().range(1, rhs_coef - 1).random();
     let lhs_term = Term::from_num_and_vars(lhs_coef, unknown);
     let rhs_const = (lhs_coef - rhs_coef) * answer;
-    let lhs_pol = Polynomial::from_terms(&[&lhs_term]).sorted();
     let rhs_pol = Polynomial::from_terms(&[&rhs_term, &Term::from_num(rhs_const)]).sorted();
 
-    let question = format!("${lhs_pol} = {rhs_pol}$");
+    let question = format!("${lhs_term} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
 
     let mut solution = StructuredSolution::new();
     solution
-        .add_aligned(lhs_pol, rhs_pol) // 4x = 6x - 6
+        .add_aligned(&lhs_term, rhs_pol) // 4x = 6x - 6
         .with_step(subtract_term(&lhs_term));
     let total_var = rhs_term - lhs_term;
     solution
@@ -278,5 +279,47 @@ fn positive_coefs_lhs_has_zero(name: String, _lang: &Language) -> Result<Problem
         solution: solution.to_string(),
         identifiers: vec![lhs_coef, rhs_coef],
         combinations: rhs_range.len(),
+    })
+}
+
+// 6x - 6 = 4x
+/// Difficulty: 3
+#[problem]
+fn positive_coefs_rhs_has_zero(name: String, _lang: &Language) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let answer = num_gen::integer().range(-8, 8).exclude(0).random();
+    let lhs_range = num_gen::integer().range(2, 9);
+    let lhs_coef = lhs_range.random();
+    let lhs_term = Term::from_num_and_vars(lhs_coef, unknown);
+    let rhs_coef = num_gen::integer().range(1, lhs_coef - 1).random();
+    let rhs_term = Term::from_num_and_vars(rhs_coef, unknown);
+    let lhs_const = (rhs_coef - lhs_coef) * answer;
+    let lhs_pol = Polynomial::from_terms(&[&lhs_term, &Term::from_num(lhs_const)]).sorted();
+
+    let question = format!("${lhs_pol} = {rhs_term}$");
+    let answer_str = format!("${unknown} = {answer}$");
+
+    let mut solution = StructuredSolution::new();
+    solution
+        .add_aligned(&lhs_pol, &rhs_term) // 6x - 6 = 4x
+        .with_step(subtract_term(&rhs_term));
+    let total_var = lhs_term - rhs_term;
+    solution
+        .add_aligned(format!("{total_var}{lhs_const:+}"), 0) // 2x - 6 = 0
+        .with_step(subtract_number(lhs_const));
+    if total_var.coefficient > Number::Integer(1) {
+        solution
+            .add_aligned(total_var, -lhs_const) // 2x = 6
+            .with_step(divide_number(lhs_coef - rhs_coef));
+    }
+    solution.add_aligned(unknown, answer); // x = 3
+
+    Ok(Problem {
+        name,
+        question,
+        answer: answer_str,
+        solution: solution.to_string(),
+        identifiers: vec![lhs_coef, rhs_coef],
+        combinations: lhs_range.len(),
     })
 }
