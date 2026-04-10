@@ -67,6 +67,10 @@ impl IntegerGenerator {
         generate_value(&self.numbers, &self.exclusions, &[] as &[fn(&i32) -> bool])
     }
 
+    pub fn and_random(self) -> (i32, Self) {
+        (self.random(), self)
+    }
+
     pub fn positive(&self) -> i32 {
         generate_value(&self.numbers, &self.exclusions, &[|n| *n >= 0])
     }

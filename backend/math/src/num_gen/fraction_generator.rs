@@ -169,6 +169,11 @@ impl FractionGenerator {
         (num, denom)
     }
 
+    pub fn and_random(mut self) -> (i32, i32, Self) {
+        let (n, d) = self.random();
+        (n, d, self)
+    }
+
     pub fn len(&self) -> usize {
         self.num.len() * self.denom.len()
     }
