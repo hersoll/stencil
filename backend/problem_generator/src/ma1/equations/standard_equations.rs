@@ -1,128 +1,146 @@
 use anyhow::Result;
 use macros::problem;
-use math::{self, IntRange};
+use math::{self, Term, num_gen, symbols};
 use types::{lang::Language, problems::Problem};
-use typst_writer::custom_math::solutions;
+use typst_writer::{
+    custom_math::solutions,
+    formatting::{StructuredSolution, divide_number, subtract_number},
+};
 
 /// x + 3 = 12
 /// Difficulty: 0
 #[problem]
 fn only_addition_or_subtraction(name: String, _lang: &Language) -> Result<Problem> {
-    let answer = IntRange::with_zero(0, 9)?.random();
-    let (constant, constant_range) = IntRange::without_zero(-answer, 9)?.and_random();
+    let answer = num_gen::integer().range(0, 9).random();
+    let (constant, constant_range) = num_gen::integer().range(-answer, 9).and_random();
+    let unknown = symbols::get_unknown()?;
 
-    let solution = format!(
-        "x {constant:+} &= {rhs}\\ {sub_constant} \\
-              x &= {answer}\\",
-        rhs = answer + constant,
-        sub_constant = typst_writer::formatting::subtract_number(constant),
-    );
+    let mut solution = StructuredSolution::new();
+    solution
+        .add_aligned(format!("{unknown}{constant:+}"), answer + constant) // x + 3 = 12
+        .with_step(subtract_number(constant))
+        .add_aligned(unknown, answer); // x = 9
 
-    let problem = Problem {
+    Ok(Problem {
         name,
-        // prefix: "Lös ekvationen",
-        // group-prefix: "Lös ekvationerna"
-        question: format!("$x {constant:+} = {}$", answer + constant),
-        answer: format!("$x = {answer}$"),
-        solution: typst_writer::formatting::equation_solution(solution),
+        question: format!("${unknown}{constant:+} = {}$", answer + constant),
+        answer: format!("${unknown} = {answer}$"),
+        solution: solution.to_string(),
         identifiers: vec![constant],
         combinations: constant_range.len(),
-    };
-    Ok(problem)
+    })
 }
 
 /// 3x = 12
 /// Difficulty: 0
 #[problem]
 fn only_multiplication(name: String, _lang: &Language) -> Result<Problem> {
-    let answer = IntRange::without_zero(2, 5)?.random();
-    let (coefficient, coefficient_range) = IntRange::without_zero(3, 9)?.and_random();
+    let answer = num_gen::integer().range(2, 5).random();
+    let (coefficient, coefficient_range) = num_gen::integer().range(3, 9).and_random();
+    let unknown = symbols::get_unknown()?;
 
-    let solution = format!(
-        "{c}x &= {rhs} \\ div {c}\\
-              x &= {a} \\",
-        c = coefficient,
-        a = answer,
-        rhs = answer * coefficient,
-    );
+    let mut solution = StructuredSolution::new();
+    solution
+        .add_aligned(format!("{coefficient}{unknown}"), coefficient * answer) // 3x = 12
+        .with_step(divide_number(coefficient))
+        .add_aligned(unknown, answer); // x = 4
 
-    let problem = Problem {
+    Ok(Problem {
         name,
-        question: format!("${}x = {}$", coefficient, answer * coefficient),
-        answer: format!("$x = {}$", answer),
-        solution: typst_writer::formatting::equation_solution(solution),
+        question: format!("${coefficient}{unknown} = {}$", answer * coefficient),
+        answer: format!("${unknown} = {answer}$"),
+        solution: solution.to_string(),
         identifiers: vec![coefficient],
         combinations: coefficient_range.len(),
-    };
-
-    Ok(problem)
+    })
 }
 
 /// 4x + 1 = 13
 /// Difficulty: 1
 #[problem]
 fn positive_up_to_5(name: String, _lang: &Language) -> Result<Problem> {
-    let answer = IntRange::without_zero(0, 5)?.random();
-    let (coefficient, coefficient_range) = IntRange::without_zero(2, 5)?.and_random();
-    let (constant, constant_range) =
-        IntRange::without_zero((-coefficient * answer).max(-5), 5)?.and_random();
+    let unknown = symbols::get_unknown()?;
+    let answer = num_gen::integer().range(0, 5).random();
+    let (coefficient, coefficient_range) = num_gen::integer().range(2, 5).and_random();
+    let (constant, constant_range) = num_gen::integer()
+        .range((-coefficient * answer).max(-5), 5)
+        .and_random();
+    let term = Term::from_num_and_vars(coefficient, unknown);
 
-    let solution = solutions::linear_equations::integer_answer(coefficient, 'x', constant, answer);
+    let mut solution = StructuredSolution::new();
+    solution
+        .add_aligned(
+            format!("{term}{constant:+}"),
+            coefficient * answer + constant,
+        )
+        .with_step(subtract_number(constant))
+        .add_aligned(&term, coefficient * answer)
+        .with_step(divide_number(coefficient))
+        .add_aligned(unknown, answer);
 
-    let problem = Problem {
+    Ok(Problem {
         name,
         question: format!(
-            "${cf}x {co:+} = {rhs}$",
-            cf = coefficient,
-            co = constant,
+            "${term}{constant:+} = {rhs}$",
             rhs = coefficient * answer + constant
         ),
-        answer: format!("$x = {}$", answer),
-        solution,
+        answer: format!("${unknown} = {answer}$"),
+        solution: solution.to_string(),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
-    };
-    Ok(problem)
+    })
 }
 
 /// 6x + 8 = 20
 /// Difficulty: 2
 #[problem]
 fn positive_answers(name: String, _lang: &Language) -> Result<Problem> {
-    let answer = IntRange::without_zero(0, 10)?.random();
-    let (coefficient, coefficient_range) = IntRange::without_zero(2, 9)?.and_random();
-    let (constant, constant_range) =
-        IntRange::without_zero((-coefficient * answer).max(-10), 10)?.and_random();
+    let unknown = symbols::get_unknown()?;
+    let answer = num_gen::integer().range(0, 10).random();
+    let (coefficient, coefficient_range) = num_gen::integer().range(2, 9).and_random();
+    let (constant, constant_range) = num_gen::integer()
+        .range((-coefficient * answer).max(-10), 10)
+        .and_random();
 
-    let solution = solutions::linear_equations::integer_answer(coefficient, 'x', constant, answer);
+    let term = Term::from_num_and_vars(coefficient, unknown);
 
-    let problem = Problem {
+    let mut solution = StructuredSolution::new();
+    solution
+        .add_aligned(
+            format!("{term}{constant:+}"),
+            coefficient * answer + constant,
+        )
+        .with_step(subtract_number(constant))
+        .add_aligned(&term, coefficient * answer)
+        .with_step(divide_number(coefficient))
+        .add_aligned(unknown, answer);
+
+    Ok(Problem {
         name,
         question: format!(
-            "${cf}x {co:+} = {rhs}$",
-            cf = coefficient,
-            co = constant,
+            "${term}{constant:+} = {rhs}$",
             rhs = coefficient * answer + constant
         ),
-        answer: format!("$x = {}$", answer),
-        solution,
+        answer: format!("${unknown} = {answer}$"),
+        solution: solution.to_string(),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
-    };
-    Ok(problem)
+    })
 }
 
 /// 6x + 8 = 19
 /// Difficulty: 3
 #[problem]
 fn positive_rational(name: String, _lang: &Language) -> Result<Problem> {
-    let (denominator, denominator_range) = IntRange::without_zero(2, 9)?.and_random();
-    let numerator = IntRange::without_zero(1, denominator * 2 - 1)?
+    let (denominator, denominator_range) = num_gen::integer().range(2, 9).and_random();
+    let numerator = num_gen::integer()
+        .range(1, denominator * 2 - 1)
         .exclude(denominator)
         .random();
     let coefficient = denominator;
-    let (constant, constant_range) =
-        IntRange::without_zero((-numerator).max(-10), 10)?.and_random();
+    let (constant, constant_range) = num_gen::integer()
+        .range((-numerator).max(-10), 10)
+        .and_random();
 
     let solution = solutions::linear_equations::positive_rational_answer(
         coefficient,
@@ -134,7 +152,7 @@ fn positive_rational(name: String, _lang: &Language) -> Result<Problem> {
     let (simplified_numerator, simplified_denominator) =
         math::utils::simplified_fraction(numerator, denominator);
 
-    let problem = Problem {
+    Ok(Problem {
         name,
         question: format!(
             "${cf}x {co:+} = {rhs}$",
@@ -146,6 +164,5 @@ fn positive_rational(name: String, _lang: &Language) -> Result<Problem> {
         solution,
         identifiers: vec![coefficient, constant],
         combinations: denominator_range.len() * constant_range.len(),
-    };
-    Ok(problem)
+    })
 }

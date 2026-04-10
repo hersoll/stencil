@@ -1,29 +1,31 @@
 use anyhow::Result;
 use macros::problem;
-use math::IntRange;
+use math::num_gen;
 use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::{self, equation_solution};
+use typst_writer::formatting::{self, StructuredSolution, divide_number, multiply_number};
 
 /// x/3 = 4
 /// Difficulty: 0
 #[problem]
 fn one_denom_one_variable(name: String, _lang: &Language) -> Result<Problem> {
-    let (denominator, denominator_range) = IntRange::without_zero(2, 10)?.and_random();
-    let rhs = IntRange::without_zero(1, 10)?.random();
+    let denominator_range = num_gen::integer().range(2, 10);
+    let denominator = denominator_range.random();
+    let rhs = num_gen::integer().range(1, 10).random();
     let final_answer = denominator * rhs;
     let unknown = 'x';
 
     let question = format!("$ {unknown}/{denominator} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
-    let solution = equation_solution(format!(
-        "{unknown}/{denominator} &= {rhs} \\ dot.op {denominator} \\
-        {unknown} &= {final_answer} \\"
-    ));
+    let mut solution = StructuredSolution::new();
+    solution
+        .add_aligned(format!("{unknown}/{denominator}"), rhs)
+        .with_step(multiply_number(denominator))
+        .add_aligned(unknown, final_answer);
 
     Ok(Problem {
         question,
         answer,
-        solution,
+        solution: solution.to_string(),
         name,
         identifiers: vec![denominator],
         combinations: denominator_range.len(),
@@ -37,28 +39,32 @@ fn one_denom_and_unit_variable_integers_positive(
     name: String,
     _lang: &Language,
 ) -> Result<Problem> {
-    let (denominator, denominator_range) = IntRange::without_zero(3, 5)?.and_random();
+    let denominator_range = num_gen::integer().range(3, 5);
+    let denominator = denominator_range.random();
     // n is the multiple of the denominator + 1, will show up in both the question and answer
-    let n = IntRange::without_zero(1, 3)?.random();
+    let n = num_gen::integer().range(1, 3).random();
     let rhs = n * (denominator + 1);
     let final_answer = n * denominator;
     let unknown = 'x';
 
     let question = format!("$ {unknown}/{denominator} + {unknown} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
-    let solution = equation_solution(format!(
-        "{unknown}/{denominator} + {unknown} &= {rhs} \\ dot.op {denominator} \\
-        {unknown} + {denominator}{unknown} &= {rhs_denom} \\ \\
-        {denom_plus_one}{unknown} &= {rhs_denom} \\ div {denom_plus_one}\\
-        {unknown} &= {final_answer} \\",
-        denom_plus_one = denominator + 1,
-        rhs_denom = rhs * denominator,
-    ));
+    let mut solution = StructuredSolution::new();
+    solution
+        .add_aligned(format!("{unknown}/{denominator} + {unknown}"), rhs)
+        .with_step(multiply_number(denominator))
+        .add_aligned(
+            format!("{unknown} + {denominator}{unknown}"),
+            rhs * denominator,
+        )
+        .add_aligned(format!("{}{unknown}", denominator + 1), rhs * denominator)
+        .with_step(divide_number(denominator + 1))
+        .add_aligned(unknown, final_answer);
 
     Ok(Problem {
         question,
         answer,
-        solution,
+        solution: solution.to_string(),
         name,
         identifiers: vec![denominator],
         combinations: denominator_range.len(),
@@ -71,28 +77,32 @@ fn unit_variable_and_one_denom_integers_positive(
     name: String,
     _lang: &Language,
 ) -> Result<Problem> {
-    let (denominator, denominator_range) = IntRange::without_zero(3, 5)?.and_random();
+    let denominator_range = num_gen::integer().range(3, 5);
+    let denominator = denominator_range.random();
     // n is the multiple of the denominator - 1, will show up in both the question and answer
-    let n = IntRange::without_zero(1, 3)?.random();
+    let n = num_gen::integer().range(1, 3).random();
     let rhs = n * (denominator - 1);
     let final_answer = n * denominator;
     let unknown = 'x';
 
     let question = format!("$ {unknown} - {unknown}/{denominator} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
-    let solution = equation_solution(format!(
-        "{unknown} - {unknown}/{denominator} &= {rhs} \\ dot.op {denominator} \\
-        {denominator}{unknown} - {unknown} &= {rhs_denom} \\ \\
-        {denom_minus_one}{unknown} &= {rhs_denom} \\ div {denom_minus_one}\\
-        {unknown} &= {final_answer} \\",
-        denom_minus_one = denominator - 1,
-        rhs_denom = rhs * denominator,
-    ));
+    let mut solution = StructuredSolution::new();
+    solution
+        .add_aligned(format!("{unknown} - {unknown}/{denominator}"), rhs)
+        .with_step(multiply_number(denominator))
+        .add_aligned(
+            format!("{denominator}{unknown} - {unknown}"),
+            rhs * denominator,
+        )
+        .add_aligned(format!("{}{unknown}", denominator - 1), rhs * denominator)
+        .with_step(divide_number(denominator - 1))
+        .add_aligned(unknown, final_answer);
 
     Ok(Problem {
         question,
         answer,
-        solution,
+        solution: solution.to_string(),
         name,
         identifiers: vec![denominator],
         combinations: denominator_range.len(),
@@ -106,9 +116,10 @@ fn unit_variable_and_one_denom_integers_with_negatives(
     name: String,
     _lang: &Language,
 ) -> Result<Problem> {
-    let (denominator, denominator_range) = IntRange::without_zero(3, 5)?.and_random();
+    let denominator_range = num_gen::integer().range(3, 5);
+    let denominator = denominator_range.random();
     // n is a multiple, will show up in both the question and answer
-    let n = IntRange::without_zero(-3, 3)?.random();
+    let n = num_gen::integer().range(-3, 3).random();
     let rhs = (1 - denominator) * n;
     let final_answer = denominator * n;
     let unknown = 'x';
