@@ -1,14 +1,15 @@
 use anyhow::Result;
 use macros::problem;
-use math::IntRange;
+use math::num_gen::{self, IntegerGenerator};
 use types::{lang::Language, problems::Problem};
+use typst_writer::formatting::parentheses;
 
 /// 5 - 9
 /// Difficulty: 0
 #[problem]
 fn subtract_larger(name: String, _lang: &Language) -> Result<Problem> {
-    let (first, first_range) = IntRange::without_zero(1, 10)?.and_random();
-    let second = IntRange::without_zero(first + 1, first + 10)?.random();
+    let (first, first_range) = num_gen::integer().range(1, 10).and_random();
+    let second = num_gen::integer().range(first + 1, first + 10).random();
     Ok(Problem {
         name,
         question: format!("${first} - {second}$"),
@@ -23,8 +24,8 @@ fn subtract_larger(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 2
 #[problem]
 fn start_negative(name: String, _lang: &Language) -> Result<Problem> {
-    let (first, first_range) = IntRange::without_zero(-10, -1)?.and_random();
-    let (second, second_range) = IntRange::without_zero(-10, 10)?.and_random();
+    let (first, first_range) = num_gen::integer().range(-10, -1).and_random();
+    let (second, second_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
     Ok(Problem {
         name,
         question: format!("${first} {second:+}$"),
@@ -39,19 +40,16 @@ fn start_negative(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 2
 #[problem]
 fn add_negative(name: String, _lang: &Language) -> Result<Problem> {
-    let (first, first_range) = IntRange::without_zero(1, 10)?.and_random();
-    let (second, second_range) = IntRange::without_zero(-10, -1)?.and_random();
+    let (first, first_range) = num_gen::integer().range(1, 10).and_random();
+    let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
     let ans = first + second;
     Ok(Problem {
         name,
-        question: format!(
-            "${first} + {second_p}$",
-            second_p = typst_writer::formatting::parentheses(second)
-        ),
+        question: format!("${first} + {second_p}$", second_p = parentheses(second)),
         answer: format!("${ans}$"),
         solution: format!(
             "${first} + {second_p} = {first} - {second_a} = {ans}$",
-            second_p = typst_writer::formatting::parentheses(second),
+            second_p = parentheses(second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
@@ -63,19 +61,16 @@ fn add_negative(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 2
 #[problem]
 fn subtract_negative(name: String, _lang: &Language) -> Result<Problem> {
-    let (first, first_range) = IntRange::without_zero(1, 10)?.and_random();
-    let (second, second_range) = IntRange::without_zero(-10, -1)?.and_random();
+    let (first, first_range) = num_gen::integer().range(1, 10).and_random();
+    let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
     let ans = first - second;
     Ok(Problem {
         name,
-        question: format!(
-            "${first} - {second_p}$",
-            second_p = typst_writer::formatting::parentheses(second)
-        ),
+        question: format!("${first} - {second_p}$", second_p = parentheses(second)),
         answer: format!("${ans}$"),
         solution: format!(
             "${first} - {second_p} = {first} + {second_a} = {ans}$",
-            second_p = typst_writer::formatting::parentheses(second),
+            second_p = parentheses(second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
@@ -83,7 +78,11 @@ fn subtract_negative(name: String, _lang: &Language) -> Result<Problem> {
     })
 }
 
-fn make_multiplication_problem(first: IntRange, second: IntRange, name: String) -> Result<Problem> {
+fn make_multiplication_problem(
+    first: IntegerGenerator,
+    second: IntegerGenerator,
+    name: String,
+) -> Result<Problem> {
     let (first_val, first_range) = first.and_random();
     let (second_val, second_range) = second.and_random();
     let ans = first_val * second_val;
@@ -91,8 +90,8 @@ fn make_multiplication_problem(first: IntRange, second: IntRange, name: String) 
         name: name,
         question: format!(
             "${first_p} dot {second_p}$",
-            first_p = typst_writer::formatting::parentheses(first_val),
-            second_p = typst_writer::formatting::parentheses(second_val)
+            first_p = parentheses(first_val),
+            second_p = parentheses(second_val)
         ),
         answer: format!("${ans}$"),
         solution: if ans > 0 {
@@ -110,8 +109,8 @@ fn make_multiplication_problem(first: IntRange, second: IntRange, name: String) 
 #[problem]
 fn positive_times_negative(name: String, _lang: &Language) -> Result<Problem> {
     make_multiplication_problem(
-        IntRange::without_zero(1, 10)?,
-        IntRange::without_zero(-10, -1)?,
+        num_gen::integer().range(1, 10),
+        num_gen::integer().range(-10, -1),
         name,
     )
 }
@@ -121,8 +120,8 @@ fn positive_times_negative(name: String, _lang: &Language) -> Result<Problem> {
 #[problem]
 fn negative_times_positive(name: String, _lang: &Language) -> Result<Problem> {
     make_multiplication_problem(
-        IntRange::without_zero(-10, -1)?,
-        IntRange::without_zero(1, 10)?,
+        num_gen::integer().range(-10, -1),
+        num_gen::integer().range(1, 10),
         name,
     )
 }
@@ -132,8 +131,8 @@ fn negative_times_positive(name: String, _lang: &Language) -> Result<Problem> {
 #[problem]
 fn negative_times_negative(name: String, _lang: &Language) -> Result<Problem> {
     make_multiplication_problem(
-        IntRange::without_zero(-10, -1)?,
-        IntRange::without_zero(-10, -1)?,
+        num_gen::integer().range(-10, -1),
+        num_gen::integer().range(-10, -1),
         name,
     )
 }
@@ -142,21 +141,21 @@ fn negative_times_negative(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 3
 #[problem]
 fn negative_plus_negative(name: String, _lang: &Language) -> Result<Problem> {
-    let (first, first_range) = IntRange::without_zero(-10, -1)?.and_random();
-    let (second, second_range) = IntRange::without_zero(-10, -1)?.and_random();
+    let (first, first_range) = num_gen::integer().range(-10, -1).and_random();
+    let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
     let ans = first + second;
     Ok(Problem {
         name,
         question: format!(
             "${first_p} + {second_p}$",
-            first_p = typst_writer::formatting::parentheses(first),
-            second_p = typst_writer::formatting::parentheses(second)
+            first_p = parentheses(first),
+            second_p = parentheses(second)
         ),
         answer: format!("${ans}$"),
         solution: format!(
             "${first_p} + {second_p} = {first} - {second_a} = {ans}$",
-            first_p = typst_writer::formatting::parentheses(first),
-            second_p = typst_writer::formatting::parentheses(second),
+            first_p = parentheses(first),
+            second_p = parentheses(second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
@@ -168,21 +167,21 @@ fn negative_plus_negative(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 3
 #[problem]
 fn negative_minus_negative(name: String, _lang: &Language) -> Result<Problem> {
-    let (first, first_range) = IntRange::without_zero(-10, -1)?.and_random();
-    let (second, second_range) = IntRange::without_zero(-10, -1)?.and_random();
+    let (first, first_range) = num_gen::integer().range(-10, -1).and_random();
+    let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
     let ans = first - second;
     Ok(Problem {
         name,
         question: format!(
             "${first_p} - {second_p}$",
-            first_p = typst_writer::formatting::parentheses(first),
-            second_p = typst_writer::formatting::parentheses(second)
+            first_p = parentheses(first),
+            second_p = parentheses(second)
         ),
         answer: format!("${ans}$"),
         solution: format!(
             "${first_p} - {second_p} = {first} + {second_a} = {ans}$",
-            first_p = typst_writer::formatting::parentheses(first),
-            second_p = typst_writer::formatting::parentheses(second),
+            first_p = parentheses(first),
+            second_p = parentheses(second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],

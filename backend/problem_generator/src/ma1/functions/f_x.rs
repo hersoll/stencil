@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{IntRange, Polynomial, Term, symbols};
+use math::{Polynomial, Term, num_gen, symbols};
 use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::equation_solution;
@@ -12,9 +12,9 @@ use typst_writer::formatting::equation_solution;
 /// Difficulty: 0
 #[problem]
 fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
-    let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
-    let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
-    let x = IntRange::without_zero(1, 5)?.random();
+    let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
+    let (constant, constant_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
+    let x = num_gen::integer().range(1, 5).random();
     let y = coefficient * x + constant;
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
@@ -47,9 +47,9 @@ fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
 /// Difficulty: 1
 #[problem]
 fn without_notation_x(name: String, lang: &Language) -> Result<Problem> {
-    let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
-    let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
-    let answer = IntRange::without_zero(1, 5)?.random();
+    let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
+    let (constant, constant_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
+    let answer = num_gen::integer().range(1, 5).random();
     let y = coefficient * answer + constant;
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
@@ -83,10 +83,12 @@ fn without_notation_x(name: String, lang: &Language) -> Result<Problem> {
 /// Difficulty: 2
 #[problem]
 fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
-    let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
-    let x = IntRange::without_zero(1, 5)?.random();
-    let (constant, constant_range) =
-        IntRange::without_zero((-x * coefficient).max(-10), 10)?.and_random();
+    let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
+    let x = num_gen::integer().range(1, 5).random();
+    let (constant, constant_range) = num_gen::integer()
+        .range((-x * coefficient).max(-10), 10)
+        .exclude(0)
+        .and_random();
     let y = coefficient * x + constant;
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
@@ -119,10 +121,12 @@ fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
 /// Difficulty: 3
 #[problem]
 fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
-    let (coefficient, coefficient_range) = IntRange::without_zero(2, 10)?.and_random();
-    let x = IntRange::without_zero(1, 5)?.random();
-    let (constant, constant_range) =
-        IntRange::without_zero((-x * coefficient).max(-10), 10)?.and_random();
+    let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
+    let x = num_gen::integer().range(1, 5).random();
+    let (constant, constant_range) = num_gen::integer()
+        .range((-x * coefficient).max(-10), 10)
+        .exclude(0)
+        .and_random();
     let y = coefficient * x + constant;
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
@@ -157,9 +161,12 @@ fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
 /// Difficulty: 3
 #[problem]
 fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
-    let (coefficient, coefficient_range) = IntRange::without_ones_and_zero(-10, 10)?.and_random();
-    let x = IntRange::with_zero(-7, 7)?.random();
-    let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
+    let (coefficient, coefficient_range) = num_gen::integer()
+        .range(-10, 10)
+        .exclude_multiple(&[-1, 0, 1])
+        .and_random();
+    let x = num_gen::integer().range(-7, 7).random();
+    let (constant, constant_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
     let y = coefficient * x + constant;
     let f_name = symbols::get_function_name()?;
     let var = symbols::get_variable()?;
@@ -201,9 +208,12 @@ fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
 /// Difficulty: 3
 #[problem]
 fn find_y(name: String, lang: &Language) -> Result<Problem> {
-    let (coefficient, coefficient_range) = IntRange::without_ones_and_zero(-10, 10)?.and_random();
-    let x = IntRange::with_zero(-7, 7)?.random();
-    let (constant, constant_range) = IntRange::without_zero(-10, 10)?.and_random();
+    let (coefficient, coefficient_range) = num_gen::integer()
+        .range(-10, 10)
+        .exclude_multiple(&[-1, 0, 1])
+        .and_random();
+    let x = num_gen::integer().range(-7, 7).random();
+    let (constant, constant_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
     let y = coefficient * x + constant;
     let f_name = symbols::get_function_name()?;
     let var = symbols::get_variable()?;
@@ -246,11 +256,11 @@ fn find_y(name: String, lang: &Language) -> Result<Problem> {
 #[problem]
 fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
-        IntRange::without_ones_and_zero(2, 6)?.and_random();
+        num_gen::integer().range(2, 6).and_random();
     let (algebra_coefficient, algebra_coefficient_range) =
-        IntRange::without_zero(1, 6)?.and_random();
-    let function_constant = IntRange::without_zero(1, 8)?.random();
-    let algebra_constant = IntRange::without_zero(1, 8)?.random();
+        num_gen::integer().range(1, 6).and_random();
+    let function_constant = num_gen::integer().range(1, 8).random();
+    let algebra_constant = num_gen::integer().range(1, 8).random();
     let f_name = symbols::get_function_name()?;
     let var = 'x';
     let algebra_symbol = symbols::get_unknown_with_exclusions(['x', 'y'])?;
@@ -295,11 +305,11 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
 #[problem]
 fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
-        IntRange::without_ones_and_zero(-6, -2)?.and_random();
+        num_gen::integer().range(-6, -2).and_random();
     let (algebra_coefficient, algebra_coefficient_range) =
-        IntRange::without_zero(1, 6)?.and_random();
-    let function_constant = IntRange::without_zero(1, 8)?.random();
-    let algebra_constant = IntRange::without_zero(-8, 8)?.random();
+        num_gen::integer().range(1, 6).and_random();
+    let function_constant = num_gen::integer().range(1, 8).random();
+    let algebra_constant = num_gen::integer().range(-8, 8).exclude(0).random();
     let f_name = symbols::get_function_name()?;
     let var = 'x';
     let algebra_symbol = symbols::get_unknown_with_exclusions(['x', 'y'])?;
@@ -344,8 +354,8 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
 // #[problem]
 // fn insert_number_twice(name: String, _lang: &Language) -> Result<Problem> {
 //     let (coef, coef_range) = IntRange::without_ones_and_zero(2, 5)?.and_random();
-//     let (constant, const_range) = IntRange::without_zero(-6, 6)?.and_random();
-//     let (val, val_range) = IntRange::without_zero(-8, 8)?.and_random();
+//     let (constant, const_range) = num_gen::integer().range(-6, 6)?.and_random();
+//     let (val, val_range) = num_gen::integer().range(-8, 8)?.and_random();
 //     let function: Expression = vec![
 //         (coef, 'x').into(),
 //         constant.into()

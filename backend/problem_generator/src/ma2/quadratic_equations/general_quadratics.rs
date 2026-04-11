@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::IntRange;
+use math::num_gen;
 use types::{lang::Language, problems::Problem};
 use typst_writer::custom_math::solutions;
 
@@ -21,8 +21,8 @@ fn quadratics_template(symmetry: i32, distance: i32) -> (String, String, String)
 
 #[problem]
 fn small_numbers_positive_p(name: String, _lang: &Language) -> Result<Problem> {
-    let (symmetry, sym_range) = IntRange::without_zero(-3, -1)?.and_random();
-    let distance = IntRange::without_zero(-symmetry + 1, 5)?.random();
+    let (symmetry, sym_range) = num_gen::integer().range(-3, -1).and_random();
+    let distance = num_gen::integer().range(-symmetry + 1, 5).random();
     let (question, answer, solution) = quadratics_template(symmetry, distance);
 
     Ok(Problem {
@@ -37,8 +37,8 @@ fn small_numbers_positive_p(name: String, _lang: &Language) -> Result<Problem> {
 
 #[problem]
 fn positive_p(name: String, _lang: &Language) -> Result<Problem> {
-    let (symmetry, sym_range) = IntRange::without_zero(-8, -1)?.and_random();
-    let distance = IntRange::without_zero(1, 10)?.random();
+    let (symmetry, sym_range) = num_gen::integer().range(-8, -1).and_random();
+    let distance = num_gen::integer().range(1, 10).random();
     let (question, answer, solution) = quadratics_template(symmetry, distance);
 
     Ok(Problem {

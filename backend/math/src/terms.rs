@@ -1,4 +1,4 @@
-use crate::{IntRange, Number, Variable, Variables};
+use crate::{Number, Variable, Variables, num_gen};
 use num_traits::Pow;
 use num_traits::Zero;
 use std::fmt::Display;
@@ -75,7 +75,7 @@ impl Term {
 
     pub fn assert_one_positive(term1: &mut Term, term2: &mut Term) {
         if *term1 < Term::zero() && *term2 < Term::zero() {
-            let random = IntRange::with_zero(0, 1).unwrap().random();
+            let random = num_gen::integer().range(0, 1).random();
             if random == 0 {
                 *term1 = -term1.clone();
             } else {
