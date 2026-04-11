@@ -1,20 +1,20 @@
 use anyhow::Result;
 use macros::problem;
-use math::{IntRange, Number, Polynomial, Term, symbols};
+use math::{Number, Polynomial, Term, num_gen, symbols};
 use types::{lang::Language, problems::Problem};
-use typst_writer;
+use typst_writer::{self, formatting::parentheses};
 
 /// 3(x+1)
 /// Difficulty: 0
 #[problem]
 fn positive_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
-    let (factor, f_range) = IntRange::without_zero(2, 5)?.and_random();
+    let (factor, f_range) = num_gen::integer().range(2, 5).and_random();
     let unknown = symbols::get_unknown()?;
-    let (constant, c_range) = IntRange::without_zero(-7, 7)?.and_random();
+    let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
 
-    let t1: Term = unknown.into();
-    let t2: Term = constant.into();
-    let exp: Polynomial = vec![t1, t2].into();
+    let t1 = Term::from(unknown);
+    let t2 = Term::from_num(constant);
+    let exp = Polynomial::from_terms(&[&t1, &t2]);
 
     let question = format!("${factor}({exp})$");
     let answer = (factor * exp.clone()).simplify();
@@ -38,13 +38,13 @@ fn positive_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 1
 #[problem]
 fn negative_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
-    let (factor, f_range) = IntRange::without_zero(-5, -2)?.and_random();
+    let (factor, f_range) = num_gen::integer().range(-5, -2).and_random();
     let unknown = symbols::get_unknown()?;
-    let (constant, c_range) = IntRange::without_zero(-7, -1)?.and_random();
+    let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
 
-    let t1: Term = unknown.into();
-    let t2: Term = constant.into();
-    let exp: Polynomial = vec![t1, t2].into();
+    let t1 = Term::from(unknown);
+    let t2 = Term::from_num(constant);
+    let exp = Polynomial::from_terms(&[&t1, &t2]);
 
     let question = format!("${factor}({exp})$");
     let answer = factor * exp.clone();
@@ -52,14 +52,14 @@ fn negative_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
     let solution = format!(
         "$&{factor}({exp}) = colored({factor_p} dot) {unknown} + colored({factor_p} dot) {const_p} =\\
             =&{answer} = {simplified}$",
-        factor_p = typst_writer::formatting::parentheses(factor),
-        const_p = typst_writer::formatting::parentheses(constant),
+        factor_p = parentheses(factor),
+        const_p = parentheses(constant),
     );
 
     Ok(Problem {
         name,
         question,
-        answer: format!("${simplified}$"),
+        answer: format!("${answer}$"),
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
@@ -70,14 +70,14 @@ fn negative_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 2
 #[problem]
 fn with_coefficient_on_variable(name: String, _lang: &Language) -> Result<Problem> {
-    let (factor, f_range) = IntRange::without_zero(2, 5)?.and_random();
+    let (factor, f_range) = num_gen::integer().range(2, 5).and_random();
     let unknown = symbols::get_unknown()?;
-    let coef = IntRange::without_zero(2, 5)?.random();
-    let (constant, c_range) = IntRange::without_zero(-7, 7)?.and_random();
+    let coef = num_gen::integer().range(2, 5).random();
+    let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
 
-    let t1: Term = (coef, unknown).into();
-    let t2: Term = constant.into();
-    let exp: Polynomial = vec![&t1, &t2].into();
+    let t1 = Term::from_num_and_vars(coef, unknown);
+    let t2 = Term::from_num(constant);
+    let exp = Polynomial::from_terms(&[&t1, &t2]);
 
     let question = format!("${factor}({exp})$");
     let answer = (factor * exp.clone()).simplify();
@@ -102,12 +102,12 @@ fn with_coefficient_on_variable(name: String, _lang: &Language) -> Result<Proble
 #[problem]
 fn multiply_by_variable(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let (constant, c_range) = IntRange::without_zero(-7, 7)?.and_random();
+    let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
 
-    let factor: Term = unknown.into();
-    let t1: Term = unknown.into();
-    let t2: Term = constant.into();
-    let exp: Polynomial = vec![&t1, &t2].into();
+    let factor = Term::from(unknown);
+    let t1 = Term::from(unknown);
+    let t2 = Term::from_num(constant);
+    let exp = Polynomial::from_terms(&[&t1, &t2]);
 
     let question = format!("${factor}({exp})$");
     let answer = (factor.clone() * exp.clone()).simplify();
@@ -132,22 +132,23 @@ fn multiply_by_variable(name: String, _lang: &Language) -> Result<Problem> {
 #[problem]
 fn add_parentheses(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
+    let coef_range = num_gen::integer()
+        .range(-9, 9)
+        .exclude_multiple(&[-1, 0, 1]);
     let coef_1 = coef_range.random();
-    let const_1 = coef_range.random();
     let coef_2 = coef_range.random();
-    let const_2 = coef_range.random();
+    let const_range = num_gen::integer().range(-9, 9).exclude(0);
+    let const_1 = const_range.random();
+    let const_2 = const_range.random();
 
-    let mut term_var_1: Term = (coef_1, unknown).into();
-    let mut term_const_1: Term = const_1.into();
-    let mut term_var_2: Term = (coef_2, unknown).into();
-    let mut term_const_2: Term = const_2.into();
+    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_const_1 = Term::from_num(const_1);
+    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
-    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
-    exp_1.sort();
-    exp_2.sort();
+    let exp_1 = Polynomial::from_terms(&[&term_var_1, &term_const_1]).sorted();
+    let exp_2 = Polynomial::from_terms(&[&term_var_2, &term_const_2]).sorted();
 
     let question = format!("$({exp_1}) + ({exp_2})$");
     let answer = (exp_1.clone() + exp_2.clone()).simplify();
@@ -162,7 +163,7 @@ fn add_parentheses(name: String, _lang: &Language) -> Result<Problem> {
         answer: format!("${answer}$"),
         solution,
         identifiers: vec![coef_1, const_1],
-        combinations: coef_range.len() * coef_range.len(),
+        combinations: coef_range.len() * const_range.len(),
     })
 }
 
@@ -171,23 +172,24 @@ fn add_parentheses(name: String, _lang: &Language) -> Result<Problem> {
 #[problem]
 fn subtract_parentheses(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
+    let coef_range = num_gen::integer()
+        .range(-9, 9)
+        .exclude_multiple(&[-1, 0, 1]);
     let coef_1 = coef_range.random();
-    let const_1 = coef_range.random();
     let coef_2 = coef_range.random();
-    let const_2 = coef_range.random();
+    let const_range = num_gen::integer().range(-9, 9).exclude(0);
+    let const_1 = const_range.random();
+    let const_2 = const_range.random();
 
-    let mut term_var_1: Term = (coef_1, unknown).into();
-    let mut term_const_1: Term = const_1.into();
-    let mut term_var_2: Term = (coef_2, unknown).into();
-    let mut term_const_2: Term = const_2.into();
+    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_const_1 = Term::from_num(const_1);
+    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
 
-    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
-    exp_1.sort();
-    exp_2.sort();
+    let exp_1 = Polynomial::from_terms(&[&term_var_1, &term_const_1]).sorted();
+    let exp_2 = Polynomial::from_terms(&[&term_var_2, &term_const_2]).sorted();
 
     let question = format!("$({exp_1}) - ({exp_2})$");
     let answer = (exp_1.clone() - exp_2.clone()).simplify();
@@ -205,7 +207,7 @@ fn subtract_parentheses(name: String, _lang: &Language) -> Result<Problem> {
         answer: format!("${answer}$"),
         solution,
         identifiers: vec![coef_1, const_1],
-        combinations: coef_range.len() * coef_range.len(),
+        combinations: coef_range.len() * const_range.len(),
     })
 }
 
@@ -213,30 +215,30 @@ fn subtract_parentheses(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 2
 #[problem]
 fn negative_factor_and_coef(name: String, _lang: &Language) -> Result<Problem> {
-    let (factor, f_range) = IntRange::without_zero(-8, -2)?.and_random();
+    let (factor, f_range) = num_gen::integer().range(-8, -2).and_random();
     let unknown = symbols::get_unknown()?;
-    let coef = IntRange::without_zero(-5, -2)?.random();
-    let (constant, c_range) = IntRange::without_zero(2, 9)?.and_random();
+    let coef = num_gen::integer().range(-5, -2).random();
+    let (constant, c_range) = num_gen::integer().range(2, 9).and_random();
 
-    let t1: Term = constant.into();
-    let t2: Term = (coef, unknown).into();
-    let exp: Polynomial = vec![&t1, &t2].into();
+    let t1 = Term::from_num(constant);
+    let t2 = Term::from_num_and_vars(coef, unknown);
+    let exp = Polynomial::from_terms(&[&t1, &t2]);
 
     let question = format!("${factor}({exp})$");
     let answer = factor * exp.clone();
-    let simplified = answer.simplify();
+    let simplified_answer = answer.simplify();
     let solution = format!(
         "$&{factor}({exp}) = colored({factor_p} dot) {t1_p} + colored({factor_p} dot) {t2_p} =\\
-            =&{answer} = {simplified}$",
-        factor_p = typst_writer::formatting::parentheses(factor),
-        t1_p = typst_writer::formatting::parentheses(t1),
-        t2_p = typst_writer::formatting::parentheses(t2),
+            =&{answer} = {simplified_answer}$",
+        factor_p = parentheses(factor),
+        t1_p = parentheses(t1),
+        t2_p = parentheses(t2),
     );
 
     Ok(Problem {
         name,
         question,
-        answer: format!("${simplified}$"),
+        answer: format!("${simplified_answer}$"),
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
@@ -247,17 +249,17 @@ fn negative_factor_and_coef(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 3
 #[problem]
 fn const_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
-    let (initial, i_range) = IntRange::without_zero(2, 5)?.and_random();
+    let (initial_const, i_range) = num_gen::integer().range(1, 8).and_random();
     let unknown = symbols::get_unknown()?;
-    let coef = IntRange::without_zero(2, 6)?.random();
-    let (constant, c_range) = IntRange::without_zero(-7, -1)?.and_random();
+    let coef = num_gen::integer().range(2, 6).random();
+    let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
 
-    let t1: Term = initial.into();
-    let t2: Term = (coef, unknown).into();
-    let t3: Term = constant.into();
+    let t1 = Term::from_num(initial_const);
+    let t2 = Term::from_num_and_vars(coef, unknown);
+    let t3 = Term::from_num(constant);
 
-    let exp_1: Polynomial = t1.into();
-    let exp_2: Polynomial = vec![&t2, &t3].into();
+    let exp_1 = Polynomial::from(t1);
+    let exp_2 = Polynomial::from_terms(&[&t2, &t3]);
 
     let question = format!("${exp_1}-({exp_2})$");
     let answer = (exp_1.clone() - exp_2.clone()).simplify();
@@ -273,7 +275,7 @@ fn const_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
         question,
         answer: format!("${answer}$"),
         solution,
-        identifiers: vec![initial, constant],
+        identifiers: vec![initial_const, constant],
         combinations: i_range.len() * c_range.len(),
     })
 }
@@ -282,17 +284,17 @@ fn const_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 3
 #[problem]
 fn var_term_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
-    let (initial, i_range) = IntRange::without_zero(1, 4)?.and_random();
+    let (initial, i_range) = num_gen::integer().range(1, 4).and_random();
     let unknown = symbols::get_unknown()?;
-    let coef = IntRange::without_zero(5, 10)?.random();
-    let (constant, c_range) = IntRange::without_zero(-7, -1)?.and_random();
+    let coef = num_gen::integer().range(5, 10).random();
+    let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
 
-    let t1: Term = (initial, unknown).into();
-    let t2: Term = (coef, unknown).into();
-    let t3: Term = constant.into();
+    let t1 = Term::from_num_and_vars(initial, unknown);
+    let t2 = Term::from_num_and_vars(coef, unknown);
+    let t3 = Term::from_num(constant);
 
-    let exp_1: Polynomial = t1.into();
-    let exp_2: Polynomial = vec![&t2, &t3].into();
+    let exp_1 = Polynomial::from(t1);
+    let exp_2 = Polynomial::from_terms(&[&t2, &t3]);
 
     let question = format!("${exp_1}-({exp_2})$");
     let answer = exp_1.clone() - exp_2.clone();
@@ -307,7 +309,7 @@ fn var_term_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem>
     Ok(Problem {
         name,
         question,
-        answer: format!("${simplified}$"),
+        answer: simplified.to_string(),
         solution,
         identifiers: vec![initial, constant],
         combinations: i_range.len() * c_range.len(),
@@ -319,25 +321,25 @@ fn var_term_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem>
 #[problem]
 fn multiply_and_add(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
-    let factor_range = IntRange::without_zero(2, 5)?;
-    let factor_1 = factor_range.random();
-    let factor_2 = factor_range.random();
+    let coef_range = num_gen::integer()
+        .range(-9, 9)
+        .exclude_multiple(&[-1, 0, 1]);
     let coef_1 = coef_range.random();
     let const_1 = coef_range.random();
     let coef_2 = coef_range.random();
     let const_2 = coef_range.random();
+    let factor_range = num_gen::integer().range(2, 5);
+    let factor_1 = factor_range.random();
+    let factor_2 = factor_range.random();
 
-    let mut term_var_1: Term = (coef_1, unknown).into();
-    let mut term_const_1: Term = const_1.into();
-    let mut term_var_2: Term = (coef_2, unknown).into();
-    let mut term_const_2: Term = const_2.into();
+    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_const_1 = Term::from_num(const_1);
+    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
-    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
-    exp_1.sort();
-    exp_2.sort();
+    let exp_1 = Polynomial::from_terms(&[&term_var_1, &term_const_1]);
+    let exp_2 = Polynomial::from_terms(&[&term_var_2, &term_const_2]);
     let mult_1 = factor_1 * exp_1.clone();
     let mult_2 = factor_2 * exp_2.clone();
 
@@ -362,25 +364,26 @@ fn multiply_and_add(name: String, _lang: &Language) -> Result<Problem> {
 #[problem]
 fn multiply_first_and_subtract(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
-    let factor_range = IntRange::without_zero(2, 5)?;
-    let factor_1 = factor_range.random();
+    let coef_range = num_gen::integer()
+        .range(-9, 9)
+        .exclude_multiple(&[-1, 0, 1]);
     let coef_1 = coef_range.random();
-    let const_1 = coef_range.random();
     let coef_2 = coef_range.random();
-    let const_2 = coef_range.random();
+    let const_range = num_gen::integer().range(-9, 9).exclude(0);
+    let const_1 = const_range.random();
+    let const_2 = const_range.random();
+    let factor_range = num_gen::integer().range(2, 5);
+    let factor_1 = factor_range.random();
 
-    let mut term_var_1: Term = (coef_1, unknown).into();
-    let mut term_const_1: Term = const_1.into();
-    let mut term_var_2: Term = (coef_2, unknown).into();
-    let mut term_const_2: Term = const_2.into();
+    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_const_1 = Term::from_num(const_1);
+    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
 
-    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
-    exp_1.sort();
-    exp_2.sort();
+    let exp_1 = Polynomial::from_terms(&[&term_var_1, &term_const_1]).sorted();
+    let exp_2 = Polynomial::from_terms(&[&term_var_2, &term_const_2]).sorted();
     let mult_1 = factor_1 * exp_1.clone();
 
     let question = format!("${factor_1}({exp_1}) - ({exp_2})$");
@@ -405,26 +408,27 @@ fn multiply_first_and_subtract(name: String, _lang: &Language) -> Result<Problem
 #[problem]
 fn multiply_and_subtract(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let coef_range = IntRange::without_ones_and_zero(-9, 9)?;
-    let factor_range = IntRange::without_zero(2, 5)?;
+    let coef_range = num_gen::integer()
+        .range(-9, 9)
+        .exclude_multiple(&[-1, 0, 1]);
+    let coef_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let const_range = num_gen::integer().range(-9, 9).exclude(0);
+    let const_1 = const_range.random();
+    let const_2 = const_range.random();
+    let factor_range = num_gen::integer().range(2, 5);
     let factor_1 = factor_range.random();
     let factor_2 = factor_range.random();
-    let coef_1 = coef_range.random();
-    let const_1 = coef_range.random();
-    let coef_2 = coef_range.random();
-    let const_2 = coef_range.random();
 
-    let mut term_var_1: Term = (coef_1, unknown).into();
-    let mut term_const_1: Term = const_1.into();
-    let mut term_var_2: Term = (coef_2, unknown).into();
-    let mut term_const_2: Term = const_2.into();
+    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_const_1 = Term::from_num(const_1);
+    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
 
-    let mut exp_1: Polynomial = vec![&term_var_1, &term_const_1].into();
-    let mut exp_2: Polynomial = vec![&term_var_2, &term_const_2].into();
-    exp_1.sort();
-    exp_2.sort();
+    let exp_1 = Polynomial::from_terms(&[&term_var_1, &term_const_1]).sorted();
+    let exp_2 = Polynomial::from_terms(&[&term_var_2, &term_const_2]).sorted();
     let mult_1 = factor_1 * exp_1.clone();
     let mult_2 = -factor_2 * exp_2.clone();
 
@@ -449,16 +453,17 @@ fn multiply_and_subtract(name: String, _lang: &Language) -> Result<Problem> {
 #[problem]
 fn multiply_by_variable_term(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let constant = IntRange::without_zero(2, 7)?.random();
-    let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
-    let coef_1 = coef_range.random().abs();
+    let constant = num_gen::integer().range(1, 7).random();
+    let coef_range = num_gen::integer()
+        .range(-5, 9)
+        .exclude_multiple(&[-1, 0, 1]);
+    let coef_1 = coef_range.positive();
     let coef_2 = coef_range.random();
 
-    let factor: Term = (coef_1, unknown).into();
-    let t1: Term = (coef_2, unknown).into();
-    let t2: Term = constant.into();
-    let mut exp: Polynomial = vec![&t1, &t2].into();
-    exp.sort();
+    let factor = Term::from_num_and_vars(coef_1, unknown);
+    let t1 = Term::from_num_and_vars(coef_2, unknown);
+    let t2 = Term::from(constant);
+    let exp = Polynomial::from_terms(&[&t1, &t2]).sorted();
 
     let question = format!("${factor}({exp})$");
     let answer = (factor.clone() * exp.clone()).simplify();
@@ -488,28 +493,31 @@ fn multiply_by_variable_term(name: String, _lang: &Language) -> Result<Problem> 
 #[problem]
 fn one_variable_one_constant(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
-    let mut t1: Term = (coef_range.random(), unknown).into();
-    let mut t3: Term = (coef_range.random(), unknown).into();
-    let mut t2: Term = coef_range.random().into();
-    let mut t4: Term = coef_range.random().into();
+    let coef_range = num_gen::integer()
+        .range(-5, 5)
+        .exclude_multiple(&[-1, 0, 1]);
+    let coef_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let mut t1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut t3 = Term::from_num_and_vars(coef_2, unknown);
+    let mut t2 = Term::from_num(coef_range.random());
+    let mut t4 = Term::from_num(coef_range.random());
     Term::assert_one_positive(&mut t1, &mut t2);
     Term::assert_one_positive(&mut t3, &mut t4);
 
-    let factor: Term = coef_range.random().into();
-    let v_factor: Term = unknown.into();
+    let factor = coef_range.random();
+    let factor_term = Term::from_num(factor);
+    let variable_factor = Term::from(unknown);
 
-    let mut exp_1: Polynomial = vec![&t1, &t2].into();
-    let mut exp_2: Polynomial = vec![&t3, &t4].into();
-    exp_1.sort();
-    exp_2.sort();
-    let mult_1 = v_factor.clone() * exp_1.clone();
-    let mult_2 = factor.clone() * exp_2.clone();
+    let exp_1 = Polynomial::from_terms(&[&t1, &t2]).sorted();
+    let exp_2 = Polynomial::from_terms(&[&t3, &t4]).sorted();
+    let mult_1 = variable_factor.clone() * exp_1.clone();
+    let mult_2 = factor_term.clone() * exp_2.clone();
 
-    let question = format!("${v_factor}({exp_1}) {factor:+}({exp_2})$");
+    let question = format!("${variable_factor}({exp_1}) {factor_term:+}({exp_2})$");
     let answer = (mult_1.clone() + mult_2.clone()).simplify();
     let solution = format!(
-        "$&{v_factor}({exp_1}) {factor:+}({exp_2}) = \\
+        "$&{variable_factor}({exp_1}) {factor_term:+}({exp_2}) = \\
          =&{mult_1}{mult_2:+} = {answer}$"
     );
 
@@ -518,8 +526,8 @@ fn one_variable_one_constant(name: String, _lang: &Language) -> Result<Problem> 
         question,
         answer: format!("${answer}$"),
         solution,
-        identifiers: vec![2],
-        combinations: 1,
+        identifiers: vec![coef_1, factor],
+        combinations: coef_range.len().pow(2),
     })
 }
 
@@ -528,28 +536,31 @@ fn one_variable_one_constant(name: String, _lang: &Language) -> Result<Problem> 
 #[problem]
 fn one_constant_one_variable(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
-    let mut t1: Term = (coef_range.random(), unknown).into();
-    let mut t3: Term = (coef_range.random(), unknown).into();
-    let mut t2: Term = coef_range.random().into();
-    let mut t4: Term = coef_range.random().into();
+    let coef_range = num_gen::integer()
+        .range(-5, 5)
+        .exclude_multiple(&[-1, 0, 1]);
+    let coef_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let mut t1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut t3 = Term::from_num_and_vars(coef_2, unknown);
+    let mut t2 = Term::from_num(coef_range.random());
+    let mut t4 = Term::from_num(coef_range.random());
     Term::assert_one_positive(&mut t1, &mut t2);
     Term::assert_one_positive(&mut t3, &mut t4);
 
-    let factor: Term = coef_range.random().into();
-    let v_factor: Term = unknown.into();
+    let factor = coef_range.random();
+    let factor_term = Term::from_num(factor);
+    let variable_factor = Term::from(unknown);
 
-    let mut exp_1: Polynomial = vec![&t1, &t2].into();
-    let mut exp_2: Polynomial = vec![&t3, &t4].into();
-    exp_1.sort();
-    exp_2.sort();
-    let mult_1 = factor.clone() * exp_1.clone();
-    let mult_2 = v_factor.clone() * exp_2.clone();
+    let exp_1 = Polynomial::from_terms(&[&t1, &t2]).sorted();
+    let exp_2 = Polynomial::from_terms(&[&t3, &t4]).sorted();
+    let mult_1 = variable_factor.clone() * exp_1.clone();
+    let mult_2 = factor_term.clone() * exp_2.clone();
 
-    let question = format!("${factor}({exp_1}) {v_factor:+}({exp_2})$");
+    let question = format!("${factor_term}({exp_1}) {variable_factor:+}({exp_2})$");
     let answer = (mult_1.clone() + mult_2.clone()).simplify();
     let solution = format!(
-        "$&{factor}({exp_1}) {v_factor:+}({exp_2}) = \\
+        "$&{factor_term}({exp_1}) {variable_factor:+}({exp_2}) = \\
          =&{mult_1}{mult_2:+} = {answer}$"
     );
 
@@ -558,8 +569,8 @@ fn one_constant_one_variable(name: String, _lang: &Language) -> Result<Problem> 
         question,
         answer: format!("${answer}$"),
         solution,
-        identifiers: vec![2],
-        combinations: 1,
+        identifiers: vec![coef_1, factor],
+        combinations: coef_range.len().pow(2),
     })
 }
 
@@ -568,20 +579,22 @@ fn one_constant_one_variable(name: String, _lang: &Language) -> Result<Problem> 
 #[problem]
 fn multiply_both_by_variable_terms(name: String, _lang: &Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
-    let coef_range = IntRange::without_ones_and_zero(-5, 5)?;
-    let mut t1: Term = (coef_range.random(), unknown).into();
-    let mut t3: Term = (coef_range.random(), unknown).into();
-    let mut t2: Term = coef_range.random().into();
-    let mut t4: Term = coef_range.random().into();
+    let coef_range = num_gen::integer()
+        .range(-5, 5)
+        .exclude_multiple(&[-1, 0, 1]);
+    let coef_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let mut t1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut t3 = Term::from_num_and_vars(coef_2, unknown);
+    let mut t2 = Term::from_num(coef_range.random());
+    let mut t4 = Term::from_num(coef_range.random());
     Term::assert_one_positive(&mut t1, &mut t2);
     Term::assert_one_positive(&mut t3, &mut t4);
-    let factor_1: Term = (coef_range.random(), unknown).into();
-    let factor_2: Term = (coef_range.random(), unknown).into();
+    let factor_1 = Term::from_num_and_vars(coef_range.random(), unknown);
+    let factor_2 = Term::from_num_and_vars(coef_range.random(), unknown);
 
-    let mut exp_1: Polynomial = vec![&t1, &t2].into();
-    let mut exp_2: Polynomial = vec![&t3, &t4].into();
-    exp_1.sort();
-    exp_2.sort();
+    let exp_1 = Polynomial::from_terms(&[&t1, &t2]).sorted();
+    let exp_2 = Polynomial::from_terms(&[&t3, &t4]).sorted();
     let mult_1 = factor_1.clone() * exp_1.clone();
     let mult_2 = factor_2.clone() * exp_2.clone();
 
@@ -597,8 +610,8 @@ fn multiply_both_by_variable_terms(name: String, _lang: &Language) -> Result<Pro
         question,
         answer: format!("${answer}$"),
         solution,
-        identifiers: vec![2],
-        combinations: 1,
+        identifiers: vec![coef_1, coef_2],
+        combinations: coef_range.len().pow(2),
     })
 }
 
@@ -607,7 +620,7 @@ fn multiply_both_by_variable_terms(name: String, _lang: &Language) -> Result<Pro
 #[problem]
 fn mixing_variables(name: String, _lang: &Language) -> Result<Problem> {
     let (unknown1, unknown2) = symbols::get_two_unknowns()?;
-    let num_range = IntRange::without_zero(-5, 5)?;
+    let num_range = num_gen::integer().range(-5, 5).exclude(0);
     let factor1 = num_range.positive();
     let factor2 = num_range.negative();
     let constant = num_range.random();
@@ -615,26 +628,24 @@ fn mixing_variables(name: String, _lang: &Language) -> Result<Problem> {
     let coef2 = num_range.random();
     let coef3 = num_range.random();
 
-    let factor1_term: Term = (factor1, unknown1).into();
-    let factor2_term: Term = (factor2, unknown2).into();
-    let mut term1: Term = constant.into();
-    let mut term2: Term = (coef1, unknown2).into();
-    let mut term3: Term = (coef2, unknown1).into();
-    let mut term4: Term = (coef3, unknown2).into();
-    Term::assert_one_positive(&mut term1, &mut term2);
-    Term::assert_one_positive(&mut term3, &mut term4);
+    let factor1_term = Term::from_num_and_vars(factor1, unknown1);
+    let factor2_term = Term::from_num_and_vars(factor2, unknown2);
+    let mut t1 = Term::from_num(constant);
+    let mut t2 = Term::from_num_and_vars(coef1, unknown2);
+    let mut t3 = Term::from_num_and_vars(coef2, unknown1);
+    let mut t4 = Term::from_num_and_vars(coef3, unknown2);
+    Term::assert_one_positive(&mut t1, &mut t2);
+    Term::assert_one_positive(&mut t3, &mut t4);
 
-    let mut exp1: Polynomial = vec![&term1, &term2].into();
-    let mut exp2: Polynomial = vec![&term3, &term4].into();
-    exp1.sort();
-    exp2.sort();
+    let exp_1 = Polynomial::from_terms(&[&t1, &t2]).sorted();
+    let exp_2 = Polynomial::from_terms(&[&t3, &t4]).sorted();
 
-    let question = format!("${factor1_term}({exp1}) {factor2_term:+}({exp2})$");
-    let mult1 = factor1_term.clone() * exp1.clone();
-    let mult2 = factor2_term.clone() * exp2.clone();
+    let question = format!("${factor1_term}({exp_1}) {factor2_term:+}({exp_2})$");
+    let mult1 = factor1_term.clone() * exp_1.clone();
+    let mult2 = factor2_term.clone() * exp_2.clone();
     let answer = (mult1.clone() + mult2.clone()).simplify();
     let solution = format!(
-        "$&{factor1_term}({exp1}) {factor2_term:+}({exp2}) = \\
+        "$&{factor1_term}({exp_1}) {factor2_term:+}({exp_2}) = \\
          =&{mult1} {mult2:+} = \\
          =& {answer}$"
     );
@@ -654,7 +665,7 @@ fn mixing_variables(name: String, _lang: &Language) -> Result<Problem> {
 #[problem]
 fn mixing_variables_and_exponents(name: String, _lang: &Language) -> Result<Problem> {
     let (unknown1, unknown2) = symbols::get_two_unknowns()?;
-    let num_range = IntRange::without_zero(-5, 5)?;
+    let num_range = num_gen::integer().range(-5, 5).exclude(0);
     let factor1 = num_range.positive();
     let factor2 = num_range.random();
     let factor3 = num_range.random();
@@ -665,25 +676,22 @@ fn mixing_variables_and_exponents(name: String, _lang: &Language) -> Result<Prob
     let coef4 = num_range.random();
     let coef5 = num_range.random();
 
-    let factor1_term: Term = (factor1, (unknown1, 2)).into();
-    let factor2_term: Term = (factor2, unknown1).into();
-    let factor3_term: Term = (factor3, unknown2).into();
-    let mut term1: Term = constant.into();
-    let mut term2: Term = (coef1, unknown2).into();
-    let mut term3: Term = (coef2, unknown2).into();
-    let mut term4: Term = (coef3, unknown1).into();
-    let mut term5: Term = (coef4, unknown1).into();
-    let mut term6: Term = coef5.into();
+    let factor1_term = Term::from_num_and_vars(factor1, (unknown1, 2));
+    let factor2_term = Term::from_num_and_vars(factor2, unknown1);
+    let factor3_term = Term::from_num_and_vars(factor3, unknown2);
+    let mut term1 = Term::from_num(constant);
+    let mut term2 = Term::from_num_and_vars(coef1, unknown2);
+    let mut term3 = Term::from_num_and_vars(coef2, unknown2);
+    let mut term4 = Term::from_num_and_vars(coef3, unknown1);
+    let mut term5 = Term::from_num_and_vars(coef4, unknown1);
+    let mut term6 = Term::from_num(coef5);
     Term::assert_one_positive(&mut term1, &mut term2);
     Term::assert_one_positive(&mut term3, &mut term4);
     Term::assert_one_positive(&mut term5, &mut term6);
 
-    let mut exp1: Polynomial = vec![&term1, &term2].into();
-    let mut exp2: Polynomial = vec![&term3, &term4].into();
-    let mut exp3: Polynomial = vec![&term5, &term6].into();
-    exp1.sort();
-    exp2.sort();
-    exp3.sort();
+    let exp1 = Polynomial::from_terms(&[&term1, &term2]).sorted();
+    let exp2 = Polynomial::from_terms(&[&term3, &term4]).sorted();
+    let exp3 = Polynomial::from_terms(&[&term5, &term6]).sorted();
 
     let question =
         format!("${factor1_term}({exp1}) {factor2_term:+}({exp2}) {factor3_term:+}({exp3})$");
@@ -692,7 +700,8 @@ fn mixing_variables_and_exponents(name: String, _lang: &Language) -> Result<Prob
     let mult3 = factor3_term.clone() * exp3.clone();
     let answer = (mult1.clone() + mult2.clone() + mult3.clone()).simplify();
     let solution = format!(
-        "$&{factor1_term}({exp1}) {factor2_term:+}({exp2}) {factor3_term:+}({exp3}) = \\
+        "  #set text(size: 0.9em)
+        $&{factor1_term}({exp1}) {factor2_term:+}({exp2}) {factor3_term:+}({exp3}) = \\
          =&{mult1} {mult2:+} {mult3:+}=\\
         =&{answer}$"
     );
