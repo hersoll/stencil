@@ -9,15 +9,15 @@ struct SolutionPart {
 /// Usage:
 ///
 ///```rust
-///let sol = StructuredSolution::new();
+///let sol = SolutionWithSteps::new();
 ///sol.add_line(polynomial).with_step(formatting::subtract_term(t1))
 ///sol.add_aligned(lhs, rhs)
 ///```
-pub struct StructuredSolution {
+pub struct SolutionWithSteps {
     parts: Vec<SolutionPart>,
 }
 
-impl StructuredSolution {
+impl SolutionWithSteps {
     pub fn new() -> Self {
         Self { parts: Vec::new() }
     }
@@ -63,7 +63,7 @@ impl StructuredSolution {
     }
 }
 
-impl Display for StructuredSolution {
+impl Display for SolutionWithSteps {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let (expressions, steps): (Vec<String>, Vec<String>) = self
             .parts

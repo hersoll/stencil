@@ -2,7 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{Number, Polynomial, Term, num_gen, symbols};
 use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::{StructuredSolution, divide_number, subtract_number, subtract_term};
+use typst_writer::formatting::{SolutionWithSteps, divide_number, subtract_number, subtract_term};
 
 /// 4x + 1 = 2x + 3
 /// Difficulty: 1
@@ -26,7 +26,7 @@ fn two_positive_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
     let question = format!("${lhs_pol} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
 
-    let mut sol = StructuredSolution::new();
+    let mut sol = SolutionWithSteps::new();
     sol.add_aligned(lhs_pol, rhs_pol) // 4x + 1 = 2x + 3
         .with_step(subtract_term(&rhs_term));
 
@@ -72,7 +72,7 @@ fn two_positive_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
     let question = format!("${lhs_pol} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
 
-    let mut sol = StructuredSolution::new();
+    let mut sol = SolutionWithSteps::new();
     sol.add_aligned(lhs_pol, rhs_pol) // 2x + 1 = 4x + 3
         .with_step(subtract_term(&lhs_term));
 
@@ -118,7 +118,7 @@ fn one_negative_coef_lhs_greater(name: String, _lang: &Language) -> Result<Probl
     let question = format!("${lhs_pol} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
 
-    let mut sol = StructuredSolution::new();
+    let mut sol = SolutionWithSteps::new();
 
     let subtracted_term = lhs_term.clone() - rhs_term.clone();
 
@@ -163,7 +163,7 @@ fn one_negative_coef_rhs_greater(name: String, _lang: &Language) -> Result<Probl
     let answer_str = format!("${unknown} = {answer}$");
 
     let subtracted_term = rhs_term.clone() - lhs_term.clone();
-    let mut sol = StructuredSolution::new();
+    let mut sol = SolutionWithSteps::new();
     sol.add_aligned(lhs_pol, rhs_pol) // 4 - 2x = 1 + 4x
         .with_step(subtract_term(&lhs_term))
         .add_aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 4 = 6x + 1
@@ -204,7 +204,7 @@ fn two_negative_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
     let question = format!("${lhs_pol} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
 
-    let mut sol = StructuredSolution::new();
+    let mut sol = SolutionWithSteps::new();
     let subtracted_term = rhs_term.clone() - lhs_term.clone();
     sol.add_aligned(lhs_pol, rhs_pol) // 4 - 4x = 8 - 2x
         .with_step(subtract_term(&lhs_term))
@@ -250,7 +250,7 @@ fn two_negative_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
 
     let total_var = lhs_term.clone() - rhs_term.clone();
     let total_coef = lhs_coef - rhs_coef;
-    let mut sol = StructuredSolution::new();
+    let mut sol = SolutionWithSteps::new();
     sol.add_aligned(&lhs_pol, &rhs_pol) // 4 - 2x = 8 - 4x
         .with_step(subtract_term(&rhs_term))
         .add_aligned(format!("{total_var}{lhs_const:+}"), rhs_const) // 4 + 2x = 8
@@ -288,7 +288,7 @@ fn positive_coefs_lhs_has_zero(name: String, _lang: &Language) -> Result<Problem
     let question = format!("${lhs_term} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
 
-    let mut solution = StructuredSolution::new();
+    let mut solution = SolutionWithSteps::new();
     solution
         .add_aligned(&lhs_term, rhs_pol) // 4x = 6x - 6
         .with_step(subtract_term(&lhs_term));
@@ -330,7 +330,7 @@ fn positive_coefs_rhs_has_zero(name: String, _lang: &Language) -> Result<Problem
     let question = format!("${lhs_pol} = {rhs_term}$");
     let answer_str = format!("${unknown} = {answer}$");
 
-    let mut solution = StructuredSolution::new();
+    let mut solution = SolutionWithSteps::new();
     solution
         .add_aligned(&lhs_pol, &rhs_term) // 6x - 6 = 4x
         .with_step(subtract_term(&rhs_term));

@@ -4,7 +4,7 @@ use math::{self, Term, num_gen, symbols};
 use types::{lang::Language, problems::Problem};
 use typst_writer::{
     custom_math::solutions,
-    formatting::{StructuredSolution, divide_number, subtract_number},
+    formatting::{SolutionWithSteps, divide_number, subtract_number},
 };
 
 /// x + 3 = 12
@@ -15,7 +15,7 @@ fn only_addition_or_subtraction(name: String, _lang: &Language) -> Result<Proble
     let (constant, constant_range) = num_gen::integer().range(-answer, 9).and_random();
     let unknown = symbols::get_unknown()?;
 
-    let mut solution = StructuredSolution::new();
+    let mut solution = SolutionWithSteps::new();
     solution
         .add_aligned(format!("{unknown}{constant:+}"), answer + constant) // x + 3 = 12
         .with_step(subtract_number(constant))
@@ -39,7 +39,7 @@ fn only_multiplication(name: String, _lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(3, 9).and_random();
     let unknown = symbols::get_unknown()?;
 
-    let mut solution = StructuredSolution::new();
+    let mut solution = SolutionWithSteps::new();
     solution
         .add_aligned(format!("{coefficient}{unknown}"), coefficient * answer) // 3x = 12
         .with_step(divide_number(coefficient))
@@ -67,7 +67,7 @@ fn positive_up_to_5(name: String, _lang: &Language) -> Result<Problem> {
         .and_random();
     let term = Term::from_num_and_vars(coefficient, unknown);
 
-    let mut solution = StructuredSolution::new();
+    let mut solution = SolutionWithSteps::new();
     solution
         .add_aligned(
             format!("{term}{constant:+}"),
@@ -104,7 +104,7 @@ fn positive_answers(name: String, _lang: &Language) -> Result<Problem> {
 
     let term = Term::from_num_and_vars(coefficient, unknown);
 
-    let mut solution = StructuredSolution::new();
+    let mut solution = SolutionWithSteps::new();
     solution
         .add_aligned(
             format!("{term}{constant:+}"),

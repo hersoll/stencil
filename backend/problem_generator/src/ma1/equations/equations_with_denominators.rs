@@ -2,7 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::num_gen;
 use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::{self, StructuredSolution, divide_number, multiply_number};
+use typst_writer::formatting::{self, SolutionWithSteps, divide_number, multiply_number};
 
 /// x/3 = 4
 /// Difficulty: 0
@@ -16,7 +16,7 @@ fn one_denom_one_variable(name: String, _lang: &Language) -> Result<Problem> {
 
     let question = format!("$ {unknown}/{denominator} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
-    let mut solution = StructuredSolution::new();
+    let mut solution = SolutionWithSteps::new();
     solution
         .add_aligned(format!("{unknown}/{denominator}"), rhs)
         .with_step(multiply_number(denominator))
@@ -49,7 +49,7 @@ fn one_denom_and_unit_variable_integers_positive(
 
     let question = format!("$ {unknown}/{denominator} + {unknown} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
-    let mut solution = StructuredSolution::new();
+    let mut solution = SolutionWithSteps::new();
     solution
         .add_aligned(format!("{unknown}/{denominator} + {unknown}"), rhs)
         .with_step(multiply_number(denominator))
@@ -87,7 +87,7 @@ fn unit_variable_and_one_denom_integers_positive(
 
     let question = format!("$ {unknown} - {unknown}/{denominator} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
-    let mut solution = StructuredSolution::new();
+    let mut solution = SolutionWithSteps::new();
     solution
         .add_aligned(format!("{unknown} - {unknown}/{denominator}"), rhs)
         .with_step(multiply_number(denominator))
@@ -127,7 +127,7 @@ fn unit_variable_and_one_denom_integers_with_negatives(
     let question = format!("$ {unknown}/{denominator} - {unknown} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
 
-    let mut sol = formatting::StructuredSolution::new();
+    let mut sol = formatting::SolutionWithSteps::new();
     sol.add_aligned(format!("{unknown}/{denominator} - {unknown}"), rhs)
         .with_step(formatting::multiply_number(denominator));
     sol.add_aligned(
