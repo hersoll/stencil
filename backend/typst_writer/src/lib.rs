@@ -1,5 +1,6 @@
 pub mod colors;
 pub mod custom_math;
+pub mod drawing;
 pub mod formatting;
 pub mod graphing;
 pub mod preamble;

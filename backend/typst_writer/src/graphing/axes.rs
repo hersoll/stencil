@@ -1,4 +1,4 @@
-use crate::graphing::graphs::Graph;
+use crate::{drawing::FontSize, graphing::graphs::Graph};
 use anyhow::{Result, anyhow};
 use math::{Number, ZERO};
 use std::fmt::Write;
@@ -10,7 +10,7 @@ pub enum GridType {
 }
 
 pub struct Axes {
-    font_size: &'static str,
+    font_size: FontSize,
 
     // Coordinates for the viewport
     x_min: Number,
@@ -43,7 +43,7 @@ pub struct Axes {
 impl Default for Axes {
     fn default() -> Self {
         Axes {
-            font_size: "0.75em",
+            font_size: FontSize::Em(0.75),
             x_min: Number::Integer(-1),
             x_max: Number::Integer(1),
             y_min: None,
@@ -78,7 +78,7 @@ impl Axes {
 
     pub fn new_solution() -> Self {
         let mut axes = Axes::default();
-        axes.font_size = "1em";
+        axes.font_size = FontSize::Em(1.0);
         axes
     }
 
