@@ -1,20 +1,28 @@
+use std::cmp::{max, min};
+
 use anyhow::Result;
 use macros::problem;
 use math::num_gen::{self, IntegerGenerator};
 use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::parentheses;
+use typst_writer::{
+    drawing::NumberLine,
+    formatting::{add_number, parentheses, subtract_number},
+};
 
 /// 5 - 9
 /// Difficulty: 0
 #[problem]
 fn subtract_larger(name: String, _lang: &Language) -> Result<Problem> {
-    let (first, first_range) = num_gen::integer().range(1, 10).and_random();
-    let second = num_gen::integer().range(first + 1, first + 10).random();
+    let (first, first_range) = num_gen::integer().range(1, 5).and_random();
+    let second = num_gen::integer().range(first + 1, first + 8).random();
+    let number_line = NumberLine::from_ends(first, first - second)
+        .with_arc(first, first - second, subtract_number(second))
+        .build_string()?;
     Ok(Problem {
         name,
         question: format!("${first} - {second}$"),
         answer: format!("${}$", first - second),
-        solution: format!("Tallinje"),
+        solution: number_line,
         identifiers: vec![first],
         combinations: first_range.len(),
     })
@@ -24,13 +32,19 @@ fn subtract_larger(name: String, _lang: &Language) -> Result<Problem> {
 /// Difficulty: 2
 #[problem]
 fn start_negative(name: String, _lang: &Language) -> Result<Problem> {
-    let (first, first_range) = num_gen::integer().range(-10, -1).and_random();
-    let (second, second_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
+    let (first, first_range) = num_gen::integer().range(-5, -1).and_random();
+    let (second, second_range) = num_gen::integer().range(-8, 8).exclude(0).and_random();
+    let number_line = NumberLine::from_ends(
+        min(first, first + second),
+        max(max(0, first), first + second),
+    )
+    .with_arc(first, first + second, add_number(second))
+    .build_string()?;
     Ok(Problem {
         name,
         question: format!("${first} {second:+}$"),
         answer: format!("${}$", first + second),
-        solution: format!("Tallinje"),
+        solution: number_line,
         identifiers: vec![first, second],
         combinations: first_range.len() * second_range.len(),
     })
