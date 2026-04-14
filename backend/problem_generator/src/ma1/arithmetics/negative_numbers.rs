@@ -1,5 +1,3 @@
-use std::cmp::{max, min};
-
 use anyhow::Result;
 use macros::problem;
 use math::num_gen::{self, IntegerGenerator};
@@ -104,7 +102,7 @@ fn subtract_larger_with_large_numbers(name: String, lang: &Language) -> Result<P
     })
 }
 
-// TODO: SPLIT INTO ONE ADDITION AND ONE SUBTRACTION
+// TODO: Register these in the database
 
 /// -4 + 2
 /// Difficulty: 2
