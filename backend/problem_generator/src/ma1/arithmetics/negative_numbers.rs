@@ -109,22 +109,72 @@ fn subtract_larger_with_large_numbers(name: String, lang: &Language) -> Result<P
 /// -4 + 2
 /// Difficulty: 2
 #[problem]
-fn start_negative(name: String, _lang: &Language) -> Result<Problem> {
-    let (first, first_range) = num_gen::integer().range(-5, -1).and_random();
-    let (second, second_range) = num_gen::integer().range(-8, 8).exclude(0).and_random();
-    let number_line = NumberLine::from_ends(
-        min(first, first + second),
-        max(max(0, first), first + second),
-    )
-    .with_arc(first, first + second, add_number(second))
-    .build_string()?;
+fn start_negative_addition_below_zero(name: String, lang: &Language) -> Result<Problem> {
+    let (first, first_range) = num_gen::integer().range(-9, -2).and_random();
+    let second = num_gen::integer().range(1, -first - 1).random();
+    let answer = first + second;
+
+    let number_line = NumberLine::from_ends(-10, 0)
+        .with_arc(first, answer, add_number(second))
+        .build_string()?;
+    let problem_data = registry::get_problem_data(&name)?;
+    let solution_str = problem_data.get_solution(lang);
+    let solution = format!("{solution_str} {number_line}");
     Ok(Problem {
         name,
-        question: format!("${first} {second:+}$"),
-        answer: format!("${}$", first + second),
-        solution: number_line,
-        identifiers: vec![first, second],
-        combinations: first_range.len() * second_range.len(),
+        question: format!("${first}+{second}$"),
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![first],
+        combinations: first_range.len(),
+    })
+}
+
+/// -4 + 6
+/// Difficulty: 2
+#[problem]
+fn start_negative_addition_above_zero(name: String, lang: &Language) -> Result<Problem> {
+    let (first, first_range) = num_gen::integer().range(-9, -2).and_random();
+    let second = num_gen::integer().range(-first + 1, 10).random();
+    let answer = first + second;
+
+    let number_line = NumberLine::from_ends(first, answer)
+        .with_arc(first, answer, add_number(second))
+        .build_string()?;
+    let problem_data = registry::get_problem_data(&name)?;
+    let solution_str = problem_data.get_solution(lang);
+    let solution = format!("{solution_str} {number_line}");
+    Ok(Problem {
+        name,
+        question: format!("${first}+{second}$"),
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![first],
+        combinations: first_range.len(),
+    })
+}
+
+/// -4 - 6
+/// Difficulty: 2
+#[problem]
+fn start_negative_subtraction(name: String, lang: &Language) -> Result<Problem> {
+    let (first, first_range) = num_gen::integer().range(-5, -2).and_random();
+    let second = num_gen::integer().range(1, 5).random();
+    let answer = first - second;
+
+    let number_line = NumberLine::from_ends(answer, 0)
+        .with_arc(first, answer, subtract_number(second))
+        .build_string()?;
+    let problem_data = registry::get_problem_data(&name)?;
+    let solution_str = problem_data.get_solution(lang);
+    let solution = format!("{solution_str} {number_line}");
+    Ok(Problem {
+        name,
+        question: format!("${first}-{second}$"),
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![first],
+        combinations: first_range.len(),
     })
 }
 
