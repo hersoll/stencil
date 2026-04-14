@@ -3,6 +3,7 @@ use std::cmp::{max, min};
 use anyhow::Result;
 use macros::problem;
 use math::num_gen::{self, IntegerGenerator};
+use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::{
     drawing::NumberLine,
@@ -12,21 +13,98 @@ use typst_writer::{
 /// 5 - 9
 /// Difficulty: 0
 #[problem]
-fn subtract_larger(name: String, _lang: &Language) -> Result<Problem> {
+fn subtract_larger(name: String, lang: &Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 5).and_random();
     let second = num_gen::integer().range(first + 1, first + 8).random();
     let number_line = NumberLine::from_ends(first, first - second)
         .with_arc(first, first - second, subtract_number(second))
         .build_string()?;
+
+    let answer = first - second;
+    let problem_data = registry::get_problem_data(&name)?;
+    let solution = replace_placeholders(
+        problem_data.get_solution(lang),
+        &[
+            ("number_line", number_line),
+            (
+                "reverse",
+                format!("${second} - {first} = {result}$", result = second - first),
+            ),
+            ("normal", format!("${first} - {second} = {answer}$")),
+        ],
+    );
+
     Ok(Problem {
         name,
         question: format!("${first} - {second}$"),
-        answer: format!("${}$", first - second),
-        solution: number_line,
+        answer: format!("${answer}$"),
+        solution,
         identifiers: vec![first],
         combinations: first_range.len(),
     })
 }
+
+/// 5 - 78
+/// Difficulty: 1
+#[problem]
+fn subtract_larger_with_large_number(name: String, lang: &Language) -> Result<Problem> {
+    let (first, first_range) = num_gen::integer().range(1, 7).and_random();
+
+    // To bring the point home, avoid things like 73 - 7: not too nice! Better to have 73 - 2
+    let first_digit = num_gen::integer().range(5, 19).random();
+    let second_digit = num_gen::integer().range(first + 1, 9).random();
+    let second = first_digit * 10 + second_digit;
+
+    let answer = first - second;
+    let reverse = second - first; //used as hint in solution
+    let problem_data = registry::get_problem_data(&name)?;
+    let solution_str = problem_data.get_solution(lang);
+    let solution = format!(
+        "{solution_str} ${second} - {first} = {reverse} arrow.r.double {first} - {second} = {answer}$"
+    );
+
+    Ok(Problem {
+        name,
+        question: format!("${first} - {second}$"),
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![first],
+        combinations: first_range.len(),
+    })
+}
+
+/// 15 - 78
+/// Difficulty: 1
+#[problem]
+fn subtract_larger_with_large_numbers(name: String, lang: &Language) -> Result<Problem> {
+    let first_digit = num_gen::integer().range(1, 5).random();
+    let (second_digit, first_range) = num_gen::integer().range(1, 7).and_random();
+    let first = first_digit * 10 + second_digit;
+
+    // To bring the point home, avoid things like 73 - 7: not too nice! Better to have 73 - 2
+    let first_digit_2 = num_gen::integer().range(6, 9).random();
+    let second_digit_2 = num_gen::integer().range(second_digit + 1, 9).random();
+    let second = first_digit_2 * 10 + second_digit_2;
+
+    let answer = first - second;
+    let reverse = second - first; //used as hint in solution
+    let problem_data = registry::get_problem_data(&name)?;
+    let solution_str = problem_data.get_solution(lang);
+    let solution = format!(
+        "{solution_str} ${second} - {first} = {reverse} arrow.r.double {first} - {second} = {answer}$"
+    );
+
+    Ok(Problem {
+        name,
+        question: format!("${first} - {second}$"),
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![first],
+        combinations: first_range.len(),
+    })
+}
+
+// TODO: SPLIT INTO ONE ADDITION AND ONE SUBTRACTION
 
 /// -4 + 2
 /// Difficulty: 2
@@ -101,7 +179,7 @@ fn make_multiplication_problem(
     let (second_val, second_range) = second.and_random();
     let ans = first_val * second_val;
     Ok(Problem {
-        name: name,
+        name,
         question: format!(
             "${first_p} dot {second_p}$",
             first_p = parentheses(first_val),
