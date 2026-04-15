@@ -3,7 +3,7 @@ use std::fmt::Display;
 
 use crate::{Number, Term};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Polynomial {
     pub terms: Vec<Term>,
 }
@@ -119,7 +119,13 @@ impl Polynomial {
         self.terms.sort_by(|a, b| b.variables.cmp(&a.variables));
     }
 
-    pub fn evaluate<T: Into<Number> + Clone>(&self, replacements: &Vec<(char, T)>) -> Number {
+    // p1 = "3x + 1"
+    // p1.evaluate("x", 3) => 10
+    // p2 = "3x + 2y + 1"
+    // p2.evaluate("x", 3) => "10 + 2y"
+    // p2.evaluate(&[("x", 3), ("y", 2)]) => 14
+
+    pub fn evaluate<T: Into<Number> + Clone>(&self, replacements: &[(char, T)]) -> Number {
         let replacement_numbers: Vec<(char, Number)> = replacements
             .iter()
             .map(|(c, t)| (*c, t.clone().into()))
@@ -352,7 +358,7 @@ mod tests {
         // NOTE: Currently evaluate() is only available for full number evaluation, not algebraic
         // let partial_evaluation = exp.evaluate(&vec![('x', -1)]);
         // assert_eq!(partial_evaluation.to_string(), "4a-5");
-        let full_evaluation = exp.evaluate(&vec![('a', -2), ('x', 5)]);
+        let full_evaluation = exp.evaluate(&[('a', -2), ('x', 5)]);
         assert_eq!(full_evaluation.to_string(), "-73");
     }
 

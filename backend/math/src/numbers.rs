@@ -216,7 +216,7 @@ impl Ord for Number {
 
 impl PartialOrd for Number {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.value().partial_cmp(&other.value())
+        Some(self.cmp(other))
     }
 }
 
@@ -234,7 +234,7 @@ impl std::ops::Neg for Number {
     }
 }
 
-impl std::ops::Add<&Number> for &Number {
+impl std::ops::Add<&Number> for Number {
     type Output = Number;
     fn add(self, rhs: &Number) -> Self::Output {
         match (self, rhs) {
@@ -243,7 +243,7 @@ impl std::ops::Add<&Number> for &Number {
                 Number::Fraction(num + l * denom, *denom)
             }
             (Number::Fraction(num, denom), Number::Integer(r)) => {
-                Number::Fraction(num + r * denom, *denom)
+                Number::Fraction(num + r * denom, denom)
             }
             (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
                 Number::Fraction(l_num * r_denom + r_num * l_denom, l_denom * r_denom)
@@ -256,14 +256,14 @@ impl std::ops::Add<&Number> for &Number {
 impl std::ops::Add<i32> for Number {
     type Output = Number;
     fn add(self, rhs: i32) -> Self::Output {
-        self + &Number::Integer(rhs)
+        self + Number::Integer(rhs)
     }
 }
 
-impl std::ops::Add<&Number> for Number {
+impl std::ops::Add<&Number> for &Number {
     type Output = Number;
     fn add(self, rhs: &Number) -> Self::Output {
-        &self + rhs
+        *self + rhs
     }
 }
 
@@ -276,11 +276,11 @@ impl std::ops::Add<Number> for Number {
 
 impl std::ops::AddAssign for Number {
     fn add_assign(&mut self, rhs: Self) {
-        *self = self.clone() + &rhs;
+        *self = *self + rhs;
     }
 }
 
-impl std::ops::Sub<&Number> for &Number {
+impl std::ops::Sub<&Number> for Number {
     type Output = Number;
     fn sub(self, rhs: &Number) -> Self::Output {
         match (self, rhs) {
@@ -289,7 +289,7 @@ impl std::ops::Sub<&Number> for &Number {
                 Number::Fraction(l * denom - num, *denom)
             }
             (Number::Fraction(num, denom), Number::Integer(r)) => {
-                Number::Fraction(num - r * denom, *denom)
+                Number::Fraction(num - r * denom, denom)
             }
             (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
                 Number::Fraction(l_num * r_denom - r_num * l_denom, l_denom * r_denom)
@@ -299,33 +299,40 @@ impl std::ops::Sub<&Number> for &Number {
     }
 }
 
-impl std::ops::Sub<&Number> for Number {
+impl std::ops::Sub<&Number> for &Number {
     type Output = Number;
     fn sub(self, rhs: &Number) -> Self::Output {
-        &self - rhs
+        *self - rhs
+    }
+}
+
+impl std::ops::Sub<Number> for Number {
+    type Output = Number;
+    fn sub(self, rhs: Number) -> Self::Output {
+        &self - &rhs
     }
 }
 
 impl std::ops::Sub<i32> for Number {
     type Output = Number;
     fn sub(self, rhs: i32) -> Self::Output {
-        self - &Number::Integer(rhs)
+        self - Number::Integer(rhs)
     }
 }
 
 impl std::ops::SubAssign for Number {
     fn sub_assign(&mut self, rhs: Self) {
-        *self = self.clone() - &rhs;
+        *self = *self - rhs;
     }
 }
 
-impl std::ops::Mul<&Number> for &Number {
+impl std::ops::Mul<&Number> for Number {
     type Output = Number;
     fn mul(self, rhs: &Number) -> Self::Output {
         match (self, rhs) {
             (Number::Integer(l), Number::Integer(r)) => Number::Integer(l * r),
             (Number::Integer(l), Number::Fraction(num, denom)) => Number::Fraction(l * num, *denom),
-            (Number::Fraction(num, denom), Number::Integer(r)) => Number::Fraction(num * r, *denom),
+            (Number::Fraction(num, denom), Number::Integer(r)) => Number::Fraction(num * r, denom),
             (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
                 Number::Fraction(l_num * r_num, l_denom * r_denom)
             }
@@ -334,10 +341,10 @@ impl std::ops::Mul<&Number> for &Number {
     }
 }
 
-impl std::ops::Mul<&Number> for Number {
+impl std::ops::Mul<&Number> for &Number {
     type Output = Number;
     fn mul(self, rhs: &Number) -> Self::Output {
-        &self * rhs
+        *self * rhs
     }
 }
 
@@ -351,7 +358,7 @@ impl std::ops::Mul<Number> for Number {
 impl std::ops::Mul<i32> for Number {
     type Output = Number;
     fn mul(self, rhs: i32) -> Self::Output {
-        self * &Number::Integer(rhs)
+        self * Number::Integer(rhs)
     }
 }
 impl std::ops::Mul<f64> for &Number {
@@ -364,31 +371,29 @@ impl std::ops::Mul<f64> for &Number {
 impl std::ops::Mul<f64> for Number {
     type Output = Number;
     fn mul(self, rhs: f64) -> Self::Output {
-        self * &rhs.into()
+        self * Number::from(rhs)
     }
 }
 
 impl std::ops::MulAssign<Number> for Number {
     fn mul_assign(&mut self, rhs: Self) {
-        *self = self.clone() * &rhs;
+        *self = *self * rhs;
     }
 }
 
 impl std::ops::MulAssign<i32> for Number {
     fn mul_assign(&mut self, rhs: i32) {
-        *self = self.clone() * rhs;
+        *self = *self * rhs;
     }
 }
 
-impl std::ops::Div<&Number> for &Number {
+impl std::ops::Div<Number> for Number {
     type Output = Number;
-    fn div(self, rhs: &Number) -> Self::Output {
+    fn div(self, rhs: Number) -> Self::Output {
         match (self, rhs) {
-            (Number::Integer(l), Number::Integer(r)) => Number::Fraction(*l, *r).simplify(),
-            (Number::Integer(l), Number::Fraction(num, denom)) => Number::Fraction(l * denom, *num),
-            (Number::Fraction(num, denom), Number::Integer(r)) => {
-                Number::Fraction(*num, *denom * r)
-            }
+            (Number::Integer(l), Number::Integer(r)) => Number::Fraction(l, r).simplify(),
+            (Number::Integer(l), Number::Fraction(num, denom)) => Number::Fraction(l * denom, num),
+            (Number::Fraction(num, denom), Number::Integer(r)) => Number::Fraction(num, denom * r),
             (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
                 Number::Fraction(l_num * r_denom, l_denom * r_num)
             }
@@ -397,29 +402,36 @@ impl std::ops::Div<&Number> for &Number {
     }
 }
 
+impl std::ops::Div<&Number> for &Number {
+    type Output = Number;
+    fn div(self, rhs: &Number) -> Self::Output {
+        *self / *rhs
+    }
+}
+
 impl std::ops::Div<&Number> for Number {
     type Output = Number;
     fn div(self, rhs: &Number) -> Self::Output {
-        &self / rhs
+        self / *rhs
     }
 }
 
 impl std::ops::Div<i32> for Number {
     type Output = Number;
     fn div(self, rhs: i32) -> Self::Output {
-        self / &Number::Integer(rhs)
+        self / Number::Integer(rhs)
     }
 }
 
 impl std::ops::DivAssign for Number {
     fn div_assign(&mut self, rhs: Self) {
-        *self = self.clone() / &rhs;
+        *self = *self / rhs;
     }
 }
 
 impl std::ops::DivAssign<i32> for Number {
     fn div_assign(&mut self, rhs: i32) {
-        *self = self.clone() / rhs;
+        *self = *self / rhs;
     }
 }
 
@@ -485,12 +497,12 @@ mod tests {
         let decimal_2: Number = 1.8.into();
         let fraction: Number = (3, 4).into();
 
-        assert_eq!((&integer + &integer).to_string(), "6");
-        assert_eq!((&integer + &decimal).to_string(), "num(\"4.2\")");
-        assert_eq!((&integer + &fraction).to_string(), "15/4");
-        assert_eq!((&decimal + &fraction).to_string(), "num(\"1.95\")");
-        assert_eq!((&PI + &integer).to_string(), "num(\"6.142\")");
-        assert_eq!((&decimal + &decimal_2).to_string(), "3");
+        assert_eq!((integer + integer).to_string(), "6");
+        assert_eq!((integer + decimal).to_string(), "num(\"4.2\")");
+        assert_eq!((integer + fraction).to_string(), "15/4");
+        assert_eq!((decimal + fraction).to_string(), "num(\"1.95\")");
+        assert_eq!((PI + integer).to_string(), "num(\"6.142\")");
+        assert_eq!((decimal + decimal_2).to_string(), "3");
     }
 
     #[test]
@@ -499,11 +511,11 @@ mod tests {
         let decimal: Number = 1.2.into();
         let fraction: Number = (3, 4).into();
 
-        assert_eq!((&integer - &integer).to_string(), "0");
-        assert_eq!((&integer - &decimal).to_string(), "num(\"1.8\")");
-        assert_eq!((&integer - &fraction).to_string(), "9/4");
-        assert_eq!((&decimal - &fraction).to_string(), "num(\"0.45\")");
-        assert_eq!((&PI - &integer).to_string(), "num(\"0.142\")");
+        assert_eq!((integer - integer).to_string(), "0");
+        assert_eq!((integer - decimal).to_string(), "num(\"1.8\")");
+        assert_eq!((integer - fraction).to_string(), "9/4");
+        assert_eq!((decimal - fraction).to_string(), "num(\"0.45\")");
+        assert_eq!((PI - integer).to_string(), "num(\"0.142\")");
     }
 
     #[test]
@@ -512,11 +524,11 @@ mod tests {
         let decimal: Number = 1.2.into();
         let fraction: Number = (3, 4).into();
 
-        assert_eq!((&integer * &integer).to_string(), "9");
-        assert_eq!((&integer * &decimal).to_string(), "num(\"3.6\")");
-        assert_eq!((&integer * &fraction).to_string(), "9/4");
-        assert_eq!((&decimal * &fraction).to_string(), "num(\"0.9\")");
-        assert_eq!((&PI * &integer).to_string(), "num(\"9.425\")");
+        assert_eq!((integer * integer).to_string(), "9");
+        assert_eq!((integer * decimal).to_string(), "num(\"3.6\")");
+        assert_eq!((integer * fraction).to_string(), "9/4");
+        assert_eq!((decimal * fraction).to_string(), "num(\"0.9\")");
+        assert_eq!((PI * integer).to_string(), "num(\"9.425\")");
     }
 
     #[test]
@@ -525,10 +537,10 @@ mod tests {
         let decimal: Number = 1.2.into();
         let fraction: Number = (3, 4).into();
 
-        assert_eq!((&integer / &integer).to_string(), "1");
-        assert_eq!((&integer / &decimal).to_string(), "num(\"2.5\")");
-        assert_eq!((&integer / &fraction).simplify().to_string(), "4");
-        assert_eq!((&decimal / &fraction).to_string(), "num(\"1.6\")");
-        assert_eq!((&PI / &integer).to_string(), "num(\"1.047\")");
+        assert_eq!((integer / integer).to_string(), "1");
+        assert_eq!((integer / decimal).to_string(), "num(\"2.5\")");
+        assert_eq!((integer / fraction).simplify().to_string(), "4");
+        assert_eq!((decimal / fraction).to_string(), "num(\"1.6\")");
+        assert_eq!((PI / integer).to_string(), "num(\"1.047\")");
     }
 }

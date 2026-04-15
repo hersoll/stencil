@@ -24,6 +24,8 @@ fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
         &[("expression", expression), ("x", x.to_string())],
     );
 
+    //NOTE: Use Polynomial and evaluate() with new fancy thing later
+
     let solution = format!(
         "y &= {coefficient}x {constant:+} \\x={x} \\
        y &= {coefficient} dot colored({x}) {constant:+} \\ \\

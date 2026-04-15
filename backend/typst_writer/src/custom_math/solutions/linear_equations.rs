@@ -1,4 +1,4 @@
-use crate::formatting;
+use crate::formatting::{SolutionWithSteps, divide_number, subtract_number};
 use math::{self, utils::gcd};
 
 /// Equations of the form 3x + 5 = 14. Zeroes for coefficient or constant is not allowed.
@@ -7,16 +7,19 @@ pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answ
         panic!("coefficient or constant is 0");
     }
 
-    let solution = format!(
-        "{coefficient}{unknown} {constant:+} &= {rhs} \\ {sub_constant} \\
-                {coefficient}{unknown} &= {cf_a} \\ div {cf_par} \\
-                    {unknown} &= {final_answer} \\",
-        cf_par = formatting::parentheses(coefficient),
-        rhs = coefficient * final_answer + constant,
-        sub_constant = formatting::subtract_number(constant),
-        cf_a = coefficient * final_answer,
-    );
-    formatting::equation_solution(solution)
+    let mut sol = SolutionWithSteps::new();
+    sol.add_aligned(
+        format!("{coefficient}{unknown}{constant:+}"),
+        coefficient * final_answer + constant,
+    )
+    .with_step(subtract_number(constant))
+    .add_aligned(
+        format!("{coefficient}{unknown}"),
+        coefficient * final_answer,
+    )
+    .with_step(divide_number(coefficient))
+    .add_aligned(unknown, final_answer);
+    sol.to_string()
 }
 
 /// Equations of the form 3x + 4 = 14. Zeroes for coefficient or constant is not allowed.
@@ -49,12 +52,14 @@ pub fn positive_rational_answer(
         format!("{numerator}/{denominator}")
     };
 
-    let solution = format!(
-        "{coefficient}{unknown} {constant:+} &= {rhs} \\ {sub_constant} \\
-                {coefficient}{unknown} &= {numerator} \\ div {coefficient} \\
-                    {unknown} &= {answer_with_simplification} \\",
-        rhs = numerator + constant,
-        sub_constant = formatting::subtract_number(constant),
-    );
-    formatting::equation_solution(solution)
+    let mut sol = SolutionWithSteps::new();
+    sol.add_aligned(
+        format!("{coefficient}{unknown}{constant:+}"),
+        numerator + constant,
+    )
+    .with_step(subtract_number(constant))
+    .add_aligned(format!("{coefficient}{unknown}"), numerator)
+    .with_step(divide_number(coefficient))
+    .add_aligned(unknown, answer_with_simplification);
+    sol.to_string()
 }
