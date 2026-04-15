@@ -82,7 +82,7 @@ pub fn replace_placeholders(template: &str, values: &[(&str, String)]) -> String
     let mut result = template.to_string();
     for (key, value) in values {
         let placeholder = format!("{{{}}}", key);
-        result = result.replace(&placeholder, &value);
+        result = result.replace(&placeholder, value);
     }
     result
 }

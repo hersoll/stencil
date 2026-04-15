@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::num_gen::{self, IntegerGenerator};
+use math::num_gen;
 use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::{
@@ -102,8 +102,6 @@ fn subtract_larger_with_large_numbers(name: String, lang: &Language) -> Result<P
     })
 }
 
-// TODO: Register these in the database
-
 /// -4 + 2
 /// Difficulty: 2
 #[problem]
@@ -117,7 +115,16 @@ fn start_negative_addition_below_zero(name: String, lang: &Language) -> Result<P
         .build_string()?;
     let problem_data = registry::get_problem_data(&name)?;
     let solution_str = problem_data.get_solution(lang);
-    let solution = format!("{solution_str} {number_line}");
+    let solution = replace_placeholders(
+        solution_str,
+        &[
+            ("number_line", number_line),
+            ("first", first.to_string()),
+            ("second", second.to_string()),
+            ("abs_first", first.abs().to_string()),
+            ("answer", answer.to_string()),
+        ],
+    );
     Ok(Problem {
         name,
         question: format!("${first}+{second}$"),
@@ -141,7 +148,16 @@ fn start_negative_addition_above_zero(name: String, lang: &Language) -> Result<P
         .build_string()?;
     let problem_data = registry::get_problem_data(&name)?;
     let solution_str = problem_data.get_solution(lang);
-    let solution = format!("{solution_str} {number_line}");
+    let solution = replace_placeholders(
+        solution_str,
+        &[
+            ("number_line", number_line),
+            ("first", first.to_string()),
+            ("second", second.to_string()),
+            ("abs_first", first.abs().to_string()),
+            ("answer", answer.to_string()),
+        ],
+    );
     Ok(Problem {
         name,
         question: format!("${first}+{second}$"),
@@ -218,63 +234,67 @@ fn subtract_negative(name: String, _lang: &Language) -> Result<Problem> {
     })
 }
 
-fn make_multiplication_problem(
-    first: IntegerGenerator,
-    second: IntegerGenerator,
-    name: String,
-) -> Result<Problem> {
-    let (first_val, first_range) = first.and_random();
-    let (second_val, second_range) = second.and_random();
+/// 4 * (-2)
+/// Difficulty: 2
+#[problem]
+fn positive_times_negative(name: String, lang: &Language) -> Result<Problem> {
+    let (first_val, first_range) = num_gen::integer().range(1, 10).and_random();
+    let (second_val, second_range) = num_gen::integer().range(-10, -1).and_random();
+    let question = format!("${first_val} dot ({second_val})$");
     let ans = first_val * second_val;
+    let problem_data = registry::get_problem_data(&name)?;
+    let solution = problem_data.get_solution(lang).to_string();
+
     Ok(Problem {
         name,
-        question: format!(
-            "${first_p} dot {second_p}$",
-            first_p = parentheses(first_val),
-            second_p = parentheses(second_val)
-        ),
+        question,
         answer: format!("${ans}$"),
-        solution: if ans > 0 {
-            format!("Två negativa faktorer ger ett positivt svar")
-        } else {
-            format!("En positiv och en negativ faktor ger ett negativt svar")
-        },
+        solution,
         identifiers: vec![first_val, second_val],
         combinations: first_range.len() * second_range.len(),
     })
 }
 
-/// 4 * (-2)
-/// Difficulty: 2
-#[problem]
-fn positive_times_negative(name: String, _lang: &Language) -> Result<Problem> {
-    make_multiplication_problem(
-        num_gen::integer().range(1, 10),
-        num_gen::integer().range(-10, -1),
-        name,
-    )
-}
-
 /// (-4) * 2
 /// Difficulty: 2
 #[problem]
-fn negative_times_positive(name: String, _lang: &Language) -> Result<Problem> {
-    make_multiplication_problem(
-        num_gen::integer().range(-10, -1),
-        num_gen::integer().range(1, 10),
+fn negative_times_positive(name: String, lang: &Language) -> Result<Problem> {
+    let (first_val, first_range) = num_gen::integer().range(-10, -1).and_random();
+    let (second_val, second_range) = num_gen::integer().range(1, 10).and_random();
+    let question = format!("$({first_val}) dot {second_val}$");
+    let ans = first_val * second_val;
+    let problem_data = registry::get_problem_data(&name)?;
+    let solution = problem_data.get_solution(lang).to_string();
+
+    Ok(Problem {
         name,
-    )
+        question,
+        answer: format!("${ans}$"),
+        solution,
+        identifiers: vec![first_val, second_val],
+        combinations: first_range.len() * second_range.len(),
+    })
 }
 
 /// (-4) * (-2)
 /// Difficulty: 2
 #[problem]
-fn negative_times_negative(name: String, _lang: &Language) -> Result<Problem> {
-    make_multiplication_problem(
-        num_gen::integer().range(-10, -1),
-        num_gen::integer().range(-10, -1),
+fn negative_times_negative(name: String, lang: &Language) -> Result<Problem> {
+    let (first_val, first_range) = num_gen::integer().range(-10, -1).and_random();
+    let (second_val, second_range) = num_gen::integer().range(-10, -1).and_random();
+    let question = format!("$({first_val}) dot ({second_val})$");
+    let ans = first_val * second_val;
+    let problem_data = registry::get_problem_data(&name)?;
+    let solution = problem_data.get_solution(lang).to_string();
+
+    Ok(Problem {
         name,
-    )
+        question,
+        answer: format!("${ans}$"),
+        solution,
+        identifiers: vec![first_val, second_val],
+        combinations: first_range.len() * second_range.len(),
+    })
 }
 
 /// (-4) + (-2)
