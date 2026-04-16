@@ -1,6 +1,6 @@
 use std::{cmp::Ordering, collections::HashSet, fmt::Display};
 
-#[derive(Clone, Debug, Copy, PartialEq, Eq, PartialOrd)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq)]
 pub struct Variable {
     pub symbol: char,
     pub exponent: i32,
@@ -37,6 +37,12 @@ impl From<(char, i32)> for Variable {
     }
 }
 
+impl PartialOrd for Variable {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 /// Ordering makes it easier to sort multivariate terms by convention:
 /// 3ab should be printed as such, not 3ba.
 impl Ord for Variable {
@@ -60,7 +66,7 @@ impl std::ops::Neg for Variable {
     }
 }
 
-#[derive(Debug, Clone, Eq)]
+#[derive(Debug, Clone, Eq, Default)]
 pub struct Variables {
     pub list: Vec<Variable>,
 }
@@ -157,11 +163,11 @@ impl std::ops::Div for Variables {
 
 impl Ord for Variables {
     fn cmp(&self, other: &Self) -> Ordering {
-        if self.list.len() == 0 && other.list.len() == 0 {
+        if self.list.is_empty() && other.list.is_empty() {
             Ordering::Equal
-        } else if self.list.len() == 0 {
+        } else if self.list.is_empty() {
             Ordering::Less
-        } else if other.list.len() == 0 {
+        } else if other.list.is_empty() {
             Ordering::Greater
         } else {
             let total_exponent_first: i32 = self.list.iter().map(|v| v.exponent.abs()).sum();
@@ -169,12 +175,20 @@ impl Ord for Variables {
             let variable_list_first: String = self
                 .list
                 .iter()
-                .map(|v| v.symbol.to_string().repeat(v.exponent.abs() as usize))
+                .map(|v| {
+                    v.symbol
+                        .to_string()
+                        .repeat(v.exponent.unsigned_abs().try_into().unwrap())
+                })
                 .collect();
             let variable_list_second: String = other
                 .list
                 .iter()
-                .map(|v| v.symbol.to_string().repeat(v.exponent.abs() as usize))
+                .map(|v| {
+                    v.symbol
+                        .to_string()
+                        .repeat(v.exponent.unsigned_abs().try_into().unwrap())
+                })
                 .collect();
 
             total_exponent_first

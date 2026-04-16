@@ -26,7 +26,7 @@ pub fn get_unknown_with_exclusions<T: Into<Vec<char>>>(exclusions_primitive: T) 
             return Ok(chosen_char);
         }
     }
-    return Err(anyhow!("Too many exclusions when getting unknown"));
+    Err(anyhow!("Too many exclusions when getting unknown"))
 }
 
 pub fn get_two_unknowns() -> Result<(char, char)> {
