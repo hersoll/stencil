@@ -13,25 +13,13 @@ pub struct Term {
 impl Term {
     // ########## CONSTRUCTORS ###########
 
-    /// Construct a new Term with the builder pattern.
-    ///
-    /// Use with_coef() and with_variables() to add to it
-    pub fn new() -> Self {
+    pub fn from_var<T: Into<Variables>>(var: T) -> Self {
+        let var = var.into();
         Self {
             coefficient: Number::Integer(1),
-            variables: Variables::new(),
+            variables: var,
             colored: false,
         }
-    }
-    pub fn with_coef<T: Into<Number>>(mut self, num: T) -> Self {
-        let num = num.into();
-        self.coefficient = num;
-        self
-    }
-    pub fn with_variables<T: Into<Variables>>(mut self, vars: T) -> Self {
-        let vars = vars.into();
-        self.variables = vars;
-        self
     }
 
     pub fn from_num<T: Into<Number>>(num: T) -> Self {
@@ -63,10 +51,10 @@ impl Term {
     }
 
     pub fn evaluate(&self, replacements: &[(char, Number)]) -> Number {
-        let mut result = self.coefficient.clone();
+        let mut result = self.coefficient;
         self.variables.list.iter().for_each(|v| {
             match replacements.iter().find(|pair| pair.0 == v.symbol) {
-                Some(pair) => result *= Number::from(pair.1.value().pow(v.exponent as i32)),
+                Some(pair) => result *= Number::from(pair.1.value().pow(v.exponent)),
                 None => panic!("Variable {v} not in replacements {replacements:#?}. (Panic should not be reached if called from polynomial.evaluate())"),
             }
         });
@@ -276,7 +264,7 @@ impl std::ops::Neg for &Term {
     type Output = Term;
     fn neg(self) -> Self::Output {
         Term {
-            coefficient: -self.coefficient.clone(),
+            coefficient: -self.coefficient,
             variables: self.variables.clone(),
             colored: self.colored,
         }
@@ -288,7 +276,7 @@ impl std::ops::Add for Term {
     fn add(self, rhs: Self) -> Self::Output {
         assert_eq!(self.variables, rhs.variables);
         Self {
-            coefficient: self.coefficient + &rhs.coefficient,
+            coefficient: self.coefficient + rhs.coefficient,
             variables: self.variables,
             colored: self.colored,
         }
@@ -305,7 +293,7 @@ impl std::ops::Sub for Term {
     fn sub(self, rhs: Self) -> Self::Output {
         assert_eq!(self.variables, rhs.variables);
         Self {
-            coefficient: self.coefficient - &rhs.coefficient,
+            coefficient: self.coefficient - rhs.coefficient,
             variables: self.variables,
             colored: self.colored,
         }
@@ -321,7 +309,7 @@ impl std::ops::Mul for Term {
     type Output = Term;
     fn mul(self, rhs: Self) -> Self::Output {
         Self {
-            coefficient: self.coefficient * &rhs.coefficient,
+            coefficient: self.coefficient * rhs.coefficient,
             variables: self.variables * rhs.variables,
             colored: self.colored,
         }
@@ -329,7 +317,7 @@ impl std::ops::Mul for Term {
 }
 impl std::ops::MulAssign for Term {
     fn mul_assign(&mut self, rhs: Self) {
-        self.coefficient = &self.coefficient * &rhs.coefficient;
+        self.coefficient = self.coefficient * rhs.coefficient;
         self.variables = self.variables.clone() * rhs.variables;
     }
 }
@@ -337,7 +325,7 @@ impl std::ops::Mul<Term> for i32 {
     type Output = Term;
     fn mul(self, rhs: Term) -> Self::Output {
         Term {
-            coefficient: rhs.coefficient * &self.into(),
+            coefficient: rhs.coefficient * self,
             variables: rhs.variables.clone(),
             colored: rhs.colored,
         }
@@ -347,7 +335,7 @@ impl std::ops::Mul<i32> for Term {
     type Output = Term;
     fn mul(self, rhs: i32) -> Self::Output {
         Term {
-            coefficient: self.coefficient * &rhs.into(),
+            coefficient: self.coefficient * rhs,
             variables: self.variables.clone(),
             colored: self.colored,
         }
