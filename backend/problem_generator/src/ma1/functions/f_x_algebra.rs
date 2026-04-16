@@ -328,7 +328,7 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
     let algebra_string = format!("{f_name}({algebra_expression})");
     let problem_data = registry::get_problem_data(&name)?;
     let question = replace_placeholders(
-        &problem_data.get_question(&lang),
+        problem_data.get_question(lang),
         &[("function", function_string), ("algebra", algebra_string)],
     );
     let answer = (function_coefficient * algebra_expression.clone() + function_constant).simplify();

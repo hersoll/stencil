@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{num_gen, symbols};
+use math::{Term, num_gen, symbols};
 use types::{lang::Language, problems::Problem};
 
 /// 5^4 * 5^2
@@ -171,5 +171,123 @@ fn multiplication_and_division(name: String, _lang: &Language) -> Result<Problem
         solution,
         identifiers: vec![base, exp1, exp2],
         combinations: exp1_range.len() * base_range.len() * exp2_range.len(),
+    })
+}
+
+/// (4x)^2
+/// Difficulty: 2
+#[problem]
+fn variable_term_power_2(name: String, _lang: &Language) -> Result<Problem> {
+    let variable = symbols::get_unknown()?;
+    let (coef, coef_range) = num_gen::integer().range(2, 10).and_random();
+    let (exp, exp_range) = num_gen::integer().number(2).and_random();
+    let final_coef = coef.pow(exp as u32);
+    let question = format!("$({coef}{variable})^{exp}$");
+    let answer = format!("${final_coef}{variable}^{exp}$");
+    let solution = format!(
+        "$ ({coef}{variable})^{exp} = {coef}^{exp}{variable}^{exp} = {final_coef}{variable}^{exp} $"
+    );
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![coef, exp],
+        combinations: coef_range.len() * exp_range.len(),
+    })
+}
+
+/// (2x)^3
+/// Difficulty: 2
+#[problem]
+fn variable_term_power_3(name: String, _lang: &Language) -> Result<Problem> {
+    let variable = symbols::get_unknown()?;
+    let (coef, coef_range) = num_gen::integer().numbers(&[2, 3, 10]).and_random();
+    let (exp, exp_range) = num_gen::integer().number(3).and_random();
+    let final_coef = coef.pow(exp as u32);
+    let question = format!("$({coef}{variable})^{exp}$");
+    let answer = format!("${final_coef}{variable}^{exp}$");
+    let solution = format!(
+        "$ ({coef}{variable})^{exp} = {coef}^{exp}{variable}^{exp} = {final_coef}{variable}^{exp} $"
+    );
+
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![coef, exp],
+        combinations: coef_range.len() * exp_range.len(),
+    })
+}
+
+/// (2x)^3 / 4x
+/// Difficulty: 5
+#[problem]
+fn variable_term_power_and_divide_x(name: String, _lang: &Language) -> Result<Problem> {
+    let variable = symbols::get_unknown()?;
+    let (coef, coef_range) = num_gen::integer().numbers(&[2, 3, 10]).and_random();
+    let (exp, exp_range) = num_gen::integer().range(2, 3).and_random();
+    let denom_coef = coef.pow(num_gen::integer().range(1, 2).random() as u32);
+    let numerator_term = coef * Term::from_var(variable);
+    let denominator_term = denom_coef * Term::from_var(variable);
+    let exponentiated_coef = coef.pow(exp as u32);
+    let final_coef = exponentiated_coef / denom_coef;
+    // Used in the final line of the solution to help pretty print coefs of 1
+    let helper_term = final_coef * Term::from_var(variable);
+    let answer = final_coef * Term::from_var((variable, exp - 1));
+    let question = format!("$ ({numerator_term})^{exp} / ({denominator_term}) $");
+    let solution = format!(
+        "$ ({numerator_term})^{exp} / ({denominator_term}) = 
+            ({coef}^{exp}{variable}^{exp}) / ({denominator_term}) = 
+            ({exponentiated_coef}{variable}^{exp}) / ({denominator_term}) = $
+        $
+            = {helper_term}^({exp} - 1) = {answer}
+        $"
+    );
+
+    Ok(Problem {
+        name,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef, exp],
+        combinations: coef_range.len() * exp_range.len(),
+    })
+}
+
+/// (3x)^3 / 9x^2
+/// Difficulty: 5
+#[problem]
+fn variable_term_power_and_divide_x_squared(name: String, _lang: &Language) -> Result<Problem> {
+    let variable = symbols::get_unknown()?;
+    let (coef, coef_range) = num_gen::integer().numbers(&[2, 3, 10]).and_random();
+    let (exp, exp_range) = num_gen::integer().range(2, 3).and_random();
+    let denom_coef = coef.pow(num_gen::integer().range(1, 2).random() as u32);
+    let numerator_term = coef * Term::from_var(variable);
+    let denominator_term = denom_coef * Term::from_var((variable, 2));
+    let exponentiated_coef = coef.pow(exp as u32);
+    let final_coef = exponentiated_coef / denom_coef;
+    // Used in the final line of the solution to help pretty print coefs of 1
+    let helper_term = final_coef * Term::from_var(variable);
+    let answer = final_coef * Term::from_var((variable, exp - 2));
+    let question = format!("$ ({numerator_term})^{exp} / ({denominator_term}) $");
+    let solution = format!(
+        "$ ({numerator_term})^{exp} / ({denominator_term}) = 
+            ({coef}^{exp}{variable}^{exp}) / ({denominator_term}) = 
+            ({exponentiated_coef}{variable}^{exp}) / ({denominator_term}) = $
+        $
+            = {helper_term}^({exp} - 2) = {answer}
+        $"
+    );
+
+    Ok(Problem {
+        name,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![coef, exp],
+        combinations: coef_range.len() * exp_range.len(),
     })
 }
