@@ -1,1 +1,1 @@
-mod f_x;
+mod f_x_algebra;
