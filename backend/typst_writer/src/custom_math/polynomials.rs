@@ -1,6 +1,9 @@
 use crate::formatting;
 use math::{Number, Polynomial};
 
+// TODO: Put these in an impl Polynomial {} or use a trait.
+// Write doc comments.
+
 pub fn show_polynomial_replacements(pol: &Polynomial, replacements: &[(char, i32)]) -> String {
     use std::fmt::Write;
 
@@ -74,11 +77,11 @@ mod tests {
         let t3: Term = (4, vars).into();
         let exp: Polynomial = vec![&t1, &t2, &t3].into();
         assert_eq!(
-            show_polynomial_replacements(&exp, &vec![('x', -1)]),
+            show_polynomial_replacements(&exp, &[('x', -1)]),
             "2 dot colored((-1))-3 dot colored((-1))^2+4a^3 dot colored((-1))^3 dot y^4"
         );
         assert_eq!(
-            show_polynomial_replacements(&exp, &vec![('x', 4)]),
+            show_polynomial_replacements(&exp, &[('x', 4)]),
             "2 dot colored(4)-3 dot colored(4)^2+4a^3 dot colored(4)^3 dot y^4"
         );
     }
