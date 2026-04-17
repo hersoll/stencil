@@ -149,7 +149,7 @@ fn double_exponentiation_variables(name: String, _lang: &Language) -> Result<Pro
 #[problem]
 fn multiplication_and_division(name: String, _lang: &Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().range(3, 9).and_random();
-    let (exp1, exp1_range) = num_gen::integer().range(2, 10).and_random();
+    let (exp1, exp1_range) = num_gen::integer().range(5, 10).and_random();
     let (exp2, exp2_range) = num_gen::integer().range(2, 10).and_random();
     let exp3 = num_gen::integer()
         .range(2, exp1 + exp2 - 2)

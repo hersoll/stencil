@@ -14,7 +14,7 @@ where
     let mut rng = rand::rng();
 
     let apply_filters = |n: &i32| -> bool {
-        !exclusions.contains(n) && (filters.len() == 0 || filters.iter().all(|f| f(n)))
+        !exclusions.contains(n) && (filters.is_empty() || filters.iter().all(|f| f(n)))
     };
 
     match kind {

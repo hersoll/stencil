@@ -309,7 +309,7 @@ fn var_term_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem>
     Ok(Problem {
         name,
         question,
-        answer: simplified.to_string(),
+        answer: format!("${simplified}$"),
         solution,
         identifiers: vec![initial, constant],
         combinations: i_range.len() * c_range.len(),
