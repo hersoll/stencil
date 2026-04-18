@@ -1,7 +1,5 @@
-#let colored(x) = text(fill: color.linear-rgb(22%, 10%, 33%), $#x$)
-#let primary(x) = text(fill: color.linear-rgb(9%, 3%, 18%), $#x$)
-#let secondary(x) = text(fill: color.linear-rgb(22%, 10%, 33%), $#x$)
-#let tertiary(x) = text(fill: color.linear-rgb(30%, 23%, 39%), $#x$)
+// Used for equation separator
+#let line_color = color.linear-rgb(20%, 20%, 20%)
 
 #import "@preview/equate:0.3.2": equate, share-align
 #show: equate.with(debug: false)
@@ -14,7 +12,7 @@
     let spacing = custom_spacing.to-absolute()
     // How many pts we start at
     let start_height = start_pos - page.margin.length
-    // How many pts we have available to use
+    // How many pts we have available to use on this page
     let spare_height = size.height - start_height
 
     let gutter = 1em
@@ -29,20 +27,24 @@
       },
     )
 
+    // The height if we would stack all items in one column with proper formatting
     let total_height = heights.sum() + (items.len() - 1) * spacing
+    // Best case: perfect split across columns
     let min_height = total_height / column_count
+    // Worst case: Everything in one column
     let max_height = total_height
 
     // Push the entire set to next page if it's relatively small and we can't fit it on the page
     // OR if we can't fit at least three rows of a long set
     let at_page_top = start_height <= 1pt
-    let pre_spacing = if not at_page_top and (
-      (min_height > spare_height and min_height < size.height / 4) or (title_height + calc.max(..heights)) * 3 > spare_height
-    ) {
-      spare_height
-    } else {
-      0pt
-    }
+    // let pre_spacing = if not at_page_top and (
+    //   (min_height > spare_height and min_height < size.height / 4) or (title_height + calc.max(..heights)) * 3 > spare_height
+    // ) {
+    //   spare_height
+    // } else {
+    //   0pt
+    // }
+    let pre_spacing = 0pt
 
     // If we push to next page, we have the entire page avaliable to us
     let effective_spare_height = if pre_spacing > 0pt {
@@ -66,60 +68,66 @@
       // The final height will be chosen from the max of these heights
       let column_heights = ()
 
+      // Let's check how much we can fit in the current space!
+      // Starting with some setup:
       let current_column = 1
-      let accumulated_height = 0pt
+      let accumulated_height_in_current_column = 0pt
+      // Variable used to keep track of whether we have overflowing or not
       let can_fit = true
+      // ?
       let empty_space = 0pt
 
-      let index = 0
-      while index < heights.len() {
-        let height = heights.at(index)
+      let item_index = 0
+      while item_index < heights.len() {
+        let current_item_height = heights.at(item_index)
 
-        if height > limit {
+        // If our item is too tall for the space to begin with, we obviously need more space. Go to the next iteration.
+        if current_item_height > limit {
           can_fit = false
           break
         }
-
-        accumulated_height += height
+        // Otherwise, we add it to the current_column as a test and do some checks below
+        accumulated_height_in_current_column += current_item_height
 
         // Check if we need to move to next column
-        if accumulated_height > limit and current_column < column_count {
-          column_heights.push(accumulated_height - height - spacing)
+        if accumulated_height_in_current_column > limit and current_column < column_count {
+          // Remove the latest item from the column and submit the column for peer review
+          column_heights.push(accumulated_height_in_current_column - current_item_height - spacing)
           current_column += 1
-          accumulated_height = 0pt
-          index -= 1 // Recheck the overflowing item
+          accumulated_height_in_current_column = -spacing // -spacing since the end of the iteration adds spacing
+          item_index -= 1 // Recheck the overflowing item
         }
 
         // We've reached the end of the page, handle page breaks
         //
-        // This condition won't be met while there are columns to fill, since the previous condition will always reset accumulated_height
-        if accumulated_height > limit and current_column_height > available_height {
-          // Disregard the overflowing item
-          column_heights.push(accumulated_height - height)
-
+        // This condition won't be met while there are columns to fill,
+        // since the previous condition will always reset accumulated_height
+        //
+        // NOTE: Could be optimized? the current_column_height > available_height check could maybe be changed?
+        if accumulated_height_in_current_column > limit and current_column_height > available_height {
           // Reset the distribution for the remaining items
           column_heights = ()
-          accumulated_height = 0pt
-          index -= 1 // Re-check the overflowing item
+          accumulated_height_in_current_column = -spacing // -spacing since the end of the iteration adds spacing
+          item_index -= 1 // Re-check the overflowing item
           current_column_height -= limit // We've used up limit worth of space
           limit = calc.min(current_column_height, size.height)
           available_height = size.height
           current_column = 1 // Reset to first column on new page
         }
 
-        accumulated_height += spacing
-        index += 1
+        accumulated_height_in_current_column += spacing
+        item_index += 1
       }
-      accumulated_height -= spacing
+      accumulated_height_in_current_column -= spacing
 
       if can_fit {
         // The final column is never added, do it here
-        column_heights.push(accumulated_height)
+        column_heights.push(accumulated_height_in_current_column)
 
         // This is only an approved height if the last column doesn't overshoot too much
         // (which it will do if we have columns that are too short)
-        if column_heights.len() <= column_count and column_heights.first() >= column_heights.last() * 0.95 {
-          break
+        if column_heights.len() <= column_count and column_heights.first() >= column_heights.last() - 4em.to-absolute() {
+          break //approved, ship it!
         }
       }
 
@@ -130,6 +138,7 @@
     if title != [] {
       title
     }
+
     block(height: current_height)[
       #set enum(spacing: spacing)
       #columns(column_count, gutter: gutter, enum(..items))
@@ -138,18 +147,17 @@
     if debug {
       [
         Paper height: #size.height \
-        Total height: #total_height \
-        Column height: #current_height \
-        Starting height: #start_height \
+        Total height if one column: #total_height \
         Available height: #spare_height \
+        Final height of box: #current_height \
+        Minimum height: #start_height \
+        Reported start_pos: #start_pos \
         Spacing: #spacing.pt() pt \
         Item heights: #heights.map(h => str(calc.round(h / 1pt, digits: 1))).join(", ") pt \
       ]
     }
   },
 )
-
-#let linecolor = color.linear-rgb(20%, 20%, 20%)
 
 //Equation solution template
 #let equation-solution(equations, operations) = {
@@ -171,7 +179,7 @@
         columns: (max-eq-width, auto),
         inset: (top: 0.2em, rest: 0.5em),
         align: (left, horizon + left),
-        grid.vline(x: 1, stroke: (paint: linecolor, thickness: 0.5pt)),
+        grid.vline(x: 1, stroke: (paint: line_color, thickness: 0.5pt)),
         ..equations.zip(color-operations).flatten(),
       )
     })

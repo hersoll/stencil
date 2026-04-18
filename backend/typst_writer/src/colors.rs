@@ -41,9 +41,13 @@ pub fn get_color_preamble(has_color: bool) -> String {
 
     format!(
         "
+#let primary_color = color.linear-rgb({primary})
+#let secondary_color = color.linear-rgb({secondary})
+#let tertiary_color = color.linear-rgb({tertiary})
 #let colored(x) = text(fill: color.linear-rgb({colored}), $#x$)
-#let primary = color.linear-rgb({primary})
-#let secondary = color.linear-rgb({secondary})
-#let tertiary = color.linear-rgb({tertiary})"
+#let primary(x) = text(fill: primary_color, $#x$)
+#let secondary(x) = text(fill: secondary_color, $#x$)
+#let tertiary(x) = text(fill: tertiary_color, $#x$)
+"
     )
 }
