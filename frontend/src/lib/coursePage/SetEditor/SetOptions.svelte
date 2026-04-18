@@ -1,7 +1,7 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import DifficultySelector from '../DifficultySelector.svelte';
-  import type { ProblemSetSpec } from '../types';
+  import type { ProblemSetSpec } from '../types.ts';
   let { set }: { set: ProblemSetSpec } = $props();
 
   const MIN_PROBLEMS = 1;
@@ -62,9 +62,9 @@
         <label for="difficulty">{i18n.t('difficulty')}</label>
         <div class="difficulty-options">
           <p>{i18n.t('from')}</p>
-          <DifficultySelector {set} type="starting" />
+          <DifficultySelector set={set.problems} type="starting" />
           <p>{i18n.t('to')}</p>
-          <DifficultySelector {set} type="ending" />
+          <DifficultySelector set={set.problems} type="ending" />
         </div>
       </div>
     </div>
