@@ -1,10 +1,10 @@
 use anyhow::Result;
 use macros::problem;
-use math::num_gen;
+use math::{Number, num_gen};
 use types::{lang::Language, problems::Problem};
 use typst_writer::custom_math::solutions;
 
-fn quadratics_template(symmetry: i32, distance: i32) -> (String, String, String) {
+fn quadratics_template(symmetry: Number, distance: Number) -> (String, String, String) {
     let x_1 = symmetry - distance;
     let x_2 = symmetry + distance;
     let p = -2 * symmetry;

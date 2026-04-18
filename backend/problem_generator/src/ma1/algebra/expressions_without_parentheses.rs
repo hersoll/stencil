@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Polynomial, Term, Variables, num_gen, symbols};
+use math::{Number, Polynomial, Term, Variables, num_gen, symbols};
 use rand::seq::IndexedRandom;
 use registry::{get_problem_data, replace_placeholders};
 use types::{lang::Language, problems::Problem};
@@ -177,7 +177,7 @@ fn evaluate_simple(name: String, lang: &Language) -> Result<Problem> {
     ];
     let problem_data = get_problem_data(&name)?;
     let question = replace_placeholders(problem_data.get_question(lang), &replacement_map);
-    let replacements = vec![(unknown, value)];
+    let replacements = vec![(unknown.0, value)];
     let answer = expression.evaluate(&replacements);
 
     let solution = format!(
@@ -228,7 +228,7 @@ fn evaluate_intermediate(name: String, lang: &Language) -> Result<Problem> {
             ("value_y", value_y.to_string()),
         ],
     );
-    let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
+    let replacements = vec![(first_unknown.0, value_x), (second_unknown.0, value_y)];
     let answer = expression.evaluate(&replacements);
 
     let solution = format!(
@@ -340,7 +340,7 @@ fn simplify_variable_combinations(name: String, _lang: &Language) -> Result<Prob
         question: format!("${expression}$"),
         answer: format!("${simplified}$"),
         solution,
-        identifiers: vec![1],
+        identifiers: vec![Number::Integer(1)],
         combinations: 1,
     })
 }
@@ -350,7 +350,7 @@ fn simplify_variable_combinations(name: String, _lang: &Language) -> Result<Prob
 #[problem]
 fn evaluate_advanced(name: String, lang: &Language) -> Result<Problem> {
     let mut total_terms = 2;
-    let mut exp_combinations: Vec<(i32, i32)> = Vec::new();
+    let mut exp_combinations: Vec<(Number, Number)> = Vec::new();
     let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
     let mut expression = Polynomial::new();
     let coef_range = num_gen::integer()
@@ -387,7 +387,7 @@ fn evaluate_advanced(name: String, lang: &Language) -> Result<Problem> {
             ("value_y", value_y.to_string()),
         ],
     );
-    let replacements = vec![(first_unknown, value_x), (second_unknown, value_y)];
+    let replacements = vec![(first_unknown.0, value_x), (second_unknown.0, value_y)];
     let answer = expression.evaluate(&replacements);
 
     let solution = format!(
@@ -403,7 +403,7 @@ fn evaluate_advanced(name: String, lang: &Language) -> Result<Problem> {
         question,
         answer: format!("${answer}$"),
         solution,
-        identifiers: vec![1],
+        identifiers: vec![Number::Integer(0)],
         combinations: 1,
     })
 }

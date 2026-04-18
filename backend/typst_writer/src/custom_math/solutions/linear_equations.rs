@@ -1,5 +1,5 @@
 use crate::formatting::{SolutionWithSteps, divide_number, subtract_number};
-use math::{self, utils::gcd};
+use math::{self, Number, symbols::Symbol, utils::gcd};
 
 /// Equations of the form 3x + 5 = 14. Zeroes for coefficient or constant is not allowed.
 pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answer: i32) -> String {
@@ -26,11 +26,11 @@ pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answ
 /// Both numerator and denominator must be positive.
 /// Ensure that the coefficient is the same as the denominator.
 pub fn positive_rational_answer(
-    coefficient: i32,
-    unknown: char,
-    constant: i32,
-    numerator: i32,
-    denominator: i32,
+    coefficient: Number,
+    unknown: Symbol,
+    constant: Number,
+    numerator: Number,
+    denominator: Number,
 ) -> String {
     if coefficient == 0 || constant == 0 {
         panic!("coefficient or constant is 0");
@@ -39,17 +39,25 @@ pub fn positive_rational_answer(
         panic!("coefficient != denominator")
     }
 
-    let (simplified_numerator, simplified_denominator) =
-        math::utils::simplified_fraction(numerator, denominator);
-    let gcd = gcd(numerator, denominator);
-    let answer_with_simplification = if gcd == denominator {
-        format!("{}", numerator / denominator)
-    } else if (simplified_numerator, simplified_denominator) != (numerator, denominator) {
-        format!(
-            r#"({numerator}_(colored(div {gcd})))/({denominator}_(colored(div {gcd}))) = {simplified_numerator} / {simplified_denominator}"#
-        )
+    // This is a mess. I'm sorry. I'm tired. 26-04-19
+
+    let answer_with_simplification = if let (Number::Integer(num), Number::Integer(denom)) =
+        (numerator, denominator)
+    {
+        let (simplified_numerator, simplified_denominator) =
+            math::utils::simplified_fraction(num, denom);
+        let gcd = gcd(numerator, denominator);
+        if gcd == denominator {
+            format!("{}", numerator / denominator)
+        } else if (simplified_numerator, simplified_denominator) != (num, denom) {
+            format!(
+                r#"({numerator}_(colored(div {gcd})))/({denominator}_(colored(div {gcd}))) = {simplified_numerator} / {simplified_denominator}"#
+            )
+        } else {
+            format!("{numerator}/{denominator}")
+        }
     } else {
-        format!("{numerator}/{denominator}")
+        String::new()
     };
 
     let mut sol = SolutionWithSteps::new();

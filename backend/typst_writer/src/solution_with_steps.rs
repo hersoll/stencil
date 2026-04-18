@@ -1,28 +1,44 @@
 use std::fmt::Display;
 
+/// Internal representation of a line in the `SolutionWithSteps`
 #[derive(Clone)]
 struct SolutionPart {
     expression: String,
     step: Option<String>,
 }
 
-/// Usage:
+/// A structured way to print the parts of solutions that require multiple mathematical steps,
+/// usually where an original expression or equation is manipulated over the course of the steps.
+/// Internally, each line is represented by an `expression` (`String`) and a `step` (`Option<String>`).
+/// Math notation (`$`) is automatically applied to each line.
 ///
+/// In the finished document, it will look something like this:
+/// (expression 0) 3x + 1 = 19 | -1 (step 0)
+/// (expression 1)     3x = 18 | /3 (step 1)
+/// (expression 2)      x = 6  |    (empty step 2)
+///
+/// # Usage:
 ///```rust
-///let sol = SolutionWithSteps::new();
-///sol.add_line(polynomial).with_step(formatting::subtract_term(t1))
-///sol.add_aligned(lhs, rhs)
+/// use typst_writer::formatting::{self, SolutionWithSteps};
+///
+/// let mut sol = SolutionWithSteps::new();
+/// sol.add_line(String::from("Hello,")).with_step(formatting::subtract_number(1));
+/// sol.add_line(String::from("world!"));
+/// let str = sol.to_string();
 ///```
+#[derive(Default)]
 pub struct SolutionWithSteps {
     parts: Vec<SolutionPart>,
 }
 
 impl SolutionWithSteps {
     pub fn new() -> Self {
-        Self { parts: Vec::new() }
+        Self::default()
     }
 
     /// Adds a step instruction to the latest line
+    ///
+    /// Overrides any previously set step for the same line!
     pub fn with_step(&mut self, step: impl Display) -> &mut Self {
         match self.parts.last_mut() {
             Some(part) => part.step = Some(step.to_string()),
@@ -33,10 +49,13 @@ impl SolutionWithSteps {
         self
     }
 
-    /// The most generic public version of adding an Expression. Used for things that aren't
-    /// equations, like simplifying expressions or function calls.
+    /// The most generic public version of adding an Expression. Used for things that don't require
+    /// equality signs, like an expression.
     ///
-    /// Note that this class of methods return &mut Self to be able to chain .add_line().with_step()
+    /// Generally, `add_equation()` and `add_aligned()` should be used whenever a `=` is included in
+    /// the expression, since those eliminate a lot `format!()` usage in calls.
+    ///
+    /// Note that this class of methods return &mut Self to be able to chain `.add_line().with_step()`
     pub fn add_line(&mut self, line: String) -> &mut Self {
         self.add_expression(line);
         self

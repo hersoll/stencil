@@ -49,7 +49,5 @@ pub async fn init_database() -> Result<()> {
 }
 
 pub fn get_pool() -> &'static PgPool {
-    let pool = DB_POOL.get().expect("Database pool not initialized");
-
-    pool
+    DB_POOL.get().expect("Database pool not initialized")
 }

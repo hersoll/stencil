@@ -80,7 +80,7 @@ impl Graph {
     fn add_dashed_slope_hints(&mut self, x_start: Number, x_step: Number) {
         let color = "black";
         let dashed_style = format!("style: (stroke: (paint: {color}, dash: \"dashed\"))");
-        let x_end = x_start + &x_step;
+        let x_end = x_start + x_step;
         let y_start = self.function.get_y(&x_start).unwrap();
         let y_end = self.function.get_y(&x_end).unwrap();
         // Need to use for_graphs for every printed Number variable, to make sure
@@ -118,12 +118,12 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         x_step: Number,
         y_pos: Number,
     ) {
-        let mut x_label_pos = x_start + &(x_step / 2);
+        let mut x_label_pos = x_start + (x_step / 2);
         if x_label_pos == ZERO {
-            x_label_pos = x_start + &(x_step / 4)
+            x_label_pos = x_start + (x_step / 4)
         }
         let x_label_dir =
-            if self.function.get_y(&x_start) < self.function.get_y(&(x_start + &x_step)) {
+            if self.function.get_y(&x_start) < self.function.get_y(&(x_start + x_step)) {
                 "north"
             } else {
                 "south"
@@ -153,9 +153,9 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         y_step: Number,
         x_pos: Number,
     ) {
-        let mut y_label_pos = y_start + &(y_step / 2);
+        let mut y_label_pos = y_start + (y_step / 2);
         if y_label_pos == ZERO {
-            y_label_pos = y_start + &(y_step / 4)
+            y_label_pos = y_start + (y_step / 4)
         }
 
         let y_label_pos = y_label_pos.for_graphs();
@@ -185,10 +185,10 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
 
         let x_var = variables.0;
         let y_var = variables.1;
-        let x_end = x_start + &x_step;
+        let x_end = x_start + x_step;
         let y_start = self.function.get_y(&x_start).unwrap();
         let y_end = self.function.get_y(&x_end).unwrap();
-        let y_step = (y_end - &y_start).simplify();
+        let y_step = (y_end - y_start).simplify();
 
         let x_step_str = x_step.for_graphs();
         let y_step_str = y_step.for_graphs();
@@ -217,7 +217,7 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         let x_end = Number::Integer(1);
         let y_start = self.function.get_y(&x_start).unwrap();
         let y_end = self.function.get_y(&x_end).unwrap();
-        let y_step = y_end - &y_start;
+        let y_step = y_end - y_start;
         let y_step_str = y_step.for_graphs();
 
         self.add_dashed_slope_hints(x_start, x_end);

@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-pub static GRAPHING_COLORS: [&'static str; 3] = ["primary", "secondary", "tertiary"];
+pub static GRAPHING_COLORS: [&str; 3] = ["primary", "secondary", "tertiary"];
 
 #[derive(Debug, Clone)]
 struct Color {

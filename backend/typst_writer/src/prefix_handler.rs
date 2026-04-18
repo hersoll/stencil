@@ -18,7 +18,7 @@ pub fn handle_prefixes(
     answer_set: Vec<String>,
     group_prefixes: &mut Vec<Option<String>>,
     document_options: &DocumentOptions,
-    problem_names: &Vec<String>,
+    problem_names: &[String],
 ) -> Result<(Vec<String>, Vec<String>)> {
     if problem_names.is_empty() {
         group_prefixes.push(None);
@@ -195,11 +195,11 @@ fn apply_inline_prefixes(
     lang: &Language,
 ) -> Result<(Vec<String>, Vec<String>)> {
     for (i, id) in prefix_ids.iter().enumerate() {
-        if let Some(id) = id {
-            if let Some(prefix) = prefix_reg.get(id) {
-                let text = prefix.get_text(lang);
-                question_set[i] = format!("{text} {}", question_set[i]);
-            }
+        if let Some(id) = id
+            && let Some(prefix) = prefix_reg.get(id)
+        {
+            let text = prefix.get_text(lang);
+            question_set[i] = format!("{text} {}", question_set[i]);
         }
     }
     Ok((question_set, answer_set))
@@ -286,6 +286,6 @@ fn push_grouped_enum(
 ///
 /// The rule for this is set in formatting::solution_rules()
 /// TODO: The entire nested solution is unbreakable right now.
-fn adjust_nested_answer(answer: &String) -> String {
+fn adjust_nested_answer(answer: &str) -> String {
     answer.replace("#solution", "#nested_solution")
 }

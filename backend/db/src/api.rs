@@ -53,7 +53,7 @@ impl ChapterHierarchy {
             desc: entry.get_desc(lang),
             topics: topics
                 .iter()
-                .map(|t| TopicHierarchy::from(t, &lang))
+                .map(|t| TopicHierarchy::from(t, lang))
                 .collect(),
         }
     }
@@ -86,13 +86,13 @@ impl TopicWithProblems {
     fn from(topic: &TopicEntry, problems: &[ProblemEntry], lang: &Language) -> Self {
         TopicWithProblems {
             id: topic.id,
-            desc: topic.get_desc(&lang),
+            desc: topic.get_desc(lang),
             problems: problems
-                .into_iter()
+                .iter()
                 .map(|p| ProblemInformation {
                     id: p.id,
                     difficulty: p.difficulty,
-                    desc: p.get_desc(&lang),
+                    desc: p.get_desc(lang),
                 })
                 .collect(),
         }
@@ -219,12 +219,12 @@ async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
 }
 
 async fn validate_chapter(course_path: &str, chapter_path: &str) -> Result<ChapterEntry, ApiError> {
-    let course = parse_course_path(&course_path).await?;
+    let course = parse_course_path(course_path).await?;
     let valid_chapters = db::get_course_chapters(&course.id).await?;
     let chapter_entry = valid_chapters
         .into_iter()
         // chapter_path can be either an ID or a name
-        .find(|c| c.name == chapter_path || &c.id.to_string() == chapter_path)
+        .find(|c| c.name == chapter_path || c.id.to_string() == chapter_path)
         .ok_or_else(|| {
             ApiError::BadRequest(format!(
                 "There is no chapter \"{chapter_path}\" in course {course_path}"

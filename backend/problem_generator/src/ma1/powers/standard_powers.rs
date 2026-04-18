@@ -181,7 +181,7 @@ fn variable_term_power_2(name: String, _lang: &Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
     let (coef, coef_range) = num_gen::integer().range(2, 10).and_random();
     let (exp, exp_range) = num_gen::integer().number(2).and_random();
-    let final_coef = coef.pow(exp as u32);
+    let final_coef = coef.pow(exp);
     let question = format!("$({coef}{variable})^{exp}$");
     let answer = format!("${final_coef}{variable}^{exp}$");
     let solution = format!(
@@ -205,7 +205,7 @@ fn variable_term_power_3(name: String, _lang: &Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
     let (coef, coef_range) = num_gen::integer().numbers(&[2, 3, 10]).and_random();
     let (exp, exp_range) = num_gen::integer().number(3).and_random();
-    let final_coef = coef.pow(exp as u32);
+    let final_coef = coef.pow(exp);
     let question = format!("$({coef}{variable})^{exp}$");
     let answer = format!("${final_coef}{variable}^{exp}$");
     let solution = format!(
@@ -229,10 +229,10 @@ fn variable_term_power_and_divide_x(name: String, _lang: &Language) -> Result<Pr
     let variable = symbols::get_unknown()?;
     let (coef, coef_range) = num_gen::integer().numbers(&[2, 3, 10]).and_random();
     let (exp, exp_range) = num_gen::integer().range(2, 3).and_random();
-    let denom_coef = coef.pow(num_gen::integer().range(1, 2).random() as u32);
+    let denom_coef = coef.pow(num_gen::integer().range(1, 2).random());
     let numerator_term = coef * Term::from_var(variable);
     let denominator_term = denom_coef * Term::from_var(variable);
-    let exponentiated_coef = coef.pow(exp as u32);
+    let exponentiated_coef = coef.pow(exp);
     let final_coef = exponentiated_coef / denom_coef;
     // Used in the final line of the solution to help pretty print coefs of 1
     let helper_term = final_coef * Term::from_var(variable);
@@ -264,10 +264,10 @@ fn variable_term_power_and_divide_x_squared(name: String, _lang: &Language) -> R
     let variable = symbols::get_unknown()?;
     let (coef, coef_range) = num_gen::integer().numbers(&[2, 3, 10]).and_random();
     let (exp, exp_range) = num_gen::integer().range(2, 3).and_random();
-    let denom_coef = coef.pow(num_gen::integer().range(1, 2).random() as u32);
+    let denom_coef = coef.pow(num_gen::integer().range(1, 2).random());
     let numerator_term = coef * Term::from_var(variable);
     let denominator_term = denom_coef * Term::from_var((variable, 2));
-    let exponentiated_coef = coef.pow(exp as u32);
+    let exponentiated_coef = coef.pow(exp);
     let final_coef = exponentiated_coef / denom_coef;
     // Used in the final line of the solution to help pretty print coefs of 1
     let helper_term = final_coef * Term::from_var(variable);

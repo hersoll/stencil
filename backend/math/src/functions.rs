@@ -47,7 +47,7 @@ impl Function {
                     None
                 } else {
                     // y = c a^x => x = lg(y/c) / lg(a)
-                    Some(vec![((y / &c).value().log2() / a.value().log2()).into()])
+                    Some(vec![((y / c).value().log2() / a.value().log2()).into()])
                 }
             }
         }

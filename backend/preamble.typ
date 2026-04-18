@@ -1,5 +1,6 @@
 // Used for equation separator
 #let line_color = color.linear-rgb(20%, 20%, 20%)
+#let colored(x) = text(fill: color.linear-rgb(22%, 10%, 33%), $#x$)
 
 #import "@preview/equate:0.3.2": equate, share-align
 #show: equate.with(debug: false)

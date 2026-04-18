@@ -1,3 +1,5 @@
+use crate::Number;
+
 use super::common::{NumberKind, generate_value};
 
 pub struct IntegerGenerator {
@@ -44,16 +46,37 @@ impl IntegerGenerator {
         self
     }
 
-    pub fn range(mut self, min: i32, max: i32) -> Self {
+    // The reason this accepts impl Into<Number> while actually just passing on an i32, is that we
+    // will sometimes call this method with a Number that depends on a previous Number, like:
+    // `range(k, 10)`
+    // We need to accomodate for this.
+    pub fn range(mut self, min: impl Into<Number>, max: impl Into<Number>) -> Self {
+        let min = min.into();
+        let max = max.into();
         if min > max {
             tracing::error!("Called num_gen::integer().range() with min and max swapped!");
         }
-        self.numbers = NumberKind::Range(min, max);
+        if let (Number::Integer(min_number), Number::Integer(max_number)) = (min, max) {
+            self.numbers = NumberKind::Range(min_number, max_number);
+            // tracing::debug!("Created range with min = {min_number} and max = {max_number}");
+        } else {
+            tracing::error!(
+                "Don't call num_gen::integer().range() with non-integers, ya dum dum! Min: {min}, Max: {max}"
+            );
+            self.numbers = NumberKind::Range(1, 1);
+        }
         self
     }
 
-    pub fn exclude(mut self, num: i32) -> Self {
-        self.exclusions.push(num);
+    pub fn exclude(mut self, num: impl Into<Number>) -> Self {
+        let num = num.into();
+        if let Number::Integer(integer_num) = num {
+            self.exclusions.push(integer_num);
+        } else {
+            tracing::error!(
+                "Don't call num_gen::integer().exclude() with a non-integer, ya dum dum! Passed value: {num}"
+            )
+        }
         self
     }
 
@@ -63,28 +86,32 @@ impl IntegerGenerator {
         self
     }
 
-    pub fn random(&self) -> i32 {
-        generate_value(&self.numbers, &self.exclusions, &[] as &[fn(&i32) -> bool])
+    pub fn random(&self) -> Number {
+        let int32 = generate_value(&self.numbers, &self.exclusions, &[] as &[fn(&i32) -> bool]);
+        Number::Integer(int32)
     }
 
-    pub fn and_random(self) -> (i32, Self) {
+    pub fn and_random(self) -> (Number, Self) {
         (self.random(), self)
     }
 
-    pub fn positive(&self) -> i32 {
-        generate_value(&self.numbers, &self.exclusions, &[|n| *n >= 0])
+    pub fn positive(&self) -> Number {
+        let int32 = generate_value(&self.numbers, &self.exclusions, &[|n| *n >= 0]);
+        Number::Integer(int32)
     }
 
-    pub fn negative(&self) -> i32 {
-        generate_value(&self.numbers, &self.exclusions, &[|n| *n <= 0])
+    pub fn negative(&self) -> Number {
+        let int32 = generate_value(&self.numbers, &self.exclusions, &[|n| *n <= 0]);
+        Number::Integer(int32)
     }
 
+    #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
         match &self.numbers {
             NumberKind::NotDefined => 0,
             NumberKind::Single(_) => 1,
             NumberKind::Multiple(vec) => vec.len() - self.exclusions.len(),
-            NumberKind::Range(min, max) => (max - min) as usize - self.exclusions.len(),
+            NumberKind::Range(min, max) => (1 + max - min) as usize - self.exclusions.len(),
         }
     }
 }

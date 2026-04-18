@@ -6,7 +6,7 @@ use tracing::debug;
 
 /// Formats the sets to columns with equal height
 pub fn sets_to_balanced_columns(
-    sets: &Vec<Vec<String>>,
+    sets: &[Vec<String>],
     group_prefixes: &[Option<String>],
     set_options: &[SetOptions],
     par_spacing: &Option<u8>,

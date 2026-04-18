@@ -45,8 +45,8 @@ pub struct NumberLine {
     arc: Option<Arc>,
 }
 
-impl NumberLine {
-    pub fn new() -> Self {
+impl Default for NumberLine {
+    fn default() -> Self {
         Self {
             min: Number::Integer(0),
             max: Number::Integer(5),
@@ -54,6 +54,12 @@ impl NumberLine {
             font_size: FontSize::Em(1.0),
             arc: None,
         }
+    }
+}
+
+impl NumberLine {
+    pub fn new() -> Self {
+        Self::default()
     }
 
     pub fn from_ends(first: impl Into<Number>, second: impl Into<Number>) -> Self {
@@ -111,7 +117,7 @@ impl NumberLine {
         for tick in ticks {
             let label = tick.label;
             let pos = tick.position;
-            let tick_height = if label == String::from("0") {
+            let tick_height = if label == "0" {
                 MAJOR_TICK_HEIGHT
             } else {
                 TICK_HEIGHT
@@ -122,8 +128,8 @@ impl NumberLine {
 
         if let Some(arc) = &self.arc {
             let start =
-                ((arc.start - &self.min) / &(self.max - &self.min)).value() as f32 * TICK_SPACE;
-            let end = ((arc.end - &self.min) / &(self.max - &self.min)).value() as f32 * TICK_SPACE;
+                ((arc.start - self.min) / (self.max - self.min)).value() as f32 * TICK_SPACE;
+            let end = ((arc.end - self.min) / (self.max - self.min)).value() as f32 * TICK_SPACE;
             let middle = (start + end) / 2.0;
 
             writeln!(
@@ -141,10 +147,10 @@ impl NumberLine {
     }
 
     fn get_ticks(&mut self) -> Vec<Tick> {
-        let total_distance = self.max - &self.min;
+        let total_distance = self.max - self.min;
         // If min = 1, max = 7.5, tick_step = 2.5 => should be 4 ticks: 1, 3.5, 6, 8.5
         // total_distance = 6.5, t_d / tick_step = 2.6, so ceil() it and add 1.
-        let amount_of_ticks = (total_distance / &self.tick_step).value().ceil() as i32 + 1;
+        let amount_of_ticks = (total_distance / self.tick_step).value().ceil() as i32 + 1;
 
         // Need to adjust font size in case there are too many ticks:
         if amount_of_ticks >= 15 {
@@ -152,7 +158,6 @@ impl NumberLine {
         }
 
         (0..amount_of_ticks)
-            .into_iter()
             .map(|i| {
                 let label_num = self.min + self.tick_step * i;
                 let position: f32 = i as f32 / (amount_of_ticks - 1) as f32 * TICK_SPACE;

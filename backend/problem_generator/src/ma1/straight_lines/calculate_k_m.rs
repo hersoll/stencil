@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, Polynomial, Term, num_gen};
+use math::{Number, Term, num_gen, symbols::Symbol};
 use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::{equation_solution, parentheses};
@@ -130,15 +130,17 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
     let small_range = num_gen::integer().range(1, 5);
     let k = num_gen::integer().range(2, 5).random();
     let m = small_range.random();
+    let x = Symbol("x");
     let x_start = small_range.random();
     let y_start = k * x_start + m;
     let x_step = small_range.random();
     let x_end = x_start + x_step;
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
-    let k_term: Term = (k, 'x').into();
-    let m_term: Term = m.into();
-    let equation: Polynomial = vec![k_term, m_term].into();
+
+    let k_term = k * x;
+    let m_term = Term::from_num(m);
+    let equation = k_term.and(&m_term);
 
     let problem_data = registry::get_problem_data(&name)?;
     let question_string = problem_data.get_question(lang);
@@ -185,6 +187,8 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
         .random();
     let small_range = num_gen::integer().range(-5, 5);
     let m = small_range.random();
+    let x = Symbol("x");
+
     let x_start = small_range.positive();
     let y_start = k * x_start + m;
     // Ensures we get a negative x_end
@@ -192,9 +196,10 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
     let x_end = x_start + x_step;
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
-    let k_term: Term = (k, 'x').into();
-    let m_term: Term = m.into();
-    let equation: Polynomial = vec![k_term, m_term].into();
+
+    let k_term = k * x;
+    let m_term = Term::from_num(m);
+    let equation = k_term.and(&m_term);
 
     let problem_data = registry::get_problem_data(&name)?;
     let question_string = problem_data.get_question(lang);
@@ -252,9 +257,12 @@ fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem
     let x_end = x_start + x_step;
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
-    let k_term: Term = (k, 'x').into();
-    let m_term: Term = m.into();
-    let equation: Polynomial = vec![k_term, m_term].into();
+
+    let x = Symbol("x");
+
+    let k_term = k * x;
+    let m_term = Term::from_num(m);
+    let equation = k_term.and(&m_term);
 
     let problem_data = registry::get_problem_data(&name)?;
     let question_string = problem_data.get_question(lang);
@@ -301,7 +309,7 @@ fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem
 /// Difficulty: 4
 #[problem]
 fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
-    let k = 0;
+    let k = Number::Integer(0);
     let m = num_gen::integer().range(-40, 40).random();
     let x_start = num_gen::integer().range(11, 29).exclude(20).random();
     let y_start = k * x_start + m;
@@ -309,9 +317,11 @@ fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
     let x_end = x_start + x_step;
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
-    let k_term: Term = (k, 'x').into();
-    let m_term: Term = m.into();
-    let equation: Polynomial = vec![k_term, m_term].into();
+
+    let x = Symbol("x");
+    let k_term = k * x;
+    let m_term = Term::from_num(m);
+    let equation = k_term.and(&m_term);
 
     let problem_data = registry::get_problem_data(&name)?;
     let question_string = problem_data.get_question(lang);
@@ -361,9 +371,11 @@ fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
     let x_end = x_start + x_step;
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
-    let k_term: Term = (k, 'x').into();
-    let m_term: Term = m.into();
-    let equation: Polynomial = vec![k_term.clone(), m_term].into();
+
+    let x = Symbol("x");
+    let k_term = k * x;
+    let m_term = Term::from_num(m);
+    let equation = k_term.and(&m_term);
 
     let problem_data = registry::get_problem_data(&name)?;
     let question_string = problem_data.get_question(lang);
@@ -437,9 +449,10 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
     }
     let y_end = (k * x_end + m).simplify();
 
-    let k_term: Term = (k, 'x').into();
-    let m_term: Term = m.into();
-    let equation: Polynomial = vec![k_term.clone(), m_term].into();
+    let x = Symbol("x");
+    let k_term = k * x;
+    let m_term = Term::from_num(m);
+    let equation = k_term.and(&m_term);
 
     let problem_data = registry::get_problem_data(&name)?;
     let question_string = problem_data.get_question(lang);
@@ -452,6 +465,7 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
     );
     let answer = format!("$y = {equation}$");
 
+    // TODO: Fix with SolutionWithSteps, conditional printing of num (since it can be 1)
     let solution = format!(
         "$ k = ({} - {})/({} - {}) = {k} $",
         parentheses(y_end),
@@ -476,7 +490,7 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
             k.denominator().as_i32()
         ),
         subtracted_fraction = Number::Fraction(
-            (y_start * k.denominator() - &(k.numerator() * x_start)).as_i32(),
+            (y_start * k.denominator() - (k.numerator() * x_start)).as_i32(),
             k.denominator().as_i32()
         ),
     ))
@@ -486,7 +500,7 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
         question,
         answer,
         solution,
-        identifiers: vec![k.numerator().as_i32(), k.denominator().as_i32()],
+        identifiers: vec![k.numerator(), k.denominator()],
         combinations: 15,
     })
 }

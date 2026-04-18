@@ -60,14 +60,14 @@ struct SpecialTopicRow {
     desc_en: String,
     chapter_id: i32,
 }
-impl Into<TopicEntry> for SpecialTopicRow {
-    fn into(self) -> TopicEntry {
+impl From<SpecialTopicRow> for TopicEntry {
+    fn from(value: SpecialTopicRow) -> Self {
         TopicEntry {
-            id: self.id,
-            name: self.name,
+            id: value.id,
+            name: value.name,
             desc: DescriptionTranslations {
-                sv: self.desc_sv,
-                en: self.desc_en,
+                sv: value.desc_sv,
+                en: value.desc_en,
             },
         }
     }

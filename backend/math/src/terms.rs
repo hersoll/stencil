@@ -1,3 +1,7 @@
+mod operations;
+
+use crate::Polynomial;
+use crate::symbols::Symbol;
 use crate::{Number, Variable, Variables, num_gen};
 use num_traits::Pow;
 use num_traits::Zero;
@@ -42,6 +46,20 @@ impl Term {
     }
     // ###################################
 
+    /// Alias method to quickly create a `Polynomial`.
+    ///
+    /// Example:
+    /// ```rust
+    /// use math::Term;
+    /// let k_term = 3 * Term::from_var('x');
+    /// let m_term = Term::from_num(-2);
+    /// let function = k_term.and(&m_term);
+    /// assert_eq!(function.to_string(), String::from("3x-2"));
+    /// ```
+    pub fn and(&self, other: &Term) -> Polynomial {
+        Polynomial::from_terms(&[self, other])
+    }
+
     pub fn abs(&self) -> Self {
         Self {
             coefficient: self.coefficient.abs(),
@@ -50,10 +68,10 @@ impl Term {
         }
     }
 
-    pub fn evaluate(&self, replacements: &[(char, Number)]) -> Number {
+    pub fn evaluate(&self, replacements: &[(&str, Number)]) -> Number {
         let mut result = self.coefficient;
         self.variables.list.iter().for_each(|v| {
-            match replacements.iter().find(|pair| pair.0 == v.symbol) {
+            match replacements.iter().find(|pair| pair.0 == v.symbol.0) {
                 Some(pair) => result *= Number::from(pair.1.value().pow(v.exponent)),
                 None => panic!("Variable {v} not in replacements {replacements:#?}. (Panic should not be reached if called from polynomial.evaluate())"),
             }
@@ -166,8 +184,8 @@ impl From<f64> for Term {
     }
 }
 
-impl From<(char, i32)> for Term {
-    fn from(value: (char, i32)) -> Self {
+impl From<(Symbol, i32)> for Term {
+    fn from(value: (Symbol, i32)) -> Self {
         Self {
             coefficient: 1.into(),
             variables: Variables::from((value.0, value.1)),
@@ -176,12 +194,11 @@ impl From<(char, i32)> for Term {
     }
 }
 
-impl From<char> for Term {
-    fn from(value: char) -> Self {
-        let variable: Variable = value.into();
+impl From<Symbol> for Term {
+    fn from(value: Symbol) -> Self {
         Self {
             coefficient: 1.into(),
-            variables: Variables::from(variable),
+            variables: Variables::from(value),
             colored: false,
         }
     }
@@ -248,115 +265,17 @@ impl Zero for Term {
         self.coefficient == 0
     }
 }
-
-impl std::ops::Neg for Term {
-    type Output = Self;
-    fn neg(self) -> Self::Output {
-        Self {
-            coefficient: -self.coefficient,
-            variables: self.variables,
-            colored: self.colored,
-        }
-    }
-}
-
-impl std::ops::Neg for &Term {
-    type Output = Term;
-    fn neg(self) -> Self::Output {
-        Term {
-            coefficient: -self.coefficient,
-            variables: self.variables.clone(),
-            colored: self.colored,
-        }
-    }
-}
-// Do not add terms manually, only meant to be used inside Expression implementation
-impl std::ops::Add for Term {
-    type Output = Self;
-    fn add(self, rhs: Self) -> Self::Output {
-        assert_eq!(self.variables, rhs.variables);
-        Self {
-            coefficient: self.coefficient + rhs.coefficient,
-            variables: self.variables,
-            colored: self.colored,
-        }
-    }
-}
-impl std::ops::AddAssign for Term {
-    fn add_assign(&mut self, rhs: Self) {
-        assert_eq!(self.variables, rhs.variables);
-        self.coefficient += rhs.coefficient;
-    }
-}
-impl std::ops::Sub for Term {
-    type Output = Self;
-    fn sub(self, rhs: Self) -> Self::Output {
-        assert_eq!(self.variables, rhs.variables);
-        Self {
-            coefficient: self.coefficient - rhs.coefficient,
-            variables: self.variables,
-            colored: self.colored,
-        }
-    }
-}
-impl std::ops::SubAssign for Term {
-    fn sub_assign(&mut self, rhs: Self) {
-        assert_eq!(self.variables, rhs.variables);
-        self.coefficient -= rhs.coefficient;
-    }
-}
-impl std::ops::Mul for Term {
-    type Output = Term;
-    fn mul(self, rhs: Self) -> Self::Output {
-        Self {
-            coefficient: self.coefficient * rhs.coefficient,
-            variables: self.variables * rhs.variables,
-            colored: self.colored,
-        }
-    }
-}
-impl std::ops::MulAssign for Term {
-    fn mul_assign(&mut self, rhs: Self) {
-        self.coefficient = self.coefficient * rhs.coefficient;
-        self.variables = self.variables.clone() * rhs.variables;
-    }
-}
-impl std::ops::Mul<Term> for i32 {
-    type Output = Term;
-    fn mul(self, rhs: Term) -> Self::Output {
-        Term {
-            coefficient: rhs.coefficient * self,
-            variables: rhs.variables.clone(),
-            colored: rhs.colored,
-        }
-    }
-}
-impl std::ops::Mul<i32> for Term {
-    type Output = Term;
-    fn mul(self, rhs: i32) -> Self::Output {
-        Term {
-            coefficient: self.coefficient * rhs,
-            variables: self.variables.clone(),
-            colored: self.colored,
-        }
-    }
-}
-impl std::ops::MulAssign<i32> for Term {
-    fn mul_assign(&mut self, rhs: i32) {
-        self.coefficient *= rhs;
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use crate::PI;
-
     use super::*;
+
+    const X: Symbol = Symbol("x");
+    const A: Symbol = Symbol("a");
 
     #[test]
     fn term_creation() {
-        let t1 = Term::from_num_and_vars(3, 'x');
-        let t2: Term = ('x', 3).into();
+        let t1 = 3 * Term::from_var(X);
+        let t2 = Term::from_var((X, 3));
         let t3 = Term::from_num(6);
 
         assert_eq!(t1.to_string(), "3x");
@@ -366,12 +285,12 @@ mod tests {
 
     #[test]
     fn term_displays() {
-        let t_a: Term = (1, 'a').into();
-        let t_one: Term = 1.into();
-        let t_m_one: Term = (-1).into();
-        let t_zero: Term = 0.into();
-        let mut t_color: Term = (-3, 'x').into();
-        let fractional_term: Term = ((3, 5), 'x').into();
+        let t_a = Term::from_var(A);
+        let t_one = Term::from_num(1);
+        let t_m_one = Term::from_num(-1);
+        let t_zero = Term::from_num(0);
+        let mut t_color = -3 * Term::from_var(X);
+        let fractional_term = Term::from_num_and_vars((3, 5), X);
         t_color.colored = true;
         assert_eq!(format!("{t_a}"), "a");
         assert_eq!(format!("{t_a:+}"), "+a");
@@ -383,72 +302,5 @@ mod tests {
         assert_eq!(format!("{t_zero:+}"), "");
         assert_eq!(format!("{t_color}"), " colored(-3x)");
         assert_eq!(format!("{fractional_term}"), "(3x)/5");
-    }
-
-    #[test]
-    fn term_addition() {
-        let t1: Term = (3, ('x', 2)).into();
-        let t2: Term = (2, ('x', 2)).into();
-        assert_eq!((t1 + t2).to_string(), "5x^2");
-        // += assignment
-        let mut t3: Term = ('x', 4).into();
-        let t4: Term = (4, ('x', 4)).into();
-        t3 += t4.clone();
-        assert_eq!(t3.to_string(), "5x^4");
-
-        let t5: Term = ((2, 3), ('x', 4)).into();
-        assert_eq!((t4 + t5).to_string(), "(14x^4)/3");
-
-        let t6: Term = (1.3, 'x').into();
-        let t7: Term = (PI, 'x').into();
-        assert_eq!((t6 + t7).to_string(), "num(\"4.442\")x");
-    }
-
-    #[test]
-    #[should_panic]
-    fn cant_add_different_terms() {
-        let t1: Term = (3, ('x', 2)).into();
-        let t2: Term = (2, 'x').into();
-        assert_eq!((t1 + t2).to_string(), "throws");
-    }
-
-    #[test]
-    fn term_subtraction() {
-        let t1: Term = (3, ('x', 2)).into();
-        let t2: Term = (2, ('x', 2)).into();
-        assert_eq!((t1 - t2).to_string(), "x^2");
-        // -= assignment
-        let mut t3: Term = ('x', 4).into();
-        let t4: Term = (4, ('x', 4)).into();
-        t3 -= t4;
-        assert_eq!(t3.to_string(), "-3x^4");
-    }
-
-    #[test]
-    #[should_panic]
-    fn cant_subtract_different_terms() {
-        let t1: Term = (3, ('x', 2)).into();
-        let t2: Term = (2, 'x').into();
-        assert_eq!((t1 - t2).to_string(), "throws");
-    }
-
-    #[test]
-    fn term_multiplication() {
-        // Term and number
-        let t1: Term = (12, ('x', 4)).into();
-        let factor = 3;
-        assert_eq!((factor * t1.clone()).to_string(), "36x^4");
-        assert_eq!((t1 * factor).to_string(), "36x^4");
-        // Term and term
-        let mut t2: Term = (3, 'x').into();
-        let t3: Term = (2, ('x', 2)).into();
-        let t4: Term = ('a', 2).into();
-        let t5: Term = 'y'.into();
-        assert_eq!((t2.clone() * t3.clone()).to_string(), "6x^3");
-        assert_eq!((t2.clone() * t4.clone()).to_string(), "3a^2 x");
-        assert_eq!((t2.clone() * t5.clone()).to_string(), "3x y");
-        t2 *= t3.clone();
-        assert_eq!(t2.to_string(), "6x^3");
-        assert_eq!((t2 * t3 * t4 * t5).to_string(), "12a^2 x^5 y");
     }
 }

@@ -1,23 +1,32 @@
-pub fn gcd(first: i32, second: i32) -> i32 {
-    if first.abs() == second.abs() {
-        return first.abs();
-    }
-    let mut a: i32;
-    let mut b: i32;
-    if first.abs() > second.abs() {
-        a = first.abs();
-        b = second.abs();
-    } else {
-        a = second.abs();
-        b = first.abs();
-    }
+use crate::Number;
 
-    while b > 0 {
-        let remainder = a % b;
-        a = b;
-        b = remainder;
+pub fn gcd(first: impl Into<Number>, second: impl Into<Number>) -> i32 {
+    let first = first.into();
+    let second = second.into();
+    if let (Number::Integer(first), Number::Integer(second)) = (first, second) {
+        if first.abs() == second.abs() {
+            return first.abs();
+        }
+        let mut a: i32;
+        let mut b: i32;
+        if first.abs() > second.abs() {
+            a = first.abs();
+            b = second.abs();
+        } else {
+            a = second.abs();
+            b = first.abs();
+        }
+
+        while b > 0 {
+            let remainder = a % b;
+            a = b;
+            b = remainder;
+        }
+        a
+    } else {
+        tracing::error!("gcd can only be used with integers");
+        1
     }
-    a
 }
 
 #[cfg(test)]

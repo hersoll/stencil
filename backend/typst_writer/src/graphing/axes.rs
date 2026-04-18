@@ -77,9 +77,10 @@ impl Axes {
     }
 
     pub fn new_solution() -> Self {
-        let mut axes = Axes::default();
-        axes.font_size = FontSize::Em(1.0);
-        axes
+        Self {
+            font_size: FontSize::Em(1.0),
+            ..Axes::default()
+        }
     }
 
     pub fn x_range(&mut self, min: impl Into<Number>, max: impl Into<Number>) -> &mut Self {
@@ -146,7 +147,7 @@ impl Axes {
         //self.auto_fit_range();
 
         // If we haven't passed any graphs, assume we want it empty and add an invisible line
-        if self.graphs.len() == 0 {
+        if self.graphs.is_empty() {
             self.graphs.push(Graph::linear(0, self.y_max.unwrap() + 10));
         }
 
@@ -222,7 +223,7 @@ impl Axes {
     /// and sets y_min and y_max acccordingly
     fn auto_y_range(&mut self) -> Result<()> {
         // If you want to draw an empty graph, specify y_min and y_max yourself
-        if self.graphs.len() == 0 {
+        if self.graphs.is_empty() {
             return Err(anyhow!(
                 "Tried to call auto_y_range() without adding a graph first. Please specify y_min and y_max if you want the graph to be empty",
             ));
@@ -233,7 +234,7 @@ impl Axes {
         for graph in self.graphs.iter() {
             // Check the endpoints of the graph
             for val in [self.x_min, self.x_max].iter() {
-                if let Some(extreme) = graph.function.get_y(&val) {
+                if let Some(extreme) = graph.function.get_y(val) {
                     if extreme < min {
                         min = extreme;
                     }
@@ -246,8 +247,8 @@ impl Axes {
             // or amplitude of a sine wave
         }
 
-        self.y_min = Some(min - &self.padding);
-        self.y_max = Some(max + &self.padding);
+        self.y_min = Some(min - self.padding);
+        self.y_max = Some(max + self.padding);
 
         Ok(())
     }
@@ -313,9 +314,8 @@ impl Axes {
 
     // Don't change ticks if explicitly set
     fn set_ticks(&mut self) {
-        match (self.x_tick, self.y_tick) {
-            (None, None) => self.auto_set_ticks(),
-            (_, _) => (),
+        if let (None, None) = (self.x_tick, self.y_tick) {
+            self.auto_set_ticks();
         }
     }
 
@@ -343,7 +343,7 @@ impl Axes {
         ] {
             let mut starting_number = StartingNumber::One;
             // Distance of 11 = 12 ticks
-            while (max - &min) / &*tick > Number::Integer(11) {
+            while (max - min) / *tick > Number::Integer(11) {
                 match starting_number {
                     StartingNumber::One => {
                         *tick *= 5;
@@ -357,7 +357,7 @@ impl Axes {
             }
 
             // Distance of 1 = 2 ticks
-            while (max - &min) / &*tick < Number::Integer(1) {
+            while (max - min) / *tick < Number::Integer(1) {
                 match starting_number {
                     StartingNumber::One => {
                         *tick /= 2;

@@ -1,6 +1,9 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Polynomial, Term, num_gen, symbols};
+use math::{
+    Number, Polynomial, Term, num_gen,
+    symbols::{self, Symbol},
+};
 use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::equation_solution;
@@ -88,7 +91,7 @@ fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
     let x = num_gen::integer().range(1, 5).random();
     let (constant, constant_range) = num_gen::integer()
-        .range((-x * coefficient).max(-10), 10)
+        .range((-x * coefficient).max(Number::Integer(-10)), 10)
         .exclude(0)
         .and_random();
     let y = coefficient * x + constant;
@@ -126,7 +129,7 @@ fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
     let x = num_gen::integer().range(1, 5).random();
     let (constant, constant_range) = num_gen::integer()
-        .range((-x * coefficient).max(-10), 10)
+        .range((-x * coefficient).max(Number::Integer(-10)), 10)
         .exclude(0)
         .and_random();
     let y = coefficient * x + constant;
@@ -264,8 +267,8 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
     let function_constant = num_gen::integer().range(1, 8).random();
     let algebra_constant = num_gen::integer().range(1, 8).random();
     let f_name = symbols::get_function_name()?;
-    let var = 'x';
-    let algebra_symbol = symbols::get_unknown_with_exclusions(['x', 'y'])?;
+    let var = Symbol("x");
+    let algebra_symbol = symbols::get_unknown_with_exclusions(["x", "y"])?;
 
     let function_term1: Term = (function_coefficient, var).into();
     let function_term2: Term = function_constant.into();
@@ -281,7 +284,8 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
         problem_data.get_question(lang),
         &[("function", function_string), ("algebra", algebra_string)],
     );
-    let answer = function_coefficient * algebra_expression.clone() + function_constant;
+    let answer =
+        function_coefficient * algebra_expression.clone() + Term::from_num(function_constant);
 
     let solution = format!(
         "${f_name}({var}) &= {function_expression} \\
@@ -313,8 +317,8 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
     let function_constant = num_gen::integer().range(1, 8).random();
     let algebra_constant = num_gen::integer().range(-8, 8).exclude(0).random();
     let f_name = symbols::get_function_name()?;
-    let var = 'x';
-    let algebra_symbol = symbols::get_unknown_with_exclusions(['x', 'y'])?;
+    let var = Symbol("x");
+    let algebra_symbol = symbols::get_unknown_with_exclusions(["x", "y"])?;
 
     let function_term1: Term = (function_coefficient, var).into();
     let function_term2: Term = function_constant.into();
@@ -331,7 +335,9 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
         problem_data.get_question(lang),
         &[("function", function_string), ("algebra", algebra_string)],
     );
-    let answer = (function_coefficient * algebra_expression.clone() + function_constant).simplify();
+    let answer = (function_coefficient * algebra_expression.clone()
+        + Term::from_num(function_constant))
+    .simplify();
 
     let solution = format!(
         "${f_name}({var}) &= {function_expression} \\

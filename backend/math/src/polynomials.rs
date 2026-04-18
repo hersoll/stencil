@@ -1,7 +1,9 @@
+mod operations;
+
 use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
-use crate::{Number, Term};
+use crate::{Number, Term, symbols::Symbol};
 
 #[derive(Debug, Clone, Default)]
 pub struct Polynomial {
@@ -42,22 +44,40 @@ impl Polynomial {
         Self { terms }
     }
 
+    /// Method used to chain multiple terms during fast Polynomial creation:
+    /// ```rust
+    /// use math::Term;
+    ///
+    /// let t1 = Term::from_var('x');
+    /// let t2 = Term::from_var('y');
+    /// let t3 = 2 * Term::from_var('x');
+    /// let p1 = t1.and(&t2).and(&t3);
+    /// assert_eq!(p1.to_string(), String::from("x+y+2x"));
+    /// ```
+    ///
+    /// The first `.and()` call comes from the Term struct, but that call returns a Polynomial and
+    /// therefore this method is needed to do the second `.and()` call.
+    pub fn and(mut self, term: &Term) -> Polynomial {
+        self.push(term.clone());
+        self
+    }
+
     pub fn push(&mut self, term: Term) {
         self.terms.push(term);
     }
 
-    /// Returns a sorted Vec of every variable in the polynomial
-    pub fn get_variables(&self) -> Vec<char> {
-        let mut variables: Vec<char> = Vec::new();
+    /// Returns a sorted Vec of every symbol in the polynomial
+    pub fn get_symbols(&self) -> Vec<Symbol> {
+        let mut symbols: Vec<Symbol> = Vec::new();
         self.terms.iter().for_each(|term| {
             term.variables.list.iter().for_each(|var| {
-                if !variables.contains(&var.symbol) {
-                    variables.push(var.symbol);
+                if !symbols.contains(&var.symbol) {
+                    symbols.push(var.symbol);
                 }
             })
         });
-        variables.sort();
-        variables
+        symbols.sort();
+        symbols
     }
 
     pub fn random_order(terms: Vec<&Term>) -> Self {
@@ -101,10 +121,7 @@ impl Polynomial {
 
     fn place_positive_first(&mut self) {
         assert_eq!(self.terms.len(), 2);
-        match (
-            self.terms[0].coefficient > 0.into(),
-            self.terms[1].coefficient > 0.into(),
-        ) {
+        match (self.terms[0].coefficient > 0, self.terms[1].coefficient > 0) {
             (true, false) => {}
             (false, true) => {
                 let temp = self.terms[0].clone();
@@ -125,16 +142,17 @@ impl Polynomial {
     // p2.evaluate("x", 3) => "10 + 2y"
     // p2.evaluate(&[("x", 3), ("y", 2)]) => 14
 
-    pub fn evaluate<T: Into<Number> + Clone>(&self, replacements: &[(char, T)]) -> Number {
-        let replacement_numbers: Vec<(char, Number)> = replacements
+    pub fn evaluate<T: Into<Number> + Clone>(&self, replacements: &[(&str, T)]) -> Number {
+        let replacement_numbers: Vec<(&str, Number)> = replacements
             .iter()
             .map(|(c, t)| (*c, t.clone().into()))
             .collect();
-        let mut variables: Vec<char> = replacement_numbers.iter().map(|&(c, _)| c).collect();
-        variables.sort();
+        let mut symbols: Vec<&str> = replacement_numbers.iter().map(|&(c, _)| c).collect();
+        symbols.sort();
+        let mut my_symbols: Vec<&str> = self.get_symbols().iter().map(|s| s.0).collect();
+        my_symbols.sort();
         assert_eq!(
-            variables,
-            self.get_variables(),
+            symbols, my_symbols,
             "Called evaluate() with a mismatch of variables:"
         );
 
@@ -143,132 +161,6 @@ impl Polynomial {
             result += term.evaluate(&replacement_numbers);
         });
         result
-    }
-}
-
-impl std::ops::Add for Polynomial {
-    type Output = Self;
-    fn add(self, rhs: Self) -> Self::Output {
-        let mut result = self.terms.clone();
-        for term in rhs.terms {
-            match self
-                .terms
-                .iter()
-                .position(|t| t.variables == term.variables)
-            {
-                Some(index) => result[index] = result[index].clone() + term,
-                None => result.push(term),
-            }
-        }
-        Self { terms: result }
-    }
-}
-
-impl std::ops::Add<Term> for Polynomial {
-    type Output = Self;
-    fn add(self, rhs: Term) -> Self::Output {
-        let mut result = self.terms.clone();
-        match self.terms.iter().position(|t| t.variables == rhs.variables) {
-            Some(index) => result[index] = result[index].clone() + rhs,
-            None => result.push(rhs),
-        }
-        Self { terms: result }
-    }
-}
-
-impl std::ops::Add<i32> for Polynomial {
-    type Output = Self;
-    fn add(self, rhs: i32) -> Self::Output {
-        let term_rhs: Term = rhs.into();
-        self + term_rhs
-    }
-}
-
-impl std::ops::AddAssign<Term> for Polynomial {
-    fn add_assign(&mut self, rhs: Term) {
-        *self = self.clone() + rhs;
-    }
-}
-
-impl std::ops::AddAssign<i32> for Polynomial {
-    fn add_assign(&mut self, rhs: i32) {
-        let term_rhs: Term = rhs.into();
-        *self = self.clone() + term_rhs;
-    }
-}
-impl std::ops::Sub for Polynomial {
-    type Output = Self;
-    fn sub(self, rhs: Self) -> Self::Output {
-        let mut result = self.terms.clone();
-        for term in rhs.terms {
-            match self
-                .terms
-                .iter()
-                .position(|t| t.variables == term.variables)
-            {
-                Some(index) => result[index] -= term,
-                None => result.push(-term),
-            }
-        }
-        Self { terms: result }
-    }
-}
-impl std::ops::Mul<Polynomial> for Polynomial {
-    type Output = Self;
-    fn mul(self, rhs: Self) -> Self::Output {
-        let mut result = Polynomial::new();
-        for lhs_term in self.terms {
-            for rhs_term in rhs.terms.clone() {
-                result.terms.push(lhs_term.clone() * rhs_term);
-            }
-        }
-        result
-    }
-}
-impl std::ops::Mul<Polynomial> for Term {
-    type Output = Polynomial;
-    fn mul(self, rhs: Polynomial) -> Self::Output {
-        let lhs: Polynomial = self.into();
-        lhs * rhs
-    }
-}
-impl std::ops::Mul<Polynomial> for i32 {
-    type Output = Polynomial;
-    fn mul(self, rhs: Polynomial) -> Self::Output {
-        let mut result = rhs.clone();
-        for term in &mut result.terms {
-            *term *= self;
-        }
-        result
-    }
-}
-impl std::ops::MulAssign<i32> for Polynomial {
-    fn mul_assign(&mut self, rhs: i32) {
-        for term in &mut self.terms {
-            *term *= rhs;
-        }
-    }
-}
-
-impl std::ops::Neg for &Polynomial {
-    type Output = Polynomial;
-    fn neg(self) -> Self::Output {
-        let mut new_exp = Polynomial::new();
-        for term in &self.terms {
-            new_exp.push(-term);
-        }
-        new_exp
-    }
-}
-
-impl std::ops::Neg for Polynomial {
-    type Output = Self;
-    fn neg(self) -> Self::Output {
-        let mut new_exp = Polynomial::new();
-        for term in self.terms {
-            new_exp.push(-term);
-        }
-        new_exp
     }
 }
 
@@ -297,35 +189,38 @@ impl Display for Polynomial {
 mod tests {
     use super::*;
 
+    const X: Symbol = Symbol("x");
+    const A: Symbol = Symbol("a");
+
     #[test]
-    fn expression_creation() {
-        let t1: Term = (3, 'x').into();
-        let t2: Term = (2, ('x', 2)).into();
-        let t3: Term = (-3, 'x').into();
-        let t4: Term = 'a'.into();
-        let ref_expression: Polynomial = vec![&t1, &t2, &t3, &t4].into();
-        let expression: Polynomial = vec![t2, t1, t4, t3].into();
-        assert_eq!(ref_expression.to_string(), "3x+2x^2-3x+a");
-        assert_eq!(expression.to_string(), "2x^2+3x+a-3x");
+    fn polynomial_creation() {
+        let t1 = 3 * X;
+        let t2 = 2 * (X * X);
+        let t3 = -3 * X;
+        let t4 = Term::from_var(A);
+        let p1 = t1.and(&t2).and(&t3).and(&t4);
+        let p2 = t2.and(&t1).and(&t4).and(&t3);
+        assert_eq!(p1.to_string(), "3x+2x^2-3x+a");
+        assert_eq!(p2.to_string(), "2x^2+3x+a-3x");
     }
 
     #[test]
     fn expression_display() {
-        let t1: Term = (3, 'x').into();
-        let t2: Term = (2, ('x', 2)).into();
-        let t3: Term = (-3, 'x').into();
-        let t4: Term = 'a'.into();
-        let expression: Polynomial = vec![t1, t2, t3, t4].into();
-        assert_eq!(format!("{expression}"), "3x+2x^2-3x+a");
-        assert_eq!(format!("{expression:+}"), "+3x+2x^2-3x+a");
+        let t1 = 3 * X;
+        let t2 = 2 * (X * X);
+        let t3 = -3 * X;
+        let t4 = Term::from_var(A);
+        let polynomial = t1.and(&t2).and(&t3).and(&t4);
+        assert_eq!(format!("{polynomial}"), "3x+2x^2-3x+a");
+        assert_eq!(format!("{polynomial:+}"), "+3x+2x^2-3x+a");
     }
 
     #[test]
     fn two_term_sorting() {
-        let t_x = Term::from((-3, 'x'));
-        let t_y = Term::from((2, 'y'));
-        let t_const = Term::from(4);
-        let x_y_expression: Polynomial = vec![&t_x, &t_y].into();
+        let t_x = -3 * X;
+        let t_y = 2 * Symbol("y");
+        let t_const = Term::from_num(4);
+        let x_y_expression = t_x.and(&t_y);
         assert_eq!(x_y_expression.to_string(), "-3x+2y");
         assert_eq!(x_y_expression.sorted().to_string(), "2y-3x");
         let x_const_expression: Polynomial = vec![&t_x, &t_const].into();
@@ -339,65 +234,26 @@ mod tests {
 
     #[test]
     fn multiple_term_sorting() {
-        let t_x = Term::from((-3, 'x'));
-        let t_x_2 = Term::from((2, ('x', 2)));
+        let t_x = -3 * X;
+        let t_x_2 = 2 * (X * X);
         let t_const = Term::from(4);
-        let expression: Polynomial = vec![&t_x, &t_x_2, &t_const].into();
+        let expression = t_x.and(&t_x_2).and(&t_const);
         assert_eq!(expression.sorted().to_string(), "2x^2-3x+4");
-        let t_y_3: Term = ('y', 3).into();
+        let t_y_3 = Term::from_var((Symbol("y"), 3));
         let expression: Polynomial = vec![&t_x, &t_x_2, &t_const, &t_y_3].into();
         assert_eq!(expression.sorted().to_string(), "y^3+2x^2-3x+4");
     }
 
     #[test]
     fn expression_evaluation() {
-        let t1: Term = (2, 'x').into();
-        let t2: Term = (-3, ('x', 2)).into();
-        let t3: Term = (4, 'a').into();
-        let exp: Polynomial = vec![&t1, &t2, &t3].into();
+        let t1: Term = 2 * X;
+        let t2: Term = -3 * (X * X);
+        let t3: Term = 4 * A;
+        let exp = t1.and(&t2).and(&t3);
         // NOTE: Currently evaluate() is only available for full number evaluation, not algebraic
         // let partial_evaluation = exp.evaluate(&vec![('x', -1)]);
         // assert_eq!(partial_evaluation.to_string(), "4a-5");
-        let full_evaluation = exp.evaluate(&[('a', -2), ('x', 5)]);
+        let full_evaluation = exp.evaluate(&[("a", -2), ("x", 5)]);
         assert_eq!(full_evaluation.to_string(), "-73");
-    }
-
-    #[test]
-    fn expression_addition() {
-        let t1: Term = (2, 'x').into();
-        let t2: Term = (-3, ('x', 2)).into();
-        let t3: Term = (4, 'a').into();
-        let exp: Polynomial = vec![t1, t2, t3].into();
-        let t1: Term = ('x', 2).into();
-        let t2: Term = (3, 'x').into();
-        let t3: Term = ('a', 2).into();
-        let exp_2: Polynomial = vec![t1, t2, t3].into();
-        assert_eq!((exp + exp_2).to_string(), "5x-2x^2+4a+a^2");
-    }
-
-    #[test]
-    fn expression_subtraction() {
-        let t1: Term = (2, 'x').into();
-        let t2: Term = (-3, ('x', 2)).into();
-        let t3: Term = (4, 'a').into();
-        let exp: Polynomial = vec![t1, t2, t3].into();
-        let t1: Term = ('x', 2).into();
-        let t2: Term = (3, 'x').into();
-        let t3: Term = ('a', 2).into();
-        let exp_2: Polynomial = vec![t1, t2, t3].into();
-        assert_eq!((exp - exp_2).to_string(), "-x-4x^2+4a-a^2");
-    }
-
-    #[test]
-    fn expression_multiplication() {
-        let t1: Term = 'x'.into();
-        let t2: Term = (2, ('y', 2)).into();
-        let t3: Term = (-3).into();
-        let exp_1: Polynomial = vec![&t1, &t2].into();
-        let exp_2: Polynomial = vec![t1, t2, t3].into();
-        assert_eq!((3 * exp_2.clone()).to_string(), "3x+6y^2-9");
-        let mult_exp = exp_1 * exp_2;
-        assert_eq!(mult_exp.to_string(), "x^2+2x y^2-3x+2x y^2+4y^4-6y^2");
-        assert_eq!(mult_exp.simplify().to_string(), "4y^4+4x y^2+x^2-6y^2-3x");
     }
 }

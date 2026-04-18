@@ -1,5 +1,5 @@
 use super::common::{NumberKind, generate_value};
-use crate::num_gen::IntegerGenerator;
+use crate::{Number, num_gen::IntegerGenerator};
 use rand::seq::IteratorRandom;
 
 /// The builder type returned by the fraction() function
@@ -148,7 +148,7 @@ impl FractionGenerator {
     /// Generate a random fraction from the FractionGenerator with the parameters given
     ///
     /// Non-consuming method, so the generator can be used again
-    pub fn random(&mut self) -> (i32, i32) {
+    pub fn random(&mut self) -> Number {
         let denom = generate_value(
             &self.denom.numbers,
             &self.denom.exclusions,
@@ -166,14 +166,15 @@ impl FractionGenerator {
             ),
         };
 
-        (num, denom)
+        Number::Fraction(num, denom)
     }
 
-    pub fn and_random(mut self) -> (i32, i32, Self) {
-        let (n, d) = self.random();
-        (n, d, self)
+    pub fn and_random(mut self) -> (Number, Self) {
+        let num = self.random();
+        (num, self)
     }
 
+    #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
         self.num.len() * self.denom.len()
     }
@@ -228,7 +229,9 @@ mod tests {
     fn simple_generate() {
         let mut frac = fraction().denom(5);
         for _ in 0..10 {
-            let (num, denom) = frac.random();
+            let num = frac.random();
+            let denom = num.denominator();
+            let num = num.numerator();
             assert!(num > 0 && num < 5);
             assert_eq!(denom, 5);
         }
@@ -238,7 +241,9 @@ mod tests {
     fn defaults_to_irreducible() {
         let mut frac = fraction().denom(6);
         for _ in 0..10 {
-            let (num, denom) = frac.random();
+            let num = frac.random();
+            let denom = num.denominator();
+            let num = num.numerator();
             assert!(num == 1 || num == 5);
             assert_eq!(denom, 6);
         }
@@ -249,7 +254,7 @@ mod tests {
         let mut found_two = false;
         let mut frac = fraction().denom(4).reducible();
         for _ in 0..100 {
-            let (num, _) = frac.random();
+            let num = frac.random().numerator();
             if num == 2 {
                 found_two = true;
                 break;
@@ -262,7 +267,7 @@ mod tests {
     fn exclude_num() {
         let mut frac = fraction().denom(3).exclude_num(2);
         for _ in 0..10 {
-            let (num, _) = frac.random();
+            let num = frac.random().numerator();
             assert_eq!(num, 1);
         }
     }
@@ -271,7 +276,7 @@ mod tests {
     fn exclude_nums() {
         let mut frac = fraction().denom(4).exclude_nums(&[2, 3]);
         for _ in 0..10 {
-            let (num, _) = frac.random();
+            let num = frac.random().numerator();
             assert_eq!(num, 1);
         }
     }
@@ -280,7 +285,7 @@ mod tests {
     fn exclude_denom() {
         let mut frac = fraction().denom_range(3, 5).exclude_denom(4);
         for _ in 0..10 {
-            let (_, denom) = frac.random();
+            let denom = frac.random().denominator();
             assert!(denom == 3 || denom == 5);
         }
     }
@@ -289,14 +294,16 @@ mod tests {
     fn exclude_denoms() {
         let mut frac = fraction().denom_range(5, 7).exclude_denoms(&[5, 6]);
         for _ in 0..10 {
-            let (_, denom) = frac.random();
+            let denom = frac.random().denominator();
             assert_eq!(denom, 7);
         }
     }
 
     #[test]
     fn denom_not_set() {
-        let (num, denom) = fraction().num(2).random();
+        let num = fraction().num(2).random();
+        let denom = num.denominator();
+        let num = num.numerator();
         assert_eq!(num, 2);
         assert_eq!(denom, 0);
     }
@@ -305,14 +312,18 @@ mod tests {
     fn min_max_works() {
         let mut frac = fraction().denom(7).min(2).max(5);
         for _ in 0..100 {
-            let (num, denom) = frac.random();
-            assert!(num >= 15 && num <= 34 && num % 7 > 0);
+            let num = frac.random();
+            let denom = num.denominator();
+            let num = num.numerator();
+            assert!(num >= 15 && num <= 34 && num % Number::Integer(7) > 0);
             assert_eq!(denom, 7);
         }
 
         let mut frac = fraction().denom(3).min(-2).max(-1);
         for _ in 0..10 {
-            let (num, denom) = frac.random();
+            let num = frac.random();
+            let denom = num.denominator();
+            let num = num.numerator();
             assert!(num == -4 || num == -5);
             assert_eq!(denom, 3);
         }

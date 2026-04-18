@@ -1,6 +1,9 @@
 use anyhow::Result;
 use macros::problem;
-use math::{self, Term, num_gen, symbols};
+use math::{
+    self, Number, Term, num_gen,
+    symbols::{self, Symbol},
+};
 use types::{lang::Language, problems::Problem};
 use typst_writer::{
     custom_math::solutions,
@@ -63,7 +66,7 @@ fn positive_up_to_5(name: String, _lang: &Language) -> Result<Problem> {
     let answer = num_gen::integer().range(0, 5).random();
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 5).and_random();
     let (constant, constant_range) = num_gen::integer()
-        .range((-coefficient * answer).max(-5), 5)
+        .range((-coefficient * answer).max(math::Number::Integer(-5)), 5)
         .and_random();
     let term = Term::from_num_and_vars(coefficient, unknown);
 
@@ -99,7 +102,7 @@ fn positive_answers(name: String, _lang: &Language) -> Result<Problem> {
     let answer = num_gen::integer().range(0, 10).random();
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 9).and_random();
     let (constant, constant_range) = num_gen::integer()
-        .range((-coefficient * answer).max(-10), 10)
+        .range((-coefficient * answer).max(Number::Integer(-10)), 10)
         .and_random();
 
     let term = Term::from_num_and_vars(coefficient, unknown);
@@ -139,18 +142,22 @@ fn positive_rational(name: String, _lang: &Language) -> Result<Problem> {
         .random();
     let coefficient = denominator;
     let (constant, constant_range) = num_gen::integer()
-        .range((-numerator).max(-10), 10)
+        .range((-numerator).max(Number::Integer(-10)), 10)
         .and_random();
 
     let solution = solutions::linear_equations::positive_rational_answer(
         coefficient,
-        'x',
+        Symbol("x"),
         constant,
         numerator,
         denominator,
     );
     let (simplified_numerator, simplified_denominator) =
-        math::utils::simplified_fraction(numerator, denominator);
+        if let (Number::Integer(num), Number::Integer(denom)) = (numerator, denominator) {
+            math::utils::simplified_fraction(num, denom)
+        } else {
+            (1, 1)
+        };
 
     Ok(Problem {
         name,

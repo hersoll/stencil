@@ -4,6 +4,7 @@ pub use number_line::NumberLine;
 
 use std::fmt::Display;
 
+#[allow(dead_code)]
 pub(crate) enum FontSize {
     Points(f32),
     Em(f32),

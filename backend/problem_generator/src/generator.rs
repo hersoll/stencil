@@ -1,5 +1,6 @@
 pub use crate::{Difficulty, picker};
 use anyhow::{Context, Result, anyhow};
+use math::Number;
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
 pub use registry::RegistryError;
 use serde::{Deserialize, Serialize};
@@ -202,11 +203,17 @@ fn get_unique_problem(candidate: &mut ProblemCandidate, lang: &Language) -> Resu
         candidate.identifiers.clear();
     }
 
+    // Our identifiers are of type Number, but Number can't be hashed due to the f64 variant. So we
+    // need to convert to i32
+    let mut problem_identifiers_as_i32 = extract_identifiers(&problem.identifiers);
+
     let mut tries = 0u16;
-    while candidate.identifiers.contains(&problem.identifiers) {
+    while candidate.identifiers.contains(&problem_identifiers_as_i32) {
         problem = (generator)(candidate.name.clone(), lang)?;
+        problem_identifiers_as_i32 = extract_identifiers(&problem.identifiers);
         tries += 1;
-        if tries >= u16::MAX {
+
+        if tries == u16::MAX {
             tracing::error!("Stuck while generating problem {}!", candidate.name);
             return Err(anyhow!(
                 "Stuck while generating problem {}!",
@@ -214,8 +221,20 @@ fn get_unique_problem(candidate: &mut ProblemCandidate, lang: &Language) -> Resu
             ));
         }
     }
-    candidate.identifiers.insert(problem.identifiers.clone());
+    candidate.identifiers.insert(problem_identifiers_as_i32);
     Ok(problem)
+}
+
+fn extract_identifiers(identifiers: &[Number]) -> Vec<i32> {
+    identifiers
+        .iter()
+        .map(|num| match num {
+            Number::Integer(i) => *i,
+            Number::Decimal(d) => *d,
+            Number::Fraction(n, _) => *n,
+            Number::Irrational(_, _) => 0i32,
+        })
+        .collect()
 }
 
 /// Given a complete problem name (module_problem),
