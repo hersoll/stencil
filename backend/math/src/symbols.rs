@@ -8,9 +8,9 @@ use crate::{Number, Term};
 
 /// Represents symbolic values.
 ///
-/// For memory efficiency, Symbols should **always** be used by refererence, either by directly
-/// accessing one of the statics by reference (like `&symbols::X`) or by the generator (`symbols::get_unknown()`)
-/// which returns references.
+/// For memory efficiency, Symbols should **never** be constructed manually, there are static references
+/// available either through direct access (like `symbols::X`) or by the generator (`symbols::get_unknown()`)
+/// which both return references.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Symbol(pub &'static str);
 
@@ -21,8 +21,8 @@ impl Display for Symbol {
 }
 
 /// Multiplying two Symbols will net a Term consisting of those symbols:
-/// x * y = xy
-/// x * x = x^2
+/// x * y = Term(xy)
+/// x * x = Term(x^2)
 impl std::ops::Mul for &'static Symbol {
     type Output = Term;
     fn mul(self, rhs: Self) -> Self::Output {
@@ -35,7 +35,7 @@ impl std::ops::Mul for &'static Symbol {
 }
 
 /// Multiplying a Symbol with a number will net a Term consisting of those two:
-/// 3 * x = 3x
+/// 3 * x = Term(3x)
 impl std::ops::Mul<&'static Symbol> for i32 {
     type Output = Term;
     fn mul(self, rhs: &'static Symbol) -> Self::Output {
@@ -44,7 +44,7 @@ impl std::ops::Mul<&'static Symbol> for i32 {
 }
 
 /// Multiplying a Symbol with a number will net a Term consisting of those two:
-/// 3 * x = 3x
+/// 3 * x = Term(3x)
 impl std::ops::Mul<&'static Symbol> for Number {
     type Output = Term;
     fn mul(self, rhs: &'static Symbol) -> Self::Output {
