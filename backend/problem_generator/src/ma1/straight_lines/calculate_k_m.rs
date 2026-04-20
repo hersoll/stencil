@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, Term, num_gen, symbols::Symbol};
+use math::{Number, Term, num_gen, symbols::X};
 use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::{equation_solution, parentheses};
@@ -130,7 +130,6 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
     let small_range = num_gen::integer().range(1, 5);
     let k = num_gen::integer().range(2, 5).random();
     let m = small_range.random();
-    let x = Symbol("x");
     let x_start = small_range.random();
     let y_start = k * x_start + m;
     let x_step = small_range.random();
@@ -138,7 +137,7 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
 
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
@@ -187,7 +186,6 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
         .random();
     let small_range = num_gen::integer().range(-5, 5);
     let m = small_range.random();
-    let x = Symbol("x");
 
     let x_start = small_range.positive();
     let y_start = k * x_start + m;
@@ -197,7 +195,7 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
 
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
@@ -258,9 +256,7 @@ fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
 
-    let x = Symbol("x");
-
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
@@ -318,8 +314,7 @@ fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
 
-    let x = Symbol("x");
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
@@ -372,8 +367,7 @@ fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
     let y_end = k * x_end + m;
     let y_step = y_end - y_start;
 
-    let x = Symbol("x");
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
@@ -419,17 +413,12 @@ fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
 /// Difficulty: 6
 #[problem]
 fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
-    let k: Number = num_gen::fraction()
-        .denoms(&[6, 9, 12])
-        .max(2)
-        .random()
-        .into();
-    let m: Number = num_gen::fraction()
+    let k = num_gen::fraction().denoms(&[6, 9, 12]).max(2).random();
+    let m = num_gen::fraction()
         .denom(k.denominator().as_i32() / 3) // Ensures integer coordinates
         .min(-3)
         .max(3)
-        .random()
-        .into();
+        .random();
 
     // To find the first integer coordinates, we need to do some math.
     // When do we "fill" a sufficient amount of the denominator in k to reach an integer?
@@ -449,8 +438,7 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
     }
     let y_end = (k * x_end + m).simplify();
 
-    let x = Symbol("x");
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 

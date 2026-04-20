@@ -2,7 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{
     self, Number, Term, num_gen,
-    symbols::{self, Symbol},
+    symbols::{self, X},
 };
 use types::{lang::Language, problems::Problem};
 use typst_writer::{
@@ -147,7 +147,7 @@ fn positive_rational(name: String, _lang: &Language) -> Result<Problem> {
 
     let solution = solutions::linear_equations::positive_rational_answer(
         coefficient,
-        Symbol("x"),
+        X,
         constant,
         numerator,
         denominator,

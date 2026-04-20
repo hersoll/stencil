@@ -4,6 +4,13 @@ use std::fmt::Display;
 
 use crate::{Number, Term};
 
+// Some Symbols will be created a *lot* during problem generation.
+// These consts prevent creating the same data multiple times
+pub const X: Symbol = Symbol("x");
+pub const Y: Symbol = Symbol("y");
+pub const PI: Symbol = Symbol("pi");
+pub const E: Symbol = Symbol("e");
+
 /// Represents symbolic values.
 ///
 /// Contains a `&str` since symbols can be "pi", "alpha", etc.

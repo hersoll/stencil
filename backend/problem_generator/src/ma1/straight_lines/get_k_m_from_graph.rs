@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, Polynomial, Term, num_gen, symbols::Symbol};
+use math::{Number, Polynomial, Term, num_gen, symbols::X};
 use registry::{get_problem_data, replace_placeholders};
 use types::{lang::Language, problems::Problem};
 use typst_writer::graphing::{Axes, Graph};
@@ -103,7 +103,6 @@ fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
     let k_range = num_gen::integer().range(-3, 3).exclude(0);
     let k = k_range.random();
     let m = num_gen::integer().range(-3, 3).random();
-    let x = Symbol("x");
 
     let x_min = -1;
     let x_max = 2;
@@ -121,7 +120,7 @@ fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
         )
         .build_string()?;
 
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let expr: Polynomial = vec![k_term, m_term].into();
 
@@ -148,7 +147,6 @@ fn draw_own_easy_integers(name: String, lang: &Language) -> Result<Problem> {
         .exclude_multiple(&[-1, 0, 1]);
     let k = k_range.random();
     let m = num_gen::integer().range(-3, 3).exclude(0).random();
-    let x = Symbol("x");
 
     let x_min = -3;
     let x_max = 3;
@@ -181,7 +179,7 @@ fn draw_own_easy_integers(name: String, lang: &Language) -> Result<Problem> {
         )
         .build_string()?;
 
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let expr = k_term.and(&m_term);
 
@@ -191,13 +189,12 @@ fn draw_own_easy_integers(name: String, lang: &Language) -> Result<Problem> {
         &[("fn", format!("y = {expr}"))],
     );
     let question = format!("{question_text}\n{question_graph}");
-    let answer = format!("{answer_graph}");
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
     Ok(Problem {
         name,
         question,
-        answer,
+        answer: answer_graph,
         solution,
         identifiers: vec![k],
         combinations: k_range.len(),
@@ -211,7 +208,6 @@ fn find_k_and_m_large_numbers(name: String, _lang: &Language) -> Result<Problem>
     let k_range = num_gen::integer().range(-3, 3).exclude(0);
     let k = k_range.random() * 20;
     let m = num_gen::integer().range(1, 5).random() * 100;
-    let x = Symbol("x");
 
     let x_min = 0;
     let x_max = 6;
@@ -225,7 +221,7 @@ fn find_k_and_m_large_numbers(name: String, _lang: &Language) -> Result<Problem>
         .add_graph(Graph::linear(k, m).with_slope_hint(0, 5, ("x", "y")))
         .build_string()?;
 
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let expr = k_term.and(&m_term);
 
@@ -250,7 +246,6 @@ fn draw_own_unit_k(name: String, lang: &Language) -> Result<Problem> {
     let k_range = num_gen::integer().numbers(&[-1, 1]);
     let k = k_range.random();
     let m = num_gen::integer().range(-2, 2).random();
-    let x = Symbol("x");
 
     let x_min = -2;
     let x_max = 2;
@@ -268,7 +263,7 @@ fn draw_own_unit_k(name: String, lang: &Language) -> Result<Problem> {
         .add_graph(Graph::linear(k, m))
         .build_string()?;
 
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let expr = k_term.and(&m_term);
 
@@ -278,13 +273,12 @@ fn draw_own_unit_k(name: String, lang: &Language) -> Result<Problem> {
         &[("fn", format!("y = {}", expr.sorted()))],
     );
     let question = format!("{question_text}\n{question_graph}");
-    let answer = format!("{answer_graph}");
     let solution = problem_data.get_solution(lang).to_string();
 
     Ok(Problem {
         name,
         question,
-        answer,
+        answer: answer_graph,
         solution,
         identifiers: vec![k],
         combinations: k_range.len(),
@@ -321,13 +315,12 @@ fn draw_own_horizontal(name: String, lang: &Language) -> Result<Problem> {
         &[("fn", format!("y = {m}"))],
     );
     let question = format!("{question_text}\n{question_graph}");
-    let answer = format!("{answer_graph}");
     let solution = problem_data.get_solution(lang).to_string();
 
     Ok(Problem {
         name,
         question,
-        answer,
+        answer: answer_graph,
         solution,
         identifiers: vec![m],
         combinations: m_range.len(),
@@ -344,7 +337,6 @@ fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
         .max(1)
         .and_random();
     let m = num_gen::integer().range(-3, 3).exclude(0).random();
-    let x = Symbol("x");
 
     let x_min = -1;
     // With some random padding
@@ -359,7 +351,7 @@ fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
         .add_graph(Graph::linear(k, m).with_slope_hint(0, k.denominator(), ("x", "y")))
         .build_string()?;
 
-    let k_term = k * x;
+    let k_term = k * X;
     let m_term = Term::from_num(m);
     let expr = k_term.and(&m_term);
 
@@ -413,13 +405,12 @@ fn draw_own_fraction(name: String, lang: &Language) -> Result<Problem> {
         &[("fn", format!("y = ({num} x)/{denom} {m:+}"))],
     );
     let question = format!("{question_text}\n{question_graph}");
-    let answer = format!("{answer_graph}");
     let solution = format!("{}\n{solution_graph}", problem_data.get_solution(lang));
 
     Ok(Problem {
         name,
         question,
-        answer,
+        answer: answer_graph,
         solution,
         identifiers: vec![num, denom],
         combinations: k_range.len(),

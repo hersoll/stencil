@@ -2,7 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{
     Number, Polynomial, Term, num_gen,
-    symbols::{self, Symbol},
+    symbols::{self, X},
 };
 use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
@@ -267,17 +267,16 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
     let function_constant = num_gen::integer().range(1, 8).random();
     let algebra_constant = num_gen::integer().range(1, 8).random();
     let f_name = symbols::get_function_name()?;
-    let var = Symbol("x");
     let algebra_symbol = symbols::get_unknown_with_exclusions(["x", "y"])?;
 
-    let function_term1: Term = (function_coefficient, var).into();
+    let function_term1: Term = (function_coefficient, X).into();
     let function_term2: Term = function_constant.into();
     let function_expression: Polynomial = vec![function_term1, function_term2].into();
     let algebra_term1: Term = (algebra_coefficient, algebra_symbol).into();
     let algebra_term2: Term = algebra_constant.into();
     let algebra_expression: Polynomial = vec![algebra_term1, algebra_term2].into();
 
-    let function_string = format!("{f_name}({var}) = {function_expression}");
+    let function_string = format!("{f_name}({X}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
     let problem_data = registry::get_problem_data(&name)?;
     let question = replace_placeholders(
@@ -288,7 +287,7 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
         function_coefficient * algebra_expression.clone() + Term::from_num(function_constant);
 
     let solution = format!(
-        "${f_name}({var}) &= {function_expression} \\
+        "${f_name}({X}) &= {function_expression} \\
         {f_name}(colored({algebra_expression})) &= {function_coefficient}(colored({algebra_expression})) {function_constant:+} \\
         {f_name}({algebra_expression}) &= {mult_algebra} {function_constant:+} \\
         {f_name}({algebra_expression}) &= {answer}$",
@@ -317,10 +316,9 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
     let function_constant = num_gen::integer().range(1, 8).random();
     let algebra_constant = num_gen::integer().range(-8, 8).exclude(0).random();
     let f_name = symbols::get_function_name()?;
-    let var = Symbol("x");
     let algebra_symbol = symbols::get_unknown_with_exclusions(["x", "y"])?;
 
-    let function_term1: Term = (function_coefficient, var).into();
+    let function_term1: Term = (function_coefficient, X).into();
     let function_term2: Term = function_constant.into();
     let mut function_expression: Polynomial = vec![function_term1, function_term2].into();
     function_expression = function_expression.simplify();
@@ -328,7 +326,7 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
     let algebra_term2: Term = algebra_constant.into();
     let algebra_expression: Polynomial = vec![algebra_term1, algebra_term2].into();
 
-    let function_string = format!("{f_name}({var}) = {function_expression}");
+    let function_string = format!("{f_name}({X}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
     let problem_data = registry::get_problem_data(&name)?;
     let question = replace_placeholders(
@@ -340,7 +338,7 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
     .simplify();
 
     let solution = format!(
-        "${f_name}({var}) &= {function_expression} \\
+        "${f_name}({X}) &= {function_expression} \\
         {f_name}(colored({algebra_expression})) &= {function_constant} {function_coefficient:+}(colored({algebra_expression}))\\
         {f_name}({algebra_expression}) &= {function_constant}{mult_algebra:+} \\
         {f_name}({algebra_expression}) &= {answer}$",
