@@ -7,7 +7,7 @@
   import SetButtons from './SetButtons.svelte';
 
   let {
-    set,
+    set = $bindable(),
     id,
     onDelete,
     topics
@@ -59,7 +59,7 @@
       {/each}
     </div>
     <div class="col">
-      <SetOptions {set} />
+      <SetOptions bind:set />
       <SetButtons {onDelete} />
     </div>
   </div>

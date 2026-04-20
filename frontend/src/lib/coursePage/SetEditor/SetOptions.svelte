@@ -2,7 +2,7 @@
   import i18n from '$src/i18n.svelte';
   import DifficultySelector from '../DifficultySelector.svelte';
   import type { ProblemSetSpec } from '../types.ts';
-  let { set }: { set: ProblemSetSpec } = $props();
+  let { set = $bindable() }: { set: ProblemSetSpec } = $props();
 
   const MIN_PROBLEMS = 1;
   const MAX_PROBLEMS = 250;
@@ -101,6 +101,16 @@
           onblur={handleSpacingBlur}
         />
       </div>
+      <div class="label-div pagebreak">
+        <label for="pagebreak">{i18n.t('set_option_pagebreak')}</label>
+        <input
+          type="checkbox"
+          id="pagebreak"
+          checked={set.options.pagebreak_after}
+          onchange={e =>
+            (set.options.pagebreak_after = e.currentTarget.checked)}
+        />
+      </div>
     </div>
   </div>
 </div>
@@ -137,6 +147,12 @@
 
     .text-input {
       width: 15rem;
+    }
+
+    &.pagebreak {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
     }
   }
 

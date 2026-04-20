@@ -94,7 +94,7 @@
   </div>
 </button>
 
-<SetEditor {set} {onDelete} {id} {topics} />
+<SetEditor bind:set {onDelete} {id} {topics} />
 
 <style>
   .set-container {
