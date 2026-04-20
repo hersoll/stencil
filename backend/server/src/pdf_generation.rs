@@ -12,7 +12,7 @@ use std::time::Instant;
 use tokio::{fs, process::Command};
 use tracing::{debug, info, instrument};
 use types::{errors::ApiError, problems::Problem};
-use typst_writer::typst_file_builder::{DocumentOptions, SetOptions, TypstFileBuilder};
+use typst_writer::typst_file_builder::{DocumentOptions, QuestionSetOptions, TypstFileBuilder};
 
 /// Information about what to include in the problem set
 ///
@@ -22,7 +22,7 @@ pub struct ProblemSetSpec {
     pub problems: ProblemOptions,
     /// Typst rendering options
     #[serde(default)]
-    pub options: SetOptions,
+    pub options: QuestionSetOptions,
 }
 
 impl ProblemSetSpec {
@@ -30,7 +30,7 @@ impl ProblemSetSpec {
     pub fn new() -> ProblemSetSpec {
         ProblemSetSpec {
             problems: ProblemOptions::default(),
-            options: SetOptions::default(),
+            options: QuestionSetOptions::default(),
         }
     }
 }
@@ -111,7 +111,7 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     // A vec containing the sets of actual problems (With question, answer, ...)
     let mut problem_sets: Vec<Vec<Problem>> = Vec::with_capacity(sets.len());
     // The typst rendering options for each set
-    let set_options: Vec<SetOptions> = sets.iter().map(|set| set.options.clone()).collect();
+    let set_options: Vec<QuestionSetOptions> = sets.iter().map(|set| set.options.clone()).collect();
 
     // Convert each incoming "set" (http-set) to actual problems
     let start = Instant::now();
@@ -144,7 +144,7 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     let typst_path = temp_dir_path.join("stencil.typ");
     let mut typst_file_builder = TypstFileBuilder::new(set_options, document_options).await?;
     for problem_set in problem_sets {
-        typst_file_builder.add_problem_set(problem_set)?;
+        typst_file_builder.parse_problem_set(problem_set)?;
     }
     let typst_as_string = typst_file_builder.build_to_string()?;
     fs::write(&typst_path, typst_as_string).await?;

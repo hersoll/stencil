@@ -1,4 +1,4 @@
-use crate::typst_file_builder::DocumentOptions;
+use crate::typst_file_builder::{AnswerSet, DocumentOptions, QuestionSet};
 use anyhow::{Result, anyhow};
 use db::PrefixEntry;
 use registry::{PREFIX_DATA, PROBLEM_DATA, RegistryError};
@@ -13,13 +13,13 @@ type PrefixRegistry = std::sync::RwLockReadGuard<'static, HashMap<i32, PrefixEnt
 /// - Create a group prefix for the entire set (if prefixes match)
 /// - Group sequential problems as nested lists and give them a group prefix (if specified in DocumentOptions)
 /// - Apply prefix text to individual problems
-pub fn handle_prefixes(
-    question_set: Vec<String>,
-    answer_set: Vec<String>,
+pub fn apply_prefixes(
+    question_set: QuestionSet,
+    answer_set: AnswerSet,
     group_prefixes: &mut Vec<Option<String>>,
     document_options: &DocumentOptions,
     problem_names: &[String],
-) -> Result<(Vec<String>, Vec<String>)> {
+) -> Result<(QuestionSet, AnswerSet)> {
     if problem_names.is_empty() {
         group_prefixes.push(None);
         return Ok((question_set, answer_set));
@@ -110,17 +110,17 @@ fn detect_group_prefix(
 /// Takes sequential similar problems, groups them together into
 /// a nested list, and gives them a group prefix.
 fn apply_grouped_prefixes(
-    question_set: Vec<String>,
-    answer_set: Vec<String>,
+    question_set: QuestionSet,
+    answer_set: AnswerSet,
     prefix_ids: &[Option<i32>],
     prefix_reg: &HashMap<i32, PrefixEntry>,
     max_group: u8,
     lang: &Language,
-) -> Result<(Vec<String>, Vec<String>)> {
+) -> Result<(QuestionSet, AnswerSet)> {
     let groups = group_related_prefixes(prefix_ids, max_group);
 
-    let mut prefixed_questions = Vec::new();
-    let mut prefixed_answers = Vec::new();
+    let mut prefixed_questions = QuestionSet::default();
+    let mut prefixed_answers = AnswerSet::default();
     let mut idx = 0usize;
 
     for len in groups {
@@ -188,18 +188,18 @@ fn group_related_prefixes(prefix_ids: &[Option<i32>], max_len: u8) -> Vec<u8> {
 ///
 /// Does not mutate the length of the sets
 fn apply_inline_prefixes(
-    mut question_set: Vec<String>,
-    answer_set: Vec<String>,
+    mut question_set: QuestionSet,
+    answer_set: AnswerSet,
     prefix_ids: &[Option<i32>],
     prefix_reg: &HashMap<i32, PrefixEntry>,
     lang: &Language,
-) -> Result<(Vec<String>, Vec<String>)> {
+) -> Result<(QuestionSet, AnswerSet)> {
     for (i, id) in prefix_ids.iter().enumerate() {
         if let Some(id) = id
             && let Some(prefix) = prefix_reg.get(id)
         {
             let text = prefix.get_text(lang);
-            question_set[i] = format!("{text} {}", question_set[i]);
+            question_set.questions[i] = format!("{text} {}", question_set.questions[i]);
         }
     }
     Ok((question_set, answer_set))
@@ -207,39 +207,43 @@ fn apply_inline_prefixes(
 
 /// Give a single problem its prefix (if it has one)
 /// and appends it to the prefixed list
+#[allow(clippy::too_many_arguments)]
 fn push_single_prefixed(
     idx: usize,
-    question_set: &[String],
-    answer_set: &[String],
+    question_set: &QuestionSet,
+    answer_set: &AnswerSet,
     prefix_ids: &[Option<i32>],
     prefix_reg: &HashMap<i32, PrefixEntry>,
-    prefixed_questions: &mut Vec<String>,
-    prefixed_answers: &mut Vec<String>,
+    prefixed_question_set: &mut QuestionSet,
+    prefixed_answer_set: &mut AnswerSet,
     lang: &Language,
 ) {
     let question = match prefix_ids[idx].and_then(|id| prefix_reg.get(&id)) {
         Some(prefix) => {
             let text = prefix.get_text(lang);
-            format!("{text} {}", question_set[idx])
+            format!("{text} {}", question_set.questions[idx])
         }
-        None => question_set[idx].clone(),
+        None => question_set.questions[idx].clone(),
     };
 
-    prefixed_questions.push(question);
-    prefixed_answers.push(answer_set[idx].clone());
+    prefixed_question_set.questions.push(question);
+    prefixed_answer_set
+        .answers
+        .push(answer_set.answers[idx].clone());
 }
 
 /// Give a problem group its prefix, turn it into a nested list
 /// and append it to the prefixed list
+#[allow(clippy::too_many_arguments)]
 fn push_grouped_enum(
     idx: usize,
     group_length: usize,
-    question_set: &[String],
-    answer_set: &[String],
+    question_set: &QuestionSet,
+    answer_set: &AnswerSet,
     prefix_ids: &[Option<i32>],
     prefix_reg: &HashMap<i32, PrefixEntry>,
-    prefixed_questions: &mut Vec<String>,
-    prefixed_answers: &mut Vec<String>,
+    prefixed_questions: &mut QuestionSet,
+    prefixed_answers: &mut AnswerSet,
     lang: &Language,
 ) -> Result<()> {
     let Some(id) = prefix_ids[idx] else {
@@ -267,16 +271,16 @@ fn push_grouped_enum(
     writeln!(grouped_answers, "#enum(numbering: \"a)\",")?;
 
     for j in idx..idx + group_length {
-        let nested_answer = adjust_nested_answer(&answer_set[j]);
-        writeln!(grouped_questions, "[{}],", question_set[j])?;
+        let nested_answer = adjust_nested_answer(&answer_set.answers[j]);
+        writeln!(grouped_questions, "[{}],", question_set.questions[j])?;
         writeln!(grouped_answers, "[{}],", nested_answer)?;
     }
 
     grouped_questions.push(')');
     grouped_answers.push(')');
 
-    prefixed_questions.push(grouped_questions);
-    prefixed_answers.push(grouped_answers);
+    prefixed_questions.questions.push(grouped_questions);
+    prefixed_answers.answers.push(grouped_answers);
 
     Ok(())
 }

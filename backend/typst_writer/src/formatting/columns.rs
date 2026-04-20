@@ -1,17 +1,17 @@
 use super::{list_item, reformat_newlines};
-use crate::typst_file_builder::SetOptions;
+use crate::typst_file_builder::{AnswerSet, QuestionSet, QuestionSetOptions};
 use anyhow::Result;
 use std::fmt::Write;
 
 /// Formats the sets to columns with equal height
-pub fn sets_to_balanced_columns(
-    sets: &[Vec<String>],
+pub fn questions_to_balanced_columns(
+    sets: &[QuestionSet],
     group_prefixes: &[Option<String>],
-    set_options: &[SetOptions],
+    set_options: &[QuestionSetOptions],
     par_spacing: &Option<u8>,
 ) -> Result<String> {
     let mut out = String::with_capacity(8 * 1024);
-    let default_options = SetOptions::default();
+    let default_options = QuestionSetOptions::default();
 
     for (i, set) in sets.iter().enumerate() {
         let set_option = set_options.get(i).unwrap_or(&default_options);
@@ -22,7 +22,7 @@ pub fn sets_to_balanced_columns(
 
         writeln!(out, "\n#let problem_set = (")?;
         // Write each list item
-        for item in set.iter() {
+        for item in set.questions.iter() {
             writeln!(out, "{}", list_item(item))?;
         }
         writeln!(out, ")")?;
@@ -68,12 +68,12 @@ pub fn sets_to_balanced_columns(
 }
 
 ///Writes the set to a flow from one filled column to the next
-pub fn sets_to_columns(sets: &[Vec<String>], columns: &u8) -> Result<String> {
-    let mut out = String::with_capacity(sets[0].len() * sets.len() * 128);
+pub fn answers_to_columns(sets: &[AnswerSet], columns: &u8) -> Result<String> {
+    let mut out = String::with_capacity(sets[0].answers.len() * sets.len() * 128);
 
     writeln!(out, "#columns({columns}, enum(spacing: 2.5em, ")?;
     for set in sets.iter() {
-        for entry in set.iter() {
+        for entry in set.answers.iter() {
             writeln!(out, "{}", list_item(entry))?;
         }
     }

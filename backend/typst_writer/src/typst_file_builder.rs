@@ -19,16 +19,28 @@ const DEFAULT_WRITE_SOLUTIONS: WriteSolutions = WriteSolutions::First;
 const DEFAULT_PAR_SPACING: Option<u8> = None;
 const DEFAULT_COLORS: bool = true;
 
+/// A set of questions grouped together in the final PDF
+#[derive(Debug, Default)]
+pub struct QuestionSet {
+    pub questions: Vec<String>,
+}
+/// A set of answers grouped together in the final PDF
+#[derive(Debug, Default)]
+pub struct AnswerSet {
+    pub answers: Vec<String>,
+}
+
+/// Options that dictate how a QuestionSet should be formatted
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct SetOptions {
+pub struct QuestionSetOptions {
     pub question_columns: u8,
     pub heading: String,
     pub spacing: Option<u16>,
     pub pagebreak_after: bool,
 }
-impl Default for SetOptions {
+impl Default for QuestionSetOptions {
     fn default() -> Self {
-        SetOptions {
+        QuestionSetOptions {
             question_columns: DEFAULT_QUESTION_COLUMNS,
             heading: String::new(),
             spacing: None,
@@ -37,6 +49,7 @@ impl Default for SetOptions {
     }
 }
 
+/// Options that concerns the document as a whole
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DocumentOptions {
     pub font_size: u8,
@@ -123,23 +136,26 @@ impl PaperSize {
     }
 }
 
+/// The data structure that tracks everything needed to build the PDF.
+///
+/// Uses the builder pattern.
 #[derive(Debug)]
 pub struct TypstFileBuilder {
-    question_sets: Vec<Vec<String>>,
-    answer_sets: Vec<Vec<String>>,
+    question_sets: Vec<QuestionSet>,
+    answer_sets: Vec<AnswerSet>,
     group_prefixes: Vec<Option<String>>,
     /// Keeps track of which problems has a written solution,
     /// if we have WriteSolutions::First. Not used otherwise.
     seen_problem_names: HashSet<String>,
     options: DocumentOptions,
-    set_options: Vec<SetOptions>,
+    set_options: Vec<QuestionSetOptions>,
     i18n_strings: HashMap<String, String>,
 }
 
 impl TypstFileBuilder {
     /// Create a new builder. Some i18n keys are fetched up-front.
     pub async fn new(
-        set_options: Vec<SetOptions>,
+        set_options: Vec<QuestionSetOptions>,
         options: DocumentOptions,
     ) -> Result<TypstFileBuilder> {
         let i18n_keys = vec!["solution", "answer_key"];
@@ -155,21 +171,25 @@ impl TypstFileBuilder {
         })
     }
 
-    /// Add a problem set to the builder. The builder stores formatted question/answer strings
-    pub fn add_problem_set(&mut self, problem_set: Vec<Problem>) -> Result<&mut Self> {
+    /// Read a problem set and convert it to a QuestionSet and AnswerSet.
+    ///
+    /// All of the formatting within the set is handled here. The sets are grouped
+    /// into nested problems (a, b, c, ...) and have their prefixes applied.
+    pub fn parse_problem_set(&mut self, problem_set: Vec<Problem>) -> Result<&mut Self> {
         if problem_set.is_empty() {
             warn!("Trying to add_problem_set() an empty problem set!");
-            self.question_sets.push(Vec::new());
-            self.answer_sets.push(Vec::new());
+            self.question_sets.push(QuestionSet::default());
+            self.answer_sets.push(AnswerSet::default());
             self.group_prefixes.push(None);
             return Ok(self);
         }
 
-        // Transform problems into names, questions and answer-or-solutions depending on the config
-        let mut names = Vec::with_capacity(problem_set.len());
-        let mut questions = Vec::with_capacity(problem_set.len());
-        let mut answers = Vec::with_capacity(problem_set.len());
+        // Problem names are collected to get their prefixes from the DB later
+        let mut problem_names = Vec::new();
+        let mut new_question_set = QuestionSet::default();
+        let mut new_answer_set = AnswerSet::default();
 
+        // Split the problem into a question and either an answer or (answer + solution)
         for problem in problem_set {
             let include_solution = self.should_include_solution(&problem.name);
 
@@ -181,20 +201,20 @@ impl TypstFileBuilder {
                 (problem.question, problem.answer)
             };
 
-            questions.push(q);
-            answers.push(a);
-            names.push(problem.name);
+            new_question_set.questions.push(q);
+            new_answer_set.answers.push(a);
+            problem_names.push(problem.name);
         }
 
-        let (question_set, answer_set) = prefix_handler::handle_prefixes(
-            questions,
-            answers,
+        let (prefixed_question_set, prefixed_answer_set) = prefix_handler::apply_prefixes(
+            new_question_set,
+            new_answer_set,
             &mut self.group_prefixes,
             &self.options,
-            &names,
+            &problem_names,
         )?;
-        self.question_sets.push(question_set);
-        self.answer_sets.push(answer_set);
+        self.question_sets.push(prefixed_question_set);
+        self.answer_sets.push(prefixed_answer_set);
         Ok(self)
     }
 
@@ -203,7 +223,7 @@ impl TypstFileBuilder {
         let mut typst_content = String::with_capacity(32 * 1024);
 
         let preamble = self.build_preamble()?;
-        let question_string = formatting::sets_to_balanced_columns(
+        let question_string = formatting::questions_to_balanced_columns(
             &self.question_sets,
             &self.group_prefixes,
             &self.set_options,
@@ -217,7 +237,7 @@ impl TypstFileBuilder {
             + &formatting::reset_enum()
             + &formatting::heading(answer_heading);
         let answer_string =
-            formatting::sets_to_columns(&self.answer_sets, &self.options.answer_columns)?;
+            formatting::answers_to_columns(&self.answer_sets, &self.options.answer_columns)?;
 
         writeln!(typst_content, "{preamble}")?;
         writeln!(typst_content, "{question_string}")?;
@@ -226,6 +246,7 @@ impl TypstFileBuilder {
         Ok(typst_content)
     }
 
+    /// Decides if a particular problem should have its solution included
     fn should_include_solution(&mut self, problem_name: &str) -> bool {
         match self.options.write_solutions {
             WriteSolutions::All => true,
@@ -235,6 +256,9 @@ impl TypstFileBuilder {
         }
     }
 
+    /// Constructs the preamble of the Typst file depending on the options provided.
+    ///
+    /// Some things are the same no matter the user's options. These are included in preamble.typ.
     fn build_preamble(&self) -> Result<String> {
         let mut parts = Vec::with_capacity(7);
         parts.push(colors::get_color_preamble(self.options.color));
