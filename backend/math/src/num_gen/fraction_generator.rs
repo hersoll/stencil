@@ -18,49 +18,50 @@ pub struct FractionGenerator {
 /// # Examples
 ///
 /// ```
-/// let (num, denom) = math::num_gen::fraction().denom(7).random();
-/// assert!(num >= 1 && num <= 6); // Generates a fraction between 1/7 and 6/7
-/// assert!(denom == 7);
+/// let frac = math::num_gen::fraction().denom(7).random();
+/// assert!(frac.numerator() >= 1 && frac.numerator() <= 6); // Generates a fraction between 1/7 and 6/7
+/// assert!(frac.denominator() == 7);
 /// ```
 ///
 /// Fractions are irreducible by default - if a certain denominator is given the generator is sure
 /// not to accidentally generate a fraction which can be reduced to another denominator:
 /// ```
-/// let (num, denom) = math::num_gen::fraction().denom(6).random();
-/// assert!(num == 1 || num == 5); // Only 1/6 and 5/6 are irreducible
-/// assert!(denom == 6);
+/// let frac = math::num_gen::fraction().denom(6).random();
+/// assert!(frac.numerator() == 1 || frac.numerator() == 5); // Only 1/6 and 5/6 are irreducible
+/// assert!(frac.denominator() == 6);
 /// ```
 ///
 /// ```
-/// let (num, denom) = math::num_gen::fraction().denom(6).min(2).max(4).random();
-/// assert!(num == 13 || num == 17 || num == 19 || num == 23);
-/// assert!(denom == 6);
+/// let frac = math::num_gen::fraction().denom(6).min(2).max(4).random();
+/// assert!(frac.numerator() == 13 || frac.numerator() == 17 || frac.numerator() == 19 ||
+/// frac.numerator() == 23);
+/// assert!(frac.denominator() == 6);
 /// ```
 ///
 /// ```
-/// let (num, denom) = math::num_gen::fraction().reducible().denom(6).random();
-/// assert!(num >= 0 && num <= 6); // All numerators are allowed now, even 0
-/// assert!(denom == 6);
+/// let frac = math::num_gen::fraction().reducible().denom(6).random();
+/// assert!(frac.numerator() >= 0 && frac.numerator() <= 6); // All numerators are allowed now, even 0
+/// assert!(frac.denominator() == 6);
 /// ```
 /// ```
-/// let (num, denom) = math::num_gen::fraction().reducible().denom(6).max(2).random();
-/// assert!(num >= 0 && num <= 12);
-/// assert!(denom == 6);
+/// let frac = math::num_gen::fraction().reducible().denom(6).max(2).random();
+/// assert!(frac.numerator() >= 0 && frac.numerator() <= 12);
+/// assert!(frac.denominator() == 6);
 /// ```
 ///
 /// The numerator can of course be set independently:
 /// ```
-/// let (num, denom) = math::num_gen::fraction().num(5).denom(6).random();
-/// assert_eq!(num, 5);
-/// assert_eq!(denom, 6);
+/// let frac = math::num_gen::fraction().num(5).denom(6).random();
+/// assert_eq!(frac.numerator(), 5);
+/// assert_eq!(frac.denominator(), 6);
 /// ```
 ///
 /// As shown above, if the numerator isn't set it will be auto adjusted depending on the
 /// denominator. The denominator is always expected to be set though. If it isn't, the method will emit a tracing::error and set the denominator to 0:
 /// ```
-/// let (num, denom) = math::num_gen::fraction().num(5).random();
-/// assert_eq!(num, 5);
-/// assert_eq!(denom, 0);
+/// let frac = math::num_gen::fraction().num(5).random();
+/// assert_eq!(frac.numerator(), 5);
+/// assert_eq!(frac.denominator(), 0);
 /// ```
 pub fn fraction() -> FractionGenerator {
     FractionGenerator {

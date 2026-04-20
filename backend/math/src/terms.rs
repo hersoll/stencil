@@ -51,7 +51,8 @@ impl Term {
     /// Example:
     /// ```rust
     /// use math::Term;
-    /// let k_term = 3 * Term::from_var('x');
+    /// use math::symbols::X;
+    /// let k_term = 3 * X;
     /// let m_term = Term::from_num(-2);
     /// let function = k_term.and(&m_term);
     /// assert_eq!(function.to_string(), String::from("3x-2"));

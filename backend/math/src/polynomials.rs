@@ -47,10 +47,11 @@ impl Polynomial {
     /// Method used to chain multiple terms during fast Polynomial creation:
     /// ```rust
     /// use math::Term;
+    /// use math::symbols::{X, Y};
     ///
-    /// let t1 = Term::from_var('x');
-    /// let t2 = Term::from_var('y');
-    /// let t3 = 2 * Term::from_var('x');
+    /// let t1 = Term::from_var(X);
+    /// let t2 = Term::from_var(Y);
+    /// let t3 = 2 * X;
     /// let p1 = t1.and(&t2).and(&t3);
     /// assert_eq!(p1.to_string(), String::from("x+y+2x"));
     /// ```

@@ -76,8 +76,6 @@ pub fn get_prefix_data(id: i32) -> Result<PrefixEntry> {
 
 /// Used in problems with dynamic text questions, for example:
 /// "Use the function {f} to solve..."
-///
-/// TODO: Find a more appropriate module for this function
 pub fn replace_placeholders(template: &str, values: &[(&str, String)]) -> String {
     let mut result = template.to_string();
     for (key, value) in values {

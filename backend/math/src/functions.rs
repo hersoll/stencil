@@ -80,9 +80,9 @@ mod linear_function_tests {
         fn integers() {
             let x = Number::Integer(-1);
             let cases = [
-                (Function::linear(1, 2), Number::Integer(1)),
-                (Function::linear(0, 2), Number::Integer(2)),
-                (Function::linear(-3, -5), Number::Integer(-2)),
+                (Function::linear(1, 2), 1),
+                (Function::linear(0, 2), 2),
+                (Function::linear(-3, -5), -2),
             ];
 
             for (f, expected) in cases {
