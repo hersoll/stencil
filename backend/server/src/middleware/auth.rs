@@ -26,11 +26,11 @@ pub async fn login(Query(params): Query<HashMap<String, String>>) -> Response {
         .map(String::as_str)
         .unwrap_or("http://localhost:5173");
 
-    return (
+    (
         StatusCode::FOUND,
         [(header::LOCATION, return_to.to_string())],
     )
-        .into_response();
+        .into_response()
 }
 
 pub async fn authenticate(req: Request<Body>, next: Next) -> Response {
@@ -63,11 +63,11 @@ pub async fn authenticate(req: Request<Body>, next: Next) -> Response {
         return unauthorized();
     };
 
-    if let Ok(user_data) = db::users::get_user_data(user).await {
-        if verify_password(pass, &user_data.password).is_ok() {
-            info!("Logged in as {}", user_data.username);
-            return next.run(req).await;
-        }
+    if let Ok(user_data) = db::users::get_user_data(user).await
+        && verify_password(pass, &user_data.password).is_ok()
+    {
+        info!("Logged in as {}", user_data.username);
+        return next.run(req).await;
     }
     unauthorized()
 }

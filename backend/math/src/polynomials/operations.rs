@@ -163,9 +163,9 @@ mod tests {
 
     use super::*;
 
-    const X: Symbol = Symbol("x");
-    const Y: Symbol = Symbol("y");
-    const A: Symbol = Symbol("a");
+    const X: &Symbol = &Symbol("x");
+    const Y: &Symbol = &Symbol("y");
+    const A: &Symbol = &Symbol("a");
 
     #[test]
     fn addition() {

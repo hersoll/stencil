@@ -17,7 +17,7 @@ use typst_writer::typst_file_builder::{DocumentOptions, SetOptions, TypstFileBui
 /// Information about what to include in the problem set
 ///
 /// Should be included in the HTTP request in the form of a Vec<ProblemSetSpec>
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct ProblemSetSpec {
     pub problems: ProblemOptions,
     /// Typst rendering options

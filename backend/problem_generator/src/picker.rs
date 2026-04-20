@@ -59,9 +59,9 @@ pub fn choose_problems(problem_pool: &mut ProblemPool) -> Result<(), ApiError> {
     );
 
     if problem_pool.problem_candidates.is_empty() {
-        return Err(ApiError::BadRequest(
+        Err(ApiError::BadRequest(
             "No valid problems in difficulty range".to_string(),
-        ));
+        ))
     } else {
         Ok(())
     }

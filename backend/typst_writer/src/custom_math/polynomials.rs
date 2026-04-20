@@ -74,15 +74,15 @@ pub fn show_polynomial_evaluation<T: Into<Number> + Clone>(
 mod tests {
     use crate::custom_math::polynomials::show_polynomial_replacements;
     use math::{Term, Variables, symbols::Symbol};
+    static A: &Symbol = &Symbol("a");
+    static X: &Symbol = &Symbol("x");
+    static Y: &Symbol = &Symbol("y");
 
     #[test]
     fn expression_evaluation_display() {
-        let a = Symbol("a");
-        let x = Symbol("x");
-        let y = Symbol("y");
-        let t1 = 2 * x;
-        let t2 = -3 * (x * x);
-        let vars = Variables::from(vec![(a, 3), (x, 3), (y, 4)]);
+        let t1 = 2 * X;
+        let t2 = -3 * (X * X);
+        let vars = Variables::from(vec![(A, 3), (X, 3), (Y, 4)]);
         let t3 = 4 * Term::from_var(vars);
         let exp = t1.and(&t2).and(&t3);
         assert_eq!(

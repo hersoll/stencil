@@ -67,8 +67,8 @@ impl Polynomial {
     }
 
     /// Returns a sorted Vec of every symbol in the polynomial
-    pub fn get_symbols(&self) -> Vec<Symbol> {
-        let mut symbols: Vec<Symbol> = Vec::new();
+    pub fn get_symbols(&self) -> Vec<&'static Symbol> {
+        let mut symbols: Vec<&'static Symbol> = Vec::new();
         self.terms.iter().for_each(|term| {
             term.variables.list.iter().for_each(|var| {
                 if !symbols.contains(&var.symbol) {
@@ -189,8 +189,9 @@ impl Display for Polynomial {
 mod tests {
     use super::*;
 
-    const X: Symbol = Symbol("x");
-    const A: Symbol = Symbol("a");
+    static X: &Symbol = &Symbol("x");
+    static Y: &Symbol = &Symbol("y");
+    static A: &Symbol = &Symbol("a");
 
     #[test]
     fn polynomial_creation() {
@@ -218,7 +219,7 @@ mod tests {
     #[test]
     fn two_term_sorting() {
         let t_x = -3 * X;
-        let t_y = 2 * Symbol("y");
+        let t_y = 2 * Y;
         let t_const = Term::from_num(4);
         let x_y_expression = t_x.and(&t_y);
         assert_eq!(x_y_expression.to_string(), "-3x+2y");
@@ -239,7 +240,7 @@ mod tests {
         let t_const = Term::from(4);
         let expression = t_x.and(&t_x_2).and(&t_const);
         assert_eq!(expression.sorted().to_string(), "2x^2-3x+4");
-        let t_y_3 = Term::from_var((Symbol("y"), 3));
+        let t_y_3 = Term::from_var((Y, 3));
         let expression: Polynomial = vec![&t_x, &t_x_2, &t_const, &t_y_3].into();
         assert_eq!(expression.sorted().to_string(), "y^3+2x^2-3x+4");
     }

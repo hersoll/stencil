@@ -132,7 +132,10 @@ mod tests {
     use crate::{PI, symbols::Symbol};
 
     use super::*;
-    const X: Symbol = Symbol("x");
+    static X: &Symbol = &Symbol("x");
+    static A: &Symbol = &Symbol("a");
+    static Y: &Symbol = &Symbol("y");
+
     #[test]
     fn addition() {
         let t1 = 3 * (X * X);
@@ -190,10 +193,8 @@ mod tests {
         // Term and term
         let mut t2 = 3 * X;
         let t3 = 2 * (X * X);
-        let a = Symbol("a");
-        let y = Symbol("y");
-        let t4 = a * a;
-        let t5 = Term::from_var(y);
+        let t4 = A * A;
+        let t5 = Term::from_var(Y);
         assert_eq!((t2.clone() * t3.clone()).to_string(), "6x^3");
         assert_eq!((t2.clone() * t4.clone()).to_string(), "3a^2 x");
         assert_eq!((t2.clone() * t5.clone()).to_string(), "3x y");

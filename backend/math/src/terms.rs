@@ -184,8 +184,8 @@ impl From<f64> for Term {
     }
 }
 
-impl From<(Symbol, i32)> for Term {
-    fn from(value: (Symbol, i32)) -> Self {
+impl From<(&'static Symbol, i32)> for Term {
+    fn from(value: (&'static Symbol, i32)) -> Self {
         Self {
             coefficient: 1.into(),
             variables: Variables::from((value.0, value.1)),
@@ -194,8 +194,8 @@ impl From<(Symbol, i32)> for Term {
     }
 }
 
-impl From<Symbol> for Term {
-    fn from(value: Symbol) -> Self {
+impl From<&'static Symbol> for Term {
+    fn from(value: &'static Symbol) -> Self {
         Self {
             coefficient: 1.into(),
             variables: Variables::from(value),
@@ -269,13 +269,13 @@ impl Zero for Term {
 mod tests {
     use super::*;
 
-    const X: Symbol = Symbol("x");
-    const A: Symbol = Symbol("a");
+    static X: Symbol = Symbol("x");
+    static A: Symbol = Symbol("a");
 
     #[test]
     fn term_creation() {
-        let t1 = 3 * Term::from_var(X);
-        let t2 = Term::from_var((X, 3));
+        let t1 = 3 * Term::from_var(&X);
+        let t2 = Term::from_var((&X, 3));
         let t3 = Term::from_num(6);
 
         assert_eq!(t1.to_string(), "3x");
@@ -285,12 +285,12 @@ mod tests {
 
     #[test]
     fn term_displays() {
-        let t_a = Term::from_var(A);
+        let t_a = Term::from_var(&A);
         let t_one = Term::from_num(1);
         let t_m_one = Term::from_num(-1);
         let t_zero = Term::from_num(0);
-        let mut t_color = -3 * Term::from_var(X);
-        let fractional_term = Term::from_num_and_vars((3, 5), X);
+        let mut t_color = -3 * Term::from_var(&X);
+        let fractional_term = Term::from_num_and_vars((3, 5), &X);
         t_color.colored = true;
         assert_eq!(format!("{t_a}"), "a");
         assert_eq!(format!("{t_a:+}"), "+a");

@@ -1,26 +1,28 @@
+use crate::symbols;
+
 use super::Symbol;
 use anyhow::{Context, Result, anyhow};
 use rand::{self, seq::IndexedRandom};
 
 struct WeightedSymbol {
-    symbol: Symbol,
+    symbol: &'static Symbol,
     weight: u8,
 }
 
 impl WeightedSymbol {
-    const fn new(symbol: Symbol, weight: u8) -> WeightedSymbol {
+    const fn new(symbol: &'static Symbol, weight: u8) -> WeightedSymbol {
         WeightedSymbol { symbol, weight }
     }
 }
 
 /// Get a random unknown - the x in 3x + 1 = 10 or (2x + 1) - (x + 2)
-pub fn get_unknown() -> Result<Symbol> {
+pub fn get_unknown() -> Result<&'static Symbol> {
     get_random(&UNKNOWNS)
 }
 
 pub fn get_unknown_with_exclusions<T: Into<Vec<&'static str>>>(
     exclusions_primitive: T,
-) -> Result<Symbol> {
+) -> Result<&'static Symbol> {
     let exclusions: Vec<&'static str> = exclusions_primitive.into();
     if exclusions.len() == UNKNOWNS.len() {
         return Err(anyhow!("Too many exclusions when getting unknown"));
@@ -33,19 +35,12 @@ pub fn get_unknown_with_exclusions<T: Into<Vec<&'static str>>>(
     Err(anyhow!("Too many exclusions when getting unknown"))
 }
 
-pub fn get_two_unknowns() -> Result<(Symbol, Symbol)> {
+pub fn get_two_unknowns() -> Result<(&'static Symbol, &'static Symbol)> {
     let mut rng = rand::rng();
-    [
-        (Symbol("a"), Symbol("b")),
-        (Symbol("j"), Symbol("k")),
-        (Symbol("m"), Symbol("n")),
-        (Symbol("p"), Symbol("q")),
-        (Symbol("t"), Symbol("u")),
-        (Symbol("x"), Symbol("y")),
-    ]
-    .choose(&mut rng)
-    .ok_or(anyhow!("The get_two_unknowns array is somehow empty?"))
-    .copied()
+    DOUBLE_UNKNOWNS
+        .choose(&mut rng)
+        .ok_or(anyhow!("The get_two_unknowns array is somehow empty?"))
+        .copied()
 }
 
 // pub fn get_three_unknowns() -> Result<(char, char, char)> {
@@ -62,16 +57,16 @@ pub fn get_two_unknowns() -> Result<(Symbol, Symbol)> {
 // }
 
 /// Get a random function name - the f in f(x).
-pub fn get_function_name() -> Result<Symbol> {
+pub fn get_function_name() -> Result<&'static Symbol> {
     get_random(&FUNCTION_NAMES)
 }
 
 /// Get a random **function** variable, i.e. the x in f(x).
-pub fn get_variable() -> Result<Symbol> {
+pub fn get_variable() -> Result<&'static Symbol> {
     get_random(&VARIABLES)
 }
 
-fn get_random(symbols: &[WeightedSymbol]) -> Result<Symbol> {
+fn get_random(symbols: &[WeightedSymbol]) -> Result<&'static Symbol> {
     let mut rng = rand::rng();
     symbols
         .choose_weighted(&mut rng, |weighted| weighted.weight)
@@ -81,31 +76,39 @@ fn get_random(symbols: &[WeightedSymbol]) -> Result<Symbol> {
 
 /// UNKNOWNS are used in equations and expressions - y is fine here
 static UNKNOWNS: [WeightedSymbol; 12] = [
-    WeightedSymbol::new(Symbol("a"), 3),
-    WeightedSymbol::new(Symbol("b"), 1),
-    WeightedSymbol::new(Symbol("c"), 1),
-    WeightedSymbol::new(Symbol("d"), 1),
-    WeightedSymbol::new(Symbol("k"), 2),
-    WeightedSymbol::new(Symbol("p"), 1),
-    WeightedSymbol::new(Symbol("q"), 1),
-    WeightedSymbol::new(Symbol("r"), 1),
-    WeightedSymbol::new(Symbol("t"), 3),
-    WeightedSymbol::new(Symbol("x"), 30),
-    WeightedSymbol::new(Symbol("y"), 2),
-    WeightedSymbol::new(Symbol("z"), 1),
+    WeightedSymbol::new(symbols::A, 3),
+    WeightedSymbol::new(symbols::B, 1),
+    WeightedSymbol::new(symbols::C, 1),
+    WeightedSymbol::new(symbols::D, 1),
+    WeightedSymbol::new(symbols::K, 2),
+    WeightedSymbol::new(symbols::P, 1),
+    WeightedSymbol::new(symbols::Q, 1),
+    WeightedSymbol::new(symbols::R, 1),
+    WeightedSymbol::new(symbols::T, 3),
+    WeightedSymbol::new(symbols::X, 30),
+    WeightedSymbol::new(symbols::Y, 2),
+    WeightedSymbol::new(symbols::Z, 1),
+];
+
+static DOUBLE_UNKNOWNS: [(&Symbol, &Symbol); 5] = [
+    (symbols::A, symbols::B),
+    (symbols::J, symbols::K),
+    (symbols::M, symbols::N),
+    (symbols::P, symbols::Q),
+    (symbols::X, symbols::Y),
 ];
 
 /// Function names are used for the form f(x) - note that y is not included here
 /// since it is uncommon in Sweden to explicitly write y(x).
 static FUNCTION_NAMES: [WeightedSymbol; 5] = [
-    WeightedSymbol::new(Symbol("f"), 20),
-    WeightedSymbol::new(Symbol("g"), 5),
-    WeightedSymbol::new(Symbol("h"), 4),
-    WeightedSymbol::new(Symbol("s"), 2),
-    WeightedSymbol::new(Symbol("v"), 5),
+    WeightedSymbol::new(symbols::F, 20),
+    WeightedSymbol::new(symbols::G, 5),
+    WeightedSymbol::new(symbols::H, 4),
+    WeightedSymbol::new(symbols::S, 2),
+    WeightedSymbol::new(symbols::V, 5),
 ];
 
 static VARIABLES: [WeightedSymbol; 2] = [
-    WeightedSymbol::new(Symbol("x"), 7),
-    WeightedSymbol::new(Symbol("t"), 1),
+    WeightedSymbol::new(symbols::X, 7),
+    WeightedSymbol::new(symbols::T, 1),
 ];

@@ -27,7 +27,7 @@ pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answ
 /// Ensure that the coefficient is the same as the denominator.
 pub fn positive_rational_answer(
     coefficient: Number,
-    unknown: Symbol,
+    unknown: &Symbol,
     constant: Number,
     numerator: Number,
     denominator: Number,

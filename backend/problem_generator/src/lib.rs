@@ -35,10 +35,10 @@ impl Difficulty {
 
     pub fn num_to_enum(difficulty_number: u8) -> Result<Difficulty> {
         match difficulty_number {
-            0 | 1 => Ok(Difficulty::Intro),
-            2 | 3 | 4 => Ok(Difficulty::Easy),
-            5 | 6 | 7 => Ok(Difficulty::Medium),
-            8 | 9 | 10 => Ok(Difficulty::Hard),
+            0..=1 => Ok(Difficulty::Intro),
+            2..=4 => Ok(Difficulty::Easy),
+            5..=7 => Ok(Difficulty::Medium),
+            8..=10 => Ok(Difficulty::Hard),
             _ => Err(anyhow!(format!(
                 "Invalid difficulty number: {difficulty_number}"
             ))),

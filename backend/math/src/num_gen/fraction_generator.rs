@@ -308,6 +308,7 @@ mod tests {
         assert_eq!(denom, 0);
     }
 
+    #[allow(clippy::manual_range_contains)]
     #[test]
     fn min_max_works() {
         let mut frac = fraction().denom(7).min(2).max(5);

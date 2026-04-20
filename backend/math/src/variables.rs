@@ -2,11 +2,13 @@ use crate::{Number, symbols::Symbol};
 use std::{cmp::Ordering, collections::HashSet, fmt::Display};
 
 /// An internal representation of variables.
+/// Since Symbols are statics that have a place in memory, we can always use a reference to that
+/// place instad!
 ///
 /// Will almost never be constructed explicitly, you probably want Term instead!
 #[derive(Clone, Debug, Copy, PartialEq, Eq)]
 pub struct Variable {
-    pub symbol: Symbol,
+    pub symbol: &'static Symbol,
     pub exponent: i32,
 }
 
@@ -23,8 +25,8 @@ impl Display for Variable {
 }
 
 /// Simple variable
-impl From<Symbol> for Variable {
-    fn from(symbol: Symbol) -> Self {
+impl From<&'static Symbol> for Variable {
+    fn from(symbol: &'static Symbol) -> Self {
         Self {
             symbol,
             exponent: 1,
@@ -33,8 +35,8 @@ impl From<Symbol> for Variable {
 }
 
 /// Includes an exponent
-impl From<(Symbol, i32)> for Variable {
-    fn from(value: (Symbol, i32)) -> Self {
+impl From<(&'static Symbol, i32)> for Variable {
+    fn from(value: (&'static Symbol, i32)) -> Self {
         Self {
             symbol: value.0,
             exponent: value.1,
@@ -42,8 +44,8 @@ impl From<(Symbol, i32)> for Variable {
     }
 }
 
-impl From<(Symbol, Number)> for Variable {
-    fn from(value: (Symbol, Number)) -> Self {
+impl From<(&'static Symbol, Number)> for Variable {
+    fn from(value: (&'static Symbol, Number)) -> Self {
         if let Number::Integer(val) = value.1 {
             Self {
                 symbol: value.0,
@@ -66,7 +68,7 @@ impl From<(Symbol, Number)> for Variable {
 /// 3ab should be printed as such, not 3ba.
 impl Ord for Variable {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.symbol.cmp(&other.symbol)
+        self.symbol.cmp(other.symbol)
     }
 }
 
@@ -101,7 +103,7 @@ impl Variables {
         Self { list: Vec::new() }
     }
 
-    pub fn from_symbol(s: Symbol) -> Self {
+    pub fn from_symbol(s: &'static Symbol) -> Self {
         Self {
             list: vec![Variable::from(s)],
         }
@@ -146,9 +148,9 @@ where
 }
 impl PartialEq for Variables {
     fn eq(&self, other: &Self) -> bool {
-        let set1: HashSet<(Symbol, i32)> =
+        let set1: HashSet<(&Symbol, i32)> =
             self.list.iter().map(|v| (v.symbol, v.exponent)).collect();
-        let set2: HashSet<(Symbol, i32)> =
+        let set2: HashSet<(&Symbol, i32)> =
             other.list.iter().map(|v| (v.symbol, v.exponent)).collect();
         set1 == set2
     }
@@ -236,17 +238,17 @@ impl PartialOrd for Variables {
 mod tests {
     use super::*;
 
-    const X: Symbol = Symbol("x");
-    const Y: Symbol = Symbol("y");
-    const Z: Symbol = Symbol("z");
-    const A: Symbol = Symbol("a");
-    const B: Symbol = Symbol("b");
+    static X: Symbol = Symbol("x");
+    static Y: Symbol = Symbol("y");
+    static Z: Symbol = Symbol("z");
+    static A: Symbol = Symbol("a");
+    static B: Symbol = Symbol("b");
 
     #[test]
     fn variable_creations() {
-        let v1 = Variable::from(X);
-        let v2 = Variable::from((X, 2));
-        let v_const = Variable::from((A, 0));
+        let v1 = Variable::from(&X);
+        let v2 = Variable::from((&X, 2));
+        let v_const = Variable::from((&A, 0));
         assert_eq!(v1.exponent, 1);
         assert_eq!(v1.symbol.0, "x");
         assert_eq!(v1.to_string(), "x");
@@ -256,10 +258,10 @@ mod tests {
 
     #[test]
     fn variable_ordering() {
-        let v1 = Variable::from(A);
-        let v2 = Variable::from(B);
-        let v3 = Variable::from(X);
-        let v4 = Variable::from(X);
+        let v1 = Variable::from(&A);
+        let v2 = Variable::from(&B);
+        let v3 = Variable::from(&X);
+        let v4 = Variable::from(&X);
         assert!(v1 < v2);
         assert!(v2 < v3);
         assert!(v1 < v3);
@@ -268,17 +270,17 @@ mod tests {
 
     #[test]
     fn variable_negation() {
-        let v1 = Variable::from((X, 2));
-        let v2 = Variable::from((A, -3));
+        let v1 = Variable::from((&X, 2));
+        let v2 = Variable::from((&A, -3));
         assert_eq!((-v1).to_string(), "x^-2");
         assert_eq!((-v2).to_string(), "a^3");
     }
 
     #[test]
     fn variables_creation() {
-        let v1 = Variables::from(X);
-        let v2 = Variables::from(vec![X, Y]);
-        let v3 = Variables::from(vec![(X, 3), (Y, 5)]);
+        let v1 = Variables::from(&X);
+        let v2 = Variables::from(vec![&X, &Y]);
+        let v3 = Variables::from(vec![(&X, 3), (&Y, 5)]);
 
         assert_eq!(v1.to_string(), "x");
         assert_eq!(v2.to_string(), "x y");
@@ -287,17 +289,17 @@ mod tests {
 
     #[test]
     fn variables_equality() {
-        let v1 = Variables::from(vec![(A, 3), (X, 5)]);
-        let v2 = Variables::from(vec![(X, 5), (A, 3)]);
+        let v1 = Variables::from(vec![(&A, 3), (&X, 5)]);
+        let v2 = Variables::from(vec![(&X, 5), (&A, 3)]);
 
         assert_eq!(v1, v2);
     }
 
     #[test]
     fn variables_ordering() {
-        let v1 = Variables::from(vec![(X, 2), (Y, 1), (Z, 3)]);
-        let v2 = Variables::from(vec![X, Y, Z]);
-        let v3 = Variables::from((X, 10));
+        let v1 = Variables::from(vec![(&X, 2), (&Y, 1), (&Z, 3)]);
+        let v2 = Variables::from(vec![&X, &Y, &Z]);
+        let v3 = Variables::from((&X, 10));
         let v4 = Variables::new();
 
         assert!(v3 > v1);
@@ -307,10 +309,10 @@ mod tests {
 
     #[test]
     fn variables_operations() {
-        let v1 = Variables::from(vec![X, Y, Z]);
-        let v2 = Variables::from(vec![X, Y]);
-        let v3 = Variables::from((X, 2));
-        let v4 = Variables::from((Y, 2));
+        let v1 = Variables::from(vec![&X, &Y, &Z]);
+        let v2 = Variables::from(vec![&X, &Y]);
+        let v3 = Variables::from((&X, 2));
+        let v4 = Variables::from((&Y, 2));
 
         assert_eq!((v1.clone() * v2.clone()).to_string(), "x^2 y^2 z");
         assert_eq!((v1.clone() * v3.clone()).to_string(), "x^3 y z");
