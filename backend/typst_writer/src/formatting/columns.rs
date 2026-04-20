@@ -1,8 +1,7 @@
 use super::{list_item, reformat_newlines};
-use crate::typst_file_builder::{DEFAULT_QUESTION_COLUMNS, SetOptions};
+use crate::typst_file_builder::SetOptions;
 use anyhow::Result;
 use std::fmt::Write;
-use tracing::debug;
 
 /// Formats the sets to columns with equal height
 pub fn sets_to_balanced_columns(
@@ -52,9 +51,11 @@ pub fn sets_to_balanced_columns(
         )?;
 
         // Add pagebreak, or paragraph spacing between sets (except after last)
-        if set_option.pagebreak_after {
-            writeln!(out, "#pagebreak()")?;
-        } else if i != sets.len().saturating_sub(1) {
+        let final_set_index = sets.len().saturating_sub(1);
+        if i == final_set_index { // Don't add anything after the final set
+        } else if set_option.pagebreak_after {
+            writeln!(out, "{}", super::page_break())?;
+        } else {
             if let Some(spacing) = par_spacing {
                 writeln!(out, "#v({}mm)", spacing)?;
             } else {
