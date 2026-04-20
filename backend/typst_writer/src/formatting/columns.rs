@@ -12,8 +12,10 @@ pub fn sets_to_balanced_columns(
     par_spacing: &Option<u8>,
 ) -> Result<String> {
     let mut out = String::with_capacity(8 * 1024);
+    let default_options = SetOptions::default();
 
     for (i, set) in sets.iter().enumerate() {
+        let set_option = set_options.get(i).unwrap_or(&default_options);
         // Write group prefix (if any)
         if let Some(prefix) = group_prefixes.get(i).and_then(|p| p.clone()) {
             writeln!(out, "{prefix}")?;
@@ -46,16 +48,13 @@ pub fn sets_to_balanced_columns(
         writeln!(
             out,
             "#context{{balanced({}, problem_set, here().position().y{}{})}}",
-            set_options
-                .get(i)
-                .map(|o| o.question_columns)
-                .unwrap_or(DEFAULT_QUESTION_COLUMNS),
-            spacing_setting,
-            heading_setting
+            set_option.question_columns, spacing_setting, heading_setting
         )?;
 
-        // Paragraph spacing between sets (except after last)
-        if i != sets.len().saturating_sub(1) {
+        // Add pagebreak, or paragraph spacing between sets (except after last)
+        if set_option.pagebreak_after {
+            writeln!(out, "#pagebreak()")?;
+        } else if i != sets.len().saturating_sub(1) {
             if let Some(spacing) = par_spacing {
                 writeln!(out, "#v({}mm)", spacing)?;
             } else {
@@ -64,10 +63,6 @@ pub fn sets_to_balanced_columns(
         }
     }
 
-    debug!(
-        "Allocated 8kb for balanced column set. Final length: {}",
-        out.len()
-    );
     Ok(out)
 }
 

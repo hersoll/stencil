@@ -34,6 +34,7 @@ export type SetOptions = {
   question_columns: number;
   heading: string;
   spacing: number | null;
+  pagebreak_after: boolean;
 };
 
 export type Difficulty = 'Intro' | 'Easy' | 'Medium' | 'Hard';
@@ -141,7 +142,12 @@ export const defaultProblemSet: ProblemSetSpec = {
     ending_difficulty: 'Hard',
     n: 20
   },
-  options: { question_columns: 2, heading: '', spacing: null }
+  options: {
+    question_columns: 2,
+    heading: '',
+    spacing: null,
+    pagebreak_after: false
+  }
 };
 
 export type DocumentOptions = {

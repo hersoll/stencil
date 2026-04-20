@@ -24,6 +24,7 @@ pub struct SetOptions {
     pub question_columns: u8,
     pub heading: String,
     pub spacing: Option<u16>,
+    pub pagebreak_after: bool,
 }
 impl Default for SetOptions {
     fn default() -> Self {
@@ -31,6 +32,7 @@ impl Default for SetOptions {
             question_columns: DEFAULT_QUESTION_COLUMNS,
             heading: String::new(),
             spacing: None,
+            pagebreak_after: false,
         }
     }
 }
