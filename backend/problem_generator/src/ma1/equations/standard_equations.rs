@@ -15,7 +15,7 @@ use typst_writer::{
 #[problem]
 fn only_addition_or_subtraction(name: String, _lang: &Language) -> Result<Problem> {
     let answer = num_gen::integer().range(0, 9).random();
-    let (constant, constant_range) = num_gen::integer().range(-answer, 9).and_random();
+    let (constant, constant_range) = num_gen::integer().range(-answer, 9).exclude(0).and_random();
     let unknown = symbols::get_unknown()?;
 
     let mut solution = SolutionWithSteps::new();
@@ -67,6 +67,7 @@ fn positive_up_to_5(name: String, _lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 5).and_random();
     let (constant, constant_range) = num_gen::integer()
         .range((-coefficient * answer).max(math::Number::Integer(-5)), 5)
+        .exclude(0)
         .and_random();
     let term = Term::from_num_and_vars(coefficient, unknown);
 
@@ -103,6 +104,7 @@ fn positive_answers(name: String, _lang: &Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 9).and_random();
     let (constant, constant_range) = num_gen::integer()
         .range((-coefficient * answer).max(Number::Integer(-10)), 10)
+        .exclude(0)
         .and_random();
 
     let term = Term::from_num_and_vars(coefficient, unknown);
@@ -143,6 +145,7 @@ fn positive_rational(name: String, _lang: &Language) -> Result<Problem> {
     let coefficient = denominator;
     let (constant, constant_range) = num_gen::integer()
         .range((-numerator).max(Number::Integer(-10)), 10)
+        .exclude(0)
         .and_random();
 
     let solution = solutions::linear_equations::positive_rational_answer(
