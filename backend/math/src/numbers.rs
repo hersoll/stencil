@@ -56,6 +56,14 @@ impl From<(f64, &'static str)> for Number {
 }
 
 impl Number {
+    pub fn to_decimal(self) -> Number {
+        todo!();
+    }
+
+    pub fn to_fraction(self) -> Number {
+        todo!();
+    }
+
     /// Calling value() is useful even for integers, since it lets us do things like
     /// num.value().pow(-2), which will be a float.
     pub fn value(&self) -> f64 {
