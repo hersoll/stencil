@@ -11,4 +11,5 @@ fn integer_increase_to_factor(name: String, lang: &Language) -> Result<Problem> 
     let increase = increase_range.random();
     let total_percentage = 100 + increase;
     let factor = total_percentage / 100;
+    todo!();
 }
