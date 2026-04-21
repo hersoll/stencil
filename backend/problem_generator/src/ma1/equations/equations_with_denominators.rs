@@ -119,7 +119,7 @@ fn unit_variable_and_one_denom_integers_with_negatives(
     let denominator_range = num_gen::integer().range(3, 5);
     let denominator = denominator_range.random();
     // n is a multiple, will show up in both the question and answer
-    let n = num_gen::integer().range(-3, 3).random();
+    let n = num_gen::integer().range(-3, 3).exclude(0).random();
     let rhs = (1 - denominator) * n;
     let final_answer = denominator * n;
     let unknown = 'x';
