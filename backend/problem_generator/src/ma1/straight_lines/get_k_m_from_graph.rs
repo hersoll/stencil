@@ -377,6 +377,7 @@ fn draw_own_fraction(name: String, lang: &Language) -> Result<Problem> {
     let m = num_gen::integer().range(-2, 2).exclude(0).random();
     let num = k.numerator();
     let denom = k.denominator();
+    let function = (k * X).and(&Term::from_num(m));
 
     let x_min = -1;
     let x_max = denom + 1;
@@ -402,7 +403,7 @@ fn draw_own_fraction(name: String, lang: &Language) -> Result<Problem> {
     let problem_data = get_problem_data(&name)?;
     let question_text = replace_placeholders(
         problem_data.get_question(lang),
-        &[("fn", format!("y = ({num} x)/{denom} {m:+}"))],
+        &[("fn", format!("y = {function}"))],
     );
     let question = format!("{question_text}\n{question_graph}");
     let solution = format!("{}\n{solution_graph}", problem_data.get_solution(lang));
