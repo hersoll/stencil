@@ -12,7 +12,7 @@ use num_traits::{Signed, Zero};
 use std::fmt::Display;
 
 // This limits all numbers to 3 decimals.
-const DECIMAL_FACTOR: i32 = 1_000;
+pub const DECIMAL_FACTOR: i32 = 1_000;
 pub const PI: Number = Number::Irrational(std::f64::consts::PI, "pi");
 pub const E: Number = Number::Irrational(std::f64::consts::E, "e");
 pub const ZERO: Number = Number::Integer(0);
@@ -64,7 +64,7 @@ impl Number {
     /// Note that all floats will be rounded to the amount of decimals provided in
     /// `Number::DECIMAL_FACTOR`
     pub fn decimal_from_f64(num: f64) -> Number {
-        Self::Decimal((num * DECIMAL_FACTOR as f64).round() as i32)
+        Self::Decimal(float_to_int(num))
     }
     pub fn to_decimal(self) -> Number {
         use Number::*;
@@ -176,6 +176,18 @@ impl Number {
             _ => format!("{self}"),
         }
     }
+}
+
+/// Returns the i32 that's used for `Number::Decimal` representation.
+///
+/// # Examples
+/// ```
+/// use math::float_to_int;
+/// let float = 3.14;
+/// assert_eq!(float_to_int(float), 3_140);
+/// ```
+pub fn float_to_int(float: f64) -> i32 {
+    (float * DECIMAL_FACTOR as f64).round() as i32
 }
 
 fn strip_num(s: String) -> String {
