@@ -13,6 +13,14 @@ pub struct DecimalGenerator {
     decimal_places: u8,
 }
 
+// TODO:
+// - Rewrite the examples
+// - Do we WANT to force with_places? How about when doing .numbers()?
+// - Rename numbers() to something better. from_...()?
+// - Do I want to change DECIMAL_FACTOR...? Sometimes longer decimals are wanted. And now we can
+// control decimal places during generation. May need rounding function in that case, since answers
+// will likely max out at 3 decimals a LOT of the time.
+
 /// Generate a random decimal number depending on the parameters given in the builder.
 ///
 /// # Examples
