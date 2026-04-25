@@ -23,7 +23,6 @@ pub const ZERO: Number = Number::Integer(0);
 
 /// The `Number` enum is used to properly display numbers in Typst while
 /// still being able to do calculations.
-/// Note that decimal numbers are limited to display (and use) 3 decimals.
 #[derive(Debug, Clone, Copy)]
 pub enum Number {
     Integer(i32),
@@ -42,12 +41,8 @@ pub enum Number {
     },
 }
 
-/// These implementations lets us do 1.into() or (1, 3).into(),
-/// but calling the variant, like `Number::Fraction(1, 3)`, is preferred.
-///
-/// This does improve ergonomics like `Term::from_num_and_vars(3.5, X)`;
-///
-/// Note that the signature is different for `Number::Decimal(1300)` and `1.3.into().`
+/// These implementations let us do `1.into()` or `(1, 3).into()`.
+/// Improves ergonomics like `Term::from_num_and_vars(3.5, X)`;
 impl From<i32> for Number {
     fn from(value: i32) -> Self {
         Self::Integer(value)

@@ -19,6 +19,38 @@ pub fn to_change_factor(number: Number) -> Number {
     (total_percentage / 100).to_decimal()
 }
 
+/// Converts a change factor to the change it represents, in **number of percentages** (not decimal form!)
+///
+/// # Examples:
+/// ```rust
+/// use math::Number;
+/// use math::utils::change_factor_to_percentage;
+/// let change_factor = Number::decimal_from_f64(1.1, 1);
+/// let increase = Number::Integer(10);
+/// assert_eq!(change_factor_to_percentage(change_factor), increase);
+/// let change_factor = Number::decimal_from_f64(0.966, 3);
+/// let decrease = Number::decimal_from_f64(-3.4, 1);
+/// assert_eq!(change_factor_to_percentage(change_factor), decrease);
+/// let change_factor = Number::decimal_from_f64(1.012345, 6);
+/// let increase = Number::decimal_from_f64(1.2345, 4);
+/// assert_eq!(change_factor_to_percentage(change_factor), increase);
+/// ```
+pub fn change_factor_to_percentage(number: Number) -> Number {
+    if let Number::Decimal { integer, decimals } = number {
+        if decimals <= 2 {
+            Number::Integer(integer * 100 / 10i32.pow(decimals as u32) - 100)
+        } else {
+            Number::Decimal {
+                integer: integer - 10i32.pow(decimals as u32),
+                decimals: decimals - 2,
+            }
+        }
+    } else {
+        tracing::error!("Did not provide a change factor to change_factor_to_percentage()");
+        number
+    }
+}
+
 #[cfg(test)]
 mod change_factor_tests {
     use super::*;
