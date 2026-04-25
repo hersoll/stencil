@@ -25,20 +25,20 @@ pub const ZERO: Number = Number::Integer(0);
 /// still being able to do calculations.
 #[derive(Debug, Clone, Copy)]
 pub enum Number {
+    /// Integer values. Nuff said.
     Integer(i32),
-    /// (123, 1) = 12,3, (1234, 1) = 123,4, (123, 3) = 0,123
-    Decimal {
-        integer: i32,
-        decimals: u8,
-    },
-    Fraction {
-        numerator: i32,
-        denominator: i32,
-    },
-    Irrational {
-        value: f64,
-        symbol: &'static str,
-    },
+    /// Decimals are represented internally with an `i32` for more exact calculations, and then
+    /// keeping track of how many decimals the number should have.
+    ///
+    /// Examples of the (integer, decimals) combos are:
+    /// `(123, 1)` = 12.3, `(1234, 1)` = 123.4, `(123, 3)` = 0.123
+    Decimal { integer: i32, decimals: u8 },
+    /// A fraction per definition has integers in the numerator and the denominator
+    Fraction { numerator: i32, denominator: i32 },
+    /// Irrational numbers aren't usually represented with pure numbers, but some kind of symbol.
+    /// Therefore, the `Irrational` variant holds an `f64` as the approximate value and a `&str` for
+    /// the in-document representation (like `"pi"` or `"sqrt(2)"`)
+    Irrational { value: f64, symbol: &'static str },
 }
 
 /// These implementations let us do `1.into()` or `(1, 3).into()`.
@@ -73,7 +73,7 @@ impl From<(f64, &'static str)> for Number {
 }
 
 impl Number {
-    /// Creates a `Number::Decimal` from the given float, rounded to the provided number of decimal
+    /// Instantiates a `Number::Decimal` from the given float, rounded to the provided number of decimal
     /// places.
     pub fn decimal_from_f64(num: f64, places: u8) -> Number {
         Self::Decimal {
@@ -81,6 +81,11 @@ impl Number {
             decimals: places,
         }
     }
+
+    /// Converts any `Number` into a `Number::Decimal`.
+    ///
+    /// Converting a `Fraction` or `Irrational` will give the `Decimal` a maximum of 6 decimals, use
+    /// `.round()` if you want less.
     pub fn to_decimal(self) -> Number {
         use Number::*;
         match self {
@@ -94,9 +99,9 @@ impl Number {
                 denominator: denom,
             } => {
                 let approximation = num as f64 / denom as f64;
-                Number::decimal_from_f64(approximation, 3)
+                Number::decimal_from_f64(approximation, 6)
             }
-            Irrational { value: val, .. } => Number::decimal_from_f64(val, 3),
+            Irrational { value: val, .. } => Number::decimal_from_f64(val, 6),
         }
     }
 
@@ -127,17 +132,13 @@ impl Number {
         }
     }
 
-    // Target: 3 decimals
-    // Currently: 12345, 5 decimals (0.12345)
-    // Need to: Divide by 100
-
     /// Shifts the `Number` to make it have the given number of decimals.
-    /// Useful for aligning different `Number::Decimal`s which each other.
+    /// Useful for aligning different `Number::Decimal`s which each other or simply rounding long numbers.
     ///
-    /// Note that this also can extend the number of decimals:
+    /// Note that this also can extend the number of decimals if needed (but not in the PDF):
     ///   0.123                   0.12
     /// `(123, 3).round(2)` --> `(12, 2)`
-    ///   12.3                    12.30
+    ///   12.3                    12.30 (12.3 in the document)
     /// `(123, 1).round(2)` --> `(1230, 2)`
     ///
     pub fn round(&self, new_decimal_places: u8) -> Self {
@@ -177,7 +178,9 @@ impl Number {
         }
     }
 
-    /// If the Number is a Fraction, simplifies it (to an Integer if possible)
+    /// If the `Number` is a `Fraction`, simplifies it (to an `Integer` if possible)
+    ///
+    /// If the `Number` is not a `Fraction`, nothing will happen to it.
     pub fn simplify(self) -> Number {
         match self {
             Number::Fraction {
@@ -198,6 +201,8 @@ impl Number {
         }
     }
 
+    /// Returns the absolute value of any `Number`.
+    /// Works for all enum variants (note that `Irrational` symbols aren't touched)
     pub fn abs(&self) -> Number {
         use Number::*;
         match self {
@@ -240,6 +245,10 @@ impl Number {
         }
     }
 
+    /// Deconstructs an `Integer` into the i32 contained within.
+    /// Used when `if let ...` is too unergonomic.
+    ///
+    /// Only use when you KNOW you have a `Number::Integer`
     pub fn as_i32(self) -> i32 {
         match self {
             Number::Integer(val) => val,
@@ -265,23 +274,6 @@ impl Number {
         }
     }
 
-    /// It is quite common to want access to the "divisor" of `Decimal` numbers, for example when it
-    /// needs to be converted from its internal integer representation to its actual value.
-    ///
-    /// For example, when we have `integer: 1234, decimals: 3`, the divisor that is used is 1000,
-    /// which results in the number 1.234.
-    ///
-    /// This function essentially returns `10.pow(decimals)`. (If the `Number` is a non-`Decimal`,
-    /// returns 1 and emits a `warn!`)
-    pub fn decimal_divisor(&self) -> i32 {
-        if let Number::Decimal { decimals, .. } = self {
-            10i32.pow(u32::from(*decimals))
-        } else {
-            tracing::warn!("Called decimal_divisor() with a non-Decimal!");
-            1
-        }
-    }
-
     /// Inside graph strings we need actual numbers, decimals can't be output
     /// as num("1.2"), like they normally do in Display. This function accounts for that.
     ///
@@ -295,7 +287,14 @@ impl Number {
     }
 }
 
-fn get_decimal_divisor(places: u8) -> i32 {
+/// It is quite common to want access to the "divisor" of `Decimal` numbers, for example when it
+/// needs to be converted from its internal integer representation to its actual value.
+///
+/// For example, when we have `integer: 1234, decimals: 3`, the divisor that is used is 1000,
+/// which results in the number 1.234.
+///
+/// This function essentially returns `10.pow(places)`
+pub fn get_decimal_divisor(places: u8) -> i32 {
     10i32.pow(places as u32)
 }
 

@@ -1,3 +1,5 @@
+use crate::get_decimal_divisor;
+
 use super::Number;
 
 impl Number {
@@ -118,12 +120,12 @@ impl std::ops::Add<&Number> for Number {
             },
             // Decimal + Integer: Make the integer larger to align with the decimal_places
             (Decimal { integer, decimals }, Integer(int)) => Decimal {
-                integer: integer + int * self.decimal_divisor(),
+                integer: integer + int * get_decimal_divisor(decimals),
                 decimals,
             },
             // Integer + Decimals: same as above
             (Integer(int), Decimal { integer, decimals }) => Decimal {
-                integer: *integer + int * rhs.decimal_divisor(),
+                integer: *integer + int * get_decimal_divisor(*decimals),
                 decimals: *decimals,
             },
             // Two decimals: Make them have the same number of decimals, then add
@@ -238,12 +240,12 @@ impl std::ops::Sub<&Number> for Number {
             },
             // Decimal - Integer: Make the integer larger to align with the decimal_places
             (Decimal { integer, decimals }, Integer(int)) => Decimal {
-                integer: integer - int * self.decimal_divisor(),
+                integer: integer - int * get_decimal_divisor(decimals),
                 decimals,
             },
             // Integer - Decimals: same as above
             (Integer(int), Decimal { integer, decimals }) => Decimal {
-                integer: int * rhs.decimal_divisor() - *integer,
+                integer: int * get_decimal_divisor(*decimals) - *integer,
                 decimals: *decimals,
             },
             // Two decimals: Make them have the same number of decimals, then subtract
