@@ -8,13 +8,12 @@ use crate::Number;
 /// use math::Number;
 /// use math::utils::to_change_factor;
 /// let increase = Number::Integer(10);
-/// let change_factor = Number::decimal_from_f64(1.1);
+/// let change_factor = Number::decimal_from_f64(1.1, 1);
 /// assert_eq!(to_change_factor(increase), change_factor);
 /// let decrease = Number::Integer(-13);
-/// let change_factor = Number::decimal_from_f64(0.87);
+/// let change_factor = Number::decimal_from_f64(0.87, 2);
 /// assert_eq!(to_change_factor(decrease), change_factor);
 /// ```
-/// 10 to 1,10 and -13 to 0,87.
 pub fn to_change_factor(number: Number) -> Number {
     let total_percentage = 100 + number;
     (total_percentage / 100).to_decimal()

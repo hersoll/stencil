@@ -2,14 +2,15 @@ use super::Number;
 
 impl Number {
     pub fn pow(&self, exponent: Number) -> Number {
+        use Number::*;
         match (self, exponent) {
             // Integer ^ Integer
-            (Number::Integer(base), Number::Integer(exp)) => {
+            (Integer(base), Integer(exp)) => {
                 if exp >= 0 {
-                    Number::Integer(base.pow(exp as u32))
+                    Integer(base.pow(exp as u32))
                 } else {
                     // e.g. 2^-3 = 1/8
-                    Number::Fraction {
+                    Fraction {
                         numerator: 1,
                         denominator: base.pow((-exp) as u32),
                     }
@@ -18,22 +19,22 @@ impl Number {
 
             // Fraction ^ Integer
             (
-                Number::Fraction {
+                Fraction {
                     numerator,
                     denominator,
                 },
-                Number::Integer(exp),
+                Integer(exp),
             ) => {
                 if exp >= 0 {
                     let e = exp as u32;
-                    Number::Fraction {
+                    Fraction {
                         numerator: numerator.pow(e),
                         denominator: denominator.pow(e),
                     }
                 } else {
                     // (a/b)^-n = b^n / a^n
                     let e = (-exp) as u32;
-                    Number::Fraction {
+                    Fraction {
                         numerator: denominator.pow(e),
                         denominator: numerator.pow(e),
                     }
@@ -51,9 +52,23 @@ impl std::ops::Neg for Number {
     fn neg(self) -> Self::Output {
         match self {
             Self::Integer(val) => Self::Integer(-val),
-            Self::Decimal(val) => Self::Decimal(-val),
-            Self::Fraction(num, denom) => Self::Fraction(-num, denom),
-            Self::Irrational(val, s) => Self::Irrational(-val, s),
+            Self::Decimal { integer, decimals } => Self::Decimal {
+                integer: -integer,
+                decimals,
+            },
+            Self::Fraction {
+                numerator,
+                denominator,
+            } => Self::Fraction {
+                numerator: -numerator,
+                denominator,
+            },
+            // Yes, we keep the same symbol even though it's negated.
+            // This is merely intended for getting a numerical value in calculations
+            Self::Irrational { value, symbol } => Self::Irrational {
+                value: -value,
+                symbol,
+            },
         }
     }
 }
@@ -61,17 +76,82 @@ impl std::ops::Neg for Number {
 impl std::ops::Add<&Number> for Number {
     type Output = Number;
     fn add(self, rhs: &Number) -> Self::Output {
+        use Number::*;
         match (self, rhs) {
-            (Number::Integer(l), Number::Integer(r)) => Number::Integer(l + r),
-            (Number::Integer(l), Number::Fraction(num, denom)) => {
-                Number::Fraction(num + l * denom, *denom)
+            // Two integers: just add them
+            (Integer(l), Integer(r)) => Integer(l + r),
+            // Integer + Fraction: Turn the integer into (int*denom)/denom, then add
+            (
+                Integer(l),
+                Fraction {
+                    numerator,
+                    denominator,
+                },
+            ) => Fraction {
+                numerator: numerator + l * denominator,
+                denominator: *denominator,
+            },
+            // Fraction + Integer: Same as above
+            (
+                Fraction {
+                    numerator,
+                    denominator,
+                },
+                Integer(r),
+            ) => Fraction {
+                numerator: numerator + r * denominator,
+                denominator,
+            },
+            // Two fractions: Make a common denominator by multiplying them
+            (
+                Fraction {
+                    numerator: l_num,
+                    denominator: l_denom,
+                },
+                Fraction {
+                    numerator: r_num,
+                    denominator: r_denom,
+                },
+            ) => Fraction {
+                numerator: l_num * r_denom + r_num * l_denom,
+                denominator: l_denom * r_denom,
+            },
+            // Decimal + Integer: Make the integer larger to align with the decimal_places
+            (Decimal { integer, decimals }, Integer(int)) => Decimal {
+                integer: integer + int * 10i32.pow(decimals as u32),
+                decimals,
+            },
+            // Integer + Decimals: same as above
+            (Integer(int), Decimal { integer, decimals }) => Decimal {
+                integer: *integer + int * 10i32.pow(*decimals as u32),
+                decimals: *decimals,
+            },
+            // Two decimals: Make them have the same number of decimals, then add
+            (
+                Decimal {
+                    decimals: l_decimals,
+                    ..
+                },
+                Decimal {
+                    decimals: r_decimals,
+                    ..
+                },
+            ) => {
+                let number_of_decimals = l_decimals.max(*r_decimals);
+                let (l_int, r_int) = match (
+                    self.round(number_of_decimals),
+                    rhs.round(number_of_decimals),
+                ) {
+                    (Decimal { integer: l, .. }, Decimal { integer: r, .. }) => (l, r),
+                    _ => unreachable!(),
+                };
+                let sum = l_int + r_int;
+                Decimal {
+                    integer: sum,
+                    decimals: number_of_decimals,
+                }
             }
-            (Number::Fraction(num, denom), Number::Integer(r)) => {
-                Number::Fraction(num + r * denom, denom)
-            }
-            (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
-                Number::Fraction(l_num * r_denom + r_num * l_denom, l_denom * r_denom)
-            }
+
             (l_val, r_val) => Number::from(l_val.value() + r_val.value()),
         }
     }
@@ -114,16 +194,80 @@ impl std::ops::AddAssign for Number {
 impl std::ops::Sub<&Number> for Number {
     type Output = Number;
     fn sub(self, rhs: &Number) -> Self::Output {
+        use Number::*;
         match (self, rhs) {
-            (Number::Integer(l), Number::Integer(r)) => Number::Integer(l - r),
-            (Number::Integer(l), Number::Fraction(num, denom)) => {
-                Number::Fraction(l * denom - num, *denom)
-            }
-            (Number::Fraction(num, denom), Number::Integer(r)) => {
-                Number::Fraction(num - r * denom, denom)
-            }
-            (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
-                Number::Fraction(l_num * r_denom - r_num * l_denom, l_denom * r_denom)
+            // Two integers: just subtract
+            (Integer(l), Integer(r)) => Integer(l - r),
+            // Integer - Fraction: Turn the integer into (int*denom)/denom, then subtract
+            (
+                Integer(l),
+                Fraction {
+                    numerator,
+                    denominator,
+                },
+            ) => Fraction {
+                numerator: l * denominator - numerator,
+                denominator: *denominator,
+            },
+            // Fraction - Integer: same as above
+            (
+                Fraction {
+                    numerator,
+                    denominator,
+                },
+                Integer(r),
+            ) => Fraction {
+                numerator: numerator - r * denominator,
+                denominator,
+            },
+            // Two fractions: Make a common denominator by multiplying them
+            (
+                Fraction {
+                    numerator: l_num,
+                    denominator: l_denom,
+                },
+                Fraction {
+                    numerator: r_num,
+                    denominator: r_denom,
+                },
+            ) => Fraction {
+                numerator: l_num * r_denom - r_num * l_denom,
+                denominator: l_denom * r_denom,
+            },
+            // Decimal - Integer: Make the integer larger to align with the decimal_places
+            (Decimal { integer, decimals }, Integer(int)) => Decimal {
+                integer: integer - int * 10i32.pow(decimals as u32),
+                decimals,
+            },
+            // Integer - Decimals: same as above
+            (Integer(int), Decimal { integer, decimals }) => Decimal {
+                integer: int * 10i32.pow(*decimals as u32) - *integer,
+                decimals: *decimals,
+            },
+            // Two decimals: Make them have the same number of decimals, then subtract
+            (
+                Decimal {
+                    decimals: l_decimals,
+                    ..
+                },
+                Decimal {
+                    decimals: r_decimals,
+                    ..
+                },
+            ) => {
+                let number_of_decimals = l_decimals.max(*r_decimals);
+                let (l_int, r_int) = match (
+                    self.round(number_of_decimals),
+                    rhs.round(number_of_decimals),
+                ) {
+                    (Decimal { integer: l, .. }, Decimal { integer: r, .. }) => (l, r),
+                    _ => unreachable!(),
+                };
+                let diff = l_int - r_int;
+                Decimal {
+                    integer: diff,
+                    decimals: number_of_decimals,
+                }
             }
             (l_val, r_val) => Number::from(l_val.value() - r_val.value()),
         }
@@ -167,13 +311,71 @@ impl std::ops::SubAssign for Number {
 impl std::ops::Mul<&Number> for Number {
     type Output = Number;
     fn mul(self, rhs: &Number) -> Self::Output {
+        use Number::*;
         match (self, rhs) {
-            (Number::Integer(l), Number::Integer(r)) => Number::Integer(l * r),
-            (Number::Integer(l), Number::Fraction(num, denom)) => Number::Fraction(l * num, *denom),
-            (Number::Fraction(num, denom), Number::Integer(r)) => Number::Fraction(num * r, denom),
-            (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
-                Number::Fraction(l_num * r_num, l_denom * r_denom)
-            }
+            // Two integers: just multiply
+            (Integer(l), Integer(r)) => Integer(l * r),
+            // Integer * Fraction: multiply numerators
+            (
+                Integer(l),
+                Fraction {
+                    numerator,
+                    denominator,
+                },
+            ) => Fraction {
+                numerator: l * numerator,
+                denominator: *denominator,
+            },
+            // Fraction * Integer: multiply numerators
+            (
+                Fraction {
+                    numerator,
+                    denominator,
+                },
+                Integer(r),
+            ) => Fraction {
+                numerator: numerator * r,
+                denominator,
+            },
+            // Fraction * Fraction: multiply like a king
+            (
+                Fraction {
+                    numerator: l_num,
+                    denominator: l_denom,
+                },
+                Fraction {
+                    numerator: r_num,
+                    denominator: r_denom,
+                },
+            ) => Fraction {
+                numerator: l_num * r_num,
+                denominator: l_denom * r_denom,
+            },
+            // Integer * Decimal: just multiply the values
+            (Integer(int), Decimal { integer, decimals }) => Decimal {
+                integer: int * integer,
+                decimals: *decimals,
+            },
+
+            // Two decimals: 23.34 * 45.321 --> Multiply them as integers (2334 * 45321), answer
+            // will have 2 + 3 = 5 decimals
+            (Decimal { integer, decimals }, Integer(int)) => Decimal {
+                integer: int * integer,
+                decimals,
+            },
+            (
+                Decimal {
+                    integer: l_int,
+                    decimals: l_decimals,
+                },
+                Decimal {
+                    integer: r_int,
+                    decimals: r_decimals,
+                },
+            ) => Decimal {
+                integer: l_int * r_int,
+                decimals: l_decimals + r_decimals,
+            },
             (l_val, r_val) => Number::from(l_val.value() * r_val.value()),
         }
     }
@@ -237,12 +439,48 @@ impl std::ops::Div<Number> for Number {
     type Output = Number;
     fn div(self, rhs: Number) -> Self::Output {
         match (self, rhs) {
-            (Number::Integer(l), Number::Integer(r)) => Number::Fraction(l, r).simplify(),
-            (Number::Integer(l), Number::Fraction(num, denom)) => Number::Fraction(l * denom, num),
-            (Number::Fraction(num, denom), Number::Integer(r)) => Number::Fraction(num, denom * r),
-            (Number::Fraction(l_num, l_denom), Number::Fraction(r_num, r_denom)) => {
-                Number::Fraction(l_num * r_denom, l_denom * r_num)
+            // Integer / Integer => Just make a fraction
+            (Number::Integer(numerator), Number::Integer(denominator)) => Number::Fraction {
+                numerator,
+                denominator,
             }
+            .simplify(),
+            // Integer / Fraction => Invert the fraction, multiply
+            (
+                Number::Integer(l),
+                Number::Fraction {
+                    numerator,
+                    denominator,
+                },
+            ) => Number::Fraction {
+                numerator: l * denominator,
+                denominator: numerator,
+            },
+            // Fraction / Integer => Extend the denominator by integer
+            (
+                Number::Fraction {
+                    numerator,
+                    denominator,
+                },
+                Number::Integer(r),
+            ) => Number::Fraction {
+                numerator,
+                denominator: denominator * r,
+            },
+            // Fraction / Fraction => Invert right fraction, multiply
+            (
+                Number::Fraction {
+                    numerator: l_num,
+                    denominator: l_denom,
+                },
+                Number::Fraction {
+                    numerator: r_num,
+                    denominator: r_denom,
+                },
+            ) => Number::Fraction {
+                numerator: l_num * r_denom,
+                denominator: l_denom * r_num,
+            },
             (l_val, r_val) => Number::from(l_val.value() / r_val.value()),
         }
     }
@@ -350,13 +588,32 @@ mod tests {
     }
 
     #[test]
+    fn multiply_will_round() {
+        let two_point_five = Number::decimal_from_f64(2.5, 1);
+        let two_point_fifty_four = Number::decimal_from_f64(2.54, 2);
+        let two = Number::Integer(2);
+
+        assert_eq!((two * two_point_five).to_string(), "5");
+        assert_eq!((two_point_five * two).to_string(), "5");
+        // Note: 2.5 * 2.54 = 6.350. Does it print 6.35?
+        assert_eq!(
+            (two_point_five * two_point_fifty_four).to_string(),
+            "num(\"6.35\")"
+        );
+        assert_eq!((two * two_point_fifty_four).to_string(), "num(\"5.08\")");
+    }
+
+    #[test]
     fn division() {
-        let integer: Number = 3.into();
-        let decimal: Number = 1.2.into();
-        let fraction: Number = (3, 4).into();
+        let integer = Number::Integer(3);
+        let decimal = Number::decimal_from_f64(1.2, 1);
+        let decimal_2 = Number::decimal_from_f64(0.6, 1);
+        let fraction = Number::from((3, 4));
 
         assert_eq!((integer / integer).to_string(), "1");
         assert_eq!((integer / decimal).to_string(), "num(\"2.5\")");
+        assert_eq!((decimal / decimal_2).to_string(), "2");
+        assert_eq!((decimal_2 / decimal).to_string(), "num(\"0.5\")");
         assert_eq!((integer / fraction).simplify().to_string(), "4");
         assert_eq!((decimal / fraction).to_string(), "num(\"1.6\")");
         assert_eq!((PI / integer).to_string(), "num(\"1.047\")");

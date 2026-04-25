@@ -8,7 +8,7 @@ pub fn pq_long(p: impl Into<Number>, q: impl Into<Number>, unknown: char) -> Str
     let symmetry = -p / 2;
     let distance = (p / 2)
         .pow(Number::Integer(2) - q)
-        .pow(Number::Fraction(1, 2));
+        .pow(Number::from((1, 2)));
     let x_1 = symmetry - distance;
     let x_2 = symmetry + distance;
     format!(
@@ -33,7 +33,7 @@ pub fn pq_short(p: impl Into<Number>, q: impl Into<Number>, unknown: char) -> St
     let symmetry = -p / 2;
     let distance = (p / 2)
         .pow(Number::Integer(2) - q)
-        .pow(Number::Fraction(1, 2));
+        .pow(Number::from((1, 2)));
     let x_1 = symmetry - distance;
     let x_2 = symmetry + distance;
     format!(

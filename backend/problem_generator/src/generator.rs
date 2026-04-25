@@ -230,9 +230,9 @@ fn extract_identifiers(identifiers: &[Number]) -> Vec<i32> {
         .iter()
         .map(|num| match num {
             Number::Integer(i) => *i,
-            Number::Decimal(d) => *d,
-            Number::Fraction(n, _) => *n,
-            Number::Irrational(_, _) => 0i32,
+            Number::Decimal { integer, .. } => *integer,
+            Number::Fraction { numerator, .. } => *numerator,
+            Number::Irrational { .. } => 0i32,
         })
         .collect()
 }

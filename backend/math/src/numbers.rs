@@ -136,6 +136,15 @@ impl Number {
     // Currently: 12345, 5 decimals (0.12345)
     // Need to: Divide by 100
 
+    /// Shifts the `Number` to make it have the given number of decimals.
+    /// Useful for aligning different `Number::Decimal`s which each other.
+    ///
+    /// Note that this also can extend the number of decimals:
+    ///   0.123                   0.12
+    /// `(123, 3).round(2)` --> `(12, 2)`
+    ///   12.3                    12.30
+    /// `(123, 1).round(2)` --> `(1230, 2)`
+    ///
     pub fn round(&self, new_decimal_places: u8) -> Self {
         use Number::*;
         match self {
@@ -246,6 +255,19 @@ impl Number {
         }
     }
 
+    pub fn is_integer(&self) -> bool {
+        use Number::*;
+        match self {
+            Integer(_) => true,
+            Decimal { integer, decimals } => integer % 10i32.pow(*decimals as u32) == 0,
+            Fraction {
+                numerator,
+                denominator,
+            } => numerator % denominator == 0,
+            Irrational { .. } => false,
+        }
+    }
+
     /// Inside graph strings we need actual numbers, decimals can't be output
     /// as num("1.2"), like they normally do in Display. This function accounts for that.
     ///
@@ -296,8 +318,8 @@ impl Display for Number {
             Number::Integer(int) => write!(f, "{int}"),
             Number::Decimal { integer, decimals } => {
                 // The decimal value is actually an integer
-                if *decimals == 0 {
-                    write!(f, "{}", *integer)
+                if self.is_integer() {
+                    write!(f, "{}", *integer / 10i32.pow(*decimals as u32))
                 } else {
                     // num() is a formatting library which outputs the decimals with commas
                     write!(f, "num(\"{}\")", self.value())
@@ -329,6 +351,18 @@ impl Zero for Number {
 impl PartialEq<Self> for Number {
     fn eq(&self, other: &Self) -> bool {
         self.value() == other.value()
+    }
+}
+
+impl PartialEq<f64> for Number {
+    fn eq(&self, other: &f64) -> bool {
+        self.value() == *other
+    }
+}
+
+impl PartialEq<Number> for f64 {
+    fn eq(&self, other: &Number) -> bool {
+        other.value() == *self
     }
 }
 
@@ -375,6 +409,12 @@ impl Ord for Number {
 impl PartialOrd for Number {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+impl PartialOrd<f64> for Number {
+    fn partial_cmp(&self, other: &f64) -> Option<std::cmp::Ordering> {
+        self.value().partial_cmp(other)
     }
 }
 

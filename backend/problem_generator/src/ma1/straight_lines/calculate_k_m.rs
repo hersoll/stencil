@@ -473,14 +473,14 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
         denom = k.denominator(),
         mult = k * x_start,
         m_mult = -k * x_start,
-        expanded_y = Number::Fraction(
-            (y_start * k.denominator()).as_i32(),
-            k.denominator().as_i32()
-        ),
-        subtracted_fraction = Number::Fraction(
-            (y_start * k.denominator() - (k.numerator() * x_start)).as_i32(),
-            k.denominator().as_i32()
-        ),
+        expanded_y = Number::Fraction {
+            numerator: (y_start * k.denominator()).as_i32(),
+            denominator: k.denominator().as_i32()
+        },
+        subtracted_fraction = Number::Fraction {
+            numerator: (y_start * k.denominator() - (k.numerator() * x_start)).as_i32(),
+            denominator: k.denominator().as_i32()
+        },
     ))
     .as_str();
     Ok(Problem {

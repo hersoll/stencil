@@ -24,29 +24,29 @@ impl Default for DecimalGenerator {
     }
 }
 
-// TODO:
-// - Rewrite the examples
-
 /// Generate a random decimal number depending on the parameters given in the builder.
 ///
 /// # Examples
 ///
 /// ```
-/// let num = math::num_gen::integer().range(4, 9).random();
-/// assert!(num >= 4 && num <= 9); // Range is inclusive
-/// ```
-/// ```
-/// let nums = math::num_gen::integer().numbers(&[3, 5, 7]);
+/// use math::num_gen;
+/// // Default is three decimal places
+/// let num = num_gen::decimal().range(1.234, 1.236).random();
+/// assert!(num == 1.234 || num == 1.235 || num == 1.236); // Range is inclusive
+///
+/// let num = num_gen::decimal().with_places(2).range(1.2, 1.3).random();
+/// assert!(num > 1.2 && num < 1.3); // Forces 2 decimal places, num can't be 1.2
+///
+/// let nums = num_gen::decimal().choose(&[1.2, 1.54, 1.456]);
 /// let num_one = nums.random();
 /// let num_two = nums.random(); // random() can be called multiple times on the same range
-/// assert!(num_one == 3 || num_one == 5 || num_one == 7);
-/// ```
-/// ```
-/// let nums = math::num_gen::integer().range(-3, 2).exclude_multiple(&[-2, -1, 0, 1]);
+/// assert!(num_one == 1.2 || num_one == 1.54 || num_one == 1.456);
+///
+/// let nums = num_gen::decimal().with_places(1).range(-0.1, 0.5).exclude_multiple(&[0.1, 0.2, 0.4]);
 /// let num = nums.random();
-/// let num_positive = nums.positive();
-/// assert!(num == 2 || num == -3);
-/// assert_eq!(num_positive, 2);
+/// let num_positive = nums.negative();
+/// assert!(num == -0.1 || num == 0.3 || num == 0.5);
+/// assert_eq!(num_positive, -0.1);
 /// ```
 pub fn decimal() -> DecimalGenerator {
     DecimalGenerator::default()
