@@ -113,7 +113,7 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
     /// Used for labelling dashed slope hints. Does not need to contain "dx"
     fn add_dx_label(
         &mut self,
-        label_content: String,
+        label_content: &str,
         x_start: Number,
         x_step: Number,
         y_pos: Number,
@@ -148,7 +148,7 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
     /// Used for labelling dashed slope hints. Does not need to contain "dy"
     fn add_dy_label(
         &mut self,
-        label_content: String,
+        label_content: &str,
         y_start: Number,
         y_step: Number,
         x_pos: Number,
@@ -195,13 +195,13 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
 
         self.add_dashed_slope_hints(x_start, x_step);
         self.add_dx_label(
-            format!("Delta {x_var} = {x_step_str}"),
+            &format!("Delta {x_var} = {x_step_str}"),
             x_start,
             x_step,
             y_start,
         );
         self.add_dy_label(
-            format!("Delta {y_var} = {y_step_str}"),
+            &format!("Delta {y_var} = {y_step_str}"),
             y_start,
             y_step,
             x_end,
@@ -221,7 +221,7 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
         let y_step_str = y_step.for_graphs();
 
         self.add_dashed_slope_hints(x_start, x_end);
-        self.add_dy_label(format!("k = {y_step_str}"), y_start, y_step, x_end);
+        self.add_dy_label(&format!("k = {y_step_str}"), y_start, y_step, x_end);
 
         self
     }

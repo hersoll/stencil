@@ -158,7 +158,7 @@ impl PartialEq for Variables {
 impl std::ops::Mul for Variables {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
-        let mut final_variables = self.list.clone();
+        let mut final_variables = self.list;
         for var in rhs.list {
             match final_variables.iter().position(|v| v.symbol == var.symbol) {
                 // Yes, we actually want to add the exponents, clippy :)
@@ -177,7 +177,7 @@ impl std::ops::Mul for Variables {
 impl std::ops::Div for Variables {
     type Output = Self;
     fn div(self, rhs: Self) -> Self::Output {
-        let mut final_variables = self.list.clone();
+        let mut final_variables = self.list;
         for var in rhs.list {
             match final_variables.iter().position(|v| v.symbol == var.symbol) {
                 Some(index) => final_variables[index].exponent -= var.exponent,
@@ -314,10 +314,10 @@ mod tests {
         let v3 = Variables::from((&X, 2));
         let v4 = Variables::from((&Y, 2));
 
-        assert_eq!((v1.clone() * v2.clone()).to_string(), "x^2 y^2 z");
-        assert_eq!((v1.clone() * v3.clone()).to_string(), "x^3 y z");
+        assert_eq!((v1.clone() * v2).to_string(), "x^2 y^2 z");
+        assert_eq!((v1 * v3.clone()).to_string(), "x^3 y z");
         assert_eq!((v4.clone() * v3.clone()).to_string(), "x^2 y^2");
         assert_eq!((v3.clone() / v4.clone()).to_string(), "x^2 y^-2");
-        assert_eq!((v4.clone() / v3.clone()).to_string(), "x^-2 y^2");
+        assert_eq!((v4 / v3).to_string(), "x^-2 y^2");
     }
 }

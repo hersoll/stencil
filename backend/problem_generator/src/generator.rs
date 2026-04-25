@@ -244,9 +244,7 @@ fn get_generator_function(name: &String) -> Result<ProblemGenerator> {
         let lock = PROBLEM_MAP.read().expect("Mutex is poisoned");
         lock.get(name)
             .copied()
-            .ok_or(RegistryError::ProblemNotFound {
-                name: name.to_string(),
-            })?
+            .ok_or(RegistryError::ProblemNotFound { name: name.clone() })?
     }; // Lock is dropped here
 
     Ok(generator)

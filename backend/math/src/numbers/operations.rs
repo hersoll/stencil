@@ -7,12 +7,12 @@ impl Number {
             // Integer ^ Integer
             (Integer(base), Integer(exp)) => {
                 if exp >= 0 {
-                    Integer(base.pow(exp as u32))
+                    Integer(base.pow(exp.cast_unsigned()))
                 } else {
                     // e.g. 2^-3 = 1/8
                     Fraction {
                         numerator: 1,
-                        denominator: base.pow((-exp) as u32),
+                        denominator: base.pow((-exp).cast_unsigned()),
                     }
                 }
             }
@@ -26,14 +26,14 @@ impl Number {
                 Integer(exp),
             ) => {
                 if exp >= 0 {
-                    let e = exp as u32;
+                    let e = exp.cast_unsigned();
                     Fraction {
                         numerator: numerator.pow(e),
                         denominator: denominator.pow(e),
                     }
                 } else {
                     // (a/b)^-n = b^n / a^n
-                    let e = (-exp) as u32;
+                    let e = (-exp).cast_unsigned();
                     Fraction {
                         numerator: denominator.pow(e),
                         denominator: numerator.pow(e),
@@ -118,12 +118,12 @@ impl std::ops::Add<&Number> for Number {
             },
             // Decimal + Integer: Make the integer larger to align with the decimal_places
             (Decimal { integer, decimals }, Integer(int)) => Decimal {
-                integer: integer + int * 10i32.pow(decimals as u32),
+                integer: integer + int * self.decimal_divisor(),
                 decimals,
             },
             // Integer + Decimals: same as above
             (Integer(int), Decimal { integer, decimals }) => Decimal {
-                integer: *integer + int * 10i32.pow(*decimals as u32),
+                integer: *integer + int * rhs.decimal_divisor(),
                 decimals: *decimals,
             },
             // Two decimals: Make them have the same number of decimals, then add
@@ -138,14 +138,16 @@ impl std::ops::Add<&Number> for Number {
                 },
             ) => {
                 let number_of_decimals = l_decimals.max(*r_decimals);
-                let (l_int, r_int) = match (
+                let sum = if let (Decimal { integer: l, .. }, Decimal { integer: r, .. }) = (
                     self.round(number_of_decimals),
                     rhs.round(number_of_decimals),
                 ) {
-                    (Decimal { integer: l, .. }, Decimal { integer: r, .. }) => (l, r),
-                    _ => unreachable!(),
+                    l + r
+                } else {
+                    tracing::error!("Somehow, we got to this branch in Add<Number>");
+                    0
                 };
-                let sum = l_int + r_int;
+
                 Decimal {
                     integer: sum,
                     decimals: number_of_decimals,
@@ -236,12 +238,12 @@ impl std::ops::Sub<&Number> for Number {
             },
             // Decimal - Integer: Make the integer larger to align with the decimal_places
             (Decimal { integer, decimals }, Integer(int)) => Decimal {
-                integer: integer - int * 10i32.pow(decimals as u32),
+                integer: integer - int * self.decimal_divisor(),
                 decimals,
             },
             // Integer - Decimals: same as above
             (Integer(int), Decimal { integer, decimals }) => Decimal {
-                integer: int * 10i32.pow(*decimals as u32) - *integer,
+                integer: int * rhs.decimal_divisor() - *integer,
                 decimals: *decimals,
             },
             // Two decimals: Make them have the same number of decimals, then subtract
@@ -256,14 +258,16 @@ impl std::ops::Sub<&Number> for Number {
                 },
             ) => {
                 let number_of_decimals = l_decimals.max(*r_decimals);
-                let (l_int, r_int) = match (
+                let diff = if let (Decimal { integer: l, .. }, Decimal { integer: r, .. }) = (
                     self.round(number_of_decimals),
                     rhs.round(number_of_decimals),
                 ) {
-                    (Decimal { integer: l, .. }, Decimal { integer: r, .. }) => (l, r),
-                    _ => unreachable!(),
+                    l - r
+                } else {
+                    tracing::error!("Somehow, we got to this branch in Sub<Number>");
+                    0
                 };
-                let diff = l_int - r_int;
+
                 Decimal {
                     integer: diff,
                     decimals: number_of_decimals,
@@ -555,8 +559,11 @@ mod tests {
 
         assert_eq!((integer + integer).to_string(), "6");
         assert_eq!((integer + decimal).to_string(), "num(\"4.2\")");
+        assert_eq!((decimal + integer).to_string(), "num(\"4.2\")");
         assert_eq!((integer + fraction).to_string(), "15/4");
+        assert_eq!((fraction + integer).to_string(), "15/4");
         assert_eq!((decimal + fraction).to_string(), "num(\"1.95\")");
+        assert_eq!((fraction + decimal).to_string(), "num(\"1.95\")");
         assert_eq!((PI + integer).to_string(), "num(\"6.142\")");
         assert_eq!((decimal + decimal_2).to_string(), "3");
     }
@@ -569,8 +576,11 @@ mod tests {
 
         assert_eq!((integer - integer).to_string(), "0");
         assert_eq!((integer - decimal).to_string(), "num(\"1.8\")");
+        assert_eq!((decimal - integer).to_string(), "num(\"-1.8\")");
         assert_eq!((integer - fraction).to_string(), "9/4");
+        assert_eq!((fraction - integer).to_string(), "-9/4");
         assert_eq!((decimal - fraction).to_string(), "num(\"0.45\")");
+        assert_eq!((fraction - decimal).to_string(), "num(\"-0.45\")");
         assert_eq!((PI - integer).to_string(), "num(\"0.142\")");
     }
 
@@ -582,8 +592,11 @@ mod tests {
 
         assert_eq!((integer * integer).to_string(), "9");
         assert_eq!((integer * decimal).to_string(), "num(\"3.6\")");
+        assert_eq!((decimal * integer).to_string(), "num(\"3.6\")");
         assert_eq!((integer * fraction).to_string(), "9/4");
+        assert_eq!((fraction * integer).to_string(), "9/4");
         assert_eq!((decimal * fraction).to_string(), "num(\"0.9\")");
+        assert_eq!((fraction * decimal).to_string(), "num(\"0.9\")");
         assert_eq!((PI * integer).to_string(), "num(\"9.425\")");
     }
 
@@ -595,7 +608,6 @@ mod tests {
 
         assert_eq!((two * two_point_five).to_string(), "5");
         assert_eq!((two_point_five * two).to_string(), "5");
-        // Note: 2.5 * 2.54 = 6.350. Does it print 6.35?
         assert_eq!(
             (two_point_five * two_point_fifty_four).to_string(),
             "num(\"6.35\")"
@@ -612,10 +624,13 @@ mod tests {
 
         assert_eq!((integer / integer).to_string(), "1");
         assert_eq!((integer / decimal).to_string(), "num(\"2.5\")");
+        assert_eq!((decimal / integer).to_string(), "num(\"0.4\")");
         assert_eq!((decimal / decimal_2).to_string(), "2");
         assert_eq!((decimal_2 / decimal).to_string(), "num(\"0.5\")");
         assert_eq!((integer / fraction).simplify().to_string(), "4");
+        assert_eq!((fraction / integer).simplify().to_string(), "1/4");
         assert_eq!((decimal / fraction).to_string(), "num(\"1.6\")");
+        assert_eq!((fraction / decimal).to_string(), "num(\"0.625\")");
         assert_eq!((PI / integer).to_string(), "num(\"1.047\")");
     }
 }

@@ -117,7 +117,7 @@ fn two_variables_and_constants(name: String, _lang: &Language) -> Result<Problem
     let mut first_const_term = Term::from_num(first_const);
     let mut second_const_term = Term::from_num(second_const);
 
-    let original_expression = Polynomial::random_order(vec![
+    let original_expression = Polynomial::random_order(&[
         &first_term_a,
         &first_term_b,
         &second_term_a,
@@ -272,7 +272,7 @@ fn one_variable_different_exponents(name: String, _lang: &Language) -> Result<Pr
     let fourth_term = Term::from_num_and_vars(fourth_coef, (unknown, fourth_exp));
 
     let original_expression =
-        Polynomial::random_order(vec![&first_term, &second_term, &third_term, &fourth_term]);
+        Polynomial::random_order(&[&first_term, &second_term, &third_term, &fourth_term]);
     let sorted_expression = original_expression.sorted();
     let simplified_expression = original_expression.simplify();
 

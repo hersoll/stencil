@@ -81,7 +81,7 @@ impl Polynomial {
         symbols
     }
 
-    pub fn random_order(terms: Vec<&Term>) -> Self {
+    pub fn random_order(terms: &[&Term]) -> Self {
         let mut owned_terms: Vec<Term> = terms.iter().map(|&t| t.clone()).collect();
         owned_terms.shuffle(&mut rng());
         Self { terms: owned_terms }
@@ -105,11 +105,11 @@ impl Polynomial {
 
     /// Sorts the expression in-place
     pub fn sort(&mut self) {
-        if self.terms.len() < 2 {
-        } else if self.terms.len() == 2 {
-            self.place_positive_first();
-        } else {
-            self.sort_by_variables();
+        use std::cmp::Ordering::*;
+        match self.terms.len().cmp(&2) {
+            Greater => self.sort_by_variables(),
+            Equal => self.place_positive_first(),
+            Less => (),
         }
     }
 
@@ -127,7 +127,7 @@ impl Polynomial {
             (false, true) => {
                 let temp = self.terms[0].clone();
                 self.terms[0] = self.terms[1].clone();
-                self.terms[1] = temp.clone();
+                self.terms[1] = temp;
             }
             (_, _) => self.sort_by_variables(),
         }

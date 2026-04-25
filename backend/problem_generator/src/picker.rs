@@ -140,7 +140,7 @@ fn get_count_per_difficulty(problem_pool: &ProblemPool) -> Result<DifficultyDist
     };
 
     let remaining = problem_pool.n - intro;
-    let [easy, medium, hard] = get_problem_ratios(avail, remaining);
+    let [easy, medium, hard] = get_problem_ratios(&avail, remaining);
 
     Ok(DifficultyDistribution {
         intro,
@@ -220,13 +220,13 @@ fn distribute_within_difficulty(
         },
     };
 
-    Ok(get_problem_ratios(available, count))
+    Ok(get_problem_ratios(&available, count))
 }
 
 /// Distributes problems across difficulty levels based on which difficulties are available
 ///
 /// Returns [easy, medium, hard] counts that sum to n
-fn get_problem_ratios(avail: AvailableDifficulties, n: u8) -> [u8; 3] {
+fn get_problem_ratios(avail: &AvailableDifficulties, n: u8) -> [u8; 3] {
     match (avail.easy, avail.medium, avail.hard) {
         // Only one difficulty available - use all problems for it
         (true, false, false) => [n, 0, 0],

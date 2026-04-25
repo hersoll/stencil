@@ -106,6 +106,7 @@ impl IntegerGenerator {
     }
 
     #[allow(clippy::len_without_is_empty)]
+    #[allow(clippy::cast_sign_loss)]
     pub fn len(&self) -> usize {
         match &self.numbers {
             NumberKind::NotDefined => 0,

@@ -171,7 +171,7 @@ mod tests {
         // -= assignment
         let mut t3 = Term::from_var((X, 4));
         let t4 = 4 * t3.clone();
-        t3 -= t4.clone();
+        t3 -= t4;
         assert_eq!(t3.to_string(), "-3x^4");
     }
 

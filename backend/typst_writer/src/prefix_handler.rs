@@ -57,8 +57,8 @@ pub fn apply_prefixes(
         // Questions and answers are grouped into nested lists,
         // and therefore will be mutated quite a lot
         _ => apply_grouped_prefixes(
-            question_set,
-            answer_set,
+            &question_set,
+            &answer_set,
             &prefix_ids,
             &prefix_reg,
             document_options.max_prefix_group,
@@ -110,8 +110,8 @@ fn detect_group_prefix(
 /// Takes sequential similar problems, groups them together into
 /// a nested list, and gives them a group prefix.
 fn apply_grouped_prefixes(
-    question_set: QuestionSet,
-    answer_set: AnswerSet,
+    question_set: &QuestionSet,
+    answer_set: &AnswerSet,
     prefix_ids: &[Option<i32>],
     prefix_reg: &HashMap<i32, PrefixEntry>,
     max_group: u8,
@@ -127,8 +127,8 @@ fn apply_grouped_prefixes(
         if len == 1 {
             push_single_prefixed(
                 idx,
-                &question_set,
-                &answer_set,
+                question_set,
+                answer_set,
                 prefix_ids,
                 prefix_reg,
                 &mut prefixed_questions,
@@ -139,8 +139,8 @@ fn apply_grouped_prefixes(
             push_grouped_enum(
                 idx,
                 len as usize,
-                &question_set,
-                &answer_set,
+                question_set,
+                answer_set,
                 prefix_ids,
                 prefix_reg,
                 &mut prefixed_questions,

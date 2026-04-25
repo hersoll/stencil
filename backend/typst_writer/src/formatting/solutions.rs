@@ -14,7 +14,7 @@ static SOLUTION_NESTED_OUTSET: &str = "3em";
 static SOLUTION_BACKGROUND_PADDING: &str = "0.5em";
 
 /// Formats the answer and solution strings to show up as a proper solution in the Typst file
-pub fn build_solution(answer: String, solution: String) -> Result<String> {
+pub fn build_solution(answer: &str, solution: &str) -> Result<String> {
     let mut out = String::with_capacity(1024);
     writeln!(out, "{answer}")?;
     writeln!(out, "#solution[")?;

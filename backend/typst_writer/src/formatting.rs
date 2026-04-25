@@ -55,7 +55,7 @@ pub fn reformat_newlines(input: &str) -> String {
 // The function makes sure the left column is
 // a block type ($ 2x + 1 $) and the right column is inline ($+2x$).
 // Remember to include empty steps if nothing happens in a step
-pub fn equation_solution(equation_string: String) -> String {
+pub fn equation_solution(equation_string: &str) -> String {
     let mut equations: Vec<&str> = Vec::new();
     let mut steps: Vec<&str> = Vec::new();
 

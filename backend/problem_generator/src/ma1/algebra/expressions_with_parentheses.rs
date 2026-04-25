@@ -52,8 +52,8 @@ fn negative_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
     let solution = format!(
         "$&{factor}({exp}) = colored({factor_p} dot) {unknown} + colored({factor_p} dot) {const_p} =\\
             =&{answer} = {simplified}$",
-        factor_p = parentheses(factor),
-        const_p = parentheses(constant),
+        factor_p = parentheses(&factor),
+        const_p = parentheses(&constant),
     );
 
     Ok(Problem {
@@ -230,9 +230,9 @@ fn negative_factor_and_coef(name: String, _lang: &Language) -> Result<Problem> {
     let solution = format!(
         "$&{factor}({exp}) = colored({factor_p} dot) {t1_p} + colored({factor_p} dot) {t2_p} =\\
             =&{answer} = {simplified_answer}$",
-        factor_p = parentheses(factor),
-        t1_p = parentheses(t1),
-        t2_p = parentheses(t2),
+        factor_p = parentheses(&factor),
+        t1_p = parentheses(&t1),
+        t2_p = parentheses(&t2),
     );
 
     Ok(Problem {

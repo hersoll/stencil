@@ -95,7 +95,7 @@ impl std::ops::Mul<Polynomial> for Polynomial {
 impl std::ops::Mul<Polynomial> for i32 {
     type Output = Polynomial;
     fn mul(self, rhs: Polynomial) -> Self::Output {
-        let mut result = rhs.clone();
+        let mut result = rhs;
         for term in &mut result.terms {
             *term *= self;
         }
@@ -107,7 +107,7 @@ impl std::ops::Mul<Polynomial> for i32 {
 impl std::ops::Mul<Polynomial> for Number {
     type Output = Polynomial;
     fn mul(self, rhs: Polynomial) -> Self::Output {
-        let mut result = rhs.clone();
+        let mut result = rhs;
         for term in &mut result.terms {
             *term *= self;
         }

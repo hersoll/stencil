@@ -84,6 +84,7 @@ pub async fn get_topic_problems(topic_id: &i32) -> Result<Vec<ProblemEntry>> {
 /// # Returns
 /// A vector of tuples containing (full_problem_name, difficulty)
 /// where full_problem_name is formatted as "module_name"
+#[allow(clippy::cast_sign_loss)]
 pub async fn get_problem_names_and_difficulties_from_topics(
     topic_ids: Vec<i32>,
     exclusions: Vec<i32>,

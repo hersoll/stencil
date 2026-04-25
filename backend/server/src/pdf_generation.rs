@@ -153,10 +153,7 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
 
     // Print typst file (pretty-printed) for debugging
     #[cfg(not(feature = "docker"))]
-    if std::env::args()
-        .collect::<Vec<String>>()
-        .contains(&"show-output".to_string())
-    {
+    if std::env::args().any(|x| x == "show-output") {
         Command::new("typstyle")
             .arg(typst_path.to_str().unwrap())
             .status()

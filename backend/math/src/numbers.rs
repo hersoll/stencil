@@ -250,6 +250,8 @@ impl Number {
         }
     }
 
+    /// Returns `true` if the **value** of the number is an integer, not if it is of the enum
+    /// variant `Number::Integer`.
     pub fn is_integer(&self) -> bool {
         use Number::*;
         match self {
@@ -260,6 +262,23 @@ impl Number {
                 denominator,
             } => numerator % denominator == 0,
             Irrational { .. } => false,
+        }
+    }
+
+    /// It is quite common to want access to the "divisor" of `Decimal` numbers, for example when it
+    /// needs to be converted from its internal integer representation to its actual value.
+    ///
+    /// For example, when we have `integer: 1234, decimals: 3`, the divisor that is used is 1000,
+    /// which results in the number 1.234.
+    ///
+    /// This function essentially returns `10.pow(decimals)`. (If the `Number` is a non-`Decimal`,
+    /// returns 1 and emits a `warn!`)
+    pub fn decimal_divisor(&self) -> i32 {
+        if let Number::Decimal { decimals, .. } = self {
+            10i32.pow(u32::from(*decimals))
+        } else {
+            tracing::warn!("Called decimal_divisor() with a non-Decimal!");
+            1
         }
     }
 

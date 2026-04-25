@@ -41,7 +41,7 @@ fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
         name,
         question,
         answer: format!("$y = {}$", y),
-        solution: equation_solution(solution),
+        solution: equation_solution(&solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     };
@@ -64,7 +64,7 @@ fn without_notation_x(name: String, lang: &Language) -> Result<Problem> {
         &[("expression", expression), ("y", y.to_string())],
     );
 
-    let solution = equation_solution(format!(
+    let solution = equation_solution(&format!(
         "y &= {coefficient}x {constant:+} \\ y={y} \\
         {y} &= {coefficient}x {constant:+} \\ {sub_constant} \\
         {lhs} &= {coefficient}x \\ div {coefficient} \\
@@ -115,7 +115,7 @@ fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
         name,
         question,
         answer: format!("$f({x}) = {y}$"),
-        solution: equation_solution(solution),
+        solution: equation_solution(&solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     };
@@ -155,7 +155,7 @@ fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
         name,
         question,
         answer: format!("$x = {x}$"),
-        solution: equation_solution(solution),
+        solution: equation_solution(&solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     };
@@ -202,7 +202,7 @@ fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
         name,
         question,
         answer: format!("${var} = {x}$"),
-        solution: equation_solution(solution),
+        solution: equation_solution(&solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     };
@@ -241,15 +241,15 @@ fn find_y(name: String, lang: &Language) -> Result<Problem> {
            {f_name}({x}) &= {prod} {constant:+} \\ \\
            {f_name}({x}) &= {y} \\",
         prod = x * coefficient,
-        par_coef = typst_writer::formatting::parentheses(coefficient),
-        par_x = typst_writer::formatting::parentheses(x),
+        par_coef = typst_writer::formatting::parentheses(&coefficient),
+        par_x = typst_writer::formatting::parentheses(&x),
     );
 
     let problem = Problem {
         name,
         question,
         answer: format!("${f_name}({x}) = {y}$"),
-        solution: equation_solution(solution),
+        solution: equation_solution(&solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     };

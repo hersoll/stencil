@@ -19,8 +19,8 @@ pub fn pq_long(p: impl Into<Number>, q: impl Into<Number>, unknown: char) -> Str
         &{unknown} = {symmetry} plus.minus sqrt({total_sq}) \\
         &{unknown} = {symmetry} plus.minus {distance} \\
         &{unknown}_1 = {x_1}, #h(0.4em) {unknown}_2 = {x_2}",
-        p_d = formatting::parentheses(p / 2),
-        q_par = formatting::parentheses(q),
+        p_d = formatting::parentheses(&(p / 2)),
+        q_par = formatting::parentheses(&q),
         q_m = -q,
         p_sq = (p / 2).pow(Number::Integer(2)),
         total_sq = (p / 2).pow(Number::Integer(2)) - q,

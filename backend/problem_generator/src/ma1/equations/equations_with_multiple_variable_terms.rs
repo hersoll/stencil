@@ -30,7 +30,7 @@ fn two_positive_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
     sol.add_aligned(lhs_pol, rhs_pol) // 4x + 1 = 2x + 3
         .with_step(subtract_term(&rhs_term));
 
-    let subtracted_term = lhs_term.clone() - rhs_term.clone();
+    let subtracted_term = lhs_term - rhs_term;
 
     sol.add_aligned(format!("{subtracted_term}{lhs_const:+}"), rhs_const) // 2x + 1 = 3
         .with_step(subtract_number(lhs_const));
@@ -76,7 +76,7 @@ fn two_positive_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
     sol.add_aligned(lhs_pol, rhs_pol) // 2x + 1 = 4x + 3
         .with_step(subtract_term(&lhs_term));
 
-    let subtracted_term = rhs_term.clone() - lhs_term.clone();
+    let subtracted_term = rhs_term - lhs_term;
 
     sol.add_aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 1 = 2x + 3
         .with_step(subtract_number(rhs_const));
@@ -120,7 +120,7 @@ fn one_negative_coef_lhs_greater(name: String, _lang: &Language) -> Result<Probl
 
     let mut sol = SolutionWithSteps::new();
 
-    let subtracted_term = lhs_term.clone() - rhs_term.clone();
+    let subtracted_term = lhs_term - rhs_term.clone();
 
     sol.add_aligned(lhs_pol, rhs_pol) // 4x + 1 = 4 - 2x
         .with_step(subtract_term(&rhs_term))
@@ -162,7 +162,7 @@ fn one_negative_coef_rhs_greater(name: String, _lang: &Language) -> Result<Probl
     let question = format!("${lhs_pol} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
 
-    let subtracted_term = rhs_term.clone() - lhs_term.clone();
+    let subtracted_term = rhs_term - lhs_term.clone();
     let mut sol = SolutionWithSteps::new();
     sol.add_aligned(lhs_pol, rhs_pol) // 4 - 2x = 1 + 4x
         .with_step(subtract_term(&lhs_term))
@@ -205,7 +205,7 @@ fn two_negative_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
     let answer_str = format!("${unknown} = {answer}$");
 
     let mut sol = SolutionWithSteps::new();
-    let subtracted_term = rhs_term.clone() - lhs_term.clone();
+    let subtracted_term = rhs_term - lhs_term.clone();
     sol.add_aligned(lhs_pol, rhs_pol) // 4 - 4x = 8 - 2x
         .with_step(subtract_term(&lhs_term))
         .add_aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 4 = 2x + 8
@@ -248,7 +248,7 @@ fn two_negative_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
     let question = format!("${lhs_pol} = {rhs_pol}$");
     let answer_str = format!("${unknown} = {answer}$");
 
-    let total_var = lhs_term.clone() - rhs_term.clone();
+    let total_var = lhs_term - rhs_term.clone();
     let total_coef = lhs_coef - rhs_coef;
     let mut sol = SolutionWithSteps::new();
     sol.add_aligned(&lhs_pol, &rhs_pol) // 4 - 2x = 8 - 4x

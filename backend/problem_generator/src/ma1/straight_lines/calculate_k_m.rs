@@ -68,10 +68,10 @@ fn find_k_with_negatives(name: String, lang: &Language) -> Result<Problem> {
     let answer = format!("$k = {k}$");
     let solution = format!(
         "$ k = (y_2 - y_1)/(x_2 - x_1) =({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
-        parentheses(y_end),
-        parentheses(y_start),
-        parentheses(x_end),
-        parentheses(x_start),
+        parentheses(&y_end),
+        parentheses(&y_start),
+        parentheses(&x_end),
+        parentheses(&x_start),
     );
 
     Ok(Problem {
@@ -153,7 +153,7 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
     let answer = format!("$y = {equation}$");
     let solution =
         format!("$ k = ({y_end} - {y_start})/({x_end} - {x_start}) = {y_step} / {x_step} = {k} $")
-            + equation_solution(format!(
+            + equation_solution(&format!(
                 "
                 y &= k x + m \\ k = {k} \\
                 y &= colored({k})x + m \\ x = {x_start}, y = {y_start} \\
@@ -211,11 +211,11 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
     let answer = format!("$y = {equation}$");
     let solution = format!(
         "$ k = ({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
-        parentheses(y_end),
-        parentheses(y_start),
-        parentheses(x_end),
-        parentheses(x_start),
-    ) + equation_solution(format!(
+        parentheses(&y_end),
+        parentheses(&y_start),
+        parentheses(&x_end),
+        parentheses(&x_start),
+    ) + equation_solution(&format!(
         "
                 y &= k x + m \\ k = {k} \\
                 y &= colored({k})x + m \\ x = {x_start}, y = {y_start} \\
@@ -225,8 +225,8 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
                     ",
         mult = k * x_start,
         m_mult = -k * x_start,
-        p_k = parentheses(k),
-        p_x_start = parentheses(x_start),
+        p_k = parentheses(&k),
+        p_x_start = parentheses(&x_start),
     ))
     .as_str();
 
@@ -273,11 +273,11 @@ fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem
 
     let solution = format!(
         "$ k = ({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
-        parentheses(y_end),
-        parentheses(y_start),
-        parentheses(x_end),
-        parentheses(x_start),
-    ) + equation_solution(format!(
+        parentheses(&y_end),
+        parentheses(&y_start),
+        parentheses(&x_end),
+        parentheses(&x_start),
+    ) + equation_solution(&format!(
         "
                 y &= k x + m \\ k = {k} \\
                 y &= colored({k})x + m \\ x = {x_start}, y = {y_start} \\
@@ -287,8 +287,8 @@ fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem
                     ",
         mult = k * x_start,
         m_mult = -k * x_start,
-        p_k = parentheses(k),
-        p_x_start = parentheses(x_start),
+        p_k = parentheses(&k),
+        p_x_start = parentheses(&x_start),
     ))
     .as_str();
     Ok(Problem {
@@ -331,11 +331,11 @@ fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
 
     let solution = format!(
         "$ k = ({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
-        parentheses(y_end),
-        parentheses(y_start),
-        parentheses(x_end),
-        parentheses(x_start),
-    ) + equation_solution(format!(
+        parentheses(&y_end),
+        parentheses(&y_start),
+        parentheses(&x_end),
+        parentheses(&x_start),
+    ) + equation_solution(&format!(
         "
                 y &= k x + m \\ k = {k} \\
                 y &= m \\ x = {x_start}, y = {y_start} \\
@@ -384,11 +384,11 @@ fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
 
     let solution = format!(
         "$ k = ({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
-        parentheses(y_end),
-        parentheses(y_start),
-        parentheses(x_end),
-        parentheses(x_start),
-    ) + equation_solution(format!(
+        parentheses(&y_end),
+        parentheses(&y_start),
+        parentheses(&x_end),
+        parentheses(&x_start),
+    ) + equation_solution(&format!(
         "
                 y &= k x + m \\ k = {k} \\
                 y &= colored({k_term}) + m \\ x = {x_start}, y = {y_start} \\
@@ -456,11 +456,11 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
     // TODO: Fix with SolutionWithSteps, conditional printing of num (since it can be 1)
     let solution = format!(
         "$ k = ({} - {})/({} - {}) = {k} $",
-        parentheses(y_end),
-        parentheses(y_start),
-        parentheses(x_end),
-        parentheses(x_start),
-    ) + equation_solution(format!(
+        parentheses(&y_end),
+        parentheses(&y_start),
+        parentheses(&x_end),
+        parentheses(&x_start),
+    ) + equation_solution(&format!(
         "
                 y &= k x + m \\ k = {k} \\
                 y &= colored({k_term}) + m \\ x = {x_start}, y = {y_start} \\

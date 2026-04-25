@@ -28,7 +28,7 @@ pub fn show_polynomial_replacements<T: Display + Zero + PartialOrd + Clone>(
                     write!(
                         &mut s,
                         " dot colored({}){}{}",
-                        formatting::parentheses(pair.1.clone()),
+                        formatting::parentheses(&pair.1),
                         if var.exponent > 1 {
                             format!("^{}", var.exponent)
                         } else {

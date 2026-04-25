@@ -155,7 +155,7 @@ impl FractionGenerator {
             &self.denom.exclusions,
             &[] as &[fn(&i32) -> bool],
         );
-        self.auto_set_num(&denom);
+        self.auto_set_num(denom);
 
         // If the fraction is irreducible, we can't just get any old numerator
         let num = match self.reducible {
@@ -184,7 +184,7 @@ impl FractionGenerator {
     }
 
     /// With a given denominator, sets the numerator to make sure the fraction is between min_value and max_value
-    fn auto_set_num(&mut self, denom: &i32) {
+    fn auto_set_num(&mut self, denom: i32) {
         if let NumberKind::NotDefined = self.num.numbers {
             self.num.numbers = NumberKind::Range(
                 self.min_value * denom.abs() + 1,

@@ -201,11 +201,11 @@ fn add_negative(name: String, _lang: &Language) -> Result<Problem> {
     let ans = first + second;
     Ok(Problem {
         name,
-        question: format!("${first} + {second_p}$", second_p = parentheses(second)),
+        question: format!("${first} + {second_p}$", second_p = parentheses(&second)),
         answer: format!("${ans}$"),
         solution: format!(
             "${first} + {second_p} = {first} - {second_a} = {ans}$",
-            second_p = parentheses(second),
+            second_p = parentheses(&second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
@@ -222,11 +222,11 @@ fn subtract_negative(name: String, _lang: &Language) -> Result<Problem> {
     let ans = first - second;
     Ok(Problem {
         name,
-        question: format!("${first} - {second_p}$", second_p = parentheses(second)),
+        question: format!("${first} - {second_p}$", second_p = parentheses(&second)),
         answer: format!("${ans}$"),
         solution: format!(
             "${first} - {second_p} = {first} + {second_a} = {ans}$",
-            second_p = parentheses(second),
+            second_p = parentheses(&second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
@@ -308,14 +308,14 @@ fn negative_plus_negative(name: String, _lang: &Language) -> Result<Problem> {
         name,
         question: format!(
             "${first_p} + {second_p}$",
-            first_p = parentheses(first),
-            second_p = parentheses(second)
+            first_p = parentheses(&first),
+            second_p = parentheses(&second)
         ),
         answer: format!("${ans}$"),
         solution: format!(
             "${first_p} + {second_p} = {first} - {second_a} = {ans}$",
-            first_p = parentheses(first),
-            second_p = parentheses(second),
+            first_p = parentheses(&first),
+            second_p = parentheses(&second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
@@ -334,14 +334,14 @@ fn negative_minus_negative(name: String, _lang: &Language) -> Result<Problem> {
         name,
         question: format!(
             "${first_p} - {second_p}$",
-            first_p = parentheses(first),
-            second_p = parentheses(second)
+            first_p = parentheses(&first),
+            second_p = parentheses(&second)
         ),
         answer: format!("${ans}$"),
         solution: format!(
             "${first_p} - {second_p} = {first} + {second_a} = {ans}$",
-            first_p = parentheses(first),
-            second_p = parentheses(second),
+            first_p = parentheses(&first),
+            second_p = parentheses(&second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],

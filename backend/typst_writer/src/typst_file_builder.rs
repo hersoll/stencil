@@ -195,7 +195,7 @@ impl TypstFileBuilder {
 
             let (q, a) = if include_solution {
                 let answer_with_solution =
-                    formatting::build_solution(problem.answer, problem.solution)?;
+                    formatting::build_solution(&problem.answer, &problem.solution)?;
                 (problem.question, answer_with_solution)
             } else {
                 (problem.question, problem.answer)
