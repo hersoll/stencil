@@ -92,12 +92,18 @@ mod linear_function_tests {
 
         #[test]
         fn decimals() {
-            let x = Number::Decimal(2500); // 2.5
+            let x = Number::decimal_from_f64(2.5, 1);
 
             let cases = [
-                (Function::linear(1.1, 1.1), Number::Decimal(3850)),
-                (Function::linear(0, -3.7), Number::Decimal(-3700)),
-                (Function::linear(1.234, 5), Number::Decimal(8085)),
+                (
+                    Function::linear(1.1, 1.1),
+                    Number::decimal_from_f64(3.850, 2),
+                ),
+                (Function::linear(0, -3.7), Number::decimal_from_f64(-3.7, 1)),
+                (
+                    Function::linear(1.234, 5),
+                    Number::decimal_from_f64(8.085, 3),
+                ),
             ];
 
             for (f, expected) in cases {
@@ -107,12 +113,12 @@ mod linear_function_tests {
 
         #[test]
         fn fractions() {
-            let x = Number::Fraction(2, 5);
+            let x = Number::from((2, 5));
 
             let cases = [
-                (Function::linear((3, 5), 1), Number::Fraction(31, 25)),
-                (Function::linear(0, (2, 3)), Number::Fraction(2, 3)),
-                (Function::linear((-4, 3), (1, 6)), Number::Fraction(-11, 30)),
+                (Function::linear((3, 5), 1), Number::from((31, 25))),
+                (Function::linear(0, (2, 3)), Number::from((2, 3))),
+                (Function::linear((-4, 3), (1, 6)), Number::from((-11, 30))),
             ];
 
             for (f, expected) in cases {
@@ -129,7 +135,7 @@ mod linear_function_tests {
             let y = Number::Integer(4);
 
             let cases = [
-                (Function::linear(3, 2), Some(vec![Number::Fraction(2, 3)])),
+                (Function::linear(3, 2), Some(vec![Number::from((2, 3))])),
                 (Function::linear(0, 2), None),
                 (Function::linear(-1, -5), Some(vec![Number::Integer(-9)])),
             ];
@@ -141,17 +147,17 @@ mod linear_function_tests {
 
         #[test]
         fn decimals() {
-            let y = Number::Decimal(2500); // 2.5
+            let y = Number::decimal_from_f64(2.5, 1);
 
             let cases = [
                 (
                     Function::linear(1.1, 1.1),
-                    Some(vec![Number::Decimal(1273)]),
+                    Some(vec![Number::decimal_from_f64(1.273, 3)]),
                 ),
                 (Function::linear(0, -3.7), None),
                 (
                     Function::linear(1.234, 5),
-                    Some(vec![Number::Decimal(-2026)]),
+                    Some(vec![Number::decimal_from_f64(-2.026, 3)]),
                 ),
             ];
 
@@ -162,19 +168,19 @@ mod linear_function_tests {
 
         #[test]
         fn fractions() {
-            let y = Number::Fraction(2, 5);
+            let y = Number::from((2, 5));
 
             let cases = [
                 (Function::linear((3, 5), 1), Some(vec![Number::Integer(-1)])),
                 (Function::linear(0, (2, 3)), None),
                 (
                     Function::linear((-4, 3), (1, 6)),
-                    Some(vec![Number::Fraction(-21, 120)]),
+                    Some(vec![Number::from((-21, 120))]),
                 ),
                 // Test another fraction representation
                 (
                     Function::linear((-4, 3), (1, 6)),
-                    Some(vec![Number::Fraction(7, -40)]),
+                    Some(vec![Number::from((7, -40))]),
                 ),
             ];
 

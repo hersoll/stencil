@@ -2,24 +2,30 @@ use crate::{Number, float_to_int};
 
 use super::common::{NumberKind, generate_value};
 
-/// The starting type of a type-state situation.
-///
-/// Makes sure the user calls .with_decimals() before doing anything else
-pub struct DecimalGeneratorPrimitive;
-
 pub struct DecimalGenerator {
+    numbers: NumberKind,
+    decimal_places: u8,
+}
+
+/// Typestate version where decimal places and range/choices have been set. Allows the user to call `.random()`,
+/// `.and_random()`, etc. as well as `.exclude()`.
+pub struct FinishedDecimalGenerator {
     numbers: NumberKind,
     exclusions: Vec<i32>,
     decimal_places: u8,
 }
 
+impl Default for DecimalGenerator {
+    fn default() -> Self {
+        Self {
+            numbers: NumberKind::NotDefined,
+            decimal_places: 3,
+        }
+    }
+}
+
 // TODO:
 // - Rewrite the examples
-// - Do we WANT to force with_places? How about when doing .numbers()?
-// - Rename numbers() to something better. from_...()?
-// - Do I want to change DECIMAL_FACTOR...? Sometimes longer decimals are wanted. And now we can
-// control decimal places during generation. May need rounding function in that case, since answers
-// will likely max out at 3 decimals a LOT of the time.
 
 /// Generate a random decimal number depending on the parameters given in the builder.
 ///
@@ -42,91 +48,110 @@ pub struct DecimalGenerator {
 /// assert!(num == 2 || num == -3);
 /// assert_eq!(num_positive, 2);
 /// ```
-pub fn decimal() -> DecimalGeneratorPrimitive {
-    DecimalGeneratorPrimitive {}
-}
-
-impl DecimalGeneratorPrimitive {
-    /// Makes sure that the generated `Number` has **at most** `decimals` number of decimals.
-    ///
-    /// Note that `.with_decimals(2)` can still generate 1.1, since it's equal to 1.10. It can't
-    /// generate 1.111, however.
-    pub fn with_places(self, places: u8) -> DecimalGenerator {
-        DecimalGenerator {
-            numbers: NumberKind::NotDefined,
-            exclusions: Vec::new(),
-            decimal_places: places,
-        }
-    }
+pub fn decimal() -> DecimalGenerator {
+    DecimalGenerator::default()
 }
 
 impl DecimalGenerator {
-    pub fn numbers(mut self, numbers: &[f64]) -> Self {
-        let int_numbers: Vec<i32> = numbers.iter().map(|num| float_to_int(*num)).collect();
+    pub fn with_places(mut self, places: u8) -> Self {
+        self.decimal_places = places;
+        self
+    }
+
+    pub fn choose(mut self, numbers: &[f64]) -> FinishedDecimalGenerator {
+        let int_numbers: Vec<i32> = numbers
+            .iter()
+            .map(|num| float_to_int(*num, self.decimal_places))
+            .collect();
 
         self.numbers = NumberKind::Multiple(int_numbers);
-        self
+        FinishedDecimalGenerator {
+            numbers: self.numbers,
+            exclusions: Vec::new(),
+            decimal_places: self.decimal_places,
+        }
     }
 
     // The reason this accepts impl Into<Number> while actually just passing on an i32, is that we
     // will sometimes call this method with a Number that depends on a previous Number, like:
     // `range(k, 1.34)`
     // We need to accomodate for this.
-    pub fn range(mut self, min: impl Into<Number>, max: impl Into<Number>) -> Self {
-        let mut min = min.into().to_decimal();
-        let mut max = max.into().to_decimal();
+    pub fn range(
+        mut self,
+        min: impl Into<Number>,
+        max: impl Into<Number>,
+    ) -> FinishedDecimalGenerator {
+        let mut min = min.into().to_decimal().round(self.decimal_places);
+        let mut max = max.into().to_decimal().round(self.decimal_places);
         if min > max {
-            tracing::error!("Called num_gen::decimal().range() with min and max swapped!");
+            tracing::warn!("Called num_gen::decimal().range() with min and max swapped!");
             std::mem::swap(&mut min, &mut max);
         }
-        if let (Number::Decimal(min_num), Number::Decimal(max_num)) = (min, max) {
+        if let (
+            Number::Decimal {
+                integer: min_num, ..
+            },
+            Number::Decimal {
+                integer: max_num, ..
+            },
+        ) = (min, max)
+        {
             self.numbers = NumberKind::Range(min_num, max_num);
         } else {
             tracing::error!(
                 "Somehow, the num_gen::decimal().range() failed to convert both min and max to Decimals!"
-            )
+            );
+            self.numbers = NumberKind::Single(0);
         }
 
-        self
+        FinishedDecimalGenerator {
+            numbers: self.numbers,
+            exclusions: Vec::new(),
+            decimal_places: self.decimal_places,
+        }
     }
+}
 
-    pub fn exclude(mut self, num: impl Into<Number>) -> Self {
-        let num = num.into().to_decimal();
-        if let Number::Decimal(decimal_integer) = num {
-            self.exclusions.push(decimal_integer);
-        } else {
-            tracing::error!("Failed to convert {num} to a Decimal")
-        }
+impl FinishedDecimalGenerator {
+    pub fn exclude(mut self, num: f64) -> Self {
+        self.exclusions.push(float_to_int(num, self.decimal_places));
         self
     }
 
     pub fn exclude_multiple(mut self, nums: &[f64]) -> Self {
-        let mut nums: Vec<i32> = nums.iter().map(|num| float_to_int(*num)).collect();
+        let mut nums: Vec<i32> = nums
+            .iter()
+            .map(|num| float_to_int(*num, self.decimal_places))
+            .collect();
         self.exclusions.append(&mut nums);
         self
     }
 
     pub fn random(&self) -> Number {
-        let int32 = generate_value(
-            &self.numbers,
-            &self.exclusions,
-            &[|integer| has_at_most_places(*integer, self.decimal_places.into())],
-        );
-        Number::Decimal(int32)
+        self.generate_decimal_with_filters(&[])
+    }
+
+    pub fn positive(&self) -> Number {
+        self.generate_decimal_with_filters(&[|n| *n >= 0])
+    }
+
+    pub fn negative(&self) -> Number {
+        self.generate_decimal_with_filters(&[|n| *n <= 0])
     }
 
     pub fn and_random(self) -> (Number, Self) {
         (self.random(), self)
     }
 
-    pub fn positive(&self) -> Number {
-        let int32 = generate_value(&self.numbers, &self.exclusions, &[|n| *n >= 0]);
-        Number::Decimal(int32)
-    }
+    fn generate_decimal_with_filters(&self, extra_filters: &[fn(&i32) -> bool]) -> Number {
+        let mut filters: Vec<fn(&i32) -> bool> = vec![|n| n % 10 != 0];
+        filters.extend_from_slice(extra_filters);
 
-    pub fn negative(&self) -> Number {
-        let int32 = generate_value(&self.numbers, &self.exclusions, &[|n| *n <= 0]);
-        Number::Decimal(int32)
+        let int32 = generate_value(&self.numbers, &self.exclusions, &filters);
+        Number::Decimal {
+            integer: int32,
+            decimals: self.decimal_places,
+        }
     }
 
     #[allow(clippy::len_without_is_empty)]
@@ -140,39 +165,10 @@ impl DecimalGenerator {
     }
 }
 
-// I get 1230
-// Check: Is it divisible by 1? Yes -> Has at MOST 3
-// Check: Is it divisible by 10? Yes -> Has at MOST 2
-// Check: Is it divisible by 100? No -> Does NOT have 1 decimal
-
-/// Checks whether the integer representation of a `Decimal` has the given amount of decimal places
-fn has_at_most_places(num: i32, places: u32) -> bool {
-    let divisor = crate::DECIMAL_FACTOR / 10i32.pow(places);
-    num % divisor == 0
-}
-
 #[cfg(test)]
 mod tests {
-    use crate::num_gen;
-
     use super::*;
-
-    #[test]
-    fn helper_function_works() {
-        assert!(has_at_most_places(1234, 3));
-        assert!(!has_at_most_places(1234, 2));
-        assert!(has_at_most_places(1230, 3));
-        assert!(has_at_most_places(1230, 2));
-        assert!(!has_at_most_places(1230, 1));
-        assert!(has_at_most_places(1200, 3));
-        assert!(has_at_most_places(1200, 2));
-        assert!(has_at_most_places(1200, 1));
-        assert!(!has_at_most_places(1200, 0));
-        assert!(has_at_most_places(1000, 3));
-        assert!(has_at_most_places(1000, 2));
-        assert!(has_at_most_places(1000, 1));
-        assert!(has_at_most_places(1000, 0));
-    }
+    use crate::num_gen;
 
     #[test]
     fn range() {
@@ -181,7 +177,7 @@ mod tests {
             let num = decimal_range.random();
             assert!(num.value() >= 1.2 && num.value() <= 1.4);
             match num {
-                Number::Decimal(d) => assert!(has_at_most_places(d, 2)),
+                Number::Decimal { integer, .. } => assert!(integer % 10 != 0),
                 _ => panic!("num is not a Decimal"),
             }
         }

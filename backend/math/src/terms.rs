@@ -116,26 +116,29 @@ impl Display for Term {
             write!(f, "")?;
         } else {
             match self.coefficient {
-                Number::Integer(_) | Number::Decimal(_) => {
+                Number::Integer(_) | Number::Decimal { .. } => {
                     write!(f, "{}{}", self.coefficient, self.variables)?
                 }
-                Number::Fraction(num, denom) => write!(
+                Number::Fraction {
+                    numerator,
+                    denominator,
+                } => write!(
                     f,
                     "{sign}({}{})/{}",
-                    if num.abs() != 1 || self.variables.list.is_empty() {
-                        num.abs().to_string()
+                    if numerator.abs() != 1 || self.variables.list.is_empty() {
+                        numerator.abs().to_string()
                     } else {
                         String::new()
                     },
                     self.variables,
-                    denom.abs(),
+                    denominator.abs(),
                     sign = if self.coefficient.value() < 0.0 {
                         "-"
                     } else {
                         ""
                     }
                 )?,
-                Number::Irrational(_, s) => write!(f, "{s} {}", self.variables)?,
+                Number::Irrational { symbol, .. } => write!(f, "{symbol} {}", self.variables)?,
             };
         }
         if self.colored && self.coefficient != 0 {

@@ -9,41 +9,35 @@ impl Number {
                     Number::Integer(base.pow(exp as u32))
                 } else {
                     // e.g. 2^-3 = 1/8
-                    Number::Fraction(1, base.pow((-exp) as u32))
+                    Number::Fraction {
+                        numerator: 1,
+                        denominator: base.pow((-exp) as u32),
+                    }
                 }
             }
 
             // Fraction ^ Integer
-            (Number::Fraction(num, denom), Number::Integer(exp)) => {
+            (
+                Number::Fraction {
+                    numerator,
+                    denominator,
+                },
+                Number::Integer(exp),
+            ) => {
                 if exp >= 0 {
                     let e = exp as u32;
-                    Number::Fraction(num.pow(e), denom.pow(e))
+                    Number::Fraction {
+                        numerator: numerator.pow(e),
+                        denominator: denominator.pow(e),
+                    }
                 } else {
                     // (a/b)^-n = b^n / a^n
                     let e = (-exp) as u32;
-                    Number::Fraction(denom.pow(e), num.pow(e))
+                    Number::Fraction {
+                        numerator: denominator.pow(e),
+                        denominator: numerator.pow(e),
+                    }
                 }
-            }
-
-            // Integer ^ Fraction — may produce an irrational (e.g. 2^(1/2) = √2)
-            (Number::Integer(base), Number::Fraction(num, denom)) => {
-                // Only handle the common nth-root case: base^(1/n)
-                if num == 1 {
-                    let result = (*base as f64).powf(1.0 / denom as f64);
-                    let display = format!("{}^(1/{denom})", base);
-                    // Leak is acceptable here since these are computed once; alternatively
-                    // keep a lookup table for common cases.
-                    Number::Irrational(result, Box::leak(display.into_boxed_str()))
-                } else {
-                    Number::from((*base as f64).powf(num as f64 / denom as f64))
-                }
-            }
-
-            // Irrational ^ Integer — keep the symbolic label alive
-            (Number::Irrational(val, label), Number::Integer(exp)) => {
-                let result = val.powi(exp);
-                let display = format!("({label})^{exp}");
-                Number::Irrational(result, Box::leak(display.into_boxed_str()))
             }
 
             // Everything else: fall back to f64

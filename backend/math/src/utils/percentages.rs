@@ -27,21 +27,30 @@ mod change_factor_tests {
     fn check_integer_change_factors(cases: &[(i32, f64)]) {
         for pair in cases {
             let integer = Number::Integer(pair.0);
-            assert_eq!(to_change_factor(integer), Number::decimal_from_f64(pair.1));
+            assert_eq!(
+                to_change_factor(integer),
+                Number::decimal_from_f64(pair.1, 3)
+            );
         }
     }
 
     fn check_fractional_change_factors(cases: &[((i32, i32), f64)]) {
         for pair in cases {
-            let fraction = Number::Fraction(pair.0.0, pair.0.1);
-            assert_eq!(to_change_factor(fraction), Number::decimal_from_f64(pair.1));
+            let fraction = Number::from((pair.0.0, pair.0.1));
+            assert_eq!(
+                to_change_factor(fraction),
+                Number::decimal_from_f64(pair.1, 3)
+            );
         }
     }
 
     fn check_decimal_change_factors(cases: &[(f64, f64)]) {
         for pair in cases {
-            let decimal = Number::decimal_from_f64(pair.0);
-            assert_eq!(to_change_factor(decimal), Number::decimal_from_f64(pair.1));
+            let decimal = Number::decimal_from_f64(pair.0, 3);
+            assert_eq!(
+                to_change_factor(decimal),
+                Number::decimal_from_f64(pair.1, 3)
+            );
         }
     }
 

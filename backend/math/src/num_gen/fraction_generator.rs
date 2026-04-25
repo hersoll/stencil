@@ -167,7 +167,10 @@ impl FractionGenerator {
             ),
         };
 
-        Number::Fraction(num, denom)
+        Number::Fraction {
+            numerator: num,
+            denominator: denom,
+        }
     }
 
     pub fn and_random(mut self) -> (Number, Self) {

@@ -11,10 +11,14 @@ use crate::utils::simplified_fraction;
 use num_traits::{Signed, Zero};
 use std::fmt::Display;
 
-// This limits all numbers to 3 decimals.
-pub const DECIMAL_FACTOR: i32 = 1_000;
-pub const PI: Number = Number::Irrational(std::f64::consts::PI, "pi");
-pub const E: Number = Number::Irrational(std::f64::consts::E, "e");
+pub const PI: Number = Number::Irrational {
+    value: std::f64::consts::PI,
+    symbol: "pi",
+};
+pub const E: Number = Number::Irrational {
+    value: std::f64::consts::E,
+    symbol: "e",
+};
 pub const ZERO: Number = Number::Integer(0);
 
 /// The `Number` enum is used to properly display numbers in Typst while
@@ -23,10 +27,19 @@ pub const ZERO: Number = Number::Integer(0);
 #[derive(Debug, Clone, Copy)]
 pub enum Number {
     Integer(i32),
-    /// The decimal value multiplied by `DECIMAL_FACTOR` (1 000)
-    Decimal(i32),
-    Fraction(i32, i32),
-    Irrational(f64, &'static str),
+    /// (123, 1) = 12,3, (1234, 1) = 123,4, (123, 3) = 0,123
+    Decimal {
+        integer: i32,
+        decimals: u8,
+    },
+    Fraction {
+        numerator: i32,
+        denominator: i32,
+    },
+    Irrational {
+        value: f64,
+        symbol: &'static str,
+    },
 }
 
 /// These implementations lets us do 1.into() or (1, 3).into(),
@@ -42,40 +55,53 @@ impl From<i32> for Number {
 }
 impl From<(i32, i32)> for Number {
     fn from(value: (i32, i32)) -> Self {
-        Self::Fraction(value.0, value.1)
+        Self::Fraction {
+            numerator: value.0,
+            denominator: value.1,
+        }
     }
 }
 
 /// Prefer `Number::decimal_from_f64()` whenever possible
 impl From<f64> for Number {
     fn from(value: f64) -> Self {
-        Number::decimal_from_f64(value)
+        Number::decimal_from_f64(value, 3)
     }
 }
 impl From<(f64, &'static str)> for Number {
     fn from(value: (f64, &'static str)) -> Self {
-        Self::Irrational(value.0, value.1)
+        Self::Irrational {
+            value: value.0,
+            symbol: value.1,
+        }
     }
 }
 
 impl Number {
-    /// Creates a `Number::Decimal` from the given float.
-    ///
-    /// Note that all floats will be rounded to the amount of decimals provided in
-    /// `Number::DECIMAL_FACTOR`
-    pub fn decimal_from_f64(num: f64) -> Number {
-        Self::Decimal(float_to_int(num))
+    /// Creates a `Number::Decimal` from the given float, rounded to the provided number of decimal
+    /// places.
+    pub fn decimal_from_f64(num: f64, places: u8) -> Number {
+        Self::Decimal {
+            integer: float_to_int(num, places),
+            decimals: places,
+        }
     }
     pub fn to_decimal(self) -> Number {
         use Number::*;
         match self {
-            Integer(i) => Decimal(i * DECIMAL_FACTOR),
-            Decimal(d) => Decimal(d),
-            Fraction(num, denom) => {
+            Integer(i) => Decimal {
+                integer: i,
+                decimals: 0,
+            },
+            Decimal { .. } => self,
+            Fraction {
+                numerator: num,
+                denominator: denom,
+            } => {
                 let approximation = num as f64 / denom as f64;
-                Number::decimal_from_f64(approximation)
+                Number::decimal_from_f64(approximation, 3)
             }
-            Irrational(val, _) => Number::decimal_from_f64(val),
+            Irrational { value: val, .. } => Number::decimal_from_f64(val, 3),
         }
     }
 
@@ -86,16 +112,47 @@ impl Number {
     pub fn to_fraction(self) -> Number {
         use Number::*;
         match self {
-            Integer(i) => Fraction(i, 1),
-            // If the decimal number is 1.6 (represented by d = 1600),
-            // we create the fraction 1600 / 1000 and simplify it => 8 / 5
-            Decimal(d) => Fraction(d, DECIMAL_FACTOR).simplify(),
-            Fraction(_, _) => self,
-            Irrational(val, _char) => {
+            Integer(i) => Fraction {
+                numerator: i,
+                denominator: 1,
+            },
+            // If the decimal number is 1.6 (represented by (16, 1)),
+            // we create the fraction 16 / 10 and simplify it => 8 / 5
+            Decimal { integer, decimals } => Fraction {
+                numerator: integer,
+                denominator: get_decimal_divisor(decimals),
+            }
+            .simplify(),
+            Fraction { .. } => self,
+            Irrational { value, .. } => {
                 tracing::error!("Please don't call .to_fraction() on an Irrational!");
                 // We can approximate it anyway :) pi = 22 / 7 amirite?
-                Number::decimal_from_f64(val).to_fraction()
+                Number::decimal_from_f64(value, 3).to_fraction()
             }
+        }
+    }
+
+    // Target: 3 decimals
+    // Currently: 12345, 5 decimals (0.12345)
+    // Need to: Divide by 100
+
+    pub fn round(&self, new_decimal_places: u8) -> Self {
+        use Number::*;
+        match self {
+            Decimal { integer, decimals } => Decimal {
+                integer: {
+                    if *decimals > new_decimal_places {
+                        let new_float = *integer as f64
+                            / 10i32.pow(*decimals as u32 - new_decimal_places as u32) as f64;
+                        new_float.round() as i32
+                    } else {
+                        *integer * 10i32.pow(new_decimal_places as u32 - *decimals as u32)
+                    }
+                },
+                decimals: new_decimal_places,
+            },
+            Irrational { value, .. } => Self::decimal_from_f64(*value, new_decimal_places),
+            _ => *self,
         }
     }
 
@@ -105,21 +162,32 @@ impl Number {
         use Number::*;
         match self {
             Integer(val) => *val as f64,
-            Decimal(val) => *val as f64 / DECIMAL_FACTOR as f64,
-            Fraction(num, denom) => *num as f64 / *denom as f64,
-            Irrational(val, _) => *val,
+            Decimal { integer, decimals } => {
+                *integer as f64 / get_decimal_divisor(*decimals) as f64
+            }
+            Fraction {
+                numerator,
+                denominator,
+            } => *numerator as f64 / *denominator as f64,
+            Irrational { value, .. } => *value,
         }
     }
 
     /// If the Number is a Fraction, simplifies it (to an Integer if possible)
     pub fn simplify(self) -> Number {
         match self {
-            Number::Fraction(num, denom) => {
-                let (s_num, s_denom) = simplified_fraction(num, denom);
+            Number::Fraction {
+                numerator,
+                denominator,
+            } => {
+                let (s_num, s_denom) = simplified_fraction(numerator, denominator);
                 if s_num % s_denom == 0 {
                     Number::Integer(s_num / s_denom)
                 } else {
-                    Number::Fraction(s_num, s_denom)
+                    Number::Fraction {
+                        numerator: s_num,
+                        denominator: s_denom,
+                    }
                 }
             }
             n => n,
@@ -130,9 +198,21 @@ impl Number {
         use Number::*;
         match self {
             Integer(val) => Integer(val.abs()),
-            Decimal(val) => Decimal(val.abs()),
-            Fraction(num, denom) => Fraction(num.abs(), denom.abs()),
-            Irrational(val, s) => Irrational(val.abs(), s),
+            Decimal { integer, decimals } => Decimal {
+                integer: integer.abs(),
+                decimals: *decimals,
+            },
+            Fraction {
+                numerator,
+                denominator,
+            } => Fraction {
+                numerator: numerator.abs(),
+                denominator: denominator.abs(),
+            },
+            Irrational { value, symbol } => Irrational {
+                value: value.abs(),
+                symbol,
+            },
         }
     }
 
@@ -141,7 +221,7 @@ impl Number {
     /// Returns the Number itself if it isn't a fraction.
     pub fn numerator(&self) -> Number {
         match self {
-            Number::Fraction(n, _) => Number::Integer(*n),
+            Number::Fraction { numerator, .. } => Number::Integer(*numerator),
             _ => *self,
         }
     }
@@ -151,7 +231,7 @@ impl Number {
     /// Returns 1 if it isn't a fraction.
     pub fn denominator(&self) -> Number {
         match self {
-            Number::Fraction(_, d) => Number::Integer(*d),
+            Number::Fraction { denominator, .. } => Number::Integer(*denominator),
             _ => Number::Integer(1),
         }
     }
@@ -171,11 +251,16 @@ impl Number {
     ///
     /// Is (probably) only used in Graph.to_typst()
     pub fn for_graphs(&self) -> String {
-        match self {
-            Number::Decimal(_) => strip_num(format!("{self}")),
-            _ => format!("{self}"),
+        if let Number::Decimal { .. } = self {
+            strip_num(format!("{self}"))
+        } else {
+            format!("{self}")
         }
     }
+}
+
+fn get_decimal_divisor(places: u8) -> i32 {
+    10i32.pow(places as u32)
 }
 
 /// Returns the i32 that's used for `Number::Decimal` representation.
@@ -184,10 +269,12 @@ impl Number {
 /// ```
 /// use math::float_to_int;
 /// let float = 3.14;
-/// assert_eq!(float_to_int(float), 3_140);
+/// assert_eq!(float_to_int(float, 3), 3_140);
 /// ```
-pub fn float_to_int(float: f64) -> i32 {
-    (float * DECIMAL_FACTOR as f64).round() as i32
+pub fn float_to_int(float: f64, places: u8) -> i32 {
+    // round 1.234 to one place --> multiply by 10 --> 12.34 --> round to int --> 12 --> store
+    // with decimals = 1
+    (float * get_decimal_divisor(places) as f64).round() as i32
 }
 
 fn strip_num(s: String) -> String {
@@ -207,17 +294,20 @@ impl Display for Number {
         }
         match self {
             Number::Integer(int) => write!(f, "{int}"),
-            Number::Decimal(large_val) => {
+            Number::Decimal { integer, decimals } => {
                 // The decimal value is actually an integer
-                if large_val % DECIMAL_FACTOR == 0 {
-                    write!(f, "{}", *large_val / DECIMAL_FACTOR)
+                if *decimals == 0 {
+                    write!(f, "{}", *integer)
                 } else {
                     // num() is a formatting library which outputs the decimals with commas
-                    write!(f, "num(\"{}\")", *large_val as f64 / DECIMAL_FACTOR as f64)
+                    write!(f, "num(\"{}\")", self.value())
                 }
             }
-            Number::Fraction(num, denom) => write!(f, "{num}/{denom}"),
-            Number::Irrational(_, id) => write!(f, "{id}"),
+            Number::Fraction {
+                numerator,
+                denominator,
+            } => write!(f, "{numerator}/{denominator}"),
+            Number::Irrational { symbol, .. } => write!(f, "{symbol}"),
         }
     }
 }
@@ -228,10 +318,10 @@ impl Zero for Number {
     }
     fn is_zero(&self) -> bool {
         match self {
-            Number::Integer(l) => *l == 0,
-            Number::Decimal(l) => *l == 0,
-            Number::Fraction(n, _) => *n == 0,
-            Number::Irrational(f, _) => *f == 0.0,
+            Number::Integer(val) => *val == 0,
+            Number::Decimal { integer, .. } => *integer == 0,
+            Number::Fraction { numerator, .. } => *numerator == 0,
+            Number::Irrational { value, .. } => *value == 0.0,
         }
     }
 }
@@ -245,10 +335,15 @@ impl PartialEq<Self> for Number {
 impl PartialEq<i32> for Number {
     fn eq(&self, other: &i32) -> bool {
         match self {
-            Number::Integer(l) => l == other,
-            Number::Decimal(l) => *l == other * DECIMAL_FACTOR,
-            Number::Fraction(n, d) => *n == other * d,
-            Number::Irrational(_, _) => false,
+            Number::Integer(val) => val == other,
+            Number::Decimal { integer, decimals } => {
+                *integer == other * get_decimal_divisor(*decimals)
+            }
+            Number::Fraction {
+                numerator,
+                denominator,
+            } => *numerator == other * denominator,
+            Number::Irrational { .. } => false,
         }
     }
 }
@@ -256,10 +351,15 @@ impl PartialEq<i32> for Number {
 impl PartialEq<Number> for i32 {
     fn eq(&self, other: &Number) -> bool {
         match other {
-            Number::Integer(l) => l == self,
-            Number::Decimal(l) => *l == self * DECIMAL_FACTOR,
-            Number::Fraction(n, d) => *n == self * d,
-            Number::Irrational(_, _) => false,
+            Number::Integer(val) => val == self,
+            Number::Decimal { integer, decimals } => {
+                *integer == self * get_decimal_divisor(*decimals)
+            }
+            Number::Fraction {
+                numerator,
+                denominator,
+            } => *numerator == self * denominator,
+            Number::Irrational { .. } => false,
         }
     }
 }
@@ -282,9 +382,14 @@ impl PartialOrd<i32> for Number {
     fn partial_cmp(&self, other: &i32) -> Option<std::cmp::Ordering> {
         match self {
             Number::Integer(i) => i.partial_cmp(other),
-            Number::Decimal(d) => d.partial_cmp(&(other * DECIMAL_FACTOR)),
-            Number::Fraction(n, d) => n.partial_cmp(&(d * other)),
-            Number::Irrational(val, _) => val.partial_cmp(&(*other as f64)),
+            Number::Decimal { integer, decimals } => {
+                integer.partial_cmp(&(other * get_decimal_divisor(*decimals)))
+            }
+            Number::Fraction {
+                numerator,
+                denominator,
+            } => numerator.partial_cmp(&(denominator * other)),
+            Number::Irrational { value, .. } => value.partial_cmp(&(*other as f64)),
         }
     }
 }
@@ -318,10 +423,10 @@ mod tests {
     #[test]
     fn comparison() {
         let integer = Number::Integer(3);
-        let decimal_lower = Number::Decimal(2900);
-        let decimal_higher = Number::Decimal(3100);
-        let fraction_lowest = Number::Fraction(8, 3);
-        let fraction_highest = Number::Fraction(10, 3);
+        let decimal_lower = Number::decimal_from_f64(2.9, 1);
+        let decimal_higher = Number::decimal_from_f64(3.1, 1);
+        let fraction_lowest = Number::from((8, 3));
+        let fraction_highest = Number::from((10, 3));
         let actual_integer = 3i32;
 
         assert!(integer > decimal_lower);
@@ -339,9 +444,9 @@ mod tests {
 
     #[test]
     fn decimal_from_f64_works_for_positive() {
-        let decimal = Number::decimal_from_f64(6.76);
-        let long_decimal_round_up = Number::decimal_from_f64(6.7676767676767);
-        let long_decimal_round_down = Number::decimal_from_f64(6.7671111111111);
+        let decimal = Number::decimal_from_f64(6.76, 2);
+        let long_decimal_round_up = Number::decimal_from_f64(6.7676767676767, 3);
+        let long_decimal_round_down = Number::decimal_from_f64(6.7671111111111, 3);
         assert_eq!(decimal.to_string(), "num(\"6.76\")");
         assert_eq!(long_decimal_round_up.to_string(), "num(\"6.768\")");
         assert_eq!(long_decimal_round_down.to_string(), "num(\"6.767\")");
@@ -349,9 +454,9 @@ mod tests {
 
     #[test]
     fn decimal_from_f64_works_for_negative() {
-        let decimal = Number::decimal_from_f64(-6.76);
-        let long_decimal_round_up = Number::decimal_from_f64(-6.7676767676767);
-        let long_decimal_round_down = Number::decimal_from_f64(-6.7671111111111);
+        let decimal = Number::decimal_from_f64(-6.76, 2);
+        let long_decimal_round_up = Number::decimal_from_f64(-6.7676767676767, 3);
+        let long_decimal_round_down = Number::decimal_from_f64(-6.7671111111111, 3);
         assert_eq!(decimal.to_string(), "num(\"-6.76\")");
         assert_eq!(long_decimal_round_up.to_string(), "num(\"-6.768\")"); // Or will it?
         assert_eq!(long_decimal_round_down.to_string(), "num(\"-6.767\")");
@@ -360,12 +465,18 @@ mod tests {
     #[test]
     fn to_decimal() {
         use Number::*;
-        let decimal_target = Number::decimal_from_f64(1.2);
-        let integer_target = Number::decimal_from_f64(1.0);
+        let decimal_target = Number::decimal_from_f64(1.2, 1);
+        let integer_target = Number::decimal_from_f64(1.0, 0);
 
         let integer = Integer(1);
-        let fraction = Fraction(6, 5);
-        let irrational = Irrational(1.2, "test");
+        let fraction = Fraction {
+            numerator: 6,
+            denominator: 5,
+        };
+        let irrational = Irrational {
+            value: 1.2,
+            symbol: "test",
+        };
         assert_eq!(integer.to_decimal(), integer_target);
         assert_eq!(fraction.to_decimal(), decimal_target);
         assert_eq!(irrational.to_decimal(), decimal_target);
@@ -374,14 +485,31 @@ mod tests {
     #[test]
     fn to_fraction() {
         use Number::*;
-        let fraction_target = Fraction(6, 5);
-        let integer_target = Fraction(2, 1);
+        let fraction_target = Number::from((6, 5));
+        let integer_target = Number::from((2, 1));
 
         let integer = Integer(2);
-        let decimal = Number::decimal_from_f64(1.2);
-        let irrational = Irrational(1.2, "test");
+        let decimal = Number::decimal_from_f64(1.2, 1);
+        let irrational = Irrational {
+            value: 1.2,
+            symbol: "test",
+        };
         assert_eq!(integer.to_fraction(), integer_target);
         assert_eq!(decimal.to_fraction(), fraction_target);
         assert_eq!(irrational.to_fraction(), fraction_target);
+    }
+
+    #[test]
+    fn rounding() {
+        let cases = [
+            (Number::decimal_from_f64(0.45, 2), 0.5),
+            (Number::decimal_from_f64(1.32, 2), 1.3),
+            (Number::decimal_from_f64(10.3, 1), 10.3),
+            (Number::decimal_from_f64(0.03, 2), 0.0),
+        ];
+
+        for case in cases {
+            assert_eq!(case.0.round(1).value(), case.1);
+        }
     }
 }
