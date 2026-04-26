@@ -2,7 +2,7 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from './ServerMessage.svelte';
-  import type { Entry, ChapterEntryRaw, CourseEntry } from './types';
+  import type { Entry, CourseEntry } from './types';
   import DescriptionField from './EditingComponents/DescriptionField.svelte';
   import LanguageHeader from './EditingComponents/LanguageHeader.svelte';
   import NewOrEditingLabel from './EditingComponents/NewOrEditingLabel.svelte';
@@ -22,7 +22,6 @@
   } = $props();
 
   let serverMessage: ServerMessage;
-  let course_chapters: ChapterEntryRaw[] = $state([]);
 
   async function handleSubmit() {
     const method =
@@ -31,13 +30,12 @@
           'POST'
         : // Existing chapter
           'PATCH';
-    const chapter_ids = course_chapters.map(p => p.id);
     const response = await fetch(`${API_URL}/edit/course`, {
       method,
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify([course, chapter_ids])
+      body: JSON.stringify(course)
     });
 
     serverMessage.show(response);
@@ -73,7 +71,7 @@
     <ChaptersField
       --height="28rem"
       entry={course}
-      bind:chapters={course_chapters}
+      bind:chapter_ids={course.chapter_ids}
       bind:dropPriority
       {serverMessage}
       parentDraggedOver={draggedOver}

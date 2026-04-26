@@ -57,18 +57,23 @@ export type CourseEntryRaw = {
   id: number;
   name: string;
   desc: DescriptionTranslations;
+  chapter_ids: number[];
 };
 
 export type ChapterEntryRaw = {
   id: number;
   name: string;
   desc: DescriptionTranslations;
+  course_ids: number[];
+  topic_ids: number[];
 };
 
 export type TopicEntryRaw = {
   id: number;
   name: string;
   desc: DescriptionTranslations;
+  chapter_ids: number[];
+  problem_ids: number[];
 };
 
 export type ProblemEntryRaw = {
@@ -79,6 +84,7 @@ export type ProblemEntryRaw = {
   difficulty: number;
   prefix_id: number | null;
   translations: ProblemTranslations;
+  topic_ids: number[];
 };
 
 export type PrefixEntryRaw = {
@@ -145,21 +151,26 @@ export const defaultCourseEntry = {
   kind: 'course',
   id: -1,
   name: '',
-  desc: { ...defaultDescriptionTranslations }
+  desc: { ...defaultDescriptionTranslations },
+  chapter_ids: []
 } satisfies CourseEntry;
 
 export const defaultChapterEntry = {
   kind: 'chapter',
   id: -1,
   name: '',
-  desc: { ...defaultDescriptionTranslations }
+  desc: { ...defaultDescriptionTranslations },
+  course_ids: [],
+  topic_ids: []
 } satisfies ChapterEntry;
 
 export const defaultTopicEntry = {
   kind: 'topic',
   id: -1,
   name: '',
-  desc: { ...defaultDescriptionTranslations }
+  desc: { ...defaultDescriptionTranslations },
+  chapter_ids: [],
+  problem_ids: []
 } satisfies TopicEntry;
 
 export const defaultProblemEntry = {
@@ -173,7 +184,8 @@ export const defaultProblemEntry = {
   translations: {
     sv: { ...defaultTranslatedProblem },
     en: { ...defaultTranslatedProblem }
-  }
+  },
+  topic_ids: []
 } satisfies ProblemEntry;
 
 export const defaultPrefixEntry = {

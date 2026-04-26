@@ -2,12 +2,7 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from './ServerMessage.svelte';
-  import type {
-    ChapterEntryRaw,
-    Entry,
-    ProblemEntryRaw,
-    TopicEntry
-  } from './types';
+  import type { Entry, TopicEntry } from './types';
   import DescriptionField from './EditingComponents/DescriptionField.svelte';
   import LanguageHeader from './EditingComponents/LanguageHeader.svelte';
   import NewOrEditingLabel from './EditingComponents/NewOrEditingLabel.svelte';
@@ -28,8 +23,6 @@
   } = $props();
 
   let serverMessage: ServerMessage;
-  let topic_problems: ProblemEntryRaw[] = $state([]);
-  let topic_chapters: ChapterEntryRaw[] = $state([]);
 
   async function handleSubmit() {
     const method =
@@ -38,8 +31,6 @@
           'POST'
         : // Existing problem
           'PATCH';
-    const problem_ids = topic_problems.map(p => p.id);
-    const chapter_ids = topic_chapters.map(c => c.id);
     const response = await fetch(`${API_URL}/edit/topic`, {
       method,
       headers: {
@@ -47,8 +38,8 @@
       },
       body: JSON.stringify({
         topic,
-        problems: problem_ids,
-        chapters: chapter_ids
+        problems: topic.problem_ids,
+        chapters: topic.chapter_ids
       })
     });
 
@@ -85,7 +76,7 @@
     <ProblemsField
       --height="26rem"
       {topic}
-      bind:problems={topic_problems}
+      bind:problem_ids={topic.problem_ids}
       bind:dropPriority
       {serverMessage}
       parentDraggedOver={draggedOver}
@@ -93,7 +84,7 @@
     />
     <ChaptersField
       --height="26rem"
-      bind:chapters={topic_chapters}
+      bind:chapter_ids={topic.chapter_ids}
       {serverMessage}
       {draggedEntry}
       parentDraggedOver={draggedOver}

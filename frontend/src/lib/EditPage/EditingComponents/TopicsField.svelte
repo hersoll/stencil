@@ -5,14 +5,14 @@
   import { type Entry, type TopicEntryRaw } from '../types';
 
   let {
-    topics = $bindable(),
+    topic_ids = $bindable(),
     serverMessage,
     draggedEntry,
     dropPriority = $bindable(),
     parentDraggedOver = $bindable(),
     entry = $bindable()
   }: {
-    topics: TopicEntryRaw[];
+    topic_ids: number[];
     serverMessage: ServerMessage;
     draggedEntry: Entry | null;
     dropPriority: boolean;
@@ -23,6 +23,7 @@
   let topicDragDepth = $state(0);
   let draggedTopic = $state<TopicEntryRaw | null>(null);
   let draggedIndex = $state(-1);
+  let topics = $state<TopicEntryRaw[]>([]);
 
   function inTopics(topic: TopicEntryRaw): boolean {
     return topics.find(t => t.id == topic.id) !== undefined;
@@ -103,7 +104,13 @@
   }
 
   async function fetchTopics() {
-    let res = await fetch(`${API_URL}/edit/${entry.kind}/${entry.id}/topics`);
+    let res = await fetch(`${API_URL}/edit/topic/ids`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(topic_ids)
+    });
     if (res.ok) {
       topics = await res.json();
     } else {

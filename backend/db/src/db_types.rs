@@ -61,6 +61,7 @@ pub struct CourseEntry {
     pub id: i32,
     pub name: String,
     pub desc: DescriptionTranslations,
+    pub chapter_ids: Vec<i32>,
 }
 impl HasDesc for CourseEntry {
     fn desc(&self) -> &DescriptionTranslations {
@@ -70,7 +71,12 @@ impl HasDesc for CourseEntry {
 impl From<DbDescRow> for CourseEntry {
     fn from(row: DbDescRow) -> Self {
         let (id, name, desc) = row.into_desc_translations();
-        CourseEntry { id, name, desc }
+        CourseEntry {
+            id,
+            name,
+            desc,
+            chapter_ids: Vec::new(),
+        }
     }
 }
 
@@ -79,6 +85,8 @@ pub struct ChapterEntry {
     pub id: i32,
     pub name: String,
     pub desc: DescriptionTranslations,
+    pub course_ids: Vec<i32>,
+    pub topic_ids: Vec<i32>,
 }
 impl HasDesc for ChapterEntry {
     fn desc(&self) -> &DescriptionTranslations {
@@ -88,7 +96,13 @@ impl HasDesc for ChapterEntry {
 impl From<DbDescRow> for ChapterEntry {
     fn from(row: DbDescRow) -> Self {
         let (id, name, desc) = row.into_desc_translations();
-        ChapterEntry { id, name, desc }
+        ChapterEntry {
+            id,
+            name,
+            desc,
+            course_ids: Vec::new(),
+            topic_ids: Vec::new(),
+        }
     }
 }
 
@@ -97,6 +111,8 @@ pub struct TopicEntry {
     pub id: i32,
     pub name: String,
     pub desc: DescriptionTranslations,
+    pub chapter_ids: Vec<i32>,
+    pub problem_ids: Vec<i32>,
 }
 impl HasDesc for TopicEntry {
     fn desc(&self) -> &DescriptionTranslations {
@@ -106,7 +122,13 @@ impl HasDesc for TopicEntry {
 impl From<DbDescRow> for TopicEntry {
     fn from(row: DbDescRow) -> Self {
         let (id, name, desc) = row.into_desc_translations();
-        TopicEntry { id, name, desc }
+        TopicEntry {
+            id,
+            name,
+            desc,
+            chapter_ids: Vec::new(),
+            problem_ids: Vec::new(),
+        }
     }
 }
 
@@ -119,6 +141,7 @@ pub struct ProblemEntry {
     pub module: String,
     pub prefix_id: Option<i32>,
     pub translations: ProblemTranslations,
+    pub topic_ids: Vec<i32>,
 }
 impl HasDesc for ProblemEntry {
     fn desc(&self) -> &DescriptionTranslations {

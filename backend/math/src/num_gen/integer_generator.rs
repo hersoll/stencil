@@ -96,12 +96,12 @@ impl IntegerGenerator {
     }
 
     pub fn positive(&self) -> Number {
-        let int32 = generate_value(&self.numbers, &self.exclusions, &[|n| *n >= 0]);
+        let int32 = generate_value(&self.numbers, &self.exclusions, &[|n: &i32| *n >= 0]);
         Number::Integer(int32)
     }
 
     pub fn negative(&self) -> Number {
-        let int32 = generate_value(&self.numbers, &self.exclusions, &[|n| *n <= 0]);
+        let int32 = generate_value(&self.numbers, &self.exclusions, &[|n: &i32| *n <= 0]);
         Number::Integer(int32)
     }
 

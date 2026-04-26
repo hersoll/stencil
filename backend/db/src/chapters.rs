@@ -15,6 +15,22 @@ pub async fn get_all_chapter_data() -> Result<Vec<ChapterEntry>> {
     Ok(chapter_data.into_iter().map(ChapterEntry::from).collect())
 }
 
+pub async fn get_chapters_from_ids(chapter_ids: &[i32]) -> Result<Vec<ChapterEntry>> {
+    let pool = crate::get_pool();
+    let chapters = sqlx::query_as!(
+        DbDescRow,
+        r#"SELECT c.id, c.name, c.desc_sv, c.desc_en
+        FROM chapters c
+        WHERE c.id = ANY($1)"#,
+        chapter_ids
+    )
+    .fetch_all(pool)
+    .await
+    .with_context(|| format!("Failed to get chapters with ids {chapter_ids:?}"))?;
+
+    Ok(chapters.into_iter().map(ChapterEntry::from).collect())
+}
+
 pub async fn get_course_chapters(course_id: &i32) -> Result<Vec<ChapterEntry>> {
     let pool = crate::get_pool();
     let chapters = sqlx::query_as!(

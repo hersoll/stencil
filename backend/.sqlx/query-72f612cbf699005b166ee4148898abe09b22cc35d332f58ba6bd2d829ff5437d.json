@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT c.id, c.name, c.desc_sv, c.desc_en\n        FROM courses c\n        WHERE c.id = ANY($1)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "desc_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "desc_en",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "72f612cbf699005b166ee4148898abe09b22cc35d332f58ba6bd2d829ff5437d"
+}

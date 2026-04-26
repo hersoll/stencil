@@ -42,6 +42,7 @@ impl From<DbProblemRow> for ProblemEntry {
                     solution: row.solution_en,
                 },
             },
+            topic_ids: Vec::new(),
         }
     }
 }
@@ -56,6 +57,23 @@ pub async fn get_all_problem_data() -> Result<Vec<ProblemEntry>> {
     )
     .fetch_all(pool)
     .await?;
+
+    Ok(problems.into_iter().map(ProblemEntry::from).collect())
+}
+
+pub async fn get_problems_from_ids(problem_ids: &[i32]) -> Result<Vec<ProblemEntry>> {
+    let pool = crate::get_pool();
+    let problems = sqlx::query_as!(
+        DbProblemRow,
+        r#"SELECT p.id, p.name, p.difficulty, p.desc_sv, p.desc_en, p.question_sv, p.question_en,
+            p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id, p.module 
+        FROM problems p
+        WHERE p.id = ANY($1)"#,
+        problem_ids
+    )
+    .fetch_all(pool)
+    .await
+    .with_context(|| format!("Failed to get problems with ids {problem_ids:?}"))?;
 
     Ok(problems.into_iter().map(ProblemEntry::from).collect())
 }
@@ -171,6 +189,10 @@ pub async fn update_problem_from_entry(problem: ProblemEntry) -> Result<String> 
 
 pub async fn delete_problem_with_id(id: i32) -> Result<String> {
     let pool = crate::get_pool();
+    let _result = sqlx::query!(r#"DELETE FROM topic_problems WHERE problem_id = $1"#, id)
+        .execute(pool)
+        .await
+        .with_context(|| error_context("delete", "problem", id))?;
     let result = sqlx::query!(r#"DELETE FROM problems WHERE id = $1 RETURNING name"#, id)
         .fetch_one(pool)
         .await

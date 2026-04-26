@@ -3,8 +3,9 @@ use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
-    ChapterEntry, chapters, relationships,
-    relationships::{ChapterTopics, CourseChapters},
+    ChapterEntry, chapters, courses,
+    relationships::{self, ChapterTopics, CourseChapters},
+    topics,
 };
 
 use types::errors::ApiError;
@@ -18,6 +19,27 @@ pub struct ChapterPayload {
 
 pub async fn get_chapters() -> Result<impl IntoResponse, ApiError> {
     match chapters::get_all_chapter_data().await {
+        Ok(mut chapters) => {
+            for chapter in chapters.iter_mut() {
+                let topics = topics::get_chapter_topics(&chapter.id)
+                    .await
+                    .map_err(|e| ApiError::Database(e.to_string()))?;
+                chapter.topic_ids = topics.iter().map(|t| t.id).collect();
+                let courses = courses::get_courses_from_chapter(&chapter.id)
+                    .await
+                    .map_err(|e| ApiError::Database(e.to_string()))?;
+                chapter.course_ids = courses.iter().map(|c| c.id).collect();
+            }
+            Ok((StatusCode::OK, Json(json!(chapters))))
+        }
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}
+
+pub async fn get_chapters_from_ids(
+    Json(chapter_ids): Json<Vec<i32>>,
+) -> Result<impl IntoResponse, ApiError> {
+    match chapters::get_chapters_from_ids(&chapter_ids).await {
         Ok(chapters) => Ok((StatusCode::OK, Json(json!(chapters)))),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }

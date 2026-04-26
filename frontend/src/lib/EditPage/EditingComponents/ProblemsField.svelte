@@ -6,14 +6,14 @@
 
   let {
     topic = $bindable(),
-    problems = $bindable(),
+    problem_ids = $bindable(),
     serverMessage,
     draggedEntry,
     dropPriority = $bindable(),
     parentDraggedOver = $bindable()
   }: {
     topic: TopicEntry;
-    problems: ProblemEntryRaw[];
+    problem_ids: number[];
     serverMessage: ServerMessage;
     draggedEntry: Entry | null;
     dropPriority: boolean;
@@ -23,6 +23,7 @@
   let dragDepth = $state(0);
   let draggedProblem = $state<ProblemEntryRaw | null>(null);
   let draggedIndex = $state(-1);
+  let problems = $state<ProblemEntryRaw[]>([]);
 
   function inProblems(problem: ProblemEntryRaw): boolean {
     return problems.find(p => p.id == problem.id) !== undefined;
@@ -103,7 +104,14 @@
   }
 
   async function fetchProblems() {
-    let res = await fetch(`${API_URL}/edit/topic/${topic.id}/problems`);
+    let res = await fetch(`${API_URL}/edit/problem/ids`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(problem_ids)
+    });
+
     if (res.ok) {
       problems = await res.json();
     } else {

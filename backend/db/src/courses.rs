@@ -31,6 +31,22 @@ pub async fn get_course_by_id(id: i32) -> Result<CourseEntry> {
     Ok(CourseEntry::from(course))
 }
 
+pub async fn get_courses_from_ids(course_ids: &[i32]) -> Result<Vec<CourseEntry>> {
+    let pool = crate::get_pool();
+    let courses = sqlx::query_as!(
+        DbDescRow,
+        r#"SELECT c.id, c.name, c.desc_sv, c.desc_en
+        FROM courses c
+        WHERE c.id = ANY($1)"#,
+        course_ids
+    )
+    .fetch_all(pool)
+    .await
+    .with_context(|| format!("Failed to get courses with ids {course_ids:?}"))?;
+
+    Ok(courses.into_iter().map(CourseEntry::from).collect())
+}
+
 pub async fn get_course_by_name(name: &str) -> Result<CourseEntry> {
     let pool = crate::get_pool();
     let course = sqlx::query_as!(

@@ -69,6 +69,8 @@ impl From<SpecialTopicRow> for TopicEntry {
                 sv: value.desc_sv,
                 en: value.desc_en,
             },
+            chapter_ids: Vec::new(),
+            problem_ids: Vec::new(),
         }
     }
 }

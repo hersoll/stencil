@@ -36,6 +36,7 @@ pub fn create_router() -> Router {
         //      PROBLEMS
         // ========================================
         .route("/edit/problem", get(db::edit::get_problems))
+        .route("/edit/problem/ids", post(db::edit::get_problems_from_ids))
         .route("/edit/problem", post(db::edit::create_problem))
         .route("/edit/problem", patch(db::edit::update_problem))
         .route("/edit/problem", delete(db::edit::delete_problem))
@@ -47,6 +48,7 @@ pub fn create_router() -> Router {
         //      TOPICS
         // ========================================
         .route("/edit/topic", get(db::edit::get_topics))
+        .route("/edit/topic/ids", post(db::edit::get_topics_from_ids))
         .route("/edit/topic", post(db::edit::create_topic))
         .route("/edit/topic", patch(db::edit::update_topic))
         .route("/edit/topic", delete(db::edit::delete_topic))
@@ -62,6 +64,7 @@ pub fn create_router() -> Router {
         //      CHAPTERS
         // ========================================
         .route("/edit/chapter", get(db::edit::get_chapters))
+        .route("/edit/chapter/ids", post(db::edit::get_chapters_from_ids))
         .route("/edit/chapter", post(db::edit::create_chapter))
         .route("/edit/chapter", patch(db::edit::update_chapter))
         .route("/edit/chapter", delete(db::edit::delete_chapter))
@@ -77,6 +80,7 @@ pub fn create_router() -> Router {
         //      COURSES
         // ========================================
         .route("/edit/course", get(db::edit::get_courses))
+        .route("/edit/course/ids", post(db::edit::get_courses_from_ids))
         .route("/edit/course", post(db::edit::create_course))
         .route("/edit/course", patch(db::edit::update_course))
         .route("/edit/course", delete(db::edit::delete_course))

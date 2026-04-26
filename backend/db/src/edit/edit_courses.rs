@@ -1,11 +1,31 @@
 use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
-use crate::{CourseEntry, courses, relationships, relationships::CourseChapters};
+use crate::{
+    CourseEntry, chapters, courses,
+    relationships::{self, CourseChapters},
+};
 use types::errors::ApiError;
 
 pub async fn get_courses() -> Result<impl IntoResponse, ApiError> {
     match courses::get_all_course_data().await {
+        Ok(mut courses) => {
+            for course in courses.iter_mut() {
+                let chapters = chapters::get_course_chapters(&course.id)
+                    .await
+                    .map_err(|e| ApiError::Database(e.to_string()))?;
+                course.chapter_ids = chapters.iter().map(|c| c.id).collect();
+            }
+            Ok((StatusCode::OK, Json(json!(courses))))
+        }
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}
+
+pub async fn get_courses_from_ids(
+    Json(course_ids): Json<Vec<i32>>,
+) -> Result<impl IntoResponse, ApiError> {
+    match courses::get_courses_from_ids(&course_ids).await {
         Ok(courses) => Ok((StatusCode::OK, Json(json!(courses)))),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }

@@ -5,14 +5,14 @@
   import { type ChapterEntryRaw, type Entry } from '../types';
 
   let {
-    chapters = $bindable(),
+    chapter_ids = $bindable(),
     serverMessage,
     draggedEntry,
     dropPriority = $bindable(),
     parentDraggedOver,
     entry = $bindable()
   }: {
-    chapters: ChapterEntryRaw[];
+    chapter_ids: number[];
     serverMessage: ServerMessage;
     draggedEntry: Entry | null;
     dropPriority: boolean;
@@ -23,6 +23,7 @@
   let dragDepth = $state(0);
   let draggedChapter = $state<ChapterEntryRaw | null>(null);
   let draggedIndex = $state(-1);
+  let chapters = $state<ChapterEntryRaw[]>([]);
 
   function inChapters(chapter: ChapterEntryRaw): boolean {
     return chapters.find(c => c.id == chapter.id) !== undefined;
@@ -102,7 +103,13 @@
     draggedIndex = -1;
   }
   async function fetchChapter() {
-    let res = await fetch(`${API_URL}/edit/${entry.kind}/${entry.id}/chapters`);
+    let res = await fetch(`${API_URL}/edit/chapter/ids`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(chapter_ids)
+    });
     if (res.ok) {
       chapters = await res.json();
     } else {

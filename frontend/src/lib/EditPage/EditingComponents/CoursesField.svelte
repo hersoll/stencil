@@ -5,14 +5,14 @@
   import { type CourseEntryRaw, type Entry } from '../types';
 
   let {
-    courses = $bindable(),
+    course_ids = $bindable(),
     serverMessage,
     draggedEntry,
     dropPriority = $bindable(),
     parentDraggedOver,
     entry = $bindable()
   }: {
-    courses: CourseEntryRaw[];
+    course_ids: number[];
     serverMessage: ServerMessage;
     draggedEntry: Entry | null;
     dropPriority: boolean;
@@ -23,6 +23,7 @@
   let dragDepth = $state(0);
   let draggedCourse = $state<CourseEntryRaw | null>(null);
   let draggedIndex = $state(-1);
+  let courses = $state<CourseEntryRaw[]>([]);
 
   function inCourses(course: CourseEntryRaw): boolean {
     return courses.find(c => c.id == course.id) !== undefined;
@@ -102,7 +103,13 @@
     draggedIndex = -1;
   }
   async function fetchCourse() {
-    let res = await fetch(`${API_URL}/edit/${entry.kind}/${entry.id}/courses`);
+    let res = await fetch(`${API_URL}/edit/topic/ids`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(course_ids)
+    });
     if (res.ok) {
       courses = await res.json();
     } else {
