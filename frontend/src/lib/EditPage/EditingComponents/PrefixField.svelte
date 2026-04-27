@@ -94,7 +94,7 @@
     grid-template-columns: 4rem 1fr;
     column-gap: 1rem;
     align-items: center;
-    height: 8rem;
+    height: 10rem;
     background-color: var(--bg-light);
     border-radius: 1rem;
     box-shadow: var(--shadow-elevation-low);
@@ -102,6 +102,16 @@
     transition:
       border-color 0.2s ease,
       background-color 0.4s;
+
+    & p {
+      max-height: 3rem;
+      overflow: hidden;
+      display: -webkit-box;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      text-overflow: ellipsis;
+    }
 
     &.parent-dragged {
       background-color: var(--bg);
