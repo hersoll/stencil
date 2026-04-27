@@ -355,16 +355,41 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
     Ok(problem)
 }
 
-// f(x) = 3x - 2. Bestäm f(f(4))
-// #[problem]
-// fn insert_number_twice(name: String, _lang: &Language) -> Result<Problem> {
-//     let (coef, coef_range) = IntRange::without_ones_and_zero(2, 5)?.and_random();
-//     let (constant, const_range) = num_gen::integer().range(-6, 6)?.and_random();
-//     let (val, val_range) = num_gen::integer().range(-8, 8)?.and_random();
-//     let function: Expression = vec![
-//         (coef, 'x').into(),
-//         constant.into()
-//     ].into();
-//     let first_step = function.evaluate(&vec![('x', val)]);
-//
-// }
+// f(x) = 3x - 2. Find the value of f(f(4))
+// Difficulty: 8
+#[problem]
+fn insert_number_twice(name: String, lang: &Language) -> Result<Problem> {
+    let (k, k_range) = num_gen::integer().range(2, 5).and_random();
+    let (m, m_range) = num_gen::integer().range(-6, 6).exclude(0).and_random();
+    let (val, val_range) = num_gen::integer().range(-2, 2).and_random();
+    let function_symbol = symbols::get_function_name()?;
+    let variable = symbols::get_variable()?;
+    let function_expression = (k * variable).and(&Term::from_num(m));
+    let first_step = function_expression.evaluate(&[(variable.0, val)]);
+    let second_step = function_expression.evaluate(&[(variable.0, first_step)]);
+
+    let problem_data = registry::get_problem_data(&name)?;
+    let question = registry::replace_placeholders(
+        problem_data.get_question(lang),
+        &[
+            (
+                "function",
+                format!("{function_symbol}({variable}) = {function_expression}"),
+            ),
+            (
+                "evaluation",
+                format!("{function_symbol}({function_symbol}({val}))"),
+            ),
+        ],
+    );
+    let answer = format!("${function_symbol}({function_symbol}({val})) = {second_step}$");
+    let solution = format!("...{first_step}...{second_step}");
+    Ok(Problem {
+        name,
+        question,
+        answer,
+        solution,
+        identifiers: vec![k, m, val],
+        combinations: k_range.len() * m_range.len() * val_range.len(),
+    })
+}
