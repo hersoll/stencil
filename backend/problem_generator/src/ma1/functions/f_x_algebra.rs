@@ -1,7 +1,7 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    Number, Polynomial, Term, num_gen,
+    Number, Term, num_gen,
     symbols::{self, X},
 };
 use registry::replace_placeholders;
@@ -271,10 +271,10 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
 
     let function_term1: Term = (function_coefficient, X).into();
     let function_term2: Term = function_constant.into();
-    let function_expression: Polynomial = vec![function_term1, function_term2].into();
+    let function_expression = function_term1.and(&function_term2);
     let algebra_term1: Term = (algebra_coefficient, algebra_symbol).into();
     let algebra_term2: Term = algebra_constant.into();
-    let algebra_expression: Polynomial = vec![algebra_term1, algebra_term2].into();
+    let algebra_expression = algebra_term1.and(&algebra_term2);
 
     let function_string = format!("{f_name}({X}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
@@ -320,11 +320,10 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
 
     let function_term1: Term = (function_coefficient, X).into();
     let function_term2: Term = function_constant.into();
-    let mut function_expression: Polynomial = vec![function_term1, function_term2].into();
-    function_expression = function_expression.simplify();
+    let function_expression = function_term1.and(&function_term2).simplify();
     let algebra_term1: Term = (algebra_coefficient, algebra_symbol).into();
     let algebra_term2: Term = algebra_constant.into();
-    let algebra_expression: Polynomial = vec![algebra_term1, algebra_term2].into();
+    let algebra_expression = algebra_term1.and(&algebra_term2);
 
     let function_string = format!("{f_name}({X}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");

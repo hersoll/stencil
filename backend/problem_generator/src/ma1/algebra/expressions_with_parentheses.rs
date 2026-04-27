@@ -258,7 +258,7 @@ fn const_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
     let t2 = Term::from_num_and_vars(coef, unknown);
     let t3 = Term::from_num(constant);
 
-    let exp_1 = Polynomial::from(t1);
+    let exp_1 = Polynomial::from_terms(&[&t1]);
     let exp_2 = Polynomial::from_terms(&[&t2, &t3]);
 
     let question = format!("${exp_1}-({exp_2})$");
@@ -293,7 +293,7 @@ fn var_term_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem>
     let t2 = Term::from_num_and_vars(coef, unknown);
     let t3 = Term::from_num(constant);
 
-    let exp_1 = Polynomial::from(t1);
+    let exp_1 = Polynomial::from_terms(&[&t1]);
     let exp_2 = Polynomial::from_terms(&[&t2, &t3]);
 
     let question = format!("${exp_1}-({exp_2})$");

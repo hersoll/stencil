@@ -119,7 +119,7 @@ impl std::ops::Mul<Polynomial> for Number {
 impl std::ops::Mul<Polynomial> for Term {
     type Output = Polynomial;
     fn mul(self, rhs: Polynomial) -> Self::Output {
-        let lhs: Polynomial = self.into();
+        let lhs = Polynomial::from_terms(&[&self]);
         lhs * rhs
     }
 }

@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, Polynomial, Term, num_gen, symbols::X};
+use math::{Number, Term, num_gen, symbols::X};
 use registry::{get_problem_data, replace_placeholders};
 use types::{lang::Language, problems::Problem};
 use typst_writer::graphing::{Axes, Graph};
@@ -122,7 +122,7 @@ fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
 
     let k_term = k * X;
     let m_term = Term::from_num(m);
-    let expr: Polynomial = vec![k_term, m_term].into();
+    let expr = k_term.and(&m_term);
 
     let question = question_graph;
     let answer = format!("$y = {}$", expr.sorted());

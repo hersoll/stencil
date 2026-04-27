@@ -1,50 +1,31 @@
 mod operations;
-
+use crate::{Number, Term, symbols::Symbol};
 use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
-use crate::{Number, Term, symbols::Symbol};
-
-#[derive(Debug, Clone, Default)]
+/// The [`Polynomial`] groups [`Term`]s together and allows for sorting them, performing calculations
+/// with other [`Polynomial`]s and maybe most importantly, simplifying [`Term`]s together
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Polynomial {
     pub terms: Vec<Term>,
 }
 
-impl From<Term> for Polynomial {
-    fn from(value: Term) -> Self {
-        Polynomial { terms: vec![value] }
-    }
-}
-
-impl<T> From<Vec<T>> for Polynomial
-where
-    T: Into<Term>,
-{
-    fn from(value: Vec<T>) -> Self {
-        Polynomial {
-            terms: value.into_iter().map(|t| t.into()).collect(),
-        }
-    }
-}
-
-impl From<Vec<&Term>> for Polynomial {
-    fn from(value: Vec<&Term>) -> Self {
-        Polynomial {
-            terms: value.iter().map(|&t| t.clone()).collect(),
-        }
-    }
-}
-
 impl Polynomial {
+    /// Constructor
     pub fn new() -> Self {
         Self { terms: Vec::new() }
     }
+
+    /// Creates a [`Polynomial`] from an array of [`Term`]s.
+    ///
+    /// This is more convenient when the [`Polynomial`] consists of multiple [`Term`]s,
+    /// otherwise `.and()` is faster to write
     pub fn from_terms(terms: &[&Term]) -> Self {
         let terms: Vec<Term> = terms.iter().map(|&t| t.clone()).collect();
         Self { terms }
     }
 
-    /// Method used to chain multiple terms during fast Polynomial creation:
+    /// Method used to chain multiple [`Term`]s into an ergonomic [`Polynomial`] creation:
     /// ```rust
     /// use math::Term;
     /// use math::symbols::{X, Y};
@@ -56,18 +37,29 @@ impl Polynomial {
     /// assert_eq!(p1.to_string(), String::from("x+y+2x"));
     /// ```
     ///
-    /// The first `.and()` call comes from the Term struct, but that call returns a Polynomial and
-    /// therefore this method is needed to do the second `.and()` call.
+    /// The first [`.and()`](Term::and) call comes from [`Term::and`], but that call returns a [`Polynomial`] and
+    /// therefore this method is needed to do the second [`.and()`](Polynomial::and) call.
     pub fn and(mut self, term: &Term) -> Polynomial {
         self.push(term.clone());
         self
     }
 
+    /// Ergonomic wrapper for pushing into the inner [`Vec`]
     pub fn push(&mut self, term: Term) {
         self.terms.push(term);
     }
 
-    /// Returns a sorted Vec of every symbol in the polynomial
+    /// Returns a [`Vec`] of every symbol in the [`Polynomial`], sorted alphabetically.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use math::symbols::{X, Y, Z};
+    /// let t1 = X * Z;
+    /// let t2 = 2 * (Y * X);
+    /// let poly = t1.and(&t2);
+    /// assert_ne!(poly.get_symbols(), vec![X, Z, Y]);
+    /// assert_eq!(poly.get_symbols(), vec![X, Y, Z]);
+    /// ```
     pub fn get_symbols(&self) -> Vec<&'static Symbol> {
         let mut symbols: Vec<&'static Symbol> = Vec::new();
         self.terms.iter().for_each(|term| {
@@ -81,12 +73,34 @@ impl Polynomial {
         symbols
     }
 
+    /// Returns a [`Polynomial`] with the order of the [`Term`]s shuffled.
     pub fn random_order(terms: &[&Term]) -> Self {
         let mut owned_terms: Vec<Term> = terms.iter().map(|&t| t.clone()).collect();
         owned_terms.shuffle(&mut rng());
         Self { terms: owned_terms }
     }
 
+    /// Simplifies the [`Polynomial`] using normal math rules.
+    ///
+    /// Will always [`sort()`](Polynomial::sort) the result.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use math::symbols::X;
+    /// let t1 = 2 * X;
+    /// let t2 = 3 * X;
+    /// let polynomial = t1.and(&t2).simplify();
+    /// assert_eq!(polynomial.to_string(), "5x");
+    /// ```
+    ///
+    /// ```rust
+    /// use math::symbols::X;
+    /// let t1 = X * X;
+    /// let t2 = 3 * X;
+    /// let t3 = 2 * (X * X);
+    /// let polynomial = t1.and(&t2).and(&t3).simplify();
+    /// assert_eq!(polynomial.to_string(), "3x^2+3x");
+    /// ```
     pub fn simplify(&self) -> Self {
         let mut result = Polynomial::new();
         for term in &self.terms {
@@ -103,7 +117,35 @@ impl Polynomial {
         result
     }
 
-    /// Sorts the expression in-place
+    /// Sorts the [`Polynomial`] in-place.
+    ///
+    /// When sorting [`Polynomial`]s, some conventions are enforced:
+    /// - If there are two terms where one is positive, the positive term is always placed first
+    /// - Otherwise, the terms are sorted by degree first and alphabetically second
+    /// # Examples
+    /// ```rust
+    /// use math::{Polynomial, Term};
+    /// use math::symbols::{X, Y};
+    /// let xy = X * Y;
+    /// let two_x = 2 * X;
+    /// let x2 = X * X;
+    /// let three_y = 3 * Y;
+    /// let constant = Term::from_num(-4);
+    /// let y2 = Y * Y;
+    /// let mut poly_sorted = Polynomial::from_terms(&[&xy, &two_x, &x2, &three_y, &constant, &y2]);
+    /// poly_sorted.sort();
+    /// // x^2 comes before xy, which comes before y^2
+    /// let poly_target = Polynomial::from_terms(&[&x2, &xy, &y2, &two_x, &three_y, &constant]);
+    /// assert_eq!(poly_sorted, poly_target);
+    /// ```
+    /// Generally, [`sorted()`](Polynomial::sorted) is the more ergonomic method
+    /// ```rust
+    /// use math::symbols::{X, Y};
+    /// let t1 = -(X * X);
+    /// let t2 = 3 * Y;
+    /// // Positive term is placed first
+    /// assert_eq!(t1.and(&t2).sorted(), t2.and(&t1));
+    /// ```
     pub fn sort(&mut self) {
         use std::cmp::Ordering::*;
         match self.terms.len().cmp(&2) {
@@ -113,7 +155,9 @@ impl Polynomial {
         }
     }
 
-    /// Returns a sorted clone of the expression
+    /// Returns a sorted clone of the [`Polynomial`].
+    ///
+    /// To read about the sorting, see [`sort()`](Polynomial::sort).
     pub fn sorted(&self) -> Self {
         let mut cloned = self.clone();
         cloned.sort();
@@ -137,12 +181,18 @@ impl Polynomial {
         self.terms.sort_by(|a, b| b.variables.cmp(&a.variables));
     }
 
+    // TODO: Implement this
     // p1 = "3x + 1"
     // p1.evaluate("x", 3) => 10
     // p2 = "3x + 2y + 1"
     // p2.evaluate("x", 3) => "10 + 2y"
-    // p2.evaluate(&[("x", 3), ("y", 2)]) => 14
+    // p2.evaluate_multiple(&[("x", 3), ("y", 2)]) => 14
 
+    /// Replaces all instance of the [`Symbol`]s in the [`Polynomial`] with the provided numbers,
+    /// and returns the result when the expression is evaluated.
+    ///
+    /// # Panics
+    /// The method currently requires every single [`Symbol`] to be replaced, it can't do partial evaluations.
     pub fn evaluate<T: Into<Number> + Clone>(&self, replacements: &[(&str, T)]) -> Number {
         let replacement_numbers: Vec<(&str, Number)> = replacements
             .iter()
@@ -225,12 +275,12 @@ mod tests {
         let x_y_expression = t_x.and(&t_y);
         assert_eq!(x_y_expression.to_string(), "-3x+2y");
         assert_eq!(x_y_expression.sorted().to_string(), "2y-3x");
-        let x_const_expression: Polynomial = vec![&t_x, &t_const].into();
+        let x_const_expression = t_x.and(&t_const);
         assert_eq!(x_const_expression.sorted().to_string(), "4-3x");
-        let y_const_expression: Polynomial = vec![&t_y, &t_const].into();
+        let y_const_expression = t_y.and(&t_const);
         assert_eq!(y_const_expression.sorted().to_string(), "2y+4");
         let t_const = Term::from(-4);
-        let x_const_expression: Polynomial = vec![&t_x, &t_const].into();
+        let x_const_expression = t_x.and(&t_const);
         assert_eq!(x_const_expression.sorted().to_string(), "-3x-4");
     }
 
@@ -242,7 +292,7 @@ mod tests {
         let expression = t_x.and(&t_x_2).and(&t_const);
         assert_eq!(expression.sorted().to_string(), "2x^2-3x+4");
         let t_y_3 = Term::from_var((Y, 3));
-        let expression: Polynomial = vec![&t_x, &t_x_2, &t_const, &t_y_3].into();
+        let expression = Polynomial::from_terms(&[&t_x, &t_x_2, &t_const, &t_y_3]);
         assert_eq!(expression.sorted().to_string(), "y^3+2x^2-3x+4");
     }
 
