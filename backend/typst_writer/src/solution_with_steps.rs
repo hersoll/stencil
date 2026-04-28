@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-/// Internal representation of a line in the `SolutionWithSteps`
+/// Internal representation of a line in the [`SolutionWithSteps`]
 #[derive(Clone)]
 struct SolutionPart {
     expression: String,
@@ -9,7 +9,7 @@ struct SolutionPart {
 
 /// A structured way to print the parts of solutions that require multiple mathematical steps,
 /// usually where an original expression or equation is manipulated over the course of the steps.
-/// Internally, each line is represented by an `expression` (`String`) and a `step` (`Option<String>`).
+/// Internally, each line is represented by an `expression` ([`String`]) and a `step` ([`Option<String>`]).
 /// Math notation (`$`) is automatically applied to each line.
 ///
 /// In the finished document, it will look something like this:
@@ -49,13 +49,13 @@ impl SolutionWithSteps {
         self
     }
 
-    /// The most generic public version of adding an Expression. Used for things that don't require
+    /// The most generic public version of adding an `expression`. Used for things that don't require
     /// equality signs, like an expression.
     ///
-    /// Generally, `add_equation()` and `add_aligned()` should be used whenever a `=` is included in
+    /// Generally, [`SolutionWithSteps::add_equation()`] and [`SolutionWithSteps::add_aligned()`] should be used whenever a `=` is included in
     /// the expression, since those eliminate a lot `format!()` usage in calls.
     ///
-    /// Note that this class of methods return &mut Self to be able to chain `.add_line().with_step()`
+    /// Note that this class of methods return `&mut Self` to be able to chain `.add_line().with_step()`
     pub fn add_line(&mut self, line: String) -> &mut Self {
         self.add_expression(line);
         self
@@ -73,7 +73,7 @@ impl SolutionWithSteps {
         self
     }
 
-    /// Helper method to avoid having to do self.parts.push(.....) in every public method
+    /// Helper method to avoid having to do `self.parts.push(...)` in every public method
     fn add_expression(&mut self, expr: String) {
         self.parts.push(SolutionPart {
             expression: expr,

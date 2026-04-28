@@ -1,4 +1,7 @@
-use math::{Number, ZERO, functions::Function};
+use math::{
+    Number, ZERO,
+    functions::{Function, FunctionKind},
+};
 
 const LABEL_PADDING: f64 = 0.2;
 
@@ -23,26 +26,23 @@ pub struct GraphAdditions {
 impl Graph {
     /// Constructor that simplifies the creation of a graph of a linear function
     pub fn linear(k: impl Into<Number>, m: impl Into<Number>) -> Graph {
-        let k = k.into();
-        let m = m.into();
         Graph {
             name: None,
-            function: Function::Linear { k, m },
+            function: Function::linear(k, m),
             additions: GraphAdditions::default(),
         }
     }
 
     /// Constructor that simplifies the creation of a graph of a exponential function
     pub fn exponential(c: impl Into<Number>, a: impl Into<Number>) -> Graph {
-        let c = c.into();
         let mut a = a.into();
-        if a <= ZERO {
+        if a <= 0 {
             tracing::error!("a in an exponential function can't be negative (or 0)");
             a = Number::Integer(1)
         }
         Graph {
             name: None,
-            function: Function::Exponential { c, a },
+            function: Function::exponential(c, a),
             additions: GraphAdditions::default(),
         }
     }
@@ -231,11 +231,11 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
     /// Even though this only concerns the function and nothing else about the graph,
     /// the method lives here due to it being typst (and therefore graph) related, not mathematical
     pub fn to_typst(&self) -> String {
-        match self.function {
-            Function::Linear { k, m } => {
+        match self.function.kind {
+            FunctionKind::Linear { k, m } => {
                 format!("{} * float(t) + {}", k.for_graphs(), m.for_graphs())
             }
-            Function::Exponential { c, a } => {
+            FunctionKind::Exponential { c, a } => {
                 format!("{} * calc.pow({}, t)", c.for_graphs(), a.for_graphs())
             }
         }

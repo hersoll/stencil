@@ -1,53 +1,108 @@
-use crate::{Number, ZERO};
+use std::fmt::Display;
 
-/// The Function enum contains information about which kind of function it is (duh), but also numbers
-/// that are specific to that kind of plot. This makes ergonomics easier when matching over the
-/// kinds since you can do Function::Linear(k, m) => ...
-pub enum Function {
+use crate::{
+    Number,
+    symbols::{self, Symbol},
+};
+
+pub struct Function {
+    /// The output [`Symbol`], generally the "y variable"
+    pub name: &'static Symbol,
+    /// The input [`Symbol`], generally the "x variable"
+    pub variable: &'static Symbol,
+    /// Determines whether to print the function as `y(x) = kx + m` (`true`) or `y = kx + m` (`false`)
+    show_as_function: bool,
+    /// Which kind of function is it?
+    pub kind: FunctionKind,
+}
+
+/// The FunctionKind enum contains information about which kind of function it is (duh), but also numbers
+/// that are specific to that kind of function. This makes ergonomics easier when matching over the
+/// kinds since you can do FunctionKind::Linear {k, m} => ...
+pub enum FunctionKind {
     Linear { k: Number, m: Number },
     Exponential { c: Number, a: Number },
 }
 
+impl Default for Function {
+    fn default() -> Self {
+        Self {
+            name: symbols::Y,
+            variable: symbols::X,
+            show_as_function: false,
+            kind: FunctionKind::Linear {
+                k: Number::Integer(1),
+                m: Number::Integer(0),
+            },
+        }
+    }
+}
 impl Function {
     /// Ergonomic constructor
     pub fn linear(k: impl Into<Number>, m: impl Into<Number>) -> Function {
         let k = k.into();
         let m = m.into();
 
-        Function::Linear { k, m }
+        Function {
+            kind: FunctionKind::Linear { k, m },
+            ..Default::default()
+        }
     }
 
     /// Ergonomic constructor
     pub fn exponential(c: impl Into<Number>, a: impl Into<Number>) -> Function {
         let c = c.into();
         let mut a = a.into();
-        if a <= ZERO {
+        if a <= 0 {
             tracing::error!("a in an exponential function can't be negative (or 0)");
             a = Number::Integer(1)
         }
-        Function::Exponential { c, a }
+        Function {
+            kind: FunctionKind::Exponential { c, a },
+            ..Default::default()
+        }
     }
+    /// Set the `name` of the [`Function`].
+    pub fn with_name(mut self, name: &'static Symbol) -> Self {
+        self.name = name;
+        self
+    }
+
+    /// Set the `variable` of the [`Function`].
+    pub fn with_variable(mut self, variable: &'static Symbol) -> Self {
+        self.variable = variable;
+        self
+    }
+
+    /// Makes sure the function prints as `y(x) = ...` rather than `y = ...`
+    pub fn with_function_notation(mut self) -> Self {
+        self.show_as_function = true;
+        self
+    }
+
+    /// Makes sure the function prints as `y = ...` rather than `y(x) = ...`
+    pub fn without_function_notation(mut self) -> Self {
+        self.show_as_function = false;
+        self
+    }
+
     /// Finds the x-value(s) of the function, given a certain y-value.
     ///
-    /// Returns None if the y-value is outside the domain of the function
-    pub fn get_x(&self, y: &Number) -> Option<Vec<Number>> {
-        match self {
-            Function::Linear { k, m } => {
+    /// Returns an empty [`Vec`] if the y-value is outside the domain of the function
+    pub fn get_x(&self, y: &Number) -> Vec<Number> {
+        match self.kind {
+            FunctionKind::Linear { k, m } => {
                 // Don't use this when k = 0, please
-                if *k == ZERO {
-                    None
-                } else {
-                    Some(vec![(y - m) / k])
-                }
+                if k == 0 { vec![] } else { vec![(*y - m) / k] }
             }
-            Function::Exponential { c, a } => {
+            FunctionKind::Exponential { c, a } => {
                 // No solution if y and c have opposite signs, since a positive value can't become
                 // negative through exponentiation
-                if y * c < ZERO {
-                    None
+                if *y * c < 0 {
+                    vec![]
                 } else {
                     // y = c a^x => x = lg(y/c) / lg(a)
-                    Some(vec![((y / c).value().log2() / a.value().log2()).into()])
+                    vec![((*y / c).value().log2() / a.value().log2()).into()]
                 }
             }
         }
@@ -57,136 +112,42 @@ impl Function {
     ///
     /// Returns None if the function isn't defined for that x-value, for example x = 0 and f(x) =
     /// 1/x
+    ///
+    /// Note that this method and [`get_x()`](Self::get_x) are not intended for pretty printing
+    /// their results, but rather to be used in [`Graphs`](typst_writer::graphing::Graph) to get coordinates.
+    /// As such, the Number might not be formatted properly for printing. Use
+    /// [`Evaluable`](super::evaluables::Evaluable) for pretty printing!
     pub fn get_y(&self, x: &Number) -> Option<Number> {
-        match self {
-            Function::Linear { k, m } => Some(k * x + m),
-            Function::Exponential { c, a } => Some(c * a.value().powf(x.value())),
+        match self.kind {
+            FunctionKind::Linear { k, m } => Some(k * x + m),
+            FunctionKind::Exponential { c, a } => Some(c * a.value().powf(x.value())),
         }
     }
 }
 
-// ===================================================
-// TESTS
-// ===================================================
+impl Display for Function {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let function_body = match self.kind {
+            FunctionKind::Linear { k, m } => {
+                format!("{kx}{m:+}", kx = k * self.variable)
+            }
+            FunctionKind::Exponential { c, a } => {
+                format!("{c} dot {a}^{x}", x = self.variable)
+            }
+        };
+        if self.show_as_function {
+            write!(
+                f,
+                "{name}({variable}) = {function_body}",
+                name = self.name,
+                variable = self.variable
+            )?;
+        } else {
+            write!(f, "{name} = {function_body}", name = self.name)?;
+        }
+        Ok(())
+    }
+}
 
 #[cfg(test)]
-mod linear_function_tests {
-    use super::*;
-
-    mod get_y {
-        use super::*;
-
-        #[test]
-        fn integers() {
-            let x = Number::Integer(-1);
-            let cases = [
-                (Function::linear(1, 2), 1),
-                (Function::linear(0, 2), 2),
-                (Function::linear(-3, -5), -2),
-            ];
-
-            for (f, expected) in cases {
-                assert_eq!(f.get_y(&x).unwrap(), expected);
-            }
-        }
-
-        #[test]
-        fn decimals() {
-            let x = Number::decimal_from_f64(2.5, 1);
-
-            let cases = [
-                (
-                    Function::linear(1.1, 1.1),
-                    Number::decimal_from_f64(3.850, 2),
-                ),
-                (Function::linear(0, -3.7), Number::decimal_from_f64(-3.7, 1)),
-                (
-                    Function::linear(1.234, 5),
-                    Number::decimal_from_f64(8.085, 3),
-                ),
-            ];
-
-            for (f, expected) in cases {
-                assert_eq!(f.get_y(&x).unwrap(), expected);
-            }
-        }
-
-        #[test]
-        fn fractions() {
-            let x = Number::from((2, 5));
-
-            let cases = [
-                (Function::linear((3, 5), 1), Number::from((31, 25))),
-                (Function::linear(0, (2, 3)), Number::from((2, 3))),
-                (Function::linear((-4, 3), (1, 6)), Number::from((-11, 30))),
-            ];
-
-            for (f, expected) in cases {
-                assert_eq!(f.get_y(&x).unwrap(), expected);
-            }
-        }
-    }
-
-    mod get_x {
-        use super::*;
-
-        #[test]
-        fn integers() {
-            let y = Number::Integer(4);
-
-            let cases = [
-                (Function::linear(3, 2), Some(vec![Number::from((2, 3))])),
-                (Function::linear(0, 2), None),
-                (Function::linear(-1, -5), Some(vec![Number::Integer(-9)])),
-            ];
-
-            for (f, expected) in cases {
-                assert_eq!(f.get_x(&y), expected);
-            }
-        }
-
-        #[test]
-        fn decimals() {
-            let y = Number::decimal_from_f64(2.5, 1);
-
-            let cases = [
-                (
-                    Function::linear(1.1, 1.1),
-                    Some(vec![Number::decimal_from_f64(1.273, 3)]),
-                ),
-                (Function::linear(0, -3.7), None),
-                (
-                    Function::linear(1.234, 5),
-                    Some(vec![Number::decimal_from_f64(-2.026, 3)]),
-                ),
-            ];
-
-            for (f, expected) in cases {
-                assert_eq!(f.get_x(&y), expected);
-            }
-        }
-
-        #[test]
-        fn fractions() {
-            let y = Number::from((2, 5));
-
-            let cases = [
-                (Function::linear((3, 5), 1), Some(vec![Number::Integer(-1)])),
-                (Function::linear(0, (2, 3)), None),
-                (
-                    Function::linear((-4, 3), (1, 6)),
-                    Some(vec![Number::from((-21, 120))]),
-                ),
-                // Test another fraction representation
-                (
-                    Function::linear((-4, 3), (1, 6)),
-                    Some(vec![Number::from((7, -40))]),
-                ),
-            ];
-
-            for (f, expected) in cases {
-                assert_eq!(f.get_x(&y), expected);
-            }
-        }
-    }
-}
+mod linear_tests;
