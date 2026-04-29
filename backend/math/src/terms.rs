@@ -112,7 +112,7 @@ impl Display for Term {
             } else {
                 write!(f, "-{}", self.variables)?;
             }
-        } else if self.coefficient.value() == 0.0 {
+        } else if self.coefficient.value() == 0.0 && f.sign_plus() {
             write!(f, "")?;
         } else {
             match self.coefficient {

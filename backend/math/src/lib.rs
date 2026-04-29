@@ -8,6 +8,7 @@ mod terms;
 pub mod utils;
 mod variables;
 
+pub use evaluables::*;
 pub use numbers::*;
 pub use polynomials::Polynomial;
 pub use terms::Term;

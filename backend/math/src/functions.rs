@@ -1,7 +1,8 @@
 use std::fmt::Display;
 
 use crate::{
-    Number,
+    Number, Term,
+    evaluables::{Evaluable, Replacements},
     symbols::{self, Symbol},
 };
 
@@ -123,29 +124,128 @@ impl Function {
             FunctionKind::Exponential { c, a } => Some(c * a.value().powf(x.value())),
         }
     }
-}
 
-impl Display for Function {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let function_body = match self.kind {
+    /// Returns the declaration of the function, either `f(x)` or `y`
+    /// (depending on the fields `name` and `variable`, of course).
+    pub fn get_declaration(&self) -> String {
+        if self.show_as_function {
+            format!("{f}({x})", f = self.name, x = self.variable)
+        } else {
+            format!("{y}", y = self.name)
+        }
+    }
+
+    /// Returns the body of the function with the designated variable,
+    /// i.e `3x + 1` or `-2 dot 1.07^x`
+    pub fn get_function_body(&self) -> String {
+        match self.kind {
             FunctionKind::Linear { k, m } => {
-                format!("{kx}{m:+}", kx = k * self.variable)
+                let poly = (k * self.variable).and(&Term::from_num(m));
+                poly.to_string()
             }
             FunctionKind::Exponential { c, a } => {
                 format!("{c} dot {a}^{x}", x = self.variable)
             }
-        };
-        if self.show_as_function {
-            write!(
-                f,
-                "{name}({variable}) = {function_body}",
-                name = self.name,
-                variable = self.variable
-            )?;
-        } else {
-            write!(f, "{name} = {function_body}", name = self.name)?;
         }
-        Ok(())
+    }
+}
+
+impl Display for Function {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{declaration} = {function_body}",
+            declaration = self.get_declaration(),
+            function_body = self.get_function_body()
+        )
+    }
+}
+
+impl Evaluable for Function {
+    fn print_replacements(&self, replacements: &Replacements) -> String {
+        // Should y be replaced with a number?
+        let declaration = if let Some(y_value) = replacements.get_replacement_for(self.name) {
+            format!("colored({y_value})")
+        } else if self.show_as_function // Can we print f(4)?
+            && let Some(x_value) = replacements.get_replacement_for(self.variable)
+        {
+            format!("{f}(colored({x_value}))", f = self.name)
+        } else {
+            self.get_declaration()
+        };
+        // Should x be replaced with a number?
+        let body = if let Some(x_value) = replacements.get_replacement_for(self.variable) {
+            let x = if *x_value < 0 {
+                format!("colored(({x_value}))")
+            } else {
+                format!("colored({x_value})")
+            };
+            match self.kind {
+                FunctionKind::Linear { k, m } => {
+                    let m = Term::from_num(m);
+                    if k == 0 {
+                        format!("{m}")
+                    } else if k == 1 {
+                        format!("{x} {m:+}")
+                    } else {
+                        format!("{k} dot {x} {m:+}")
+                    }
+                }
+                FunctionKind::Exponential { c, a } => {
+                    format!("{c} dot {a}^({x})") // parentheses to make sure it's picked up?
+                }
+            }
+        } else {
+            self.get_function_body()
+        };
+
+        format!("{declaration} = {body}")
+    }
+
+    fn print_evaluation_by_parts(&self, replacements: &Replacements) -> String {
+        // Should y be replaced with a number?
+        let declaration = if let Some(y_value) = replacements.get_replacement_for(self.name) {
+            format!("colored({y_value})")
+        } else if self.show_as_function // Can we print f(4)?
+            && let Some(x_value) = replacements.get_replacement_for(self.variable)
+        {
+            format!("{f}({x_value})", f = self.name)
+        } else {
+            self.get_declaration()
+        };
+        // Should x be replaced with a number?
+        let body = if let Some(x) = replacements.get_replacement_for(self.variable) {
+            match self.kind {
+                FunctionKind::Linear { k, m } => {
+                    let m = Term::from_num(m); // Does not print if 0
+                    if k == 0 {
+                        format!("{m}")
+                    } else {
+                        format!("{kx}{m:+}", kx = k * x)
+                    }
+                }
+                FunctionKind::Exponential { c, a } => {
+                    format!("{c} dot {ax}", ax = a.pow(*x))
+                }
+            }
+        } else {
+            self.get_function_body()
+        };
+        format!("{declaration} = {body}")
+    }
+
+    fn evaluate(&self, replacements: &Replacements) -> Number {
+        if let Some(x) = replacements.get_replacement_for(self.variable) {
+            match self.kind {
+                FunctionKind::Linear { k, m } => k * x + m,
+                FunctionKind::Exponential { c, a } => c * a.pow(*x),
+            }
+        } else {
+            panic!(
+                "Did not provide the correct variable name for evaluate() in the replacements for function with {:#?}, {:#?}",
+                self.name, self.variable
+            );
+        }
     }
 }
 

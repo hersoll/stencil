@@ -1,7 +1,9 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    Number, Term, num_gen,
+    Evaluable, Number, Replacements, Term,
+    functions::Function,
+    num_gen,
     symbols::{self, X},
 };
 use registry::replace_placeholders;
@@ -364,18 +366,20 @@ fn insert_number_twice(name: String, lang: &Language) -> Result<Problem> {
     let (val, val_range) = num_gen::integer().range(-2, 2).and_random();
     let function_symbol = symbols::get_function_name()?;
     let variable = symbols::get_variable()?;
-    let function_expression = (k * variable).and(&Term::from_num(m));
-    let first_step = function_expression.evaluate(&[(variable.0, val)]);
-    let second_step = function_expression.evaluate(&[(variable.0, first_step)]);
+    let function = Function::linear(k, m)
+        .with_variable(variable)
+        .with_name(function_symbol)
+        .with_function_notation();
+    let first_replacement = Replacements::from(vec![(variable, &val)]);
+    let first_step = function.evaluate(&first_replacement);
+    let second_replacement = Replacements::from(vec![(variable, &first_step)]);
+    let second_step = function.evaluate(&second_replacement);
 
     let problem_data = registry::get_problem_data(&name)?;
     let question = registry::replace_placeholders(
         problem_data.get_question(lang),
         &[
-            (
-                "function",
-                format!("{function_symbol}({variable}) = {function_expression}"),
-            ),
+            ("function", function.to_string()),
             (
                 "evaluation",
                 format!("{function_symbol}({function_symbol}({val}))"),
@@ -383,7 +387,13 @@ fn insert_number_twice(name: String, lang: &Language) -> Result<Problem> {
         ],
     );
     let answer = format!("${function_symbol}({function_symbol}({val})) = {second_step}$");
-    let solution = format!("...{first_step}...{second_step}");
+    let solution_hint = problem_data.get_solution(lang);
+    let solution = format!(
+        "{solution_hint} \\ \\ ${first_evaluation} = {first_step} \\
+        {function_symbol}({function_symbol}({val})) = {second_evaluation} = {second_step}$",
+        first_evaluation = function.print_replacements(&first_replacement),
+        second_evaluation = function.print_replacements(&second_replacement)
+    );
     Ok(Problem {
         name,
         question,
