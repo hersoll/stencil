@@ -75,7 +75,7 @@ fn with_coefficient_on_variable(name: String, _lang: &Language) -> Result<Proble
     let coef = num_gen::integer().range(2, 5).random();
     let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
 
-    let t1 = Term::from_num_and_vars(coef, unknown);
+    let t1 = coef * unknown;
     let t2 = Term::from_num(constant);
     let exp = Polynomial::from_terms(&[&t1, &t2]);
 
@@ -141,9 +141,9 @@ fn add_parentheses(name: String, _lang: &Language) -> Result<Problem> {
     let const_1 = const_range.random();
     let const_2 = const_range.random();
 
-    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_var_1 = coef_1 * unknown;
     let mut term_const_1 = Term::from_num(const_1);
-    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_var_2 = coef_2 * unknown;
     let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
@@ -181,9 +181,9 @@ fn subtract_parentheses(name: String, _lang: &Language) -> Result<Problem> {
     let const_1 = const_range.random();
     let const_2 = const_range.random();
 
-    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_var_1 = coef_1 * unknown;
     let mut term_const_1 = Term::from_num(const_1);
-    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_var_2 = coef_2 * unknown;
     let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
@@ -221,7 +221,7 @@ fn negative_factor_and_coef(name: String, _lang: &Language) -> Result<Problem> {
     let (constant, c_range) = num_gen::integer().range(2, 9).and_random();
 
     let t1 = Term::from_num(constant);
-    let t2 = Term::from_num_and_vars(coef, unknown);
+    let t2 = coef * unknown;
     let exp = Polynomial::from_terms(&[&t1, &t2]);
 
     let question = format!("${factor}({exp})$");
@@ -255,7 +255,7 @@ fn const_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
     let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
 
     let t1 = Term::from_num(initial_const);
-    let t2 = Term::from_num_and_vars(coef, unknown);
+    let t2 = coef * unknown;
     let t3 = Term::from_num(constant);
 
     let exp_1 = Polynomial::from_terms(&[&t1]);
@@ -289,8 +289,8 @@ fn var_term_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem>
     let coef = num_gen::integer().range(5, 10).random();
     let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
 
-    let t1 = Term::from_num_and_vars(initial, unknown);
-    let t2 = Term::from_num_and_vars(coef, unknown);
+    let t1 = initial * unknown;
+    let t2 = coef * unknown;
     let t3 = Term::from_num(constant);
 
     let exp_1 = Polynomial::from_terms(&[&t1]);
@@ -332,9 +332,9 @@ fn multiply_and_add(name: String, _lang: &Language) -> Result<Problem> {
     let factor_1 = factor_range.random();
     let factor_2 = factor_range.random();
 
-    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_var_1 = coef_1 * unknown;
     let mut term_const_1 = Term::from_num(const_1);
-    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_var_2 = coef_2 * unknown;
     let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
@@ -375,9 +375,9 @@ fn multiply_first_and_subtract(name: String, _lang: &Language) -> Result<Problem
     let factor_range = num_gen::integer().range(2, 5);
     let factor_1 = factor_range.random();
 
-    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_var_1 = coef_1 * unknown;
     let mut term_const_1 = Term::from_num(const_1);
-    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_var_2 = coef_2 * unknown;
     let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
@@ -420,9 +420,9 @@ fn multiply_and_subtract(name: String, _lang: &Language) -> Result<Problem> {
     let factor_1 = factor_range.random();
     let factor_2 = factor_range.random();
 
-    let mut term_var_1 = Term::from_num_and_vars(coef_1, unknown);
+    let mut term_var_1 = coef_1 * unknown;
     let mut term_const_1 = Term::from_num(const_1);
-    let mut term_var_2 = Term::from_num_and_vars(coef_2, unknown);
+    let mut term_var_2 = coef_2 * unknown;
     let mut term_const_2 = Term::from_num(const_2);
     Term::assert_one_positive(&mut term_var_1, &mut term_const_1);
     Term::assert_one_positive(&mut term_var_2, &mut term_const_2);
@@ -460,8 +460,8 @@ fn multiply_by_variable_term(name: String, _lang: &Language) -> Result<Problem> 
     let coef_1 = coef_range.positive();
     let coef_2 = coef_range.random();
 
-    let factor = Term::from_num_and_vars(coef_1, unknown);
-    let t1 = Term::from_num_and_vars(coef_2, unknown);
+    let factor = coef_1 * unknown;
+    let t1 = coef_2 * unknown;
     let t2 = Term::from(constant);
     let exp = Polynomial::from_terms(&[&t1, &t2]).sorted();
 
@@ -498,8 +498,8 @@ fn one_variable_one_constant(name: String, _lang: &Language) -> Result<Problem> 
         .exclude_multiple(&[-1, 0, 1]);
     let coef_1 = coef_range.random();
     let coef_2 = coef_range.random();
-    let mut t1 = Term::from_num_and_vars(coef_1, unknown);
-    let mut t3 = Term::from_num_and_vars(coef_2, unknown);
+    let mut t1 = coef_1 * unknown;
+    let mut t3 = coef_2 * unknown;
     let mut t2 = Term::from_num(coef_range.random());
     let mut t4 = Term::from_num(coef_range.random());
     Term::assert_one_positive(&mut t1, &mut t2);
@@ -541,8 +541,8 @@ fn one_constant_one_variable(name: String, _lang: &Language) -> Result<Problem> 
         .exclude_multiple(&[-1, 0, 1]);
     let coef_1 = coef_range.random();
     let coef_2 = coef_range.random();
-    let mut t1 = Term::from_num_and_vars(coef_1, unknown);
-    let mut t3 = Term::from_num_and_vars(coef_2, unknown);
+    let mut t1 = coef_1 * unknown;
+    let mut t3 = coef_2 * unknown;
     let mut t2 = Term::from_num(coef_range.random());
     let mut t4 = Term::from_num(coef_range.random());
     Term::assert_one_positive(&mut t1, &mut t2);
@@ -584,14 +584,14 @@ fn multiply_both_by_variable_terms(name: String, _lang: &Language) -> Result<Pro
         .exclude_multiple(&[-1, 0, 1]);
     let coef_1 = coef_range.random();
     let coef_2 = coef_range.random();
-    let mut t1 = Term::from_num_and_vars(coef_1, unknown);
-    let mut t3 = Term::from_num_and_vars(coef_2, unknown);
+    let mut t1 = coef_1 * unknown;
+    let mut t3 = coef_2 * unknown;
     let mut t2 = Term::from_num(coef_range.random());
     let mut t4 = Term::from_num(coef_range.random());
     Term::assert_one_positive(&mut t1, &mut t2);
     Term::assert_one_positive(&mut t3, &mut t4);
-    let factor_1 = Term::from_num_and_vars(coef_range.random(), unknown);
-    let factor_2 = Term::from_num_and_vars(coef_range.random(), unknown);
+    let factor_1 = coef_range.random() * unknown;
+    let factor_2 = coef_range.random() * unknown;
 
     let exp_1 = Polynomial::from_terms(&[&t1, &t2]).sorted();
     let exp_2 = Polynomial::from_terms(&[&t3, &t4]).sorted();
@@ -628,12 +628,12 @@ fn mixing_variables(name: String, _lang: &Language) -> Result<Problem> {
     let coef2 = num_range.random();
     let coef3 = num_range.random();
 
-    let factor1_term = Term::from_num_and_vars(factor1, unknown1);
-    let factor2_term = Term::from_num_and_vars(factor2, unknown2);
+    let factor1_term = factor1 * unknown1;
+    let factor2_term = factor2 * unknown2;
     let mut t1 = Term::from_num(constant);
-    let mut t2 = Term::from_num_and_vars(coef1, unknown2);
-    let mut t3 = Term::from_num_and_vars(coef2, unknown1);
-    let mut t4 = Term::from_num_and_vars(coef3, unknown2);
+    let mut t2 = coef1 * unknown2;
+    let mut t3 = coef2 * unknown1;
+    let mut t4 = coef3 * unknown2;
     Term::assert_one_positive(&mut t1, &mut t2);
     Term::assert_one_positive(&mut t3, &mut t4);
 
@@ -676,14 +676,14 @@ fn mixing_variables_and_exponents(name: String, _lang: &Language) -> Result<Prob
     let coef4 = num_range.random();
     let coef5 = num_range.random();
 
-    let factor1_term = Term::from_num_and_vars(factor1, (unknown1, 2));
-    let factor2_term = Term::from_num_and_vars(factor2, unknown1);
-    let factor3_term = Term::from_num_and_vars(factor3, unknown2);
+    let factor1_term = factor1 * unknown1 * unknown1;
+    let factor2_term = factor2 * unknown1;
+    let factor3_term = factor3 * unknown2;
     let mut term1 = Term::from_num(constant);
-    let mut term2 = Term::from_num_and_vars(coef1, unknown2);
-    let mut term3 = Term::from_num_and_vars(coef2, unknown2);
-    let mut term4 = Term::from_num_and_vars(coef3, unknown1);
-    let mut term5 = Term::from_num_and_vars(coef4, unknown1);
+    let mut term2 = coef1 * unknown2;
+    let mut term3 = coef2 * unknown2;
+    let mut term4 = coef3 * unknown1;
+    let mut term5 = coef4 * unknown1;
     let mut term6 = Term::from_num(coef5);
     Term::assert_one_positive(&mut term1, &mut term2);
     Term::assert_one_positive(&mut term3, &mut term4);

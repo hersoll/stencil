@@ -165,8 +165,8 @@ mod tests {
         let t5 = Term::from_num_and_vars((2, 3), (X, 4));
         assert_eq!((t4 + t5).to_string(), "(14x^4)/3");
 
-        let t6 = Term::from_num_and_vars(1.3, X);
-        let t7 = Term::from_num_and_vars(PI, X);
+        let t6 = Number::decimal_from_f64(1.3, 1) * X;
+        let t7 = PI * X;
         assert_eq!((t6 + t7).to_string(), "num(\"4.442\")x");
     }
 

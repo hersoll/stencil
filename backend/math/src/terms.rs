@@ -14,8 +14,10 @@ pub struct Term {
 }
 
 impl Term {
-    // ########## CONSTRUCTORS ###########
-
+    /// Constructor to explicitly create a [`Term`] from [`Symbols`](Symbol).
+    ///
+    /// Note that if you have more than a `Symbol`, you can do `3 * X` or `X * X`.
+    /// (You can also do `1 * X` instead of calling this function, but that looks a bit odd)
     pub fn from_var<T: Into<Variables>>(var: T) -> Self {
         let var = var.into();
         Self {
@@ -25,6 +27,7 @@ impl Term {
         }
     }
 
+    /// Create a [`Term`] from a single [`Number`], or a primitive that can be converted to a `Number`.
     pub fn from_num<T: Into<Number>>(num: T) -> Self {
         let num = num.into();
         Self {
@@ -34,6 +37,9 @@ impl Term {
         }
     }
 
+    /// Ergonomic constructor when the [`Number`] and [`Symbol`] are tedious to construct manually.
+    ///
+    /// For example: `Term::from_num_and_vars((4, 5), (X, 5))`
     pub fn from_num_and_vars<T: Into<Number>, U: Into<Variables>>(num: T, vars: U) -> Self {
         let num = num.into();
         let vars = vars.into();
@@ -43,7 +49,6 @@ impl Term {
             colored: false,
         }
     }
-    // ###################################
 
     /// Alias method to quickly create a `Polynomial`.
     ///
@@ -60,6 +65,7 @@ impl Term {
         Polynomial::from_terms(&[self, other])
     }
 
+    /// Returns the Term with the coefficient changed to its absolute value.
     pub fn abs(&self) -> Self {
         Self {
             coefficient: self.coefficient.abs(),
@@ -68,6 +74,9 @@ impl Term {
         }
     }
 
+    /// Helper function. Makes sure one of the [`Terms`](Term) are positive.
+    ///
+    /// Makes one positive if not.
     pub fn assert_one_positive(term1: &mut Term, term2: &mut Term) {
         if *term1 < 0 && *term2 < 0 {
             let random = num_gen::integer().range(0, 1).random();
@@ -383,7 +392,10 @@ mod tests {
         let t_m_one = Term::from_num(-1);
         let t_zero = Term::from_num(0);
         let mut t_color = -3 * Term::from_var(&X);
-        let fractional_term = Term::from_num_and_vars((3, 5), &X);
+        let fractional_term = Number::Fraction {
+            numerator: 3,
+            denominator: 5,
+        } * &X;
         t_color.colored = true;
         assert_eq!(format!("{t_a}"), "a");
         assert_eq!(format!("{t_a:+}"), "+a");
