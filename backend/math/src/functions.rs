@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use crate::{
-    Number, Term,
+    Number, Replacement, Term,
     evaluables::{Evaluable, Replacements},
     symbols::{self, Symbol},
     utils,
@@ -163,7 +163,8 @@ impl Display for Function {
 }
 
 impl Evaluable for Function {
-    fn print_replacements(&self, replacements: &Replacements) -> String {
+    fn print_replacements(&self, replacements: &[Replacement]) -> String {
+        let replacements = Replacements::from_array(replacements);
         // Should y be replaced with a number?
         let declaration = if let Some(y_value) = replacements.get_replacement_for(self.name) {
             format!("colored({y_value})")
@@ -199,7 +200,9 @@ impl Evaluable for Function {
         format!("{declaration} = {body}")
     }
 
-    fn print_evaluation_by_parts(&self, replacements: &Replacements) -> String {
+    fn print_evaluation_by_parts(&self, replacements: &[Replacement]) -> String {
+        let replacements = Replacements::from_array(replacements);
+
         // Should y be replaced with a number?
         let declaration = if let Some(y_value) = replacements.get_replacement_for(self.name) {
             format!("colored({y_value})")
@@ -231,7 +234,9 @@ impl Evaluable for Function {
         format!("{declaration} = {body}")
     }
 
-    fn evaluate(&self, replacements: &Replacements) -> Number {
+    fn evaluate(&self, replacements: &[Replacement]) -> Number {
+        let replacements = Replacements::from_array(replacements);
+
         if let Some(x) = replacements.get_replacement_for(self.variable) {
             match self.kind {
                 FunctionKind::Linear { k, m } => k * x + m,

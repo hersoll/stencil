@@ -1,12 +1,9 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, Polynomial, Term, Variables, num_gen, symbols};
+use math::{Evaluable, Number, Polynomial, Term, Variables, num_gen, symbols};
 use rand::seq::IndexedRandom;
 use registry::{get_problem_data, replace_placeholders};
 use types::{lang::Language, problems::Problem};
-use typst_writer::custom_math::polynomials::{
-    show_polynomial_evaluation, show_polynomial_replacements,
-};
 
 /// 3x + 4 + 2x + 1
 /// Difficulty: 0
@@ -169,7 +166,7 @@ fn evaluate_simple(name: String, lang: &Language) -> Result<Problem> {
     let first_term = Term::from_num_and_vars(coef, unknown);
     let const_term = Term::from(constant);
 
-    let expression = Polynomial::from_terms(&[&first_term, &const_term]);
+    let expression = first_term.and(&const_term);
     let replacement_map = vec![
         ("expression", expression.to_string()),
         ("unknown", unknown.to_string()),
@@ -177,14 +174,14 @@ fn evaluate_simple(name: String, lang: &Language) -> Result<Problem> {
     ];
     let problem_data = get_problem_data(&name)?;
     let question = replace_placeholders(problem_data.get_question(lang), &replacement_map);
-    let replacements = vec![(unknown.0, value)];
+    let replacements = [(unknown, &value)];
     let answer = expression.evaluate(&replacements);
 
     let solution = format!(
         "$&{expression} = \\
         = &{} = \\
         = &{}{constant:+} = {answer}$",
-        show_polynomial_replacements(&expression, &replacements),
+        expression.print_replacements(&replacements),
         coef * value,
     );
 
@@ -228,14 +225,14 @@ fn evaluate_intermediate(name: String, lang: &Language) -> Result<Problem> {
             ("value_y", value_y.to_string()),
         ],
     );
-    let replacements = vec![(first_unknown.0, value_x), (second_unknown.0, value_y)];
+    let replacements = [(first_unknown, &value_x), (second_unknown, &value_y)];
     let answer = expression.evaluate(&replacements);
 
     let solution = format!(
         "$&{expression} = \\
         = &{} = \\
         = &{}{:+}{constant:+} = {answer}$",
-        show_polynomial_replacements(&expression, &replacements),
+        expression.print_replacements(&replacements),
         coef * value_x,
         coef_2 * value_y,
     );
@@ -387,15 +384,15 @@ fn evaluate_advanced(name: String, lang: &Language) -> Result<Problem> {
             ("value_y", value_y.to_string()),
         ],
     );
-    let replacements = vec![(first_unknown.0, value_x), (second_unknown.0, value_y)];
+    let replacements = [(first_unknown, &value_x), (second_unknown, &value_y)];
     let answer = expression.evaluate(&replacements);
 
     let solution = format!(
         "$&{expression} = \\
         = &{} = \\
         = &{} = {answer}$",
-        show_polynomial_replacements(&expression, &replacements),
-        show_polynomial_evaluation(&expression, &replacements),
+        expression.print_replacements(&replacements),
+        expression.print_evaluation_by_parts(&replacements),
     );
 
     Ok(Problem {

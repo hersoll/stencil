@@ -1,5 +1,4 @@
 use math::{Number, Term};
-use num_traits::Zero;
 use std::fmt::Display;
 
 /// The space between the operator and number in the solution step-by-step
@@ -17,10 +16,14 @@ pub fn add_number(val: impl Into<Number>) -> String {
 
 pub fn add_term(term: &Term) -> String {
     use std::cmp::Ordering::*;
-    match term.cmp(&Term::zero()) {
-        Greater => format!("+ #h({OPERATOR_SPACE}em) {}", term),
-        Less => format!("- #h({OPERATOR_SPACE}em) {}", term.abs()),
-        Equal => String::new(),
+    match term.partial_cmp(&0) {
+        Some(Greater) => format!("+ #h({OPERATOR_SPACE}em) {}", term),
+        Some(Less) => format!("- #h({OPERATOR_SPACE}em) {}", term.abs()),
+        Some(Equal) => String::new(),
+        None => {
+            tracing::error!("Unable to compare term {term} to 0");
+            String::new()
+        }
     }
 }
 
@@ -36,10 +39,14 @@ pub fn subtract_number(val: impl Into<Number>) -> String {
 
 pub fn subtract_term(term: &Term) -> String {
     use std::cmp::Ordering::*;
-    match term.cmp(&Term::zero()) {
-        Greater => format!("- #h({OPERATOR_SPACE}em) {}", term),
-        Less => format!("+ #h({OPERATOR_SPACE}em) {}", term.abs()),
-        Equal => String::new(),
+    match term.partial_cmp(&0) {
+        Some(Greater) => format!("- #h({OPERATOR_SPACE}em) {}", term),
+        Some(Less) => format!("+ #h({OPERATOR_SPACE}em) {}", term.abs()),
+        Some(Equal) => String::new(),
+        None => {
+            tracing::error!("Unable to compare term {term} to 0");
+            String::new()
+        }
     }
 }
 
@@ -53,8 +60,8 @@ pub fn multiply_number(val: impl Into<Number>) -> String {
     format!("dot {}", parentheses(&val))
 }
 
-pub fn parentheses<T: PartialOrd + Zero + Display>(val: &T) -> String {
-    if val < &T::zero() {
+pub fn parentheses<T: PartialOrd<Number> + Display>(val: &T) -> String {
+    if val < &Number::Integer(0) {
         format!("({val})")
     } else {
         format!("{val}")

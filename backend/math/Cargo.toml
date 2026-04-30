@@ -7,4 +7,3 @@ edition = "2024"
 anyhow = { version = "1.0.100", features = ["backtrace"] }
 rand = { version = "0.9.1"}
 tracing = "0.1.43"
-num-traits = "0.2.19"

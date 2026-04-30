@@ -1,3 +1,6 @@
+use crate::Variables;
+use crate::symbols::Symbol;
+
 use super::super::Number;
 use super::Term;
 
@@ -91,6 +94,18 @@ impl std::ops::Mul<i32> for Term {
         Term {
             coefficient: self.coefficient * rhs,
             variables: self.variables.clone(),
+            colored: self.colored,
+        }
+    }
+}
+
+impl std::ops::Mul<&'static Symbol> for Term {
+    type Output = Term;
+    fn mul(self, rhs: &'static Symbol) -> Self::Output {
+        let rhs = Variables::from(rhs);
+        Term {
+            coefficient: self.coefficient,
+            variables: self.variables * rhs,
             colored: self.colored,
         }
     }

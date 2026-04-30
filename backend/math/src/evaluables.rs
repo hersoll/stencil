@@ -1,10 +1,16 @@
 use super::{Number, symbols::Symbol};
 
 pub type Replacement<'a> = (&'static Symbol, &'a Number);
-pub struct Replacements<'a>(Vec<Replacement<'a>>);
+#[derive(Debug)]
+pub struct Replacements<'a>(pub Vec<Replacement<'a>>);
 
 impl<'a> Replacements<'a> {
-    pub fn from(vec: Vec<Replacement<'a>>) -> Self {
+    pub fn from_array(arr: &[Replacement<'a>]) -> Self {
+        let vec = Vec::from(arr);
+        Replacements(vec)
+    }
+
+    pub fn from_vec(vec: Vec<Replacement<'a>>) -> Self {
         Replacements(vec)
     }
     /// Returns the first [`Number`] which is in the same tuple as `symbol`.
@@ -27,7 +33,7 @@ pub trait Evaluable {
     /// and colors them.
     ///
     /// For example `f(x) = 2x - 1` => `f(3) = 2 dot colored(3) - 1`
-    fn print_replacements(&self, replacements: &Replacements) -> String;
+    fn print_replacements(&self, replacements: &[Replacement]) -> String;
 
     /// Evaluates each "part" of the expression, and prints what each part becomes. Pairs nicely as
     /// a follow up to [`print_replacements()`](Self::print_replacements).
@@ -36,13 +42,13 @@ pub trait Evaluable {
     /// x = 3, m = -1, this should print `"6 - 1"`
     ///
     /// If all [`Symbols`](Symbol) are replaced, the result of the printed calculation should be equivalent to the [`Number`] returned by [`evaluate()`](Self::evaluate).
-    fn print_evaluation_by_parts(&self, replacements: &Replacements) -> String;
+    fn print_evaluation_by_parts(&self, replacements: &[Replacement]) -> String;
 
     /// Replaces every [`Symbol`] with a [`Number`] according to the rules provided in `replacements` and calculates the final result.
     ///
     /// # Panics
     /// Should panic if the provided `Symbols` aren't equivalent to the `Symbols` in `self`.
-    fn evaluate(&self, replacements: &Replacements) -> Number;
+    fn evaluate(&self, replacements: &[Replacement]) -> Number;
 }
 
 #[cfg(test)]
@@ -53,7 +59,7 @@ mod tests {
 
     #[test]
     fn get_replacement_from_symbol() {
-        let replacements = Replacements::from(vec![
+        let replacements = Replacements::from_vec(vec![
             (symbols::A, &Number::Integer(1)),
             (symbols::B, &Number::Integer(2)),
             (symbols::C, &Number::Integer(3)),

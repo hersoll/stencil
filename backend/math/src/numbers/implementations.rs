@@ -1,7 +1,6 @@
 use crate::get_decimal_divisor;
 
 use super::Number;
-use num_traits::Zero;
 use std::fmt::Display;
 
 impl Display for Number {
@@ -56,20 +55,6 @@ impl From<(f64, &'static str)> for Number {
         Self::Irrational {
             value: value.0,
             symbol: value.1,
-        }
-    }
-}
-
-impl Zero for Number {
-    fn zero() -> Self {
-        Number::Integer(0)
-    }
-    fn is_zero(&self) -> bool {
-        match self {
-            Number::Integer(val) => *val == 0,
-            Number::Decimal { integer, .. } => *integer == 0,
-            Number::Fraction { numerator, .. } => *numerator == 0,
-            Number::Irrational { value, .. } => *value == 0.0,
         }
     }
 }

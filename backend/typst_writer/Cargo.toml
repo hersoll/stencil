@@ -12,4 +12,3 @@ registry = {path = "../registry"}
 tracing = "0.1.43"
 anyhow = { version = "1.0.100", features = ["backtrace"] }
 serde = { version = "1.0.219", features = ["derive"] }
-num-traits = "0.2.19"

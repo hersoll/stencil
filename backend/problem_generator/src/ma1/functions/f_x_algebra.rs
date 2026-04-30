@@ -1,7 +1,7 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    Evaluable, Number, Replacements, Term,
+    Evaluable, Number, Term,
     functions::Function,
     num_gen,
     symbols::{self, X},
@@ -370,9 +370,9 @@ fn insert_number_twice(name: String, lang: &Language) -> Result<Problem> {
         .with_variable(variable)
         .with_name(function_symbol)
         .with_function_notation();
-    let first_replacement = Replacements::from(vec![(variable, &val)]);
+    let first_replacement = [(variable, &val)];
     let first_step = function.evaluate(&first_replacement);
-    let second_replacement = Replacements::from(vec![(variable, &first_step)]);
+    let second_replacement = [(variable, &first_step)];
     let second_step = function.evaluate(&second_replacement);
 
     let problem_data = registry::get_problem_data(&name)?;

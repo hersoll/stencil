@@ -1,10 +1,9 @@
 mod operations;
 
-use crate::Polynomial;
 use crate::symbols::Symbol;
+use crate::utils::parenthesize;
+use crate::{Evaluable, Polynomial, Replacement, Replacements};
 use crate::{Number, Variable, Variables, num_gen};
-use num_traits::Pow;
-use num_traits::Zero;
 use std::fmt::Display;
 
 #[derive(Clone, Debug)]
@@ -69,19 +68,8 @@ impl Term {
         }
     }
 
-    pub fn evaluate(&self, replacements: &[(&str, Number)]) -> Number {
-        let mut result = self.coefficient;
-        self.variables.list.iter().for_each(|v| {
-            match replacements.iter().find(|pair| pair.0 == v.symbol.0) {
-                Some(pair) => result *= Number::from(pair.1.value().pow(v.exponent)),
-                None => panic!("Variable {v} not in replacements {replacements:#?}. (Panic should not be reached if called from polynomial.evaluate())"),
-            }
-        });
-        result
-    }
-
     pub fn assert_one_positive(term1: &mut Term, term2: &mut Term) {
-        if *term1 < Term::zero() && *term2 < Term::zero() {
+        if *term1 < 0 && *term2 < 0 {
             let random = num_gen::integer().range(0, 1).random();
             if random == 0 {
                 *term1 = -term1.clone();
@@ -96,23 +84,23 @@ impl Display for Term {
         if self.colored && self.coefficient != 0 {
             write!(f, " colored(")?;
         }
-        if f.sign_plus() && self.coefficient.value() > 0.0 {
+        if f.sign_plus() && self.coefficient > 0 {
             write!(f, "+")?;
         }
 
-        if self.coefficient.value() == 1.0 {
+        if self.coefficient == 1 {
             if self.variables.list.is_empty() {
                 write!(f, "1")?;
             } else {
                 write!(f, "{}", self.variables)?;
             }
-        } else if self.coefficient.value() == -1.0 {
+        } else if self.coefficient == -1 {
             if self.variables.list.is_empty() {
                 write!(f, "-1")?;
             } else {
                 write!(f, "-{}", self.variables)?;
             }
-        } else if self.coefficient.value() == 0.0 && f.sign_plus() {
+        } else if self.coefficient == 0 && f.sign_plus() {
             write!(f, "")?;
         } else {
             match self.coefficient {
@@ -145,6 +133,98 @@ impl Display for Term {
             write!(f, ")")?;
         }
         Ok(())
+    }
+}
+
+impl Evaluable for Term {
+    fn print_replacements(&self, replacements: &[Replacement]) -> String {
+        let replacements = Replacements::from_array(replacements);
+
+        use std::fmt::Write;
+        // Always print the coefficient first
+        let mut s = self.coefficient.to_string();
+        // For each variable, replace that variable with a number (if it exists in Replacements)
+        for (i, var) in self.variables.list.iter().enumerate() {
+            match replacements
+                .0
+                .iter()
+                .find(|(symbol, _)| *symbol == var.symbol)
+            {
+                None => write!(&mut s, "{var}").unwrap(), // No replacement, just print the var
+                Some((_, num)) => {
+                    // Adding dot at the ending if/else and then trimming it here might look
+                    // weird. This is due to the fact that when we have, say, abcd and want to
+                    // replace b with 2, the output should be "a dot 2 dot cd".
+                    //
+                    // The replacement is what causes the surrounding dots, since symbols don't
+                    // have dots between them. That's why we need to add them in the beginning and
+                    // the end, but this means we must trim "dot" on successive replacements
+                    s = s.trim_end_matches(" dot ").to_string();
+                    write!(
+                        &mut s,
+                        " dot colored({}){}{}",
+                        parenthesize(num),
+                        if var.exponent > 1 {
+                            format!("^{}", var.exponent)
+                        } else {
+                            String::new()
+                        },
+                        if i < self.variables.list.len() - 1 {
+                            " dot "
+                        } else {
+                            ""
+                        }
+                    )
+                    .unwrap()
+                }
+            }
+        }
+
+        s
+    }
+
+    // Very similar to print_replacements(), except the exponentiation is calculated
+    // instead of written out.
+    // Will also panic :)
+    fn print_evaluation_by_parts(&self, replacements: &[Replacement]) -> String {
+        let replacements = Replacements::from_array(replacements);
+
+        use std::fmt::Write;
+        // Always print the coefficient first
+        let mut s = self.coefficient.to_string();
+        // For each variable, replace that variable with a number
+        for var in self.variables.list.iter() {
+            match replacements
+                .0
+                .iter()
+                .find(|(symbol, _)| *symbol == var.symbol)
+            {
+                None => panic!("Didn't replace {} in {self}", var.symbol),
+                Some((_, num)) => {
+                    // Compared to print_replacements() , this will always print " dot "
+                    // since everything must be replaced
+                    let evaluated_variable = parenthesize(&num.pow(Number::Integer(var.exponent)));
+                    write!(&mut s, " dot {evaluated_variable}",).unwrap()
+                }
+            }
+        }
+
+        s
+    }
+
+    fn evaluate(&self, replacements: &[Replacement]) -> Number {
+        let replacements = Replacements::from_array(replacements);
+
+        // Term is, say, 3xy^2 => Start the result at 3
+        let mut result = self.coefficient;
+        // For each variable, substitute the symbol for the number and exponentiate it
+        self.variables.list.iter().for_each(|v| {
+            match replacements.0.iter().find(|(symbol, _)| *symbol == v.symbol) {
+                Some((_, num)) => result *= Number::from(num.value().powf(v.exponent as f64)),
+                None => panic!("Variable {v} not in replacements {replacements:#?}. (Panic should not be reached if called from polynomial.evaluate())"),
+            }
+        });
+        result
     }
 }
 
@@ -235,8 +315,29 @@ where
     }
 }
 
-// NOTE: The Ord/Eq is not meant for sorting or anything like that.
-// It's primarily to determine whether a Term is negative or positive for the typst_formatting::step_...
+impl PartialOrd<Number> for Term {
+    fn partial_cmp(&self, other: &Number) -> Option<std::cmp::Ordering> {
+        Some(self.coefficient.cmp(other))
+    }
+}
+
+impl PartialEq<Number> for Term {
+    fn eq(&self, other: &Number) -> bool {
+        self.coefficient == *other
+    }
+}
+
+impl PartialOrd<i32> for Term {
+    fn partial_cmp(&self, other: &i32) -> Option<std::cmp::Ordering> {
+        self.coefficient.partial_cmp(other)
+    }
+}
+
+impl PartialEq<i32> for Term {
+    fn eq(&self, other: &i32) -> bool {
+        self.coefficient == *other
+    }
+}
 
 impl Ord for Term {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -257,18 +358,6 @@ impl PartialEq for Term {
 }
 impl Eq for Term {}
 
-impl Zero for Term {
-    fn zero() -> Self {
-        Self {
-            coefficient: 0.into(),
-            colored: false,
-            variables: Variables::new(),
-        }
-    }
-    fn is_zero(&self) -> bool {
-        self.coefficient == 0
-    }
-}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -302,9 +391,77 @@ mod tests {
         assert_eq!(format!("{t_one:+}"), "+1");
         assert_eq!(format!("{t_m_one}"), "-1");
         assert_eq!(format!("{t_m_one:+}"), "-1");
-        assert_eq!(format!("{t_zero}"), "");
+        assert_eq!(format!("{t_zero}"), "0");
         assert_eq!(format!("{t_zero:+}"), "");
         assert_eq!(format!("{t_color}"), " colored(-3x)");
         assert_eq!(format!("{fractional_term}"), "(3x)/5");
+    }
+
+    mod evaluations {
+        use crate::symbols::{X, Y};
+
+        use super::*;
+
+        #[test]
+        fn evaluates() {
+            let t1 = 3 * X * Y;
+            let t2 = 3 * X * X * Y * Y * Y;
+            let replacements = [(X, &Number::Integer(10)), (Y, &Number::Integer(1))];
+            assert_eq!(t1.evaluate(&replacements), 30);
+            assert_eq!(t1.evaluate(&replacements).to_string(), "30");
+            assert_eq!(t2.evaluate(&replacements), 300);
+            assert_eq!(t2.evaluate(&replacements).to_string(), "300");
+
+            let replacements = [(X, &Number::Integer(-2)), (Y, &Number::Integer(4))];
+            assert_eq!(t1.evaluate(&replacements), -24);
+            assert_eq!(t1.evaluate(&replacements).to_string(), "-24");
+            assert_eq!(t2.evaluate(&replacements), 768);
+            assert_eq!(t2.evaluate(&replacements).to_string(), "768");
+
+            let replacements = vec![(X, &Number::Integer(100)), (Y, &Number::Integer(0))];
+            assert_eq!(t1.evaluate(&replacements), 0);
+            assert_eq!(t1.evaluate(&replacements).to_string(), "0");
+            assert_eq!(t2.evaluate(&replacements), 0);
+            assert_eq!(t2.evaluate(&replacements).to_string(), "0");
+        }
+
+        #[should_panic]
+        #[test]
+        fn evaluate_panics() {
+            let term = 3 * X * Y;
+            let replacements = [(Y, &Number::Integer(1))];
+            assert_eq!(term.evaluate(&replacements), 30); // not everything replaced
+        }
+
+        #[test]
+        fn prints_replacements_and_evaluations() {
+            let term = 2 * X * X * Y;
+            let full_replacement = [(X, &Number::Integer(4)), (Y, &Number::Integer(-2))];
+            let partial_replacement = [(X, &Number::Integer(4))];
+            let zero_replacement = [(X, &Number::Integer(0)), (Y, &Number::Integer(0))];
+
+            assert_eq!(
+                term.print_replacements(&full_replacement),
+                "2 dot colored(4)^2 dot colored((-2))"
+            );
+            assert_eq!(
+                term.print_evaluation_by_parts(&full_replacement),
+                "2 dot 16 dot (-2)"
+            );
+
+            assert_eq!(
+                term.print_replacements(&partial_replacement),
+                "2 dot colored(4)^2 dot y"
+            );
+
+            assert_eq!(
+                term.print_replacements(&zero_replacement),
+                "2 dot colored(0)^2 dot colored(0)"
+            );
+            assert_eq!(
+                term.print_evaluation_by_parts(&zero_replacement),
+                "2 dot 0 dot 0"
+            );
+        }
     }
 }

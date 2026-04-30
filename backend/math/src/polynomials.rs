@@ -1,5 +1,5 @@
 mod operations;
-use crate::{Number, Term, symbols::Symbol};
+use crate::{Evaluable, Number, Replacement, Term, symbols::Symbol};
 use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
@@ -180,39 +180,6 @@ impl Polynomial {
     fn sort_by_variables(&mut self) {
         self.terms.sort_by(|a, b| b.variables.cmp(&a.variables));
     }
-
-    // TODO: Implement this
-    // p1 = "3x + 1"
-    // p1.evaluate("x", 3) => 10
-    // p2 = "3x + 2y + 1"
-    // p2.evaluate("x", 3) => "10 + 2y"
-    // p2.evaluate_multiple(&[("x", 3), ("y", 2)]) => 14
-
-    /// Replaces all instance of the [`Symbol`]s in the [`Polynomial`] with the provided numbers,
-    /// and returns the result when the expression is evaluated.
-    ///
-    /// # Panics
-    /// The method currently requires every single [`Symbol`] to be replaced, it can't do partial evaluations.
-    pub fn evaluate<T: Into<Number> + Clone>(&self, replacements: &[(&str, T)]) -> Number {
-        let replacement_numbers: Vec<(&str, Number)> = replacements
-            .iter()
-            .map(|(c, t)| (*c, t.clone().into()))
-            .collect();
-        let mut symbols: Vec<&str> = replacement_numbers.iter().map(|&(c, _)| c).collect();
-        symbols.sort();
-        let mut my_symbols: Vec<&str> = self.get_symbols().iter().map(|s| s.0).collect();
-        my_symbols.sort();
-        assert_eq!(
-            symbols, my_symbols,
-            "Called evaluate() with a mismatch of variables:"
-        );
-
-        let mut result: Number = 0.into();
-        self.terms.iter().for_each(|term| {
-            result += term.evaluate(&replacement_numbers);
-        });
-        result
-    }
 }
 
 impl Display for Polynomial {
@@ -233,6 +200,42 @@ impl Display for Polynomial {
             }
         }
         Ok(())
+    }
+}
+
+impl Evaluable for Polynomial {
+    fn print_replacements(&self, replacements: &[Replacement]) -> String {
+        let mut s = String::new();
+        self.terms.iter().enumerate().for_each(|(i, term)| {
+            // Terms don't add signs by themselves when printing replacements
+            if i > 0 && term.coefficient > 0 {
+                s += "+";
+            }
+            s += &term.print_replacements(replacements);
+        });
+
+        s
+    }
+
+    fn print_evaluation_by_parts(&self, replacements: &[Replacement]) -> String {
+        let mut s = String::new();
+        self.terms.iter().enumerate().for_each(|(i, term)| {
+            // Terms don't add signs by themselves when printing evaluations
+            if i > 0 && term.coefficient > 0 {
+                s += "+";
+            }
+            s += &term.print_evaluation_by_parts(replacements);
+        });
+
+        s
+    }
+
+    fn evaluate(&self, replacements: &[Replacement]) -> Number {
+        let mut result: Number = Number::Integer(0);
+        self.terms.iter().for_each(|term| {
+            result += term.evaluate(replacements);
+        });
+        result
     }
 }
 
@@ -302,10 +305,8 @@ mod tests {
         let t2: Term = -3 * (X * X);
         let t3: Term = 4 * A;
         let exp = t1.and(&t2).and(&t3);
-        // NOTE: Currently evaluate() is only available for full number evaluation, not algebraic
-        // let partial_evaluation = exp.evaluate(&vec![('x', -1)]);
-        // assert_eq!(partial_evaluation.to_string(), "4a-5");
-        let full_evaluation = exp.evaluate(&[("a", -2), ("x", 5)]);
+        let replacements = [(A, &Number::Integer(-2)), (X, &Number::Integer(5))];
+        let full_evaluation = exp.evaluate(&replacements);
         assert_eq!(full_evaluation.to_string(), "-73");
     }
 }

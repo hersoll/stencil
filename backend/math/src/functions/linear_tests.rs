@@ -75,11 +75,8 @@ mod evaluable {
                 .with_variable(symbols::X)
                 .with_function_notation();
             assert_eq!(
-                func.print_replacements(&Replacements::from(vec![(
-                    symbols::X,
-                    &Number::Integer(2)
-                )])),
-                "f(2) = 4 dot colored(2) -1"
+                func.print_replacements(&[(symbols::X, &Number::Integer(2))]),
+                "f(colored(2)) = 4 dot colored(2) -1"
             );
 
             let func = Function::linear(0, 1)
@@ -87,11 +84,8 @@ mod evaluable {
                 .with_variable(symbols::X)
                 .with_function_notation();
             assert_eq!(
-                func.print_replacements(&Replacements::from(vec![(
-                    symbols::X,
-                    &Number::Integer(2)
-                )])),
-                "f(2) = 1"
+                func.print_replacements(&[(symbols::X, &Number::Integer(2))]),
+                "f(colored(2)) = 1"
             );
         }
 
@@ -102,10 +96,7 @@ mod evaluable {
                 .with_variable(symbols::X)
                 .with_function_notation();
             assert_eq!(
-                func.print_replacements(&Replacements::from(vec![(
-                    symbols::Y,
-                    &Number::Integer(2)
-                )])),
+                func.print_replacements(&[(symbols::Y, &Number::Integer(2))]),
                 "colored(2) = 4x-1"
             );
 
@@ -114,10 +105,7 @@ mod evaluable {
                 .with_variable(symbols::X)
                 .with_function_notation();
             assert_eq!(
-                func.print_replacements(&Replacements::from(vec![(
-                    symbols::Y,
-                    &Number::Integer(2)
-                )])),
+                func.print_replacements(&[(symbols::Y, &Number::Integer(2))]),
                 "colored(2) = 1"
             );
         }
@@ -129,10 +117,7 @@ mod evaluable {
                 .with_variable(symbols::X)
                 .without_function_notation();
             assert_eq!(
-                func.print_replacements(&Replacements::from(vec![(
-                    symbols::A,
-                    &Number::Integer(2)
-                )])),
+                func.print_replacements(&[(symbols::A, &Number::Integer(2))]),
                 "y = 4x-1"
             );
         }
@@ -142,7 +127,7 @@ mod evaluable {
         use super::*;
         #[test]
         fn it_works() {
-            let replacement = Replacements::from(vec![(symbols::X, &Number::Integer(2))]);
+            let replacement = [(symbols::X, &Number::Integer(2))];
             let cases = [
                 (Function::linear(3, 1), "y = 6+1"),
                 (Function::linear(1, -1), "y = 2-1"),
