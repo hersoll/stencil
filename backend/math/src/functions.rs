@@ -4,6 +4,7 @@ use crate::{
     Number, Term,
     evaluables::{Evaluable, Replacements},
     symbols::{self, Symbol},
+    utils,
 };
 
 pub struct Function {
@@ -175,11 +176,7 @@ impl Evaluable for Function {
         };
         // Should x be replaced with a number?
         let body = if let Some(x_value) = replacements.get_replacement_for(self.variable) {
-            let x = if *x_value < 0 {
-                format!("colored(({x_value}))")
-            } else {
-                format!("colored({x_value})")
-            };
+            let x = format!("colored({})", utils::parenthesize(x_value));
             match self.kind {
                 FunctionKind::Linear { k, m } => {
                     let m = Term::from_num(m);
