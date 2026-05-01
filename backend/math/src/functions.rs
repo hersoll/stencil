@@ -12,10 +12,12 @@ pub struct Function {
     pub name: &'static Symbol,
     /// The input [`Symbol`], generally the "x variable"
     pub variable: &'static Symbol,
-    /// Determines whether to print the function as `y(x) = kx + m` (`true`) or `y = kx + m` (`false`)
-    show_as_function: bool,
     /// Which kind of function is it?
     pub kind: FunctionKind,
+    /// Determines whether to print the function as `y(x) = kx + m` (`true`) or `y = kx + m` (`false`)
+    show_as_function: bool,
+    /// Will it print with a `&` for Typst alignment?
+    aligned: bool,
 }
 
 /// The FunctionKind enum contains information about which kind of function it is (duh), but also numbers
@@ -31,11 +33,12 @@ impl Default for Function {
         Self {
             name: symbols::Y,
             variable: symbols::X,
-            show_as_function: false,
             kind: FunctionKind::Linear {
                 k: Number::Integer(1),
                 m: Number::Integer(0),
             },
+            show_as_function: false,
+            aligned: false,
         }
     }
 }
@@ -85,6 +88,12 @@ impl Function {
     /// Makes sure the function prints as `y = ...` rather than `y(x) = ...`
     pub fn without_function_notation(mut self) -> Self {
         self.show_as_function = false;
+        self
+    }
+
+    /// Adds alignment characters (`&`) by the equality sign
+    pub fn aligned(mut self) -> Self {
+        self.aligned = true;
         self
     }
 
@@ -149,14 +158,19 @@ impl Function {
             }
         }
     }
+
+    fn get_equality_sign(&self) -> &'static str {
+        if self.aligned { "&=" } else { "=" }
+    }
 }
 
 impl Display for Function {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{declaration} = {function_body}",
+            "{declaration} {equality_sign} {function_body}",
             declaration = self.get_declaration(),
+            equality_sign = self.get_equality_sign(),
             function_body = self.get_function_body()
         )
     }
@@ -197,7 +211,8 @@ impl Evaluable for Function {
             self.get_function_body()
         };
 
-        format!("{declaration} = {body}")
+        let equality_sign = self.get_equality_sign();
+        format!("{declaration} {equality_sign} {body}")
     }
 
     fn print_evaluation_by_parts(&self, replacements: &[Replacement]) -> String {
@@ -231,7 +246,8 @@ impl Evaluable for Function {
         } else {
             self.get_function_body()
         };
-        format!("{declaration} = {body}")
+        let equality_sign = self.get_equality_sign();
+        format!("{declaration} {equality_sign} {body}")
     }
 
     fn evaluate(&self, replacements: &[Replacement]) -> Number {

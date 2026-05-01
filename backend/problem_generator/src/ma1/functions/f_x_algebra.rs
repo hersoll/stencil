@@ -8,7 +8,7 @@ use math::{
 };
 use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::equation_solution;
+use typst_writer::formatting::{SolutionWithSteps, equation_solution};
 
 // In this module, problems in the form of f(3) is known as "calculating y"
 // and problems like f(x) = 3 are known as "calculating x"
@@ -17,35 +17,39 @@ use typst_writer::formatting::equation_solution;
 /// Difficulty: 0
 #[problem]
 fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
-    let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
-    let (constant, constant_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
-    let x = num_gen::integer().range(1, 5).random();
-    let y = coefficient * x + constant;
+    let (k, k_range) = num_gen::integer().range(2, 10).and_random();
+    let (m, m_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
+    let x_value = num_gen::integer().range(1, 5).random();
+    let y_value = k * x_value + m;
 
-    let expression = format!("y = {}x {:+}", coefficient, constant);
+    let mut expression = Function::linear(k, m).without_function_notation();
     let problem_data = registry::get_problem_data(&name)?;
     let question = replace_placeholders(
         problem_data.get_question(lang),
-        &[("expression", expression), ("x", x.to_string())],
+        &[
+            ("expression", expression.to_string()),
+            ("x", x_value.to_string()),
+        ],
     );
 
-    //NOTE: Use Polynomial and evaluate() with new fancy thing later
-
-    let solution = format!(
-        "y &= {coefficient}x {constant:+} \\x={x} \\
-       y &= {coefficient} dot colored({x}) {constant:+} \\ \\
-       y &= {prod} {constant:+} \\ \\
-       y &= {y} \\",
-        prod = x * coefficient
-    );
+    expression = expression.aligned();
+    let mut solution = SolutionWithSteps::new();
+    solution
+        .add_line(&expression)
+        .with_step(format!("x = {x_value}"));
+    let replacement = [(symbols::X, &x_value)];
+    solution
+        .add_line(expression.print_replacements(&replacement))
+        .add_line(expression.print_evaluation_by_parts(&replacement))
+        .add_aligned("y", y_value);
 
     let problem = Problem {
         name,
         question,
-        answer: format!("$y = {}$", y),
-        solution: equation_solution(&solution),
-        identifiers: vec![coefficient, constant],
-        combinations: coefficient_range.len() * constant_range.len(),
+        answer: format!("$y = {}$", y_value),
+        solution: solution.to_string(),
+        identifiers: vec![k, m],
+        combinations: k_range.len() * m_range.len(),
     };
     Ok(problem)
 }

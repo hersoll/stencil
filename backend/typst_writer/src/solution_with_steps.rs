@@ -56,8 +56,8 @@ impl SolutionWithSteps {
     /// the expression, since those eliminate a lot `format!()` usage in calls.
     ///
     /// Note that this class of methods return `&mut Self` to be able to chain `.add_line().with_step()`
-    pub fn add_line(&mut self, line: String) -> &mut Self {
-        self.add_expression(line);
+    pub fn add_line(&mut self, line: impl Display) -> &mut Self {
+        self.add_expression(format!("{line}"));
         self
     }
 

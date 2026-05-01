@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Evaluable, Number, Polynomial, Term, Variables, num_gen, symbols};
+use math::{Evaluable, Number, Polynomial, Term, VariableList, num_gen, symbols};
 use rand::seq::IndexedRandom;
 use registry::{get_problem_data, replace_placeholders};
 use types::{lang::Language, problems::Problem};
@@ -314,7 +314,7 @@ fn simplify_variable_combinations(name: String, _lang: &Language) -> Result<Prob
     while i < total_terms {
         let coef = num_gen::integer().range(-6, 6).exclude(0).random();
         let (first_exponent, second_exponent) = variable_combinations.choose(&mut rng).unwrap();
-        let vars: Variables = vec![
+        let vars: VariableList = vec![
             (first_unknown, *first_exponent),
             (second_unknown, *second_exponent),
         ]
@@ -362,7 +362,7 @@ fn evaluate_advanced(name: String, lang: &Language) -> Result<Problem> {
             continue;
         }
         exp_combinations.push((first_exponent, second_exponent));
-        let vars: Variables = vec![
+        let vars: VariableList = vec![
             (first_unknown, first_exponent),
             (second_unknown, second_exponent),
         ]
