@@ -3,13 +3,13 @@ mod operations;
 use crate::symbols::Symbol;
 use crate::utils::parenthesize;
 use crate::{Evaluable, Polynomial, Replacement, Replacements};
-use crate::{Number, Variable, Variables, num_gen};
+use crate::{Number, PolynomialVariable, VariableList, num_gen};
 use std::fmt::Display;
 
 #[derive(Clone, Debug)]
 pub struct Term {
     pub coefficient: Number,
-    pub variables: Variables,
+    pub variables: VariableList,
     pub colored: bool,
 }
 
@@ -18,7 +18,7 @@ impl Term {
     ///
     /// Note that if you have more than a `Symbol`, you can do `3 * X` or `X * X`.
     /// (You can also do `1 * X` instead of calling this function, but that looks a bit odd)
-    pub fn from_var<T: Into<Variables>>(var: T) -> Self {
+    pub fn from_var<T: Into<VariableList>>(var: T) -> Self {
         let var = var.into();
         Self {
             coefficient: Number::Integer(1),
@@ -32,7 +32,7 @@ impl Term {
         let num = num.into();
         Self {
             coefficient: num,
-            variables: Variables::new(),
+            variables: VariableList::empty(),
             colored: false,
         }
     }
@@ -40,7 +40,7 @@ impl Term {
     /// Ergonomic constructor when the [`Number`] and [`Symbol`] are tedious to construct manually.
     ///
     /// For example: `Term::from_num_and_vars((4, 5), (X, 5))`
-    pub fn from_num_and_vars<T: Into<Number>, U: Into<Variables>>(num: T, vars: U) -> Self {
+    pub fn from_num_and_vars<T: Into<Number>, U: Into<VariableList>>(num: T, vars: U) -> Self {
         let num = num.into();
         let vars = vars.into();
         Self {
@@ -241,7 +241,7 @@ impl From<Number> for Term {
     fn from(value: Number) -> Self {
         Self {
             coefficient: value,
-            variables: Variables::new(),
+            variables: VariableList::empty(),
             colored: false,
         }
     }
@@ -251,7 +251,7 @@ impl From<i32> for Term {
     fn from(value: i32) -> Self {
         Self {
             coefficient: value.into(),
-            variables: Variables::new(),
+            variables: VariableList::empty(),
             colored: false,
         }
     }
@@ -261,7 +261,7 @@ impl From<(i32, i32)> for Term {
     fn from(value: (i32, i32)) -> Self {
         Self {
             coefficient: value.into(),
-            variables: Variables::new(),
+            variables: VariableList::empty(),
             colored: false,
         }
     }
@@ -271,7 +271,7 @@ impl From<f64> for Term {
     fn from(value: f64) -> Self {
         Self {
             coefficient: value.into(),
-            variables: Variables::new(),
+            variables: VariableList::empty(),
             colored: false,
         }
     }
@@ -281,7 +281,7 @@ impl From<(&'static Symbol, i32)> for Term {
     fn from(value: (&'static Symbol, i32)) -> Self {
         Self {
             coefficient: 1.into(),
-            variables: Variables::from((value.0, value.1)),
+            variables: VariableList::from((value.0, value.1)),
             colored: false,
         }
     }
@@ -291,17 +291,17 @@ impl From<&'static Symbol> for Term {
     fn from(value: &'static Symbol) -> Self {
         Self {
             coefficient: 1.into(),
-            variables: Variables::from(value),
+            variables: VariableList::from(value),
             colored: false,
         }
     }
 }
 
-impl<T> From<(T, Variables)> for Term
+impl<T> From<(T, VariableList)> for Term
 where
     T: Into<Number>,
 {
-    fn from(value: (T, Variables)) -> Self {
+    fn from(value: (T, VariableList)) -> Self {
         Term {
             coefficient: value.0.into(),
             variables: value.1,
@@ -313,12 +313,12 @@ where
 impl<T, U> From<(T, U)> for Term
 where
     T: Into<Number>,
-    U: Into<Variable>,
+    U: Into<PolynomialVariable>,
 {
     fn from(value: (T, U)) -> Self {
         Self {
             coefficient: value.0.into(),
-            variables: Variables::from(value.1),
+            variables: VariableList::from(value.1),
             colored: false,
         }
     }

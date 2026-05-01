@@ -12,5 +12,5 @@ pub use evaluables::*;
 pub use numbers::*;
 pub use polynomials::Polynomial;
 pub use terms::Term;
-pub use variables::Variable;
-pub use variables::Variables;
+pub use variables::PolynomialVariable;
+pub use variables::VariableList;
