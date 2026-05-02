@@ -1,4 +1,5 @@
 use anyhow::Result;
+use db::HasReplacements;
 use macros::problem;
 use math::num_gen;
 use types::{lang::Language, problems::Problem};
@@ -11,11 +12,9 @@ fn integer_increase_to_factor(name: String, lang: &Language) -> Result<Problem> 
     let increase = increase_range.random();
     let change_factor = math::utils::to_change_factor(increase);
 
-    let problem_translations = registry::get_problem_data(&name)?;
-    let question = registry::replace_placeholders(
-        problem_translations.get_question(lang),
-        &[("percent", increase.to_string())],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("percent", increase)]);
 
     let solution = format!(
         "$100% + {increase}% = {total}% = {change_factor}$",
@@ -39,11 +38,9 @@ fn integer_decrease_to_factor(name: String, lang: &Language) -> Result<Problem> 
     let decrease = decrease_range.random();
     let change_factor = math::utils::to_change_factor(-decrease);
 
-    let problem_translations = registry::get_problem_data(&name)?;
-    let question = registry::replace_placeholders(
-        problem_translations.get_question(lang),
-        &[("percent", decrease.to_string())],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("percent", decrease)]);
 
     let solution = format!(
         "$100% - {decrease}% = {total}% = {change_factor}$",
@@ -67,11 +64,9 @@ fn factor_to_increase_two_decimals(name: String, lang: &Language) -> Result<Prob
     let change_factor = factor_range.random();
     let increase = math::utils::change_factor_to_percentage(change_factor);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let answer = registry::replace_placeholders(
-        problem_data.get_answer(lang),
-        &[("percent", increase.to_string())],
-    );
+    let answer = registry::get_problem_data(&name)?
+        .get_answer(lang)
+        .replace_placeholders(&[("percent", increase)]);
     let solution = format!(
         "${change_factor} = {total}% = 100% + {increase}%$",
         total = 100 + increase
@@ -94,11 +89,10 @@ fn factor_to_decrease_two_decimals(name: String, lang: &Language) -> Result<Prob
     let change_factor = factor_range.random();
     let decrease = math::utils::change_factor_to_percentage(change_factor).abs();
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let answer = registry::replace_placeholders(
-        problem_data.get_answer(lang),
-        &[("percent", decrease.to_string())],
-    );
+    let answer = registry::get_problem_data(&name)?
+        .get_answer(lang)
+        .replace_placeholders(&[("percent", decrease)]);
+
     let solution = format!(
         "${change_factor} = {total}% = 100% - {decrease}%$",
         total = 100 - decrease
@@ -121,11 +115,10 @@ fn factor_to_large_decrease_two_decimals(name: String, lang: &Language) -> Resul
     let change_factor = factor_range.random();
     let decrease = math::utils::change_factor_to_percentage(change_factor).abs();
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let answer = registry::replace_placeholders(
-        problem_data.get_answer(lang),
-        &[("percent", decrease.to_string())],
-    );
+    let answer = registry::get_problem_data(&name)?
+        .get_answer(lang)
+        .replace_placeholders(&[("percent", decrease)]);
+
     let solution = format!(
         "${change_factor} = {total}% = 100% - {decrease}%$",
         total = 100 - decrease
@@ -148,11 +141,10 @@ fn factor_to_increase_one_decimal(name: String, lang: &Language) -> Result<Probl
     let change_factor = factor_range.random();
     let increase = math::utils::change_factor_to_percentage(change_factor);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let answer = registry::replace_placeholders(
-        problem_data.get_answer(lang),
-        &[("percent", increase.to_string())],
-    );
+    let answer = registry::get_problem_data(&name)?
+        .get_answer(lang)
+        .replace_placeholders(&[("percent", increase)]);
+
     let solution = format!(
         "${change_factor} = {total}% = 100% + {increase}%$",
         total = 100 + increase
@@ -175,11 +167,10 @@ fn factor_to_decrease_one_decimal(name: String, lang: &Language) -> Result<Probl
     let change_factor = factor_range.random();
     let decrease = math::utils::change_factor_to_percentage(change_factor).abs();
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let answer = registry::replace_placeholders(
-        problem_data.get_answer(lang),
-        &[("percent", decrease.to_string())],
-    );
+    let answer = registry::get_problem_data(&name)?
+        .get_answer(lang)
+        .replace_placeholders(&[("percent", decrease)]);
+
     let solution = format!(
         "${change_factor} = {total}% = 100% - {decrease}%$",
         total = 100 - decrease
@@ -202,11 +193,10 @@ fn factor_to_increase_above_2(name: String, lang: &Language) -> Result<Problem> 
     let change_factor = factor_range.random();
     let increase = math::utils::change_factor_to_percentage(change_factor);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let answer = registry::replace_placeholders(
-        problem_data.get_answer(lang),
-        &[("percent", increase.to_string())],
-    );
+    let answer = registry::get_problem_data(&name)?
+        .get_answer(lang)
+        .replace_placeholders(&[("percent", increase)]);
+
     let solution = format!(
         "${change_factor} = {total}% = 100% + {increase}%$",
         total = 100 + increase
@@ -229,11 +219,10 @@ fn factor_to_increase_large_number(name: String, lang: &Language) -> Result<Prob
     let change_factor = factor_range.random();
     let increase = math::utils::change_factor_to_percentage(change_factor);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let answer = registry::replace_placeholders(
-        problem_data.get_answer(lang),
-        &[("percent", increase.to_string())],
-    );
+    let answer = registry::get_problem_data(&name)?
+        .get_answer(lang)
+        .replace_placeholders(&[("percent", increase)]);
+
     let solution = format!(
         "${change_factor} = {total}% = 100% + {increase}%$",
         total = 100 + increase
@@ -256,11 +245,9 @@ fn decimal_increase_to_factor(name: String, lang: &Language) -> Result<Problem> 
     let increase = increase_range.random();
     let change_factor = math::utils::to_change_factor(increase);
 
-    let problem_translations = registry::get_problem_data(&name)?;
-    let question = registry::replace_placeholders(
-        problem_translations.get_question(lang),
-        &[("percent", increase.to_string())],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("percent", increase)]);
 
     let solution = format!(
         "$100% + {increase}% = {total}% = {change_factor}$",
@@ -284,11 +271,9 @@ fn decimal_decrease_to_factor(name: String, lang: &Language) -> Result<Problem> 
     let decrease = decrease_range.random();
     let change_factor = math::utils::to_change_factor(-decrease);
 
-    let problem_translations = registry::get_problem_data(&name)?;
-    let question = registry::replace_placeholders(
-        problem_translations.get_question(lang),
-        &[("percent", decrease.to_string())],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("percent", decrease)]);
 
     let solution = format!(
         "$100% - {decrease}% = {total}% = {change_factor}$",
@@ -312,11 +297,9 @@ fn large_decimal_increase_to_factor(name: String, lang: &Language) -> Result<Pro
     let increase = increase_range.random();
     let change_factor = math::utils::to_change_factor(increase);
 
-    let problem_translations = registry::get_problem_data(&name)?;
-    let question = registry::replace_placeholders(
-        problem_translations.get_question(lang),
-        &[("percent", increase.to_string())],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("percent", increase)]);
 
     let solution = format!(
         "$100% + {increase}% = {total}% = {change_factor}$",
@@ -340,11 +323,9 @@ fn large_decimal_decrease_to_factor(name: String, lang: &Language) -> Result<Pro
     let decrease = decrease_range.random();
     let change_factor = math::utils::to_change_factor(-decrease);
 
-    let problem_translations = registry::get_problem_data(&name)?;
-    let question = registry::replace_placeholders(
-        problem_translations.get_question(lang),
-        &[("percent", decrease.to_string())],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("percent", decrease)]);
 
     let solution = format!(
         "$100% - {decrease}% = {total}% = {change_factor}$",

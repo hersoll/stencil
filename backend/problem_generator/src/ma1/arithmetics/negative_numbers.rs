@@ -1,7 +1,7 @@
 use anyhow::Result;
+use db::HasReplacements;
 use macros::problem;
 use math::num_gen;
-use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::{
     drawing::NumberLine,
@@ -19,18 +19,16 @@ fn subtract_larger(name: String, lang: &Language) -> Result<Problem> {
         .build_string()?;
 
     let answer = first - second;
-    let problem_data = registry::get_problem_data(&name)?;
-    let solution = replace_placeholders(
-        problem_data.get_solution(lang),
-        &[
+    let solution = registry::get_problem_data(&name)?
+        .get_solution(lang)
+        .replace_placeholders(&[
             ("number_line", number_line),
             (
                 "reverse",
                 format!("${second} - {first} = {result}$", result = second - first),
             ),
             ("normal", format!("${first} - {second} = {answer}$")),
-        ],
-    );
+        ]);
 
     Ok(Problem {
         name,
@@ -113,18 +111,15 @@ fn start_negative_addition_below_zero(name: String, lang: &Language) -> Result<P
     let number_line = NumberLine::from_ends(-10, 0)
         .with_arc(first, answer, add_number(second))
         .build_string()?;
-    let problem_data = registry::get_problem_data(&name)?;
-    let solution_str = problem_data.get_solution(lang);
-    let solution = replace_placeholders(
-        solution_str,
-        &[
+    let solution = registry::get_problem_data(&name)?
+        .get_solution(lang)
+        .replace_placeholders(&[
             ("number_line", number_line),
             ("first", first.to_string()),
             ("second", second.to_string()),
             ("abs_first", first.abs().to_string()),
             ("answer", answer.to_string()),
-        ],
-    );
+        ]);
     Ok(Problem {
         name,
         question: format!("${first}+{second}$"),
@@ -146,18 +141,15 @@ fn start_negative_addition_above_zero(name: String, lang: &Language) -> Result<P
     let number_line = NumberLine::from_ends(first, answer)
         .with_arc(first, answer, add_number(second))
         .build_string()?;
-    let problem_data = registry::get_problem_data(&name)?;
-    let solution_str = problem_data.get_solution(lang);
-    let solution = replace_placeholders(
-        solution_str,
-        &[
+    let solution = registry::get_problem_data(&name)?
+        .get_solution(lang)
+        .replace_placeholders(&[
             ("number_line", number_line),
             ("first", first.to_string()),
             ("second", second.to_string()),
             ("abs_first", first.abs().to_string()),
             ("answer", answer.to_string()),
-        ],
-    );
+        ]);
     Ok(Problem {
         name,
         question: format!("${first}+{second}$"),

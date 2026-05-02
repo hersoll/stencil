@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 db = {path = "../db"}
+types = {path = "../types"}
 
 anyhow = { version = "1.0.100", features = ["backtrace"] }
 thiserror = "2.0.17"

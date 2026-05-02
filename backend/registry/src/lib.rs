@@ -1,6 +1,5 @@
-use db::{self, PrefixEntry, ProblemEntry};
-
 use anyhow::{Context, Result};
+use db::{self, PrefixEntry, ProblemEntry};
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
 
@@ -48,20 +47,6 @@ pub async fn load_prefix_data() -> Result<()> {
     Ok(())
 }
 
-pub fn get_problem_data(full_name: &str) -> Result<ProblemEntry> {
-    let problem = PROBLEM_DATA
-        .read()
-        .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
-            registry: "PROBLEM_DATA".to_string(),
-        })?
-        .get(full_name)
-        .cloned()
-        .ok_or(RegistryError::ProblemNotFound {
-            name: full_name.to_string(),
-        })?;
-    Ok(problem)
-}
-
 pub fn get_prefix_data(id: i32) -> Result<PrefixEntry> {
     let prefix = PREFIX_DATA
         .read()
@@ -74,13 +59,16 @@ pub fn get_prefix_data(id: i32) -> Result<PrefixEntry> {
     Ok(prefix)
 }
 
-/// Used in problems with dynamic text questions, for example:
-/// "Use the function {f} to solve..."
-pub fn replace_placeholders(template: &str, values: &[(&str, String)]) -> String {
-    let mut result = template.to_string();
-    for (key, value) in values {
-        let placeholder = format!("{{{}}}", key);
-        result = result.replace(&placeholder, value);
-    }
-    result
+pub fn get_problem_data(full_name: &str) -> Result<ProblemEntry> {
+    let problem = PROBLEM_DATA
+        .read()
+        .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
+            registry: "PROBLEM_DATA".to_string(),
+        })?
+        .get(full_name)
+        .cloned()
+        .ok_or(RegistryError::ProblemNotFound {
+            name: full_name.to_string(),
+        })?;
+    Ok(problem)
 }

@@ -1,5 +1,8 @@
 use super::common::{error_context, error_context_by_name};
-use crate::{DescriptionTranslations, ProblemEntry, ProblemTranslations, TranslatedProblem};
+use crate::{
+    Answer, DescriptionTranslations, ProblemEntry, ProblemTranslations, Question, Solution,
+    TranslatedProblem,
+};
 use anyhow::{Context, Result};
 
 struct DbProblemRow {
@@ -10,12 +13,12 @@ struct DbProblemRow {
     difficulty: i32,
     module: String,
     prefix_id: Option<i32>,
-    question_sv: Option<String>,
-    question_en: Option<String>,
-    answer_sv: Option<String>,
-    answer_en: Option<String>,
-    solution_sv: Option<String>,
-    solution_en: Option<String>,
+    question_sv: Question,
+    question_en: Question,
+    answer_sv: Answer,
+    answer_en: Answer,
+    solution_sv: Solution,
+    solution_en: Solution,
 }
 
 impl From<DbProblemRow> for ProblemEntry {
@@ -143,12 +146,12 @@ pub async fn create_problem_from_entry(problem: &ProblemEntry) -> Result<i32> {
         problem.desc.en,
         problem.difficulty,
         problem.module,
-        problem.translations.sv.question,
-        problem.translations.en.question,
-        problem.translations.sv.answer,
-        problem.translations.en.answer,
-        problem.translations.sv.solution,
-        problem.translations.en.solution,
+        &problem.translations.sv.question,
+        &problem.translations.en.question,
+        &problem.translations.sv.answer,
+        &problem.translations.en.answer,
+        &problem.translations.sv.solution,
+        &problem.translations.en.solution,
         problem.prefix_id,
     )
     .fetch_one(pool)
@@ -171,12 +174,12 @@ pub async fn update_problem_from_entry(problem: ProblemEntry) -> Result<String> 
             problem.desc.sv,
             problem.desc.en,
             problem.module,
-            translations.sv.question,
-            translations.en.question,
-            translations.sv.answer,
-            translations.en.answer,
-            translations.sv.solution,
-            translations.en.solution,
+            &translations.sv.question,
+            &translations.en.question,
+            &translations.sv.answer,
+            &translations.en.answer,
+            &translations.sv.solution,
+            &translations.en.solution,
             problem.difficulty,
             problem.prefix_id,
         )

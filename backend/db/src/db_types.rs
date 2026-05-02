@@ -1,6 +1,6 @@
-use crate::common::DbDescRow;
+use crate::{Answer, Question, Solution, common::DbDescRow};
 use serde::{Deserialize, Serialize};
-use tracing::error;
+use std::fmt::Display;
 use types::lang::Language;
 
 // ###########################
@@ -14,6 +14,23 @@ pub trait HasDesc {
             Language::Sv => self.desc().sv.clone(),
             Language::En => self.desc().en.clone(),
         }
+    }
+}
+
+/// Questions, Answers and Solutions might have template strings in them which will be replaced at
+/// runtime. This trait enables you to retrieve the strings and replace the templating
+pub trait HasReplacements {
+    // Does this need String, or can it be &str?
+    fn get_str(&self) -> &String;
+    /// Used in problems with dynamic text questions, for example:
+    /// "Use the function {f} to solve..."
+    fn replace_placeholders(&self, values: &[(&str, impl Display)]) -> String {
+        let mut result = self.get_str().to_owned();
+        for (key, value) in values {
+            let placeholder = format!("{{{}}}", key);
+            result = result.replace(&placeholder, &value.to_string());
+        }
+        result
     }
 }
 
@@ -35,9 +52,9 @@ pub struct ProblemTranslations {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct TranslatedProblem {
-    pub question: Option<String>,
-    pub answer: Option<String>,
-    pub solution: Option<String>,
+    pub question: Question,
+    pub answer: Answer,
+    pub solution: Solution,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -149,47 +166,23 @@ impl HasDesc for ProblemEntry {
     }
 }
 impl ProblemEntry {
-    pub fn get_question(&self, lang: &Language) -> &str {
-        let question = match lang {
+    pub fn get_question(&self, lang: &Language) -> &Question {
+        match lang {
             Language::Sv => &self.translations.sv.question,
             Language::En => &self.translations.en.question,
-        };
-
-        question.as_deref().unwrap_or_else(|| {
-            error!(
-                "get_question() was called on problem {}, but there is no question.",
-                self.name
-            );
-            ""
-        })
+        }
     }
-    pub fn get_answer(&self, lang: &Language) -> &str {
-        let answer = match lang {
+    pub fn get_answer(&self, lang: &Language) -> &Answer {
+        match lang {
             Language::Sv => &self.translations.sv.answer,
             Language::En => &self.translations.en.answer,
-        };
-
-        answer.as_deref().unwrap_or_else(|| {
-            error!(
-                "get_answer() was called on problem {}, but there is no question.",
-                self.name
-            );
-            ""
-        })
+        }
     }
-    pub fn get_solution(&self, lang: &Language) -> &str {
-        let solution = match lang {
+    pub fn get_solution(&self, lang: &Language) -> &Solution {
+        match lang {
             Language::Sv => &self.translations.sv.solution,
             Language::En => &self.translations.en.solution,
-        };
-
-        solution.as_deref().unwrap_or_else(|| {
-            error!(
-                "get_solution() was called on problem {}, but there is no question.",
-                self.name
-            );
-            ""
-        })
+        }
     }
 }
 

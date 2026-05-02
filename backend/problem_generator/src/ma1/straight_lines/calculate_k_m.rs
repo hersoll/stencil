@@ -1,7 +1,7 @@
 use anyhow::Result;
+use db::HasReplacements;
 use macros::problem;
 use math::{Number, Term, num_gen, symbols::X};
-use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::{equation_solution, parentheses};
 
@@ -18,15 +18,12 @@ fn find_k_all_positives(name: String, lang: &Language) -> Result<Problem> {
     let x_end = x_start + x_step;
     let y_end = y_start + y_step;
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let question_string = problem_data.get_question(lang);
-    let question = replace_placeholders(
-        question_string,
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
             ("p2", format!("$({x_end}, {y_end})$")),
-        ],
-    );
+        ]);
     let answer = format!("$k = {k}$");
     let solution = format!(
         "$ k = (y_2 - y_1)/(x_2 - x_1) =({y_end} - {y_start})/({x_end} - {x_start}) = {y_step} / {x_step} = {k} $"
@@ -56,15 +53,12 @@ fn find_k_with_negatives(name: String, lang: &Language) -> Result<Problem> {
     let x_end = x_start + x_step;
     let y_end = y_start + y_step;
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let question_string = problem_data.get_question(lang);
-    let question = replace_placeholders(
-        question_string,
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
             ("p2", format!("$({x_end}, {y_end})$")),
-        ],
-    );
+        ]);
     let answer = format!("$k = {k}$");
     let solution = format!(
         "$ k = (y_2 - y_1)/(x_2 - x_1) =({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
@@ -99,15 +93,12 @@ fn find_k_large_integers(name: String, lang: &Language) -> Result<Problem> {
     let x_end = x_start + x_step;
     let y_end = y_start + y_step;
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let question_string = problem_data.get_question(lang);
-    let question = replace_placeholders(
-        question_string,
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
             ("p2", format!("$({x_end}, {y_end})$")),
-        ],
-    );
+        ]);
     let answer = format!("$k = {k}$");
     let solution = format!(
         "$ k = (y_2 - y_1)/(x_2 - x_1) =({y_end} - {y_start})/({x_end} - {x_start}) = {y_step} / {x_step} = {k} $"
@@ -141,15 +132,12 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let question_string = problem_data.get_question(lang);
-    let question = replace_placeholders(
-        question_string,
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
             ("p2", format!("$({x_end}, {y_end})$")),
-        ],
-    );
+        ]);
     let answer = format!("$y = {equation}$");
     let solution =
         format!("$ k = ({y_end} - {y_start})/({x_end} - {x_start}) = {y_step} / {x_step} = {k} $")
@@ -199,15 +187,12 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let question_string = problem_data.get_question(lang);
-    let question = replace_placeholders(
-        question_string,
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
             ("p2", format!("$({x_end}, {y_end})$")),
-        ],
-    );
+        ]);
     let answer = format!("$y = {equation}$");
     let solution = format!(
         "$ k = ({} - {})/({} - {}) = ({y_step}) / ({x_step}) = {k} $",
@@ -260,15 +245,12 @@ fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let question_string = problem_data.get_question(lang);
-    let question = replace_placeholders(
-        question_string,
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
             ("p2", format!("$({x_end}, {y_end})$")),
-        ],
-    );
+        ]);
     let answer = format!("$y = {equation}$");
 
     let solution = format!(
@@ -318,15 +300,12 @@ fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let question_string = problem_data.get_question(lang);
-    let question = replace_placeholders(
-        question_string,
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
             ("p2", format!("$({x_end}, {y_end})$")),
-        ],
-    );
+        ]);
     let answer = format!("$y = {equation}$");
 
     let solution = format!(
@@ -371,15 +350,12 @@ fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let question_string = problem_data.get_question(lang);
-    let question = replace_placeholders(
-        question_string,
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
             ("p2", format!("$({x_end}, {y_end})$")),
-        ],
-    );
+        ]);
     let answer = format!("$y = {equation}$");
 
     let solution = format!(
@@ -442,15 +418,12 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let problem_data = registry::get_problem_data(&name)?;
-    let question_string = problem_data.get_question(lang);
-    let question = replace_placeholders(
-        question_string,
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
             ("p2", format!("$({x_end}, {y_end})$")),
-        ],
-    );
+        ]);
     let answer = format!("$y = {equation}$");
 
     // TODO: Fix with SolutionWithSteps, conditional printing of num (since it can be 1)

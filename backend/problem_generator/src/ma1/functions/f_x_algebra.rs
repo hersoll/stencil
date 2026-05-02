@@ -1,4 +1,5 @@
 use anyhow::Result;
+use db::HasReplacements;
 use macros::problem;
 use math::{
     Evaluable, Number, Term,
@@ -6,7 +7,6 @@ use math::{
     num_gen,
     symbols::{self, X},
 };
-use registry::replace_placeholders;
 use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::{SolutionWithSteps, equation_solution};
 
@@ -23,14 +23,12 @@ fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
     let y_value = k * x_value + m;
 
     let mut expression = Function::linear(k, m).without_function_notation();
-    let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("expression", expression.to_string()),
             ("x", x_value.to_string()),
-        ],
-    );
+        ]);
 
     expression = expression.aligned();
     let mut solution = SolutionWithSteps::new();
@@ -64,11 +62,9 @@ fn without_notation_x(name: String, lang: &Language) -> Result<Problem> {
     let y = coefficient * answer + constant;
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
-    let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[("expression", expression), ("y", y.to_string())],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("expression", expression), ("y", y.to_string())]);
 
     let solution = equation_solution(&format!(
         "y &= {coefficient}x {constant:+} \\ y={y} \\
@@ -103,11 +99,9 @@ fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
     let y = coefficient * x + constant;
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
-    let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[("expression", expression), ("x", x.to_string())],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("expression", expression), ("x", x.to_string())]);
 
     let solution = format!(
         "f(x) &= {coefficient}x {constant:+} \\x={x} \\
@@ -141,11 +135,9 @@ fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
     let y = coefficient * x + constant;
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
-    let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[("expression", expression), ("y", y.to_string())],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("expression", expression), ("y", y.to_string())]);
 
     let solution = format!(
         "f(x) &= {coefficient}x {constant:+} \\f(x)={y} \\
@@ -183,16 +175,14 @@ fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
     let var = symbols::get_variable()?;
 
     let expression = format!("{f_name}({var}) = {coefficient}{var} {constant:+}");
-    let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("expression", expression),
             ("y", y.to_string()),
             ("var", var.to_string()),
             ("f", f_name.to_string()),
-        ],
-    );
+        ]);
 
     let solution = format!(
         "{f_name}({var}) &= {coefficient}{var} {constant:+} \\{f_name}({var})={y} \\
@@ -230,16 +220,14 @@ fn find_y(name: String, lang: &Language) -> Result<Problem> {
     let var = symbols::get_variable()?;
 
     let expression = format!("{f_name}({var}) = {coefficient}{var} {constant:+}");
-    let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[
             ("expression", expression),
             ("x", x.to_string()),
             ("var", var.to_string()),
             ("f", f_name.to_string()),
-        ],
-    );
+        ]);
 
     let solution = format!(
         "{f_name}({var}) &= {coefficient}{var} {constant:+} \\{var}={x} \\
@@ -284,11 +272,9 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
 
     let function_string = format!("{f_name}({X}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
-    let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[("function", function_string), ("algebra", algebra_string)],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("function", function_string), ("algebra", algebra_string)]);
     let answer =
         function_coefficient * algebra_expression.clone() + Term::from_num(function_constant);
 
@@ -333,11 +319,9 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
 
     let function_string = format!("{f_name}({X}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
-    let problem_data = registry::get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[("function", function_string), ("algebra", algebra_string)],
-    );
+    let question = registry::get_problem_data(&name)?
+        .get_question(lang)
+        .replace_placeholders(&[("function", function_string), ("algebra", algebra_string)]);
     let answer = (function_coefficient * algebra_expression.clone()
         + Term::from_num(function_constant))
     .simplify();
@@ -380,16 +364,13 @@ fn insert_number_twice(name: String, lang: &Language) -> Result<Problem> {
     let second_step = function.evaluate(&second_replacement);
 
     let problem_data = registry::get_problem_data(&name)?;
-    let question = registry::replace_placeholders(
-        problem_data.get_question(lang),
-        &[
-            ("function", function.to_string()),
-            (
-                "evaluation",
-                format!("{function_symbol}({function_symbol}({val}))"),
-            ),
-        ],
-    );
+    let question = problem_data.get_question(lang).replace_placeholders(&[
+        ("function", function.to_string()),
+        (
+            "evaluation",
+            format!("{function_symbol}({function_symbol}({val}))"),
+        ),
+    ]);
     let answer = format!("${function_symbol}({function_symbol}({val})) = {second_step}$");
     let solution_hint = problem_data.get_solution(lang);
     let solution = format!(

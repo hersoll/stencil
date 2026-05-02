@@ -1502,6 +1502,7 @@ dependencies = [
  "anyhow",
  "db",
  "thiserror 2.0.18",
+ "types",
 ]
 
 [[package]]

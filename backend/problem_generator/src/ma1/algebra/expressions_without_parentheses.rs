@@ -1,8 +1,9 @@
 use anyhow::Result;
+use db::HasReplacements;
 use macros::problem;
 use math::{Evaluable, Number, Polynomial, Term, VariableList, num_gen, symbols};
 use rand::seq::IndexedRandom;
-use registry::{get_problem_data, replace_placeholders};
+use registry::get_problem_data;
 use types::{lang::Language, problems::Problem};
 
 /// 3x + 4 + 2x + 1
@@ -173,7 +174,9 @@ fn evaluate_simple(name: String, lang: &Language) -> Result<Problem> {
         ("value", value.to_string()),
     ];
     let problem_data = get_problem_data(&name)?;
-    let question = replace_placeholders(problem_data.get_question(lang), &replacement_map);
+    let question = problem_data
+        .get_question(lang)
+        .replace_placeholders(&replacement_map);
     let replacements = [(unknown, &value)];
     let answer = expression.evaluate(&replacements);
 
@@ -215,16 +218,13 @@ fn evaluate_intermediate(name: String, lang: &Language) -> Result<Problem> {
 
     let expression = Polynomial::from_terms(&[&first_term, &second_term, &const_term]);
     let problem_data = get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[
-            ("expression", expression.to_string()),
-            ("unknown_a", first_unknown.to_string()),
-            ("unknown_b", second_unknown.to_string()),
-            ("value_x", value_x.to_string()),
-            ("value_y", value_y.to_string()),
-        ],
-    );
+    let question = problem_data.get_question(lang).replace_placeholders(&[
+        ("expression", expression.to_string()),
+        ("unknown_a", first_unknown.to_string()),
+        ("unknown_b", second_unknown.to_string()),
+        ("value_x", value_x.to_string()),
+        ("value_y", value_y.to_string()),
+    ]);
     let replacements = [(first_unknown, &value_x), (second_unknown, &value_y)];
     let answer = expression.evaluate(&replacements);
 
@@ -374,16 +374,13 @@ fn evaluate_advanced(name: String, lang: &Language) -> Result<Problem> {
     let value_y = num_gen::integer().range(-2, -1).random();
 
     let problem_data = get_problem_data(&name)?;
-    let question = replace_placeholders(
-        problem_data.get_question(lang),
-        &[
-            ("expression", expression.to_string()),
-            ("unknown_a", first_unknown.to_string()),
-            ("unknown_b", second_unknown.to_string()),
-            ("value_x", value_x.to_string()),
-            ("value_y", value_y.to_string()),
-        ],
-    );
+    let question = problem_data.get_question(lang).replace_placeholders(&[
+        ("expression", expression.to_string()),
+        ("unknown_a", first_unknown.to_string()),
+        ("unknown_b", second_unknown.to_string()),
+        ("value_x", value_x.to_string()),
+        ("value_y", value_y.to_string()),
+    ]);
     let replacements = [(first_unknown, &value_x), (second_unknown, &value_y)];
     let answer = expression.evaluate(&replacements);
 
