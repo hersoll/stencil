@@ -199,7 +199,11 @@ fn apply_inline_prefixes(
             && let Some(prefix) = prefix_reg.get(id)
         {
             let text = prefix.get_text(lang);
-            question_set.questions[i] = format!("{text} {}", question_set.questions[i]);
+            question_set.questions[i] = if text.contains("{}") {
+                text.replace("{}", &question_set.questions[i]) + "."
+            } else {
+                format!("{text} {}", question_set.questions[i])
+            };
         }
     }
     Ok((question_set, answer_set))
@@ -221,7 +225,11 @@ fn push_single_prefixed(
     let question = match prefix_ids[idx].and_then(|id| prefix_reg.get(&id)) {
         Some(prefix) => {
             let text = prefix.get_text(lang);
-            format!("{text} {}", question_set.questions[idx])
+            if text.contains("{}") {
+                text.replace("{}", &question_set.questions[idx]) + "."
+            } else {
+                format!("{text} {}", question_set.questions[idx])
+            }
         }
         None => question_set.questions[idx].clone(),
     };
