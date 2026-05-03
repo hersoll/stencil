@@ -1,12 +1,12 @@
 {
   "db_name": "PostgreSQL",
-  "query": "UPDATE chapters SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 \n               RETURNING name",
+  "query": "UPDATE chapters SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 \n               RETURNING id",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "name",
-        "type_info": "Varchar"
+        "name": "id",
+        "type_info": "Int4"
       }
     ],
     "parameters": {
@@ -21,5 +21,5 @@
       false
     ]
   },
-  "hash": "69d9829c5104c26de898ac03bc0853815b067edc8642e29e251f69f16d017da2"
+  "hash": "6716eb21b3076dff178e057a17233120a81ed8cb825326771f9210fffab3cdfb"
 }

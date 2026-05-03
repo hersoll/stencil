@@ -31,10 +31,12 @@
 
   function addCourse(course: CourseEntryRaw) {
     courses.push(course);
+    course_ids.push(course.id);
   }
 
   function removeCourse(course: CourseEntryRaw) {
     courses = courses.filter(c => c.id !== course.id);
+    course_ids = course_ids.filter(id => id !== course.id);
   }
 
   // The topic area is entered while dragging
@@ -78,9 +80,10 @@
     if (draggedIndex === -1 || draggedIndex === targetIndex) return;
 
     const newOrder = [...courses];
-    const [removed] = newOrder.splice(draggedIndex, 1);
-    newOrder.splice(targetIndex, 0, removed);
+    const [removed_entry] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, removed_entry);
     courses = newOrder;
+    course_ids = courses.map(c => c.id);
 
     draggedIndex = targetIndex;
   }
@@ -103,7 +106,7 @@
     draggedIndex = -1;
   }
   async function fetchCourse() {
-    let res = await fetch(`${API_URL}/edit/topic/ids`, {
+    let res = await fetch(`${API_URL}/edit/course/ids`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -118,7 +121,7 @@
   }
 
   $effect(() => {
-    if (entry) fetchCourse();
+    if (courses.length == 0) fetchCourse();
   });
 </script>
 

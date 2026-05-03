@@ -1,21 +1,11 @@
-use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
-use serde::Deserialize;
-use serde_json::json;
-
 use crate::{
     ChapterEntry, chapters, courses,
     relationships::{self, ChapterTopics, CourseChapters},
     topics,
 };
-
+use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
+use serde_json::json;
 use types::errors::ApiError;
-
-#[derive(Debug, Deserialize)]
-pub struct ChapterPayload {
-    chapter: ChapterEntry,
-    courses: Vec<i32>,
-    topics: Vec<i32>,
-}
 
 pub async fn get_chapters() -> Result<impl IntoResponse, ApiError> {
     match chapters::get_all_chapter_data().await {
@@ -46,18 +36,13 @@ pub async fn get_chapters_from_ids(
 }
 
 pub async fn create_chapter(
-    Json(payload): Json<ChapterPayload>,
+    Json(chapter): Json<ChapterEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
-    tracing::debug!(
-        "Recieved: {:#?} {:#?} {:#?}",
-        payload.chapter,
-        payload.courses,
-        payload.topics
-    );
-    let chapter_id = chapters::create_chapter_from_entry(payload.chapter).await?;
-    relationships::update_children_for_parent::<ChapterTopics>(&chapter_id, &payload.topics)
+    tracing::debug!("Received: {chapter:#?}",);
+    let chapter_id = chapters::create_chapter_from_entry(&chapter).await?;
+    relationships::update_children_for_parent::<ChapterTopics>(&chapter_id, &chapter.topic_ids)
         .await?;
-    relationships::update_parents_for_child::<CourseChapters>(&payload.courses, &chapter_id)
+    relationships::update_parents_for_child::<CourseChapters>(&chapter.course_ids, &chapter_id)
         .await?;
 
     Ok((
@@ -67,29 +52,18 @@ pub async fn create_chapter(
 }
 
 pub async fn update_chapter(
-    Json(payload): Json<ChapterPayload>,
+    Json(chapter): Json<ChapterEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
-    tracing::debug!(
-        "Recieved: {:#?} {:#?} {:#?}",
-        payload.chapter,
-        payload.courses,
-        payload.topics
-    );
-    relationships::update_children_for_parent::<ChapterTopics>(
-        &payload.chapter.id,
-        &payload.topics,
-    )
-    .await?;
-    relationships::update_parents_for_child::<CourseChapters>(
-        &payload.courses,
-        &payload.chapter.id,
-    )
-    .await?;
-    let chapter_name = chapters::update_chapter_from_entry(payload.chapter).await?;
+    tracing::debug!("Recieved: {chapter:#?}",);
+    let chapter_id = chapters::update_chapter_from_entry(&chapter).await?;
+    relationships::update_children_for_parent::<ChapterTopics>(&chapter_id, &chapter.topic_ids)
+        .await?;
+    relationships::update_parents_for_child::<CourseChapters>(&chapter.course_ids, &chapter_id)
+        .await?;
 
     Ok((
         StatusCode::OK,
-        format!("Successfully updated {chapter_name}"),
+        format!("Successfully updated {}", chapter.name),
     ))
 }
 

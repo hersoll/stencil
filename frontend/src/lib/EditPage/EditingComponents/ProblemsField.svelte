@@ -31,10 +31,12 @@
 
   function addProblem(problem: ProblemEntryRaw) {
     problems.push(problem);
+    problem_ids.push(problem.id);
   }
 
   function removeProblem(problem: ProblemEntryRaw) {
     problems = problems.filter(p => p.id !== problem.id);
+    problem_ids = problem_ids.filter(id => id !== problem.id);
   }
 
   // The area is entered while dragging
@@ -78,9 +80,10 @@
     if (draggedIndex === -1 || draggedIndex === targetIndex) return;
 
     const newOrder = [...problems];
-    const [removed] = newOrder.splice(draggedIndex, 1);
-    newOrder.splice(targetIndex, 0, removed);
+    const [removed_entry] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, removed_entry);
     problems = newOrder;
+    problem_ids = problems.map(p => p.id);
 
     draggedIndex = targetIndex;
   }
@@ -120,7 +123,7 @@
   }
 
   $effect(() => {
-    if (topic) fetchProblems();
+    if (problems.length == 0) fetchProblems();
   });
 </script>
 

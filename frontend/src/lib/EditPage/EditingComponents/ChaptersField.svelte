@@ -31,10 +31,12 @@
 
   function addChapter(chapter: ChapterEntryRaw) {
     chapters.push(chapter);
+    chapter_ids.push(chapter.id);
   }
 
   function removeChapter(chapter: ChapterEntryRaw) {
     chapters = chapters.filter(c => c.id !== chapter.id);
+    chapter_ids = chapter_ids.filter(id => id !== chapter.id);
   }
 
   // The topic area is entered while dragging
@@ -78,9 +80,10 @@
     if (draggedIndex === -1 || draggedIndex === targetIndex) return;
 
     const newOrder = [...chapters];
-    const [removed] = newOrder.splice(draggedIndex, 1);
-    newOrder.splice(targetIndex, 0, removed);
+    const [removed_entry] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, removed_entry);
     chapters = newOrder;
+    chapter_ids = chapters.map(c => c.id);
 
     draggedIndex = targetIndex;
   }
@@ -118,7 +121,7 @@
   }
 
   $effect(() => {
-    if (entry) fetchChapter();
+    if (chapters.length == 0) fetchChapter();
   });
 </script>
 

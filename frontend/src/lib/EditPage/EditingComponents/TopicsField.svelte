@@ -31,10 +31,12 @@
 
   function addTopic(topic: TopicEntryRaw) {
     topics.push(topic);
+    topic_ids.push(topic.id);
   }
 
   function removeTopic(topic: TopicEntryRaw) {
     topics = topics.filter(t => t.id !== topic.id);
+    topic_ids = topic_ids.filter(id => id !== topic.id);
   }
 
   // The topic area is entered while dragging
@@ -78,9 +80,10 @@
     if (draggedIndex === -1 || draggedIndex === targetIndex) return;
 
     const newOrder = [...topics];
-    const [removed] = newOrder.splice(draggedIndex, 1);
-    newOrder.splice(targetIndex, 0, removed);
+    const [removed_entry] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, removed_entry);
     topics = newOrder;
+    topic_ids = topics.map(t => t.id);
 
     draggedIndex = targetIndex;
   }
@@ -119,7 +122,7 @@
   }
 
   $effect(() => {
-    if (entry) fetchTopics();
+    if (topics.length == 0) fetchTopics();
   });
 </script>
 

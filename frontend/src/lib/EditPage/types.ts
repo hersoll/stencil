@@ -34,9 +34,9 @@ export type ProblemTranslations = {
 };
 
 export type TranslatedProblem = {
-  question: string | null;
-  answer: string | null;
-  solution: string | null;
+  question: string;
+  answer: string;
+  solution: string;
 };
 
 export type PrefixTranslations = {
@@ -127,9 +127,9 @@ export const defaultDescriptionTranslations = {
 };
 
 export const defaultTranslatedProblem = {
-  question: null,
-  answer: null,
-  solution: null
+  question: '',
+  answer: '',
+  solution: ''
 };
 
 export const defaultProblemTranslations = {
