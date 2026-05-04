@@ -1,4 +1,3 @@
-use anyhow::{Result, anyhow};
 //#################################
 //#           IMPORTS             #
 //#################################
@@ -33,18 +32,21 @@ impl Difficulty {
         ]
     }
 
-    pub fn num_to_enum(difficulty_number: u8) -> Result<Difficulty> {
-        match difficulty_number {
-            0..=1 => Ok(Difficulty::Intro),
-            2..=4 => Ok(Difficulty::Easy),
-            5..=7 => Ok(Difficulty::Medium),
-            8..=10 => Ok(Difficulty::Hard),
-            _ => Err(anyhow!(format!(
-                "Invalid difficulty number: {difficulty_number}"
-            ))),
-        }
-    }
+    // Unused
+    //
+    // pub fn num_to_enum(difficulty_number: u8) -> Result<Difficulty> {
+    //     match difficulty_number {
+    //         0..=1 => Ok(Difficulty::Intro),
+    //         2..=4 => Ok(Difficulty::Easy),
+    //         5..=7 => Ok(Difficulty::Medium),
+    //         8..=10 => Ok(Difficulty::Hard),
+    //         _ => Err(anyhow!(format!(
+    //             "Invalid difficulty number: {difficulty_number}"
+    //         ))),
+    //     }
+    // }
 
+    /// Returns the numeric values that are associated with a certain [`Difficulty`].
     pub fn enum_to_nums(difficulty: Difficulty) -> Vec<u8> {
         match difficulty {
             Difficulty::Intro => vec![0, 1],
@@ -54,6 +56,8 @@ impl Difficulty {
         }
     }
 
+    /// Converts a `starting_difficulty` and an `ending_difficulty` into a range of numbers,
+    /// collected into a [`Vec`].
     pub fn enums_to_nums(
         starting_difficulty: Difficulty,
         ending_difficulty: Difficulty,
@@ -74,22 +78,25 @@ impl Difficulty {
 
         (minimum_number..=maximum_number).collect()
     }
-    pub fn str_to_enum(s: &str) -> Result<Difficulty> {
-        match s {
-            "difficulty_intro" => Ok(Difficulty::Intro),
-            "difficulty_easy" => Ok(Difficulty::Easy),
-            "difficulty_medium" => Ok(Difficulty::Medium),
-            "difficulty_hard" => Ok(Difficulty::Hard),
-            _ => Err(anyhow!("Invalid difficulty string: {s}")),
-        }
-    }
 
-    pub fn to_str(&self) -> &str {
-        match self {
-            Difficulty::Intro => "difficulty_intro",
-            Difficulty::Easy => "difficulty_easy",
-            Difficulty::Medium => "difficulty_medium",
-            Difficulty::Hard => "difficulty_hard",
-        }
-    }
+    // Unused
+    //
+    // pub fn str_to_enum(s: &str) -> Result<Difficulty> {
+    //     match s {
+    //         "difficulty_intro" => Ok(Difficulty::Intro),
+    //         "difficulty_easy" => Ok(Difficulty::Easy),
+    //         "difficulty_medium" => Ok(Difficulty::Medium),
+    //         "difficulty_hard" => Ok(Difficulty::Hard),
+    //         _ => Err(anyhow!("Invalid difficulty string: {s}")),
+    //     }
+    // }
+    //
+    // pub fn to_str(&self) -> &str {
+    //     match self {
+    //         Difficulty::Intro => "difficulty_intro",
+    //         Difficulty::Easy => "difficulty_easy",
+    //         Difficulty::Medium => "difficulty_medium",
+    //         Difficulty::Hard => "difficulty_hard",
+    //     }
+    // }
 }

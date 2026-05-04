@@ -21,17 +21,23 @@ struct AvailableDifficulties {
     hard: bool,
 }
 
+/// Struct representing how many of each [`Difficulty`] number should be generated.
+///
+/// Has a length of 11 since the difficulties go from 0-10.
+#[derive(Debug, Copy, Clone)]
+pub struct CountPerDifficultyNumber(pub [u8; 11]);
+
 /// How many problems there should be within each Difficulty
 #[derive(Debug)]
-struct DifficultyDistribution {
+struct CountPerDifficulty {
     intro: u8,
     easy: u8,
     medium: u8,
     hard: u8,
 }
 
-impl DifficultyDistribution {
-    fn get(&self, difficulty: Difficulty) -> u8 {
+impl CountPerDifficulty {
+    fn get_count(&self, difficulty: Difficulty) -> u8 {
         match difficulty {
             Difficulty::Intro => self.intro,
             Difficulty::Easy => self.easy,
@@ -41,18 +47,20 @@ impl DifficultyDistribution {
     }
 }
 
-/// Filters the ProblemPool depending on the difficulty range
-pub fn choose_problems(problem_pool: &mut ProblemPool) -> Result<(), ApiError> {
+/// Filters the [`ProblemPool`] to only include problems in the difficulty range
+///
+/// Returns an [`Err`] if the filtered pool is empty - we need at least one problem!
+pub fn filter_pool_by_difficulty(problem_pool: &mut ProblemPool) -> Result<(), ApiError> {
     // A range of numbers, for example 3..7, as a Vec
     let difficulty_range = Difficulty::enums_to_nums(
         problem_pool.starting_difficulty,
         problem_pool.ending_difficulty,
     );
 
-    // Retain all problems which match the desired difficulties
     problem_pool
         .problem_candidates
         .retain(|candidate| difficulty_range.contains(&candidate.difficulty));
+
     debug!(
         "Found {} problems within difficulty range",
         problem_pool.problem_candidates.len()
@@ -67,11 +75,13 @@ pub fn choose_problems(problem_pool: &mut ProblemPool) -> Result<(), ApiError> {
     }
 }
 
-/// Finds out how many of each difficulty number should be generated.
-pub fn distribute_problems(problem_pool: &ProblemPool) -> Result<[u8; 11]> {
-    let counts = get_count_per_difficulty(problem_pool)?;
+/// Finds out how many of each [`Difficulty`] number should be generated.
+pub fn distribute_problems(problem_pool: &ProblemPool) -> Result<CountPerDifficultyNumber> {
+    // How many each Easy, Medium, etc.?
+    let counts = distribute_problems_by_difficulty(problem_pool)?;
     debug!("Problem distribution among difficulties: {:?}", counts);
 
+    // Within Easy, how many from 2, 3, 4?
     let distribution_per_difficulty_number =
         distribute_problems_by_difficulty_number(problem_pool, &counts)?;
     debug!(
@@ -82,67 +92,46 @@ pub fn distribute_problems(problem_pool: &ProblemPool) -> Result<[u8; 11]> {
     Ok(distribution_per_difficulty_number)
 }
 
-/// Checks which difficulty ranges have available problems
+/// Checks which difficulty ranges have available problems (`true`/`false`)
 fn check_available_difficulties(problem_pool: &ProblemPool) -> AvailableDifficulties {
-    let mut intro = false;
-    let mut easy = false;
-    let mut medium = false;
-    let mut hard = false;
-
-    for c in &problem_pool.problem_candidates {
-        if c.difficulty <= 1 {
-            intro = true;
-        }
-        if (2..=4).contains(&c.difficulty) {
-            easy = true;
-        }
-        if (5..=7).contains(&c.difficulty) {
-            medium = true;
-        }
-        if (8..=10).contains(&c.difficulty) {
-            hard = true;
-        }
-
-        // Early exit if all found
-        if intro && easy && medium && hard {
-            break;
-        }
-    }
+    let candidates = &problem_pool.problem_candidates;
 
     AvailableDifficulties {
-        intro,
-        easy,
-        medium,
-        hard,
+        intro: candidates.iter().any(|c| c.difficulty <= 1),
+        easy: candidates.iter().any(|c| (2..=4).contains(&c.difficulty)),
+        medium: candidates.iter().any(|c| (5..=7).contains(&c.difficulty)),
+        hard: candidates.iter().any(|c| (8..=10).contains(&c.difficulty)),
     }
 }
 
-/// Calculates how many problems there are of each Difficulty
+/// Calculates how many problems there should be of each [`Difficulty`].
 ///
-/// The return might look like Ok([3, 6, 2, 1])
-fn get_count_per_difficulty(problem_pool: &ProblemPool) -> Result<DifficultyDistribution> {
+/// This function and it's nested functions are where most of the "business logic" of problem distribution lives.
+fn distribute_problems_by_difficulty(problem_pool: &ProblemPool) -> Result<CountPerDifficulty> {
     if problem_pool.problem_candidates.is_empty() {
-        return Err(anyhow!("get_count_per_difficulty() called with empty Vec"));
+        return Err(anyhow!(
+            "determine_difficulty_distribution() called with empty Vec"
+        ));
     }
 
-    let avail = check_available_difficulties(problem_pool);
-    debug!("Difficulties with available problems: {:?}", avail);
+    let difficulties = check_available_difficulties(problem_pool);
+    debug!("Difficulties with available problems: {:?}", difficulties);
 
     // Calculate intro count
-    let intro = if !avail.easy && !avail.medium && !avail.hard {
-        // If no other difficulties found, use all problems as intro
+    let intro = if !difficulties.easy && !difficulties.medium && !difficulties.hard {
+        // If no other difficulties found, make all problems Intro
         problem_pool.n
-    } else if avail.intro {
+    } else if difficulties.intro {
         // Use 20% of total, capped at 5
         5.min((0.2 * problem_pool.n as f32).ceil() as u8)
     } else {
         0
     };
 
-    let remaining = problem_pool.n - intro;
-    let [easy, medium, hard] = get_problem_ratios(&avail, remaining);
+    let remaining_count = problem_pool.n - intro;
+    let [easy, medium, hard] = get_problem_ratios(&difficulties, remaining_count);
 
-    Ok(DifficultyDistribution {
+    Ok(CountPerDifficulty {
         intro,
         easy,
         medium,
@@ -153,19 +142,19 @@ fn get_count_per_difficulty(problem_pool: &ProblemPool) -> Result<DifficultyDist
 /// Distributes problem counts across all difficulty numbers (0-10)
 fn distribute_problems_by_difficulty_number(
     problem_pool: &ProblemPool,
-    counts: &DifficultyDistribution,
-) -> Result<[u8; 11]> {
+    count_per_difficulty: &CountPerDifficulty,
+) -> Result<CountPerDifficultyNumber> {
     if problem_pool.problem_candidates.is_empty() {
         return Err(anyhow!(
             "Cannot distribute problems with empty candidate pool"
         ));
     }
 
-    let mut result = [0u8; 11];
+    let mut result = CountPerDifficultyNumber([0u8; 11]);
 
     for difficulty in Difficulty::all() {
         // How many problems should we distribute within this difficulty?
-        let count = counts.get(difficulty);
+        let count = count_per_difficulty.get_count(difficulty);
         if count == 0 {
             continue;
         }
@@ -175,7 +164,7 @@ fn distribute_problems_by_difficulty_number(
 
         // Copy distribution into the appropriate slots
         for (i, &num) in nums.iter().enumerate() {
-            result[num as usize] = distribution[i];
+            result.0[num as usize] = distribution[i];
         }
     }
 
@@ -183,12 +172,14 @@ fn distribute_problems_by_difficulty_number(
 }
 
 /// Distributes a count across a specific difficulty level (e.g., Easy = [2,3,4])
+///
+/// `difficulty_numbers`: The numbers to distribute between (e.g. 0, 1 or 8, 9, 10)
 fn distribute_within_difficulty(
     problem_pool: &ProblemPool,
     difficulty_numbers: &[u8],
-    count: u8,
+    problem_count: u8,
 ) -> Result<[u8; 3]> {
-    if count == 0 {
+    if problem_count == 0 {
         return Ok([0, 0, 0]);
     }
     if difficulty_numbers.len() > 3 {
@@ -199,7 +190,6 @@ fn distribute_within_difficulty(
     }
 
     // Check which specific difficulty numbers are available
-    // NOTE: (assumes 2-3 numbers per difficulty)
     let available = AvailableDifficulties {
         intro: false,
         easy: problem_pool
@@ -220,12 +210,16 @@ fn distribute_within_difficulty(
         },
     };
 
-    Ok(get_problem_ratios(&available, count))
+    Ok(get_problem_ratios(&available, problem_count))
 }
 
 /// Distributes problems across difficulty levels based on which difficulties are available
 ///
 /// Returns [easy, medium, hard] counts that sum to n
+///
+/// NOTE: Currently this is "hacky" since we use the same distribution for Difficulty levels and
+/// Difficulty numbers. In the future, I think I want to role a specific function for numbers that
+/// encourages a bit more mixing.
 fn get_problem_ratios(avail: &AvailableDifficulties, n: u8) -> [u8; 3] {
     match (avail.easy, avail.medium, avail.hard) {
         // Only one difficulty available - use all problems for it

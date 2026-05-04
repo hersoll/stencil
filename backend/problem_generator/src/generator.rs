@@ -1,3 +1,4 @@
+use crate::picker::CountPerDifficultyNumber;
 pub use crate::{Difficulty, picker};
 use anyhow::{Context, Result, anyhow};
 use math::Number;
@@ -125,7 +126,7 @@ pub async fn generate_problem_set(
         ending_difficulty: options.ending_difficulty,
         n: options.n,
     };
-    picker::choose_problems(&mut problem_pool)?;
+    picker::filter_pool_by_difficulty(&mut problem_pool)?;
     let distribution_by_difficulty_num = picker::distribute_problems(&problem_pool)?;
 
     let mut rng = rand::rng();
@@ -136,7 +137,7 @@ pub async fn generate_problem_set(
 
 fn generate_problems(
     problem_pool: &mut ProblemPool,
-    distribution_by_difficulty_num: [u8; 11],
+    distribution_by_difficulty_num: CountPerDifficultyNumber,
     rng: &mut ThreadRng,
 ) -> Result<Vec<Problem>> {
     // The actual generated problems
@@ -157,7 +158,7 @@ fn generate_problems(
     // difficulty number. If several problems has the max score, one is chosen at random.
     // It generates a problem of that type, and lowers that problem's score.
     // Indices are tracked to be able to change the relevant score in `candidates_with_scores`
-    for (difficulty, &count) in distribution_by_difficulty_num.iter().enumerate() {
+    for (difficulty, &count) in distribution_by_difficulty_num.0.iter().enumerate() {
         let indices = &problem_indices_by_difficulty[difficulty];
         // Skip difficulties that don't have problems
         if indices.is_empty() || count == 0 {
