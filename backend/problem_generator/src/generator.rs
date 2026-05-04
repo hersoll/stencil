@@ -34,7 +34,7 @@ pub static PROBLEM_NAME_TO_FUNCTION_MAP: LazyLock<RwLock<HashMap<String, Problem
 pub struct ProblemOptions {
     /// Topics to draw problems from
     pub topics: Vec<i32>,
-    /// Which problems to exclude from the generations
+    /// Which problems to exclude from the generator
     #[serde(default)]
     pub exclusions: Vec<i32>,
     pub starting_difficulty: Difficulty,
@@ -73,20 +73,25 @@ pub struct ProblemPool<'pool> {
 }
 
 /// Problem that is a candidate for selection.
-/// Data grouping for easier ergonomics when choosing problems
+/// Data grouping for easier ergonomics when choosing problems.
 ///
-/// The problem_picker module will filter down the candidate list throughout the module,
-/// until problems are generated
+/// The [`picker`] module will filter down the candidate list throughout the module,
+/// until problems are generated.
 #[derive(Debug, Clone, Eq)]
 pub struct ProblemCandidate {
     pub id: i32,
     pub difficulty: u8,
+
     /// The "score" is what the module uses to determine which problem is chosen.
     /// When a problem is generated, that problem's score is lowered.
     ///
     /// This assures a variety of problems (if there is variety, that is)
     pub score: u8,
-    pub identifiers: HashSet<Vec<i32>>,
+
+    /// Identifiers of already generated problems.
+    ///
+    /// Stored with the [`ProblemCandidate`] to make the `identifiers` persist between generations.
+    pub generated_identifiers: HashSet<Vec<i32>>,
 }
 
 impl PartialEq for ProblemCandidate {
@@ -95,10 +100,11 @@ impl PartialEq for ProblemCandidate {
     }
 }
 
-/// The entry point of the module.
+/// Generates problems and distributes them across the desired difficulties.
 ///
-/// Given the SetInformation, finds the appropriate problems
-/// and distributes them appropriately across the difficulties given
+/// As the "main" function of this module, this function takes the input [`ProblemOptions`] and
+/// finds out which [`Difficulties`](Difficulty) to choose and how many problems from each, and then
+/// generates those problems and returns them.
 pub async fn generate_problem_set(
     options: ProblemOptions,
     lang: &Language,
@@ -114,7 +120,7 @@ pub async fn generate_problem_set(
                 id,
                 difficulty,
                 score: DEFAULT_SCORE.max(options.n),
-                identifiers: HashSet::new(),
+                generated_identifiers: HashSet::new(),
             })
         })
         .collect::<Result<Vec<ProblemCandidate>>>()?;
@@ -207,30 +213,48 @@ fn get_unique_problem(candidate: &mut ProblemCandidate, lang: Language) -> Resul
     let mut problem = (generator)(candidate.id, lang)?;
 
     // Reset if all combinations are exhausted
-    if candidate.identifiers.len() >= problem.combinations {
-        candidate.identifiers.clear();
+    if candidate.generated_identifiers.len() >= problem.combinations {
+        candidate.generated_identifiers.clear();
     }
 
-    // Our identifiers are of type Number, but Number can't be hashed due to the f64 variant. So we
-    // need to convert to i32
     let mut problem_identifiers_as_i32 = extract_identifiers(&problem.identifiers);
 
+    // If we generate a non-unique problem, retry until we get a unique problem.
+    // We should always be able to do this, since the earlier `if` statement makes
+    // sure there are less finished problems than there are combinations.
+    //
+    // Therefore, if we are unable to generate a unique problem, something has gone wrong,
+    // most likely when defining `identifiers` and `combinations` in the `Problem`. Fix it!!!
     let mut tries = 0u16;
-    while candidate.identifiers.contains(&problem_identifiers_as_i32) {
+    while candidate
+        .generated_identifiers
+        .contains(&problem_identifiers_as_i32)
+    {
         problem = (generator)(candidate.id, lang)?;
         problem_identifiers_as_i32 = extract_identifiers(&problem.identifiers);
         tries += 1;
 
+        // 65_535 tries until we call it a day
         if tries == u16::MAX {
-            let error_msg = format!("Stuck while generating problem {}!", candidate.id);
+            let error_msg = format!(
+                "Stuck while generating problem {}! 
+Check the identifiers and combinations in the Problem definition",
+                candidate.id
+            );
             tracing::error!(error_msg);
             return Err(anyhow!(error_msg));
         }
     }
-    candidate.identifiers.insert(problem_identifiers_as_i32);
+    candidate
+        .generated_identifiers
+        .insert(problem_identifiers_as_i32);
     Ok(problem)
 }
 
+/// Converts identifiers into `i32`s.
+///
+/// While the identifiers are [`Numbers`](Number), they can't be hashed due to the `f64` variant.
+/// It's easier to store them as `i32`s.
 fn extract_identifiers(identifiers: &[Number]) -> Vec<i32> {
     identifiers
         .iter()
