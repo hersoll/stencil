@@ -244,9 +244,10 @@ fn extract_identifiers(identifiers: &[Number]) -> Vec<i32> {
 
 /// Given a problem_id, returns a pointer to the function that generates that problem.
 fn get_generator_function(id: i32) -> Result<ProblemGenerator> {
-    let problem_data = get_problem_data(id)?;
-    let problem_name = problem_data.module + "_" + &problem_data.name;
     let generator = {
+        let problem_data = get_problem_data(id)?;
+        let problem_name = problem_data.module + "_" + &problem_data.name;
+
         let lock = PROBLEM_NAME_TO_FUNCTION_MAP
             .read()
             .expect("Mutex is poisoned");
