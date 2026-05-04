@@ -218,7 +218,7 @@ fn distribute_within_difficulty(
 /// Returns [easy, medium, hard] counts that sum to n
 ///
 /// NOTE: Currently this is "hacky" since we use the same distribution for Difficulty levels and
-/// Difficulty numbers. In the future, I think I want to role a specific function for numbers that
+/// Difficulty numbers. In the future, I think I want to roll a specific function for numbers that
 /// encourages a bit more mixing.
 fn get_problem_ratios(avail: &AvailableDifficulties, n: u8) -> [u8; 3] {
     match (avail.easy, avail.medium, avail.hard) {
