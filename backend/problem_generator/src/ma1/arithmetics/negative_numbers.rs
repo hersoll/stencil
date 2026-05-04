@@ -11,7 +11,7 @@ use typst_writer::{
 /// 5 - 9
 /// Difficulty: 0
 #[problem]
-fn subtract_larger(name: String, lang: &Language) -> Result<Problem> {
+fn subtract_larger(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 5).and_random();
     let second = num_gen::integer().range(first + 1, first + 8).random();
     let number_line = NumberLine::from_ends(first, first - second)
@@ -19,7 +19,7 @@ fn subtract_larger(name: String, lang: &Language) -> Result<Problem> {
         .build_string()?;
 
     let answer = first - second;
-    let solution = registry::get_problem_data(&name)?
+    let solution = registry::get_problem_data(id)?
         .get_solution(lang)
         .replace_placeholders(&[
             ("number_line", number_line),
@@ -31,7 +31,7 @@ fn subtract_larger(name: String, lang: &Language) -> Result<Problem> {
         ]);
 
     Ok(Problem {
-        name,
+        id,
         question: format!("${first} - {second}$"),
         answer: format!("${answer}$"),
         solution,
@@ -43,7 +43,7 @@ fn subtract_larger(name: String, lang: &Language) -> Result<Problem> {
 /// 5 - 78
 /// Difficulty: 1
 #[problem]
-fn subtract_larger_with_large_number(name: String, lang: &Language) -> Result<Problem> {
+fn subtract_larger_with_large_number(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 7).and_random();
 
     // To bring the point home, avoid things like 73 - 7: not too nice! Better to have 73 - 2
@@ -53,14 +53,14 @@ fn subtract_larger_with_large_number(name: String, lang: &Language) -> Result<Pr
 
     let answer = first - second;
     let reverse = second - first; //used as hint in solution
-    let problem_data = registry::get_problem_data(&name)?;
+    let problem_data = registry::get_problem_data(id)?;
     let solution_str = problem_data.get_solution(lang);
     let solution = format!(
         "{solution_str} ${second} - {first} = {reverse} arrow.r.double {first} - {second} = {answer}$"
     );
 
     Ok(Problem {
-        name,
+        id,
         question: format!("${first} - {second}$"),
         answer: format!("${answer}$"),
         solution,
@@ -72,7 +72,7 @@ fn subtract_larger_with_large_number(name: String, lang: &Language) -> Result<Pr
 /// 15 - 78
 /// Difficulty: 1
 #[problem]
-fn subtract_larger_with_large_numbers(name: String, lang: &Language) -> Result<Problem> {
+fn subtract_larger_with_large_numbers(id: i32, lang: Language) -> Result<Problem> {
     let first_digit = num_gen::integer().range(1, 5).random();
     let (second_digit, first_range) = num_gen::integer().range(1, 7).and_random();
     let first = first_digit * 10 + second_digit;
@@ -84,14 +84,14 @@ fn subtract_larger_with_large_numbers(name: String, lang: &Language) -> Result<P
 
     let answer = first - second;
     let reverse = second - first; //used as hint in solution
-    let problem_data = registry::get_problem_data(&name)?;
+    let problem_data = registry::get_problem_data(id)?;
     let solution_str = problem_data.get_solution(lang);
     let solution = format!(
         "{solution_str} ${second} - {first} = {reverse} arrow.r.double {first} - {second} = {answer}$"
     );
 
     Ok(Problem {
-        name,
+        id,
         question: format!("${first} - {second}$"),
         answer: format!("${answer}$"),
         solution,
@@ -103,7 +103,7 @@ fn subtract_larger_with_large_numbers(name: String, lang: &Language) -> Result<P
 /// -4 + 2
 /// Difficulty: 2
 #[problem]
-fn start_negative_addition_below_zero(name: String, lang: &Language) -> Result<Problem> {
+fn start_negative_addition_below_zero(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-9, -2).and_random();
     let second = num_gen::integer().range(1, -first - 1).random();
     let answer = first + second;
@@ -111,7 +111,7 @@ fn start_negative_addition_below_zero(name: String, lang: &Language) -> Result<P
     let number_line = NumberLine::from_ends(-10, 0)
         .with_arc(first, answer, add_number(second))
         .build_string()?;
-    let solution = registry::get_problem_data(&name)?
+    let solution = registry::get_problem_data(id)?
         .get_solution(lang)
         .replace_placeholders(&[
             ("number_line", number_line),
@@ -121,7 +121,7 @@ fn start_negative_addition_below_zero(name: String, lang: &Language) -> Result<P
             ("answer", answer.to_string()),
         ]);
     Ok(Problem {
-        name,
+        id,
         question: format!("${first}+{second}$"),
         answer: format!("${answer}$"),
         solution,
@@ -133,7 +133,7 @@ fn start_negative_addition_below_zero(name: String, lang: &Language) -> Result<P
 /// -4 + 6
 /// Difficulty: 2
 #[problem]
-fn start_negative_addition_above_zero(name: String, lang: &Language) -> Result<Problem> {
+fn start_negative_addition_above_zero(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-9, -2).and_random();
     let second = num_gen::integer().range(-first + 1, 10).random();
     let answer = first + second;
@@ -141,7 +141,7 @@ fn start_negative_addition_above_zero(name: String, lang: &Language) -> Result<P
     let number_line = NumberLine::from_ends(first, answer)
         .with_arc(first, answer, add_number(second))
         .build_string()?;
-    let solution = registry::get_problem_data(&name)?
+    let solution = registry::get_problem_data(id)?
         .get_solution(lang)
         .replace_placeholders(&[
             ("number_line", number_line),
@@ -151,7 +151,7 @@ fn start_negative_addition_above_zero(name: String, lang: &Language) -> Result<P
             ("answer", answer.to_string()),
         ]);
     Ok(Problem {
-        name,
+        id,
         question: format!("${first}+{second}$"),
         answer: format!("${answer}$"),
         solution,
@@ -163,7 +163,7 @@ fn start_negative_addition_above_zero(name: String, lang: &Language) -> Result<P
 /// -4 - 6
 /// Difficulty: 2
 #[problem]
-fn start_negative_subtraction(name: String, lang: &Language) -> Result<Problem> {
+fn start_negative_subtraction(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-5, -2).and_random();
     let second = num_gen::integer().range(1, 5).random();
     let answer = first - second;
@@ -171,11 +171,11 @@ fn start_negative_subtraction(name: String, lang: &Language) -> Result<Problem> 
     let number_line = NumberLine::from_ends(answer, 0)
         .with_arc(first, answer, subtract_number(second))
         .build_string()?;
-    let problem_data = registry::get_problem_data(&name)?;
+    let problem_data = registry::get_problem_data(id)?;
     let solution_str = problem_data.get_solution(lang);
     let solution = format!("{solution_str} {number_line}");
     Ok(Problem {
-        name,
+        id,
         question: format!("${first}-{second}$"),
         answer: format!("${answer}$"),
         solution,
@@ -187,12 +187,12 @@ fn start_negative_subtraction(name: String, lang: &Language) -> Result<Problem> 
 /// 4 + (-2)
 /// Difficulty: 2
 #[problem]
-fn add_negative(name: String, _lang: &Language) -> Result<Problem> {
+fn add_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 10).and_random();
     let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
     let ans = first + second;
     Ok(Problem {
-        name,
+        id,
         question: format!("${first} + {second_p}$", second_p = parentheses(&second)),
         answer: format!("${ans}$"),
         solution: format!(
@@ -208,12 +208,12 @@ fn add_negative(name: String, _lang: &Language) -> Result<Problem> {
 /// 4 - (-2)
 /// Difficulty: 2
 #[problem]
-fn subtract_negative(name: String, _lang: &Language) -> Result<Problem> {
+fn subtract_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 10).and_random();
     let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
     let ans = first - second;
     Ok(Problem {
-        name,
+        id,
         question: format!("${first} - {second_p}$", second_p = parentheses(&second)),
         answer: format!("${ans}$"),
         solution: format!(
@@ -229,16 +229,16 @@ fn subtract_negative(name: String, _lang: &Language) -> Result<Problem> {
 /// 4 * (-2)
 /// Difficulty: 2
 #[problem]
-fn positive_times_negative(name: String, lang: &Language) -> Result<Problem> {
+fn positive_times_negative(id: i32, lang: Language) -> Result<Problem> {
     let (first_val, first_range) = num_gen::integer().range(1, 10).and_random();
     let (second_val, second_range) = num_gen::integer().range(-10, -1).and_random();
     let question = format!("${first_val} dot ({second_val})$");
     let ans = first_val * second_val;
-    let problem_data = registry::get_problem_data(&name)?;
+    let problem_data = registry::get_problem_data(id)?;
     let solution = problem_data.get_solution(lang).to_string();
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${ans}$"),
         solution,
@@ -250,16 +250,16 @@ fn positive_times_negative(name: String, lang: &Language) -> Result<Problem> {
 /// (-4) * 2
 /// Difficulty: 2
 #[problem]
-fn negative_times_positive(name: String, lang: &Language) -> Result<Problem> {
+fn negative_times_positive(id: i32, lang: Language) -> Result<Problem> {
     let (first_val, first_range) = num_gen::integer().range(-10, -1).and_random();
     let (second_val, second_range) = num_gen::integer().range(1, 10).and_random();
     let question = format!("$({first_val}) dot {second_val}$");
     let ans = first_val * second_val;
-    let problem_data = registry::get_problem_data(&name)?;
+    let problem_data = registry::get_problem_data(id)?;
     let solution = problem_data.get_solution(lang).to_string();
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${ans}$"),
         solution,
@@ -271,16 +271,16 @@ fn negative_times_positive(name: String, lang: &Language) -> Result<Problem> {
 /// (-4) * (-2)
 /// Difficulty: 2
 #[problem]
-fn negative_times_negative(name: String, lang: &Language) -> Result<Problem> {
+fn negative_times_negative(id: i32, lang: Language) -> Result<Problem> {
     let (first_val, first_range) = num_gen::integer().range(-10, -1).and_random();
     let (second_val, second_range) = num_gen::integer().range(-10, -1).and_random();
     let question = format!("$({first_val}) dot ({second_val})$");
     let ans = first_val * second_val;
-    let problem_data = registry::get_problem_data(&name)?;
+    let problem_data = registry::get_problem_data(id)?;
     let solution = problem_data.get_solution(lang).to_string();
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${ans}$"),
         solution,
@@ -292,12 +292,12 @@ fn negative_times_negative(name: String, lang: &Language) -> Result<Problem> {
 /// (-4) + (-2)
 /// Difficulty: 3
 #[problem]
-fn negative_plus_negative(name: String, _lang: &Language) -> Result<Problem> {
+fn negative_plus_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-10, -1).and_random();
     let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
     let ans = first + second;
     Ok(Problem {
-        name,
+        id,
         question: format!(
             "${first_p} + {second_p}$",
             first_p = parentheses(&first),
@@ -318,12 +318,12 @@ fn negative_plus_negative(name: String, _lang: &Language) -> Result<Problem> {
 /// (-4) - (-2)
 /// Difficulty: 3
 #[problem]
-fn negative_minus_negative(name: String, _lang: &Language) -> Result<Problem> {
+fn negative_minus_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-10, -1).and_random();
     let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
     let ans = first - second;
     Ok(Problem {
-        name,
+        id,
         question: format!(
             "${first_p} - {second_p}$",
             first_p = parentheses(&first),

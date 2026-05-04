@@ -26,7 +26,7 @@ struct CourseHierarchy {
     chapters: Vec<ChapterHierarchy>,
 }
 impl CourseHierarchy {
-    fn from(entry: &CourseEntry, chapters: Vec<ChapterHierarchy>, lang: &Language) -> Self {
+    fn from(entry: &CourseEntry, chapters: Vec<ChapterHierarchy>, lang: Language) -> Self {
         CourseHierarchy {
             name: entry.name.clone(),
             id: entry.id.to_string(),
@@ -46,7 +46,7 @@ struct ChapterHierarchy {
 impl ChapterHierarchy {
     // TopicEntry is used instead of TopicHierarchy since that is what the Db returns,
     // to avoid conversions in every function
-    fn from(entry: &ChapterEntry, topics: &[TopicEntry], lang: &Language) -> Self {
+    fn from(entry: &ChapterEntry, topics: &[TopicEntry], lang: Language) -> Self {
         ChapterHierarchy {
             name: entry.name.clone(),
             id: entry.id.to_string(),
@@ -66,7 +66,7 @@ struct TopicHierarchy {
     desc: String,
 }
 impl TopicHierarchy {
-    fn from(entry: &TopicEntry, lang: &Language) -> Self {
+    fn from(entry: &TopicEntry, lang: Language) -> Self {
         TopicHierarchy {
             name: entry.name.clone(),
             id: entry.id.to_string(),
@@ -83,7 +83,7 @@ struct TopicWithProblems {
     problems: Vec<ProblemInformation>,
 }
 impl TopicWithProblems {
-    fn from(topic: &TopicEntry, problems: &[ProblemEntry], lang: &Language) -> Self {
+    fn from(topic: &TopicEntry, problems: &[ProblemEntry], lang: Language) -> Self {
         TopicWithProblems {
             id: topic.id,
             desc: topic.get_desc(lang),
@@ -129,7 +129,7 @@ pub async fn get_courses(Path(lang_code): Path<String>) -> Result<impl IntoRespo
             course.name.clone(),
             CourseData {
                 id: course.id,
-                desc: course.get_desc(&lang),
+                desc: course.get_desc(lang),
             },
         );
     }
@@ -168,11 +168,11 @@ pub async fn get_course(
             let topics = topics_by_chapter
                 .get(&chapter.id)
                 .unwrap_or(&empty_chapters);
-            Ok(ChapterHierarchy::from(&chapter, topics, &lang))
+            Ok(ChapterHierarchy::from(&chapter, topics, lang))
         })
         .collect::<Result<Vec<ChapterHierarchy>, ApiError>>()?;
 
-    let course_hierarchy = CourseHierarchy::from(&course, chapter_hierarchies, &lang);
+    let course_hierarchy = CourseHierarchy::from(&course, chapter_hierarchies, lang);
     Ok((StatusCode::OK, Json(json!(course_hierarchy))))
 }
 
@@ -182,7 +182,7 @@ pub async fn get_chapter(
     let lang = parse_language(&lang_code)?;
     let chapter_entry = validate_chapter(&course_path, &chapter_path).await?;
     let topics = db::get_chapter_topics(&chapter_entry.id).await?;
-    let chapter = ChapterHierarchy::from(&chapter_entry, &topics, &lang);
+    let chapter = ChapterHierarchy::from(&chapter_entry, &topics, lang);
 
     Ok((StatusCode::OK, Json(json!(chapter))))
 }
@@ -202,7 +202,7 @@ pub async fn get_problems(
     let mut topic_vec = Vec::new();
     for topic in topics {
         let problems = db::get_topic_problems(&topic.id).await?;
-        let topic = TopicWithProblems::from(&topic, &problems, &lang);
+        let topic = TopicWithProblems::from(&topic, &problems, lang);
         topic_vec.push(topic);
     }
 

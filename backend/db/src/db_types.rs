@@ -9,7 +9,7 @@ use types::lang::Language;
 pub trait HasDesc {
     fn desc(&self) -> &DescriptionTranslations;
 
-    fn get_desc(&self, lang: &Language) -> String {
+    fn get_desc(&self, lang: Language) -> String {
         match lang {
             Language::Sv => self.desc().sv.clone(),
             Language::En => self.desc().en.clone(),
@@ -166,19 +166,19 @@ impl HasDesc for ProblemEntry {
     }
 }
 impl ProblemEntry {
-    pub fn get_question(&self, lang: &Language) -> &Question {
+    pub fn get_question(&self, lang: Language) -> &Question {
         match lang {
             Language::Sv => &self.translations.sv.question,
             Language::En => &self.translations.en.question,
         }
     }
-    pub fn get_answer(&self, lang: &Language) -> &Answer {
+    pub fn get_answer(&self, lang: Language) -> &Answer {
         match lang {
             Language::Sv => &self.translations.sv.answer,
             Language::En => &self.translations.en.answer,
         }
     }
-    pub fn get_solution(&self, lang: &Language) -> &Solution {
+    pub fn get_solution(&self, lang: Language) -> &Solution {
         match lang {
             Language::Sv => &self.translations.sv.solution,
             Language::En => &self.translations.en.solution,
@@ -193,13 +193,13 @@ pub struct PrefixEntry {
     pub translations: PrefixTranslations,
 }
 impl PrefixEntry {
-    pub fn get_text(&self, lang: &Language) -> &str {
+    pub fn get_text(&self, lang: Language) -> &str {
         match lang {
             Language::Sv => &self.translations.sv.text,
             Language::En => &self.translations.en.text,
         }
     }
-    pub fn get_group_text(&self, lang: &Language) -> &str {
+    pub fn get_group_text(&self, lang: Language) -> &str {
         match lang {
             Language::Sv => &self.translations.sv.group_text,
             Language::En => &self.translations.en.group_text,

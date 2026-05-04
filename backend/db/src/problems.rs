@@ -103,16 +103,15 @@ pub async fn get_topic_problems(topic_id: &i32) -> Result<Vec<ProblemEntry>> {
 /// Get problem names and difficulties from topics for PDF generation
 ///
 /// # Returns
-/// A vector of tuples containing (full_problem_name, difficulty)
-/// where full_problem_name is formatted as "module_name"
+/// A [`Vec`] of problem ids
 #[allow(clippy::cast_sign_loss)]
-pub async fn get_problem_names_and_difficulties_from_topics(
+pub async fn get_valid_problem_ids_from_topics(
     topic_ids: Vec<i32>,
     exclusions: Vec<i32>,
-) -> Result<Vec<(String, u8)>> {
+) -> Result<Vec<i32>> {
     let pool = crate::get_pool();
     let problems = sqlx::query!(
-        r#"SELECT p.module, p.name, p.difficulty 
+        r#"SELECT p.id 
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = ANY($1)
@@ -123,15 +122,7 @@ pub async fn get_problem_names_and_difficulties_from_topics(
     .fetch_all(pool)
     .await?;
 
-    Ok(problems
-        .iter()
-        .map(|record| {
-            (
-                format!("{}_{}", record.module, record.name),
-                record.difficulty as u8,
-            )
-        })
-        .collect())
+    Ok(problems.into_iter().map(|record| record.id).collect())
 }
 
 pub async fn create_problem_from_entry(problem: &ProblemEntry) -> Result<i32> {

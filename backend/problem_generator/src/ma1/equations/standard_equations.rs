@@ -13,7 +13,7 @@ use typst_writer::{
 /// x + 3 = 12
 /// Difficulty: 0
 #[problem]
-fn only_addition_or_subtraction(name: String, _lang: &Language) -> Result<Problem> {
+fn only_addition_or_subtraction(id: i32, _lang: Language) -> Result<Problem> {
     let answer = num_gen::integer().range(0, 9).random();
     let (constant, constant_range) = num_gen::integer().range(-answer, 9).exclude(0).and_random();
     let unknown = symbols::get_unknown()?;
@@ -25,7 +25,7 @@ fn only_addition_or_subtraction(name: String, _lang: &Language) -> Result<Proble
         .add_aligned(unknown, answer); // x = 9
 
     Ok(Problem {
-        name,
+        id,
         question: format!("${unknown}{constant:+} = {}$", answer + constant),
         answer: format!("${unknown} = {answer}$"),
         solution: solution.to_string(),
@@ -37,7 +37,7 @@ fn only_addition_or_subtraction(name: String, _lang: &Language) -> Result<Proble
 /// 3x = 12
 /// Difficulty: 0
 #[problem]
-fn only_multiplication(name: String, _lang: &Language) -> Result<Problem> {
+fn only_multiplication(id: i32, _lang: Language) -> Result<Problem> {
     let answer = num_gen::integer().range(2, 5).random();
     let (coefficient, coefficient_range) = num_gen::integer().range(3, 9).and_random();
     let unknown = symbols::get_unknown()?;
@@ -49,7 +49,7 @@ fn only_multiplication(name: String, _lang: &Language) -> Result<Problem> {
         .add_aligned(unknown, answer); // x = 4
 
     Ok(Problem {
-        name,
+        id,
         question: format!("${coefficient}{unknown} = {}$", answer * coefficient),
         answer: format!("${unknown} = {answer}$"),
         solution: solution.to_string(),
@@ -61,7 +61,7 @@ fn only_multiplication(name: String, _lang: &Language) -> Result<Problem> {
 /// 4x + 1 = 13
 /// Difficulty: 1
 #[problem]
-fn positive_up_to_5(name: String, _lang: &Language) -> Result<Problem> {
+fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(0, 5).random();
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 5).and_random();
@@ -83,7 +83,7 @@ fn positive_up_to_5(name: String, _lang: &Language) -> Result<Problem> {
         .add_aligned(unknown, answer);
 
     Ok(Problem {
-        name,
+        id,
         question: format!(
             "${term}{constant:+} = {rhs}$",
             rhs = coefficient * answer + constant
@@ -98,7 +98,7 @@ fn positive_up_to_5(name: String, _lang: &Language) -> Result<Problem> {
 /// 6x + 8 = 20
 /// Difficulty: 2
 #[problem]
-fn positive_answers(name: String, _lang: &Language) -> Result<Problem> {
+fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(0, 10).random();
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 9).and_random();
@@ -121,7 +121,7 @@ fn positive_answers(name: String, _lang: &Language) -> Result<Problem> {
         .add_aligned(unknown, answer);
 
     Ok(Problem {
-        name,
+        id,
         question: format!(
             "${term}{constant:+} = {rhs}$",
             rhs = coefficient * answer + constant
@@ -136,7 +136,7 @@ fn positive_answers(name: String, _lang: &Language) -> Result<Problem> {
 /// 6x + 8 = 19
 /// Difficulty: 3
 #[problem]
-fn positive_rational(name: String, _lang: &Language) -> Result<Problem> {
+fn positive_rational(id: i32, _lang: Language) -> Result<Problem> {
     let (denominator, denominator_range) = num_gen::integer().range(2, 9).and_random();
     let numerator = num_gen::integer()
         .range(1, denominator * 2 - 1)
@@ -163,7 +163,7 @@ fn positive_rational(name: String, _lang: &Language) -> Result<Problem> {
         };
 
     Ok(Problem {
-        name,
+        id,
         question: format!(
             "${cf}x {co:+} = {rhs}$",
             cf = coefficient,

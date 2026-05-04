@@ -7,7 +7,7 @@ use typst_writer::{self, formatting::parentheses};
 /// 3(x+1)
 /// Difficulty: 0
 #[problem]
-fn positive_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
+fn positive_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
     let (factor, f_range) = num_gen::integer().range(2, 5).and_random();
     let unknown = symbols::get_unknown()?;
     let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
@@ -25,7 +25,7 @@ fn positive_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -37,7 +37,7 @@ fn positive_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
 /// -2(x+4)
 /// Difficulty: 1
 #[problem]
-fn negative_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
+fn negative_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
     let (factor, f_range) = num_gen::integer().range(-5, -2).and_random();
     let unknown = symbols::get_unknown()?;
     let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
@@ -57,7 +57,7 @@ fn negative_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -69,7 +69,7 @@ fn negative_integer_mult(name: String, _lang: &Language) -> Result<Problem> {
 /// 3(2a-4)
 /// Difficulty: 2
 #[problem]
-fn with_coefficient_on_variable(name: String, _lang: &Language) -> Result<Problem> {
+fn with_coefficient_on_variable(id: i32, _lang: Language) -> Result<Problem> {
     let (factor, f_range) = num_gen::integer().range(2, 5).and_random();
     let unknown = symbols::get_unknown()?;
     let coef = num_gen::integer().range(2, 5).random();
@@ -88,7 +88,7 @@ fn with_coefficient_on_variable(name: String, _lang: &Language) -> Result<Proble
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -100,7 +100,7 @@ fn with_coefficient_on_variable(name: String, _lang: &Language) -> Result<Proble
 /// x(x+1)
 /// Difficulty: 2
 #[problem]
-fn multiply_by_variable(name: String, _lang: &Language) -> Result<Problem> {
+fn multiply_by_variable(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
 
@@ -118,7 +118,7 @@ fn multiply_by_variable(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -130,7 +130,7 @@ fn multiply_by_variable(name: String, _lang: &Language) -> Result<Problem> {
 /// (2x + 1) + (3x - 4)
 /// Difficulty: 2
 #[problem]
-fn add_parentheses(name: String, _lang: &Language) -> Result<Problem> {
+fn add_parentheses(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = num_gen::integer()
         .range(-9, 9)
@@ -158,7 +158,7 @@ fn add_parentheses(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -170,7 +170,7 @@ fn add_parentheses(name: String, _lang: &Language) -> Result<Problem> {
 /// (2x + 1) - (3x - 4)
 /// Difficulty: 3
 #[problem]
-fn subtract_parentheses(name: String, _lang: &Language) -> Result<Problem> {
+fn subtract_parentheses(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = num_gen::integer()
         .range(-9, 9)
@@ -202,7 +202,7 @@ fn subtract_parentheses(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -214,7 +214,7 @@ fn subtract_parentheses(name: String, _lang: &Language) -> Result<Problem> {
 /// -4(3 - 4x)
 /// Difficulty: 2
 #[problem]
-fn negative_factor_and_coef(name: String, _lang: &Language) -> Result<Problem> {
+fn negative_factor_and_coef(id: i32, _lang: Language) -> Result<Problem> {
     let (factor, f_range) = num_gen::integer().range(-8, -2).and_random();
     let unknown = symbols::get_unknown()?;
     let coef = num_gen::integer().range(-5, -2).random();
@@ -236,7 +236,7 @@ fn negative_factor_and_coef(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${simplified_answer}$"),
         solution,
@@ -248,7 +248,7 @@ fn negative_factor_and_coef(name: String, _lang: &Language) -> Result<Problem> {
 /// 3 - (2x - 1)
 /// Difficulty: 3
 #[problem]
-fn const_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
+fn const_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
     let (initial_const, i_range) = num_gen::integer().range(1, 8).and_random();
     let unknown = symbols::get_unknown()?;
     let coef = num_gen::integer().range(2, 6).random();
@@ -271,7 +271,7 @@ fn const_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -283,7 +283,7 @@ fn const_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
 /// 2x - (7x - 1)
 /// Difficulty: 3
 #[problem]
-fn var_term_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem> {
+fn var_term_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
     let (initial, i_range) = num_gen::integer().range(1, 4).and_random();
     let unknown = symbols::get_unknown()?;
     let coef = num_gen::integer().range(5, 10).random();
@@ -307,7 +307,7 @@ fn var_term_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem>
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${simplified}$"),
         solution,
@@ -319,7 +319,7 @@ fn var_term_minus_parenthesis(name: String, _lang: &Language) -> Result<Problem>
 /// 4(2x + 1) + 2(3x - 4)
 /// Difficulty: 3
 #[problem]
-fn multiply_and_add(name: String, _lang: &Language) -> Result<Problem> {
+fn multiply_and_add(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = num_gen::integer()
         .range(-9, 9)
@@ -350,7 +350,7 @@ fn multiply_and_add(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -362,7 +362,7 @@ fn multiply_and_add(name: String, _lang: &Language) -> Result<Problem> {
 /// 4(2x + 1) - (3x - 4)
 /// Difficulty: 3
 #[problem]
-fn multiply_first_and_subtract(name: String, _lang: &Language) -> Result<Problem> {
+fn multiply_first_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = num_gen::integer()
         .range(-9, 9)
@@ -394,7 +394,7 @@ fn multiply_first_and_subtract(name: String, _lang: &Language) -> Result<Problem
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -406,7 +406,7 @@ fn multiply_first_and_subtract(name: String, _lang: &Language) -> Result<Problem
 /// 4(2x + 1) - 2(3x - 4)
 /// Difficulty: 4
 #[problem]
-fn multiply_and_subtract(name: String, _lang: &Language) -> Result<Problem> {
+fn multiply_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = num_gen::integer()
         .range(-9, 9)
@@ -439,7 +439,7 @@ fn multiply_and_subtract(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -451,7 +451,7 @@ fn multiply_and_subtract(name: String, _lang: &Language) -> Result<Problem> {
 /// 3x(1 - 2x)
 /// Difficulty: 5
 #[problem]
-fn multiply_by_variable_term(name: String, _lang: &Language) -> Result<Problem> {
+fn multiply_by_variable_term(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let constant = num_gen::integer().range(1, 7).random();
     let coef_range = num_gen::integer()
@@ -479,7 +479,7 @@ fn multiply_by_variable_term(name: String, _lang: &Language) -> Result<Problem> 
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -491,7 +491,7 @@ fn multiply_by_variable_term(name: String, _lang: &Language) -> Result<Problem> 
 /// x(3x + 1) - 3(2 + x)
 /// Difficulty: 6
 #[problem]
-fn one_variable_one_constant(name: String, _lang: &Language) -> Result<Problem> {
+fn one_variable_one_constant(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = num_gen::integer()
         .range(-5, 5)
@@ -522,7 +522,7 @@ fn one_variable_one_constant(name: String, _lang: &Language) -> Result<Problem> 
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -534,7 +534,7 @@ fn one_variable_one_constant(name: String, _lang: &Language) -> Result<Problem> 
 /// 3(3x + 1) - x(2 + x)
 /// Difficulty: 6
 #[problem]
-fn one_constant_one_variable(name: String, _lang: &Language) -> Result<Problem> {
+fn one_constant_one_variable(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = num_gen::integer()
         .range(-5, 5)
@@ -565,7 +565,7 @@ fn one_constant_one_variable(name: String, _lang: &Language) -> Result<Problem> 
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -577,7 +577,7 @@ fn one_constant_one_variable(name: String, _lang: &Language) -> Result<Problem> 
 /// 3x(3x + 1) - 2x(2 + x)
 /// Difficulty: 7
 #[problem]
-fn multiply_both_by_variable_terms(name: String, _lang: &Language) -> Result<Problem> {
+fn multiply_both_by_variable_terms(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let coef_range = num_gen::integer()
         .range(-5, 5)
@@ -606,7 +606,7 @@ fn multiply_both_by_variable_terms(name: String, _lang: &Language) -> Result<Pro
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -618,7 +618,7 @@ fn multiply_both_by_variable_terms(name: String, _lang: &Language) -> Result<Pro
 /// 2x(1 + y) - 3(x + y)
 /// Difficulty: 8
 #[problem]
-fn mixing_variables(name: String, _lang: &Language) -> Result<Problem> {
+fn mixing_variables(id: i32, _lang: Language) -> Result<Problem> {
     let (unknown1, unknown2) = symbols::get_two_unknowns()?;
     let num_range = num_gen::integer().range(-5, 5).exclude(0);
     let factor1 = num_range.positive();
@@ -651,7 +651,7 @@ fn mixing_variables(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -663,7 +663,7 @@ fn mixing_variables(name: String, _lang: &Language) -> Result<Problem> {
 /// x^2(1 - y) + 3x(y - 1) - y(3x + 1)
 /// Difficulty: 9
 #[problem]
-fn mixing_variables_and_exponents(name: String, _lang: &Language) -> Result<Problem> {
+fn mixing_variables_and_exponents(id: i32, _lang: Language) -> Result<Problem> {
     let (unknown1, unknown2) = symbols::get_two_unknowns()?;
     let num_range = num_gen::integer().range(-5, 5).exclude(0);
     let factor1 = num_range.positive();
@@ -707,7 +707,7 @@ fn mixing_variables_and_exponents(name: String, _lang: &Language) -> Result<Prob
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,

@@ -6,7 +6,7 @@ use types::{lang::Language, problems::Problem};
 /// 5^4 * 5^2
 /// Difficulty: 0
 #[problem]
-fn simple_multiplication(name: String, _lang: &Language) -> Result<Problem> {
+fn simple_multiplication(id: i32, _lang: Language) -> Result<Problem> {
     let base = num_gen::integer().range(4, 9).random();
     let (exp1, exp1_range) = num_gen::integer().range(2, 6).and_random();
     let (exp2, exp2_range) = num_gen::integer().range(2, 6).and_random();
@@ -18,7 +18,7 @@ fn simple_multiplication(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -30,7 +30,7 @@ fn simple_multiplication(name: String, _lang: &Language) -> Result<Problem> {
 /// x^4 * x^2
 /// Difficulty: 1
 #[problem]
-fn simple_multiplication_variables(name: String, _lang: &Language) -> Result<Problem> {
+fn simple_multiplication_variables(id: i32, _lang: Language) -> Result<Problem> {
     let base = symbols::get_unknown()?;
     let (exp1, exp1_range) = num_gen::integer().range(2, 6).and_random();
     let (exp2, exp2_range) = num_gen::integer().range(2, 6).and_random();
@@ -42,7 +42,7 @@ fn simple_multiplication_variables(name: String, _lang: &Language) -> Result<Pro
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -54,7 +54,7 @@ fn simple_multiplication_variables(name: String, _lang: &Language) -> Result<Pro
 /// 5^4 / 5^2
 /// Difficulty: 0
 #[problem]
-fn simple_division(name: String, _lang: &Language) -> Result<Problem> {
+fn simple_division(id: i32, _lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().range(4, 9).and_random();
     let (exp1, exp1_range) = num_gen::integer().range(4, 10).and_random();
     let exp2 = num_gen::integer().range(2, exp1 - 2).random();
@@ -66,7 +66,7 @@ fn simple_division(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -78,7 +78,7 @@ fn simple_division(name: String, _lang: &Language) -> Result<Problem> {
 /// a^4 / a^2
 /// Difficulty: 1
 #[problem]
-fn simple_division_variables(name: String, _lang: &Language) -> Result<Problem> {
+fn simple_division_variables(id: i32, _lang: Language) -> Result<Problem> {
     let base = symbols::get_unknown()?;
     let (exp1, exp1_range) = num_gen::integer().range(4, 10).and_random();
     let exp2 = num_gen::integer().range(2, exp1 - 2).random();
@@ -90,7 +90,7 @@ fn simple_division_variables(name: String, _lang: &Language) -> Result<Problem> 
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -101,7 +101,7 @@ fn simple_division_variables(name: String, _lang: &Language) -> Result<Problem> 
 /// (5^4)^2
 /// Difficulty: 1
 #[problem]
-fn double_exponentiation(name: String, _lang: &Language) -> Result<Problem> {
+fn double_exponentiation(id: i32, _lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().range(2, 9).and_random();
     let (exp1, exp1_range) = num_gen::integer().range(2, 6).and_random();
     let exp2 = num_gen::integer().range(3, 6).random();
@@ -112,7 +112,7 @@ fn double_exponentiation(name: String, _lang: &Language) -> Result<Problem> {
         format!("$ ({base}^{exp1})^{exp2} = {base}^({exp1} dot {exp2}) = {base}^{total_exp} $");
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -124,7 +124,7 @@ fn double_exponentiation(name: String, _lang: &Language) -> Result<Problem> {
 /// (x^4)^2
 /// Difficulty: 1
 #[problem]
-fn double_exponentiation_variables(name: String, _lang: &Language) -> Result<Problem> {
+fn double_exponentiation_variables(id: i32, _lang: Language) -> Result<Problem> {
     let base = symbols::get_unknown()?;
     let (exp1, exp1_range) = num_gen::integer().range(2, 6).and_random();
     let exp2 = num_gen::integer().range(3, 6).random();
@@ -135,7 +135,7 @@ fn double_exponentiation_variables(name: String, _lang: &Language) -> Result<Pro
         format!("$ ({base}^{exp1})^{exp2} = {base}^({exp1} dot {exp2}) = {base}^{total_exp} $");
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -147,7 +147,7 @@ fn double_exponentiation_variables(name: String, _lang: &Language) -> Result<Pro
 // (5^3 * 5^6) / 5^2
 // Difficulty: 2
 #[problem]
-fn multiplication_and_division(name: String, _lang: &Language) -> Result<Problem> {
+fn multiplication_and_division(id: i32, _lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().range(3, 9).and_random();
     let (exp1, exp1_range) = num_gen::integer().range(5, 10).and_random();
     let (exp2, exp2_range) = num_gen::integer().range(2, 10).and_random();
@@ -165,7 +165,7 @@ fn multiplication_and_division(name: String, _lang: &Language) -> Result<Problem
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -177,7 +177,7 @@ fn multiplication_and_division(name: String, _lang: &Language) -> Result<Problem
 /// (4x)^2
 /// Difficulty: 2
 #[problem]
-fn variable_term_power_2(name: String, _lang: &Language) -> Result<Problem> {
+fn variable_term_power_2(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
     let (coef, coef_range) = num_gen::integer().range(2, 10).and_random();
     let (exp, exp_range) = num_gen::integer().number(2).and_random();
@@ -189,7 +189,7 @@ fn variable_term_power_2(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -201,7 +201,7 @@ fn variable_term_power_2(name: String, _lang: &Language) -> Result<Problem> {
 /// (2x)^3
 /// Difficulty: 2
 #[problem]
-fn variable_term_power_3(name: String, _lang: &Language) -> Result<Problem> {
+fn variable_term_power_3(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
     let (coef, coef_range) = num_gen::integer().numbers(&[2, 3, 10]).and_random();
     let (exp, exp_range) = num_gen::integer().number(3).and_random();
@@ -213,7 +213,7 @@ fn variable_term_power_3(name: String, _lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -225,7 +225,7 @@ fn variable_term_power_3(name: String, _lang: &Language) -> Result<Problem> {
 /// (2x)^3 / 4x
 /// Difficulty: 5
 #[problem]
-fn variable_term_power_and_divide_x(name: String, _lang: &Language) -> Result<Problem> {
+fn variable_term_power_and_divide_x(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
     let (coef, coef_range) = num_gen::integer().numbers(&[2, 3, 10]).and_random();
     let (exp, exp_range) = num_gen::integer().range(2, 3).and_random();
@@ -248,7 +248,7 @@ fn variable_term_power_and_divide_x(name: String, _lang: &Language) -> Result<Pr
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -260,7 +260,7 @@ fn variable_term_power_and_divide_x(name: String, _lang: &Language) -> Result<Pr
 /// (3x)^3 / 9x^2
 /// Difficulty: 5
 #[problem]
-fn variable_term_power_and_divide_x_squared(name: String, _lang: &Language) -> Result<Problem> {
+fn variable_term_power_and_divide_x_squared(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
     let (coef, coef_range) = num_gen::integer().numbers(&[2, 3, 10]).and_random();
     let (exp, exp_range) = num_gen::integer().range(2, 3).and_random();
@@ -283,7 +283,7 @@ fn variable_term_power_and_divide_x_squared(name: String, _lang: &Language) -> R
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,

@@ -16,14 +16,14 @@ use typst_writer::formatting::{SolutionWithSteps, equation_solution};
 /// y = 3x + 1, x = 3
 /// Difficulty: 0
 #[problem]
-fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
+fn without_notation_y(id: i32, lang: Language) -> Result<Problem> {
     let (k, k_range) = num_gen::integer().range(2, 10).and_random();
     let (m, m_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
     let x_value = num_gen::integer().range(1, 5).random();
     let y_value = k * x_value + m;
 
     let mut expression = Function::linear(k, m).without_function_notation();
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("expression", expression.to_string()),
@@ -42,7 +42,7 @@ fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
         .add_aligned("y", y_value);
 
     let problem = Problem {
-        name,
+        id,
         question,
         answer: format!("$y = {}$", y_value),
         solution: solution.to_string(),
@@ -55,14 +55,14 @@ fn without_notation_y(name: String, lang: &Language) -> Result<Problem> {
 /// y = 2x + 2, y = 2
 /// Difficulty: 1
 #[problem]
-fn without_notation_x(name: String, lang: &Language) -> Result<Problem> {
+fn without_notation_x(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
     let (constant, constant_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
     let answer = num_gen::integer().range(1, 5).random();
     let y = coefficient * answer + constant;
 
     let expression = format!("y = {}x {:+}", coefficient, constant);
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[("expression", expression), ("y", y.to_string())]);
 
@@ -76,7 +76,7 @@ fn without_notation_x(name: String, lang: &Language) -> Result<Problem> {
     ));
 
     let problem = Problem {
-        name,
+        id,
         question,
         answer: format!("$x = {}$", answer),
         solution,
@@ -89,7 +89,7 @@ fn without_notation_x(name: String, lang: &Language) -> Result<Problem> {
 /// f(3), no negatives
 /// Difficulty: 2
 #[problem]
-fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
+fn find_y_no_negatives(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
     let x = num_gen::integer().range(1, 5).random();
     let (constant, constant_range) = num_gen::integer()
@@ -99,7 +99,7 @@ fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
     let y = coefficient * x + constant;
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[("expression", expression), ("x", x.to_string())]);
 
@@ -112,7 +112,7 @@ fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
     );
 
     let problem = Problem {
-        name,
+        id,
         question,
         answer: format!("$f({x}) = {y}$"),
         solution: equation_solution(&solution),
@@ -125,7 +125,7 @@ fn find_y_no_negatives(name: String, lang: &Language) -> Result<Problem> {
 /// Find x where f(x) = 2
 /// Difficulty: 3
 #[problem]
-fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
+fn find_x_where_f_x(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
     let x = num_gen::integer().range(1, 5).random();
     let (constant, constant_range) = num_gen::integer()
@@ -135,7 +135,7 @@ fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
     let y = coefficient * x + constant;
 
     let expression = format!("f(x) = {}x {:+}", coefficient, constant);
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[("expression", expression), ("y", y.to_string())]);
 
@@ -150,7 +150,7 @@ fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
     );
 
     let problem = Problem {
-        name,
+        id,
         question,
         answer: format!("$x = {x}$"),
         solution: equation_solution(&solution),
@@ -163,7 +163,7 @@ fn find_x_where_f_x(name: String, lang: &Language) -> Result<Problem> {
 /// Solve the equation f(x) = 4
 /// Difficulty: 3
 #[problem]
-fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
+fn equation_f_x_equals(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer()
         .range(-10, 10)
         .exclude_multiple(&[-1, 0, 1])
@@ -175,7 +175,7 @@ fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
     let var = symbols::get_variable()?;
 
     let expression = format!("{f_name}({var}) = {coefficient}{var} {constant:+}");
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("expression", expression),
@@ -195,7 +195,7 @@ fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
     );
 
     let problem = Problem {
-        name,
+        id,
         question,
         answer: format!("${var} = {x}$"),
         solution: equation_solution(&solution),
@@ -208,7 +208,7 @@ fn equation_f_x_equals(name: String, lang: &Language) -> Result<Problem> {
 /// f(-3)
 /// Difficulty: 3
 #[problem]
-fn find_y(name: String, lang: &Language) -> Result<Problem> {
+fn find_y(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer()
         .range(-10, 10)
         .exclude_multiple(&[-1, 0, 1])
@@ -220,7 +220,7 @@ fn find_y(name: String, lang: &Language) -> Result<Problem> {
     let var = symbols::get_variable()?;
 
     let expression = format!("{f_name}({var}) = {coefficient}{var} {constant:+}");
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("expression", expression),
@@ -240,7 +240,7 @@ fn find_y(name: String, lang: &Language) -> Result<Problem> {
     );
 
     let problem = Problem {
-        name,
+        id,
         question,
         answer: format!("${f_name}({x}) = {y}$"),
         solution: equation_solution(&solution),
@@ -253,7 +253,7 @@ fn find_y(name: String, lang: &Language) -> Result<Problem> {
 /// f(x) = 2x + 4. Bestäm f(a+1)
 /// Difficulty: 6
 #[problem]
-fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
+fn insert_algebra_positive(id: i32, lang: Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
         num_gen::integer().range(2, 6).and_random();
     let (algebra_coefficient, algebra_coefficient_range) =
@@ -272,7 +272,7 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
 
     let function_string = format!("{f_name}({X}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[("function", function_string), ("algebra", algebra_string)]);
     let answer =
@@ -287,7 +287,7 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
     );
 
     let problem = Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -300,7 +300,7 @@ fn insert_algebra_positive(name: String, lang: &Language) -> Result<Problem> {
 /// f(x) = 4 - 2x. Bestäm f(2a-1)
 /// Difficulty: 7
 #[problem]
-fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
+fn insert_algebra_negative(id: i32, lang: Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
         num_gen::integer().range(-6, -2).and_random();
     let (algebra_coefficient, algebra_coefficient_range) =
@@ -319,7 +319,7 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
 
     let function_string = format!("{f_name}({X}) = {function_expression}");
     let algebra_string = format!("{f_name}({algebra_expression})");
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[("function", function_string), ("algebra", algebra_string)]);
     let answer = (function_coefficient * algebra_expression.clone()
@@ -335,7 +335,7 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
     );
 
     let problem = Problem {
-        name,
+        id,
         question,
         answer: format!("${answer}$"),
         solution,
@@ -348,7 +348,7 @@ fn insert_algebra_negative(name: String, lang: &Language) -> Result<Problem> {
 // f(x) = 3x - 2. Find the value of f(f(4))
 // Difficulty: 8
 #[problem]
-fn insert_number_twice(name: String, lang: &Language) -> Result<Problem> {
+fn insert_number_twice(id: i32, lang: Language) -> Result<Problem> {
     let (k, k_range) = num_gen::integer().range(2, 5).and_random();
     let (m, m_range) = num_gen::integer().range(-6, 6).exclude(0).and_random();
     let (val, val_range) = num_gen::integer().range(-2, 2).and_random();
@@ -363,7 +363,7 @@ fn insert_number_twice(name: String, lang: &Language) -> Result<Problem> {
     let second_replacement = [(variable, &first_step)];
     let second_step = function.evaluate(&second_replacement);
 
-    let problem_data = registry::get_problem_data(&name)?;
+    let problem_data = registry::get_problem_data(id)?;
     let question = problem_data.get_question(lang).replace_placeholders(&[
         ("function", function.to_string()),
         (
@@ -380,7 +380,7 @@ fn insert_number_twice(name: String, lang: &Language) -> Result<Problem> {
         second_evaluation = function.print_replacements(&second_replacement)
     );
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,

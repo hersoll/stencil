@@ -5,22 +5,26 @@ use std::sync::{LazyLock, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum RegistryError {
-    #[error("problem id not found: {name}")]
-    ProblemNotFound { name: String },
+    #[error("problem id not found: {id}")]
+    ProblemNotFound { id: i32 },
     #[error("prefix id not found: {id}")]
     PrefixNotFound { id: i32 },
     #[error("Mutex {registry} is poisoned")]
     RegistryMutexIsPoisoned { registry: String },
 }
 
-pub static PROBLEM_DATA: LazyLock<RwLock<HashMap<String, ProblemEntry>>> =
+/// A map between a `Problem's` full name (`{module}_{problem}`) and a [`ProblemEntry`].
+///
+/// The `ProblemEntry` contains all the information about the problem, like questions for each
+/// language, its difficulty, etc.
+pub static PROBLEM_DATA: LazyLock<RwLock<HashMap<i32, ProblemEntry>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
 pub static PREFIX_DATA: LazyLock<RwLock<HashMap<i32, PrefixEntry>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
 /// Loads data about every problem in the database to the PROBLEM_DATA hashmap
-/// to lessen database hits during runtime
+/// to lessen database hits during runtime and to keep it all in memory for referencing
 pub async fn load_problem_data() -> Result<()> {
     let problems = db::get_all_problem_data().await?;
     for problem in problems {
@@ -28,7 +32,7 @@ pub async fn load_problem_data() -> Result<()> {
             .write()
             .ok()
             .context("Failed to write to PROBLEM_DATA")?
-            .insert(problem.module.clone() + "_" + &problem.name, problem);
+            .insert(problem.id, problem);
     }
     Ok(())
 }
@@ -59,16 +63,15 @@ pub fn get_prefix_data(id: i32) -> Result<PrefixEntry> {
     Ok(prefix)
 }
 
-pub fn get_problem_data(full_name: &str) -> Result<ProblemEntry> {
+/// Used in problems to retrieve questions, answers, etc.
+pub fn get_problem_data(id: i32) -> Result<ProblemEntry> {
     let problem = PROBLEM_DATA
         .read()
         .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
             registry: "PROBLEM_DATA".to_string(),
         })?
-        .get(full_name)
+        .get(&id)
         .cloned()
-        .ok_or(RegistryError::ProblemNotFound {
-            name: full_name.to_string(),
-        })?;
+        .ok_or(RegistryError::ProblemNotFound { id })?;
     Ok(problem)
 }

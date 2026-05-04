@@ -9,7 +9,7 @@ use typst_writer::graphing::{Axes, Graph};
 /// Find m in graph
 /// Difficulty: 0
 #[problem]
-fn find_m(name: String, lang: &Language) -> Result<Problem> {
+fn find_m(id: i32, lang: Language) -> Result<Problem> {
     // k = -1 makes x-intersect and y-intersect the same - not ideal for learning
     let k_range = num_gen::integer().range(-3, 3).exclude_multiple(&[0, -1]);
     let k = k_range.random();
@@ -39,7 +39,7 @@ fn find_m(name: String, lang: &Language) -> Result<Problem> {
         .add_graph(Graph::linear(k, m).with_dot_at(0, m))
         .build_string()?;
 
-    let problem_data = registry::get_problem_data(&name)?;
+    let problem_data = registry::get_problem_data(id)?;
     let question = problem_data.get_question(lang);
     let solution = problem_data.get_solution(lang);
 
@@ -48,7 +48,7 @@ fn find_m(name: String, lang: &Language) -> Result<Problem> {
     let solution = format!("{solution}\n{solution_graph}");
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -60,7 +60,7 @@ fn find_m(name: String, lang: &Language) -> Result<Problem> {
 /// Find k in graph
 /// Difficulty: 1
 #[problem]
-fn find_k(name: String, lang: &Language) -> Result<Problem> {
+fn find_k(id: i32, lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer().range(-3, 3).exclude(0);
     let k = k_range.random();
     // We want the x-intersect to be an integer, easiest way is to make sure m is a multiple of k
@@ -79,7 +79,7 @@ fn find_k(name: String, lang: &Language) -> Result<Problem> {
         .add_graph(Graph::linear(k, m).with_simple_slope_hint())
         .build_string()?;
 
-    let problem_data = registry::get_problem_data(&name)?;
+    let problem_data = registry::get_problem_data(id)?;
     let question = problem_data.get_question(lang);
     let solution = problem_data.get_solution(lang);
 
@@ -88,7 +88,7 @@ fn find_k(name: String, lang: &Language) -> Result<Problem> {
     let solution = format!("{solution}\n{solution_graph}");
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -100,7 +100,7 @@ fn find_k(name: String, lang: &Language) -> Result<Problem> {
 /// Find k and m in graph (k and m are integers)
 /// Difficulty: 2
 #[problem]
-fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
+fn find_k_and_m_integers(id: i32, _lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer().range(-3, 3).exclude(0);
     let k = k_range.random();
     let m = num_gen::integer().range(-3, 3).random();
@@ -130,7 +130,7 @@ fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -142,7 +142,7 @@ fn find_k_and_m_integers(name: String, _lang: &Language) -> Result<Problem> {
 /// Draw the graph of 3x - 1
 /// Difficulty: 3
 #[problem]
-fn draw_own_easy_integers(name: String, lang: &Language) -> Result<Problem> {
+fn draw_own_easy_integers(id: i32, lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer()
         .range(-3, 3)
         .exclude_multiple(&[-1, 0, 1]);
@@ -184,14 +184,14 @@ fn draw_own_easy_integers(name: String, lang: &Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let expr = k_term.and(&m_term);
 
-    let question_text = get_problem_data(&name)?
+    let question_text = get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[("fn", format!("y = {expr}"))]);
     let question = format!("{question_text}\n{question_graph}");
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_graph,
         solution,
@@ -203,7 +203,7 @@ fn draw_own_easy_integers(name: String, lang: &Language) -> Result<Problem> {
 /// Find k and m in graph (k and m are large numbers), y = 40x + 300
 /// Difficulty: 4
 #[problem]
-fn find_k_and_m_large_numbers(name: String, _lang: &Language) -> Result<Problem> {
+fn find_k_and_m_large_numbers(id: i32, _lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer().range(-3, 3).exclude(0);
     let k = k_range.random() * 20;
     let m = num_gen::integer().range(1, 5).random() * 100;
@@ -229,7 +229,7 @@ fn find_k_and_m_large_numbers(name: String, _lang: &Language) -> Result<Problem>
     let solution = format!("$k = {five_k}/5 = {k}$\n{solution_graph}", five_k = k * 5);
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -241,7 +241,7 @@ fn find_k_and_m_large_numbers(name: String, _lang: &Language) -> Result<Problem>
 /// Draw the graph of y = x + 1
 /// Difficulty: 4
 #[problem]
-fn draw_own_unit_k(name: String, lang: &Language) -> Result<Problem> {
+fn draw_own_unit_k(id: i32, lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer().numbers(&[-1, 1]);
     let k = k_range.random();
     let m = num_gen::integer().range(-2, 2).random();
@@ -266,7 +266,7 @@ fn draw_own_unit_k(name: String, lang: &Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let expr = k_term.and(&m_term);
 
-    let problem_data = get_problem_data(&name)?;
+    let problem_data = get_problem_data(id)?;
     let question_text = problem_data
         .get_question(lang)
         .replace_placeholders(&[("fn", format!("y = {}", expr.sorted()))]);
@@ -274,7 +274,7 @@ fn draw_own_unit_k(name: String, lang: &Language) -> Result<Problem> {
     let solution = problem_data.get_solution(lang).to_string();
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_graph,
         solution,
@@ -286,7 +286,7 @@ fn draw_own_unit_k(name: String, lang: &Language) -> Result<Problem> {
 /// Draw the graph of y = 2
 /// Difficulty: 4
 #[problem]
-fn draw_own_horizontal(name: String, lang: &Language) -> Result<Problem> {
+fn draw_own_horizontal(id: i32, lang: Language) -> Result<Problem> {
     let k = 0;
     let m_range = num_gen::integer().range(-2, 2);
     let m = m_range.random();
@@ -307,7 +307,7 @@ fn draw_own_horizontal(name: String, lang: &Language) -> Result<Problem> {
         .add_graph(Graph::linear(k, m))
         .build_string()?;
 
-    let problem_data = get_problem_data(&name)?;
+    let problem_data = get_problem_data(id)?;
     let question_text = problem_data
         .get_question(lang)
         .replace_placeholders(&[("fn", format!("y = {m}"))]);
@@ -315,7 +315,7 @@ fn draw_own_horizontal(name: String, lang: &Language) -> Result<Problem> {
     let solution = problem_data.get_solution(lang).to_string();
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_graph,
         solution,
@@ -327,7 +327,7 @@ fn draw_own_horizontal(name: String, lang: &Language) -> Result<Problem> {
 /// Find k and m in graph (k is a fraction)
 /// Difficulty: 5
 #[problem]
-fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
+fn find_k_m_fraction(id: i32, _lang: Language) -> Result<Problem> {
     let (k, k_range) = num_gen::fraction()
         .denom_range(3, 5)
         .min(-1)
@@ -357,7 +357,7 @@ fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -369,7 +369,7 @@ fn find_k_m_fraction(name: String, _lang: &Language) -> Result<Problem> {
 /// Draw the graph of y = 3x/5 + 2
 /// Difficulty: 6
 #[problem]
-fn draw_own_fraction(name: String, lang: &Language) -> Result<Problem> {
+fn draw_own_fraction(id: i32, lang: Language) -> Result<Problem> {
     let (k, k_range) = num_gen::fraction().denoms(&[3, 5, 7]).and_random();
     let m = num_gen::integer().range(-2, 2).exclude(0).random();
     let num = k.numerator();
@@ -397,7 +397,7 @@ fn draw_own_fraction(name: String, lang: &Language) -> Result<Problem> {
         .add_graph(Graph::linear(k, m).with_slope_hint(0, denom, ("x", "y")))
         .build_string()?;
 
-    let problem_data = get_problem_data(&name)?;
+    let problem_data = get_problem_data(id)?;
     let question_text = problem_data
         .get_question(lang)
         .replace_placeholders(&[("fn", format!("y = {function}"))]);
@@ -405,7 +405,7 @@ fn draw_own_fraction(name: String, lang: &Language) -> Result<Problem> {
     let solution = format!("{}\n{solution_graph}", problem_data.get_solution(lang));
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_graph,
         solution,

@@ -20,13 +20,13 @@ fn quadratics_template(symmetry: Number, distance: Number) -> (String, String, S
 }
 
 #[problem]
-fn small_numbers_positive_p(name: String, _lang: &Language) -> Result<Problem> {
+fn small_numbers_positive_p(id: i32, _lang: Language) -> Result<Problem> {
     let (symmetry, sym_range) = num_gen::integer().range(-3, -1).and_random();
     let distance = num_gen::integer().range(-symmetry + 1, 5).random();
     let (question, answer, solution) = quadratics_template(symmetry, distance);
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -36,13 +36,13 @@ fn small_numbers_positive_p(name: String, _lang: &Language) -> Result<Problem> {
 }
 
 #[problem]
-fn positive_p(name: String, _lang: &Language) -> Result<Problem> {
+fn positive_p(id: i32, _lang: Language) -> Result<Problem> {
     let (symmetry, sym_range) = num_gen::integer().range(-8, -1).and_random();
     let distance = num_gen::integer().range(1, 10).random();
     let (question, answer, solution) = quadratics_template(symmetry, distance);
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,

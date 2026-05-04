@@ -18,21 +18,20 @@ pub fn apply_prefixes(
     answer_set: AnswerSet,
     group_prefixes: &mut Vec<Option<String>>,
     document_options: &DocumentOptions,
-    problem_names: &[String],
+    problem_ids: &[i32],
 ) -> Result<(QuestionSet, AnswerSet)> {
-    if problem_names.is_empty() {
+    if problem_ids.is_empty() {
         group_prefixes.push(None);
         return Ok((question_set, answer_set));
     }
 
-    let prefix_ids = fetch_prefix_ids(problem_names)?;
+    let prefix_ids = fetch_prefix_ids(problem_ids)?;
     let prefix_reg = get_prefix_registry()?;
 
     // Case 1: Entire set shares a single prefix.
     //
     // Attach a group prefix, leave the questions and answers untouched
-    if let Some(group_prefix) =
-        detect_group_prefix(&prefix_ids, &prefix_reg, &document_options.lang)
+    if let Some(group_prefix) = detect_group_prefix(&prefix_ids, &prefix_reg, document_options.lang)
     {
         group_prefixes.push(Some(group_prefix));
         return Ok((question_set, answer_set));
@@ -50,7 +49,7 @@ pub fn apply_prefixes(
             answer_set,
             &prefix_ids,
             &prefix_reg,
-            &document_options.lang,
+            document_options.lang,
         ),
         // Case 2B: Group similar problems
         //
@@ -62,12 +61,12 @@ pub fn apply_prefixes(
             &prefix_ids,
             &prefix_reg,
             document_options.max_prefix_group,
-            &document_options.lang,
+            document_options.lang,
         ),
     }
 }
 
-fn fetch_prefix_ids(problem_names: &[String]) -> Result<Vec<Option<i32>>> {
+fn fetch_prefix_ids(problem_names: &[i32]) -> Result<Vec<Option<i32>>> {
     let reg = PROBLEM_DATA
         .read()
         .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
@@ -94,7 +93,7 @@ fn get_prefix_registry() -> Result<PrefixRegistry> {
 fn detect_group_prefix(
     prefix_ids: &[Option<i32>],
     prefix_reg: &HashMap<i32, PrefixEntry>,
-    lang: &Language,
+    lang: Language,
 ) -> Option<String> {
     let first = prefix_ids.first().and_then(|&id| id)?;
 
@@ -115,7 +114,7 @@ fn apply_grouped_prefixes(
     prefix_ids: &[Option<i32>],
     prefix_reg: &HashMap<i32, PrefixEntry>,
     max_group: u8,
-    lang: &Language,
+    lang: Language,
 ) -> Result<(QuestionSet, AnswerSet)> {
     let groups = group_related_prefixes(prefix_ids, max_group);
 
@@ -192,7 +191,7 @@ fn apply_inline_prefixes(
     answer_set: AnswerSet,
     prefix_ids: &[Option<i32>],
     prefix_reg: &HashMap<i32, PrefixEntry>,
-    lang: &Language,
+    lang: Language,
 ) -> Result<(QuestionSet, AnswerSet)> {
     for (i, id) in prefix_ids.iter().enumerate() {
         if let Some(id) = id
@@ -220,7 +219,7 @@ fn push_single_prefixed(
     prefix_reg: &HashMap<i32, PrefixEntry>,
     prefixed_question_set: &mut QuestionSet,
     prefixed_answer_set: &mut AnswerSet,
-    lang: &Language,
+    lang: Language,
 ) {
     let question = match prefix_ids[idx].and_then(|id| prefix_reg.get(&id)) {
         Some(prefix) => {
@@ -252,7 +251,7 @@ fn push_grouped_enum(
     prefix_reg: &HashMap<i32, PrefixEntry>,
     prefixed_questions: &mut QuestionSet,
     prefixed_answers: &mut AnswerSet,
-    lang: &Language,
+    lang: Language,
 ) -> Result<()> {
     let Some(id) = prefix_ids[idx] else {
         return Ok(());

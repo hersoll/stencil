@@ -3,10 +3,12 @@ use anyhow::{Context, Result, anyhow};
 use math::Number;
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
 pub use registry::RegistryError;
+use registry::get_problem_data;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
 use std::{cmp::Ordering, collections::HashSet};
+use tracing::error;
 pub use types::problems::Problem;
 use types::{errors::ApiError, lang::Language};
 
@@ -15,12 +17,13 @@ const DEFAULT_STARTING_DIFFICULTY: Difficulty = Difficulty::Intro;
 const DEFAULT_ENDING_DIFFICULTY: Difficulty = Difficulty::Hard;
 const DEFAULT_PROBLEM_COUNT: u8 = 10;
 
-pub type ProblemGenerator = fn(String, &Language) -> Result<Problem>;
+pub type ProblemGenerator = fn(i32, Language) -> Result<Problem>;
 
-/// A map between problem names (simple_equations_default) and their functions
+/// A map between problem names with `{module}_{problem}` syntax
+/// (e.g. `simple_equations_default`) and their functions.
 ///
-/// This HashMap is written to in the problem! macro (during startup)
-pub static PROBLEM_MAP: LazyLock<RwLock<HashMap<String, ProblemGenerator>>> =
+/// This HashMap is written to in the problem! macro (during startup, before `main`)
+pub static PROBLEM_NAME_TO_FUNCTION_MAP: LazyLock<RwLock<HashMap<String, ProblemGenerator>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
 /// Information about what to include in the problem set
@@ -55,10 +58,14 @@ impl Default for ProblemOptions {
 /// Defines which problems are available to choose from and which
 /// criteria the problem_picker functions can use to
 /// choose which problems to generate
+///
+/// # Lifetime
+/// The [`Language`] reference comes from a higher order function and will live during the entire
+/// lifetime of the [`ProblemPool`]
 #[derive(Debug)]
-pub struct ProblemPool {
+pub struct ProblemPool<'pool> {
     pub problem_candidates: Vec<ProblemCandidate>,
-    pub lang: Language,
+    pub lang: &'pool Language,
     pub starting_difficulty: Difficulty,
     pub ending_difficulty: Difficulty,
     pub n: u8,
@@ -71,7 +78,7 @@ pub struct ProblemPool {
 /// until problems are generated
 #[derive(Debug, Clone, Eq)]
 pub struct ProblemCandidate {
-    pub name: String,
+    pub id: i32,
     pub difficulty: u8,
     /// The "score" is what the module uses to determine which problem is chosen.
     /// When a problem is generated, that problem's score is lowered.
@@ -83,7 +90,7 @@ pub struct ProblemCandidate {
 
 impl PartialEq for ProblemCandidate {
     fn eq(&self, other: &Self) -> bool {
-        self.name == other.name
+        self.id == other.id
     }
 }
 
@@ -93,19 +100,18 @@ impl PartialEq for ProblemCandidate {
 /// and distributes them appropriately across the difficulties given
 pub async fn generate_problem_set(
     options: ProblemOptions,
-    lang: Language,
+    lang: &Language,
 ) -> Result<Vec<Problem>, ApiError> {
-    // (name, dificulty)
-    let problems: Vec<(String, u8)> =
-        db::get_problem_names_and_difficulties_from_topics(options.topics, options.exclusions)
-            .await?;
-    // Construct an initial list of candidates from the problem names
-    let problem_candidates: Vec<ProblemCandidate> = problems
+    let ids = db::get_valid_problem_ids_from_topics(options.topics, options.exclusions).await?;
+
+    // Construct an initial list of candidates from the problem ids
+    let problem_candidates: Vec<ProblemCandidate> = ids
         .into_iter()
-        .map(|problem| {
+        .map(|id| {
+            let difficulty = get_problem_data(id)?.difficulty as u8;
             Ok(ProblemCandidate {
-                name: problem.0,
-                difficulty: problem.1,
+                id,
+                difficulty,
                 score: DEFAULT_SCORE.max(options.n),
                 identifiers: HashSet::new(),
             })
@@ -183,7 +189,7 @@ fn generate_problems(
                 .context("No valid problems within the max_indices")?;
 
             let chosen_candidate = &mut problem_pool.problem_candidates[chosen_index];
-            let problem = get_unique_problem(chosen_candidate, &problem_pool.lang)?;
+            let problem = get_unique_problem(chosen_candidate, *problem_pool.lang)?;
             // Lower the score
             chosen_candidate.score = chosen_candidate.score.saturating_sub(1);
             problems.push(problem);
@@ -191,12 +197,13 @@ fn generate_problems(
     }
     Ok(problems)
 }
+
 /// Generates a problem with a unique ID (the actual numbers that makes the problem different).
 ///
 /// If there are no more possible IDs to generate, reset (which might repeat problems)
-fn get_unique_problem(candidate: &mut ProblemCandidate, lang: &Language) -> Result<Problem> {
-    let generator = get_generator_function(&candidate.name)?;
-    let mut problem = (generator)(candidate.name.clone(), lang)?;
+fn get_unique_problem(candidate: &mut ProblemCandidate, lang: Language) -> Result<Problem> {
+    let generator = get_generator_function(candidate.id)?;
+    let mut problem = (generator)(candidate.id, lang)?;
 
     // Reset if all combinations are exhausted
     if candidate.identifiers.len() >= problem.combinations {
@@ -209,16 +216,14 @@ fn get_unique_problem(candidate: &mut ProblemCandidate, lang: &Language) -> Resu
 
     let mut tries = 0u16;
     while candidate.identifiers.contains(&problem_identifiers_as_i32) {
-        problem = (generator)(candidate.name.clone(), lang)?;
+        problem = (generator)(candidate.id, lang)?;
         problem_identifiers_as_i32 = extract_identifiers(&problem.identifiers);
         tries += 1;
 
         if tries == u16::MAX {
-            tracing::error!("Stuck while generating problem {}!", candidate.name);
-            return Err(anyhow!(
-                "Stuck while generating problem {}!",
-                candidate.name
-            ));
+            let error_msg = format!("Stuck while generating problem {}!", candidate.id);
+            tracing::error!(error_msg);
+            return Err(anyhow!(error_msg));
         }
     }
     candidate.identifiers.insert(problem_identifiers_as_i32);
@@ -237,14 +242,18 @@ fn extract_identifiers(identifiers: &[Number]) -> Vec<i32> {
         .collect()
 }
 
-/// Given a complete problem name (module_problem),
-/// returns a pointer to the function that generates that problem.
-fn get_generator_function(name: &String) -> Result<ProblemGenerator> {
+/// Given a problem_id, returns a pointer to the function that generates that problem.
+fn get_generator_function(id: i32) -> Result<ProblemGenerator> {
+    let problem_data = get_problem_data(id)?;
+    let problem_name = problem_data.module + "_" + &problem_data.name;
     let generator = {
-        let lock = PROBLEM_MAP.read().expect("Mutex is poisoned");
-        lock.get(name)
-            .copied()
-            .ok_or(RegistryError::ProblemNotFound { name: name.clone() })?
+        let lock = PROBLEM_NAME_TO_FUNCTION_MAP
+            .read()
+            .expect("Mutex is poisoned");
+        lock.get(&problem_name).copied().ok_or_else(|| {
+            error!("Failed to retrieve problem {problem_name}");
+            RegistryError::ProblemNotFound { id }
+        })?
     }; // Lock is dropped here
 
     Ok(generator)

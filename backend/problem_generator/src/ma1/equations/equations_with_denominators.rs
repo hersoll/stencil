@@ -7,7 +7,7 @@ use typst_writer::formatting::{self, SolutionWithSteps, divide_number, multiply_
 /// x/3 = 4
 /// Difficulty: 0
 #[problem]
-fn one_denom_one_variable(name: String, _lang: &Language) -> Result<Problem> {
+fn one_denom_one_variable(id: i32, _lang: Language) -> Result<Problem> {
     let denominator_range = num_gen::integer().range(2, 10);
     let denominator = denominator_range.random();
     let rhs = num_gen::integer().range(1, 10).random();
@@ -26,7 +26,7 @@ fn one_denom_one_variable(name: String, _lang: &Language) -> Result<Problem> {
         question,
         answer,
         solution: solution.to_string(),
-        name,
+        id,
         identifiers: vec![denominator],
         combinations: denominator_range.len(),
     })
@@ -35,10 +35,7 @@ fn one_denom_one_variable(name: String, _lang: &Language) -> Result<Problem> {
 /// x/5 + x = 12
 /// Difficulty: 2
 #[problem]
-fn one_denom_and_unit_variable_integers_positive(
-    name: String,
-    _lang: &Language,
-) -> Result<Problem> {
+fn one_denom_and_unit_variable_integers_positive(id: i32, _lang: Language) -> Result<Problem> {
     let denominator_range = num_gen::integer().range(3, 5);
     let denominator = denominator_range.random();
     // n is the multiple of the denominator + 1, will show up in both the question and answer
@@ -65,7 +62,7 @@ fn one_denom_and_unit_variable_integers_positive(
         question,
         answer,
         solution: solution.to_string(),
-        name,
+        id,
         identifiers: vec![denominator],
         combinations: denominator_range.len(),
     })
@@ -73,10 +70,7 @@ fn one_denom_and_unit_variable_integers_positive(
 /// x - x/3 = 8
 /// Difficulty: 2
 #[problem]
-fn unit_variable_and_one_denom_integers_positive(
-    name: String,
-    _lang: &Language,
-) -> Result<Problem> {
+fn unit_variable_and_one_denom_integers_positive(id: i32, _lang: Language) -> Result<Problem> {
     let denominator_range = num_gen::integer().range(3, 5);
     let denominator = denominator_range.random();
     // n is the multiple of the denominator - 1, will show up in both the question and answer
@@ -103,7 +97,7 @@ fn unit_variable_and_one_denom_integers_positive(
         question,
         answer,
         solution: solution.to_string(),
-        name,
+        id,
         identifiers: vec![denominator],
         combinations: denominator_range.len(),
     })
@@ -113,8 +107,8 @@ fn unit_variable_and_one_denom_integers_positive(
 /// Difficulty: 3
 #[problem]
 fn unit_variable_and_one_denom_integers_with_negatives(
-    name: String,
-    _lang: &Language,
+    id: i32,
+    _lang: Language,
 ) -> Result<Problem> {
     let denominator_range = num_gen::integer().range(3, 5);
     let denominator = denominator_range.random();
@@ -142,7 +136,7 @@ fn unit_variable_and_one_denom_integers_with_negatives(
         question,
         answer,
         solution: sol.to_string(),
-        name,
+        id,
         identifiers: vec![denominator],
         combinations: denominator_range.len(),
     })

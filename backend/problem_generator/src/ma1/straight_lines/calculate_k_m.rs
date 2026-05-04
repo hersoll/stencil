@@ -8,7 +8,7 @@ use typst_writer::formatting::{equation_solution, parentheses};
 /// Calculate k between (1, 3) and (4, 9) [positive integers]
 /// Difficulty: 1
 #[problem]
-fn find_k_all_positives(name: String, lang: &Language) -> Result<Problem> {
+fn find_k_all_positives(id: i32, lang: Language) -> Result<Problem> {
     let small_range = num_gen::integer().range(1, 5);
     let k = small_range.random();
     let x_start = small_range.random();
@@ -18,7 +18,7 @@ fn find_k_all_positives(name: String, lang: &Language) -> Result<Problem> {
     let x_end = x_start + x_step;
     let y_end = y_start + y_step;
 
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
@@ -30,7 +30,7 @@ fn find_k_all_positives(name: String, lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -42,7 +42,7 @@ fn find_k_all_positives(name: String, lang: &Language) -> Result<Problem> {
 /// Calculate k between (1, -2) and (-5, 3)
 /// Difficulty: 2
 #[problem]
-fn find_k_with_negatives(name: String, lang: &Language) -> Result<Problem> {
+fn find_k_with_negatives(id: i32, lang: Language) -> Result<Problem> {
     let small_range = num_gen::integer().range(-5, 5).exclude(0);
     let k = small_range.negative(); // Having a negative k ensures we get 
     let x_start = small_range.positive();
@@ -53,7 +53,7 @@ fn find_k_with_negatives(name: String, lang: &Language) -> Result<Problem> {
     let x_end = x_start + x_step;
     let y_end = y_start + y_step;
 
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
@@ -69,7 +69,7 @@ fn find_k_with_negatives(name: String, lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -81,7 +81,7 @@ fn find_k_with_negatives(name: String, lang: &Language) -> Result<Problem> {
 /// Calculate k between (27, 32) and (34, 18)
 /// Difficulty: 2
 #[problem]
-fn find_k_large_integers(name: String, lang: &Language) -> Result<Problem> {
+fn find_k_large_integers(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::integer().range(-3, 3).random();
     let start_range = num_gen::integer()
         .range(16, 34)
@@ -93,7 +93,7 @@ fn find_k_large_integers(name: String, lang: &Language) -> Result<Problem> {
     let x_end = x_start + x_step;
     let y_end = y_start + y_step;
 
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
@@ -105,7 +105,7 @@ fn find_k_large_integers(name: String, lang: &Language) -> Result<Problem> {
     );
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -117,7 +117,7 @@ fn find_k_large_integers(name: String, lang: &Language) -> Result<Problem> {
 /// Find the equation of the line between (1, 3) and (4, 9) [positive integers]
 /// Difficulty: 3
 #[problem]
-fn find_equation_small_positives(name: String, lang: &Language) -> Result<Problem> {
+fn find_equation_small_positives(id: i32, lang: Language) -> Result<Problem> {
     let small_range = num_gen::integer().range(1, 5);
     let k = num_gen::integer().range(2, 5).random();
     let m = small_range.random();
@@ -132,7 +132,7 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
@@ -155,7 +155,7 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
             .as_str();
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -167,7 +167,7 @@ fn find_equation_small_positives(name: String, lang: &Language) -> Result<Proble
 /// Find the equation of the line between (1, -3) and (-4, 9)
 /// Difficulty: 4
 #[problem]
-fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem> {
+fn find_equation_with_negatives(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::integer()
         .range(-5, 5)
         .exclude_multiple(&[-1, 0, 1])
@@ -187,7 +187,7 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
@@ -216,7 +216,7 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
     .as_str();
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -228,7 +228,7 @@ fn find_equation_with_negatives(name: String, lang: &Language) -> Result<Problem
 /// Find the equation of the line between (17, 30) and (29, 54)
 /// Difficulty: 4
 #[problem]
-fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem> {
+fn find_equation_large_integers(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::integer()
         .range(-3, 3)
         .exclude_multiple(&[-1, 0, 1])
@@ -245,7 +245,7 @@ fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
@@ -274,7 +274,7 @@ fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem
     ))
     .as_str();
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -286,7 +286,7 @@ fn find_equation_large_integers(name: String, lang: &Language) -> Result<Problem
 /// Find the equation of the line between (17, 30) and (29, 30)
 /// Difficulty: 4
 #[problem]
-fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
+fn find_equation_k_zero(id: i32, lang: Language) -> Result<Problem> {
     let k = Number::Integer(0);
     let m = num_gen::integer().range(-40, 40).random();
     let x_start = num_gen::integer().range(11, 29).exclude(20).random();
@@ -300,7 +300,7 @@ fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
@@ -324,7 +324,7 @@ fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
     ))
     .as_str();
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -336,7 +336,7 @@ fn find_equation_k_zero(name: String, lang: &Language) -> Result<Problem> {
 /// Find the equation of the line between (17, 30) and (29, 42)
 /// Difficulty: 4
 #[problem]
-fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
+fn find_equation_k_one(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::integer().numbers(&[-1, 1]).random();
     let m = num_gen::integer().range(-40, 40).random();
     let x_start = num_gen::integer().range(11, 29).exclude(20).random();
@@ -350,7 +350,7 @@ fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
@@ -376,7 +376,7 @@ fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
     ))
     .as_str();
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -388,7 +388,7 @@ fn find_equation_k_one(name: String, lang: &Language) -> Result<Problem> {
 /// Find the equation of the line between (17, 30) and (23, 40)
 /// Difficulty: 6
 #[problem]
-fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
+fn find_equation_k_fraction(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::fraction().denoms(&[6, 9, 12]).max(2).random();
     let m = num_gen::fraction()
         .denom(k.denominator().as_i32() / 3) // Ensures integer coordinates
@@ -418,7 +418,7 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let equation = k_term.and(&m_term);
 
-    let question = registry::get_problem_data(&name)?
+    let question = registry::get_problem_data(id)?
         .get_question(lang)
         .replace_placeholders(&[
             ("p1", format!("$({x_start}, {y_start})$")),
@@ -457,7 +457,7 @@ fn find_equation_k_fraction(name: String, lang: &Language) -> Result<Problem> {
     ))
     .as_str();
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,

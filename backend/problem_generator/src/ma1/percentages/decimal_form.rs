@@ -6,7 +6,7 @@ use types::{lang::Language, problems::Problem};
 /// Write 56% in decimal form
 /// Difficulty: 0
 #[problem]
-fn two_digit_to_decimal_form(name: String, _lang: &Language) -> Result<Problem> {
+fn two_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
     let percentage_range = num_gen::integer()
         .range(11, 99)
         .exclude_multiple(&[20, 30, 40, 50, 60, 70, 80, 90]);
@@ -18,7 +18,7 @@ fn two_digit_to_decimal_form(name: String, _lang: &Language) -> Result<Problem> 
     let solution = format!("$1% = num(0.01) \\ 10% = num(0.10) \\ {percentage}% = {decimal_form}$");
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer,
         solution,
@@ -30,6 +30,6 @@ fn two_digit_to_decimal_form(name: String, _lang: &Language) -> Result<Problem> 
 // /// Write 145% in decimal form
 // /// Difficulty: 0
 // #[problem]
-// fn three_digit_to_decimal_form(name: String, _lang: &Language) -> Result<Problem> {
+// fn three_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
 //     todo!()
 // }

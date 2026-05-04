@@ -119,7 +119,7 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
         debug!(set_index = i, "Processing problem set");
         let problem_set = problem_generator::generator::generate_problem_set(
             set.problems,
-            document_options.lang.clone(),
+            &document_options.lang,
         )
         .await?;
         problem_sets.push(problem_set);

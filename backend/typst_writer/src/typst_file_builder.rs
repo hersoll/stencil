@@ -146,7 +146,7 @@ pub struct TypstFileBuilder {
     group_prefixes: Vec<Option<String>>,
     /// Keeps track of which problems has a written solution,
     /// if we have WriteSolutions::First. Not used otherwise.
-    seen_problem_names: HashSet<String>,
+    seen_problem_ids: HashSet<i32>,
     options: DocumentOptions,
     set_options: Vec<QuestionSetOptions>,
     i18n_strings: HashMap<String, String>,
@@ -164,7 +164,7 @@ impl TypstFileBuilder {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),
             group_prefixes: Vec::new(),
-            seen_problem_names: HashSet::new(),
+            seen_problem_ids: HashSet::new(),
             options,
             set_options,
             i18n_strings,
@@ -185,13 +185,13 @@ impl TypstFileBuilder {
         }
 
         // Problem names are collected to get their prefixes from the DB later
-        let mut problem_names = Vec::new();
+        let mut problem_ids = Vec::new();
         let mut new_question_set = QuestionSet::default();
         let mut new_answer_set = AnswerSet::default();
 
         // Split the problem into a question and either an answer or (answer + solution)
         for problem in problem_set {
-            let include_solution = self.should_include_solution(&problem.name);
+            let include_solution = self.should_include_solution(problem.id);
 
             let (q, a) = if include_solution {
                 let answer_with_solution =
@@ -203,7 +203,7 @@ impl TypstFileBuilder {
 
             new_question_set.questions.push(q);
             new_answer_set.answers.push(a);
-            problem_names.push(problem.name);
+            problem_ids.push(problem.id);
         }
 
         let (prefixed_question_set, prefixed_answer_set) = prefix_handler::apply_prefixes(
@@ -211,7 +211,7 @@ impl TypstFileBuilder {
             new_answer_set,
             &mut self.group_prefixes,
             &self.options,
-            &problem_names,
+            &problem_ids,
         )?;
         self.question_sets.push(prefixed_question_set);
         self.answer_sets.push(prefixed_answer_set);
@@ -247,12 +247,12 @@ impl TypstFileBuilder {
     }
 
     /// Decides if a particular problem should have its solution included
-    fn should_include_solution(&mut self, problem_name: &str) -> bool {
+    fn should_include_solution(&mut self, problem_id: i32) -> bool {
         match self.options.write_solutions {
             WriteSolutions::All => true,
             WriteSolutions::None => false,
             // Returns true if it was inserted (and thus is the first occurence)
-            WriteSolutions::First => self.seen_problem_names.insert(problem_name.to_owned()),
+            WriteSolutions::First => self.seen_problem_ids.insert(problem_id),
         }
     }
 

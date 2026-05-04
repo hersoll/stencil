@@ -7,7 +7,7 @@ use typst_writer::formatting::{SolutionWithSteps, divide_number, subtract_number
 /// 4x + 1 = 2x + 3
 /// Difficulty: 1
 #[problem]
-fn two_positive_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Problem> {
+fn two_positive_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(1, 6).random();
     let lhs_range = num_gen::integer().range(3, 9);
@@ -41,7 +41,7 @@ fn two_positive_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
     sol.add_aligned(unknown, answer);
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_str,
         solution: sol.to_string(),
@@ -53,7 +53,7 @@ fn two_positive_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
 /// 2x + 1 = 4x + 3
 /// Difficulty: 1
 #[problem]
-fn two_positive_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Problem> {
+fn two_positive_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(1, 6).random();
     let rhs_range = num_gen::integer().range(3, 9);
@@ -87,7 +87,7 @@ fn two_positive_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
     sol.add_aligned(answer, unknown); // -1 = x
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_str,
         solution: sol.to_string(),
@@ -99,7 +99,7 @@ fn two_positive_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
 /// 4x + 1 = 4 - 2x
 /// Difficulty: 2
 #[problem]
-fn one_negative_coef_lhs_greater(name: String, _lang: &Language) -> Result<Problem> {
+fn one_negative_coef_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(-8, 8).exclude(0).random();
     let lhs_range = num_gen::integer().range(1, 9);
@@ -131,7 +131,7 @@ fn one_negative_coef_lhs_greater(name: String, _lang: &Language) -> Result<Probl
         .add_aligned(unknown, answer); // x = 0.5
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_str,
         solution: sol.to_string(),
@@ -143,7 +143,7 @@ fn one_negative_coef_lhs_greater(name: String, _lang: &Language) -> Result<Probl
 /// 4 - 2x = 1 + 4x
 /// Difficulty: 2
 #[problem]
-fn one_negative_coef_rhs_greater(name: String, _lang: &Language) -> Result<Problem> {
+fn one_negative_coef_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(-8, 8).exclude(0).random();
     let rhs_range = num_gen::integer().range(1, 9);
@@ -173,7 +173,7 @@ fn one_negative_coef_rhs_greater(name: String, _lang: &Language) -> Result<Probl
         .add_aligned(answer, unknown); // 0.5 = x
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_str,
         solution: sol.to_string(),
@@ -185,7 +185,7 @@ fn one_negative_coef_rhs_greater(name: String, _lang: &Language) -> Result<Probl
 // 4 - 4x = 8 - 2x
 /// Difficulty: 3
 #[problem]
-fn two_negative_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Problem> {
+fn two_negative_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(-8, 8).exclude(0).random();
     let lhs_range = num_gen::integer().range(-9, -3);
@@ -217,7 +217,7 @@ fn two_negative_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
     sol.add_aligned(answer, unknown); // -2 = x
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_str,
         solution: sol.to_string(),
@@ -229,7 +229,7 @@ fn two_negative_coefs_rhs_greater(name: String, _lang: &Language) -> Result<Prob
 // 4 - 2x = 8 - 4x
 /// Difficulty: 3
 #[problem]
-fn two_negative_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Problem> {
+fn two_negative_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(-8, 8).exclude(0).random();
     let rhs_range = num_gen::integer().range(-9, -2);
@@ -262,7 +262,7 @@ fn two_negative_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
     sol.add_aligned(unknown, answer); // x = 2
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_str,
         solution: sol.to_string(),
@@ -274,7 +274,7 @@ fn two_negative_coefs_lhs_greater(name: String, _lang: &Language) -> Result<Prob
 // 4x = 6x - 6
 /// Difficulty: 3
 #[problem]
-fn positive_coefs_lhs_has_zero(name: String, _lang: &Language) -> Result<Problem> {
+fn positive_coefs_lhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(-8, 8).exclude(0).random();
     let rhs_range = num_gen::integer().range(2, 9);
@@ -304,7 +304,7 @@ fn positive_coefs_lhs_has_zero(name: String, _lang: &Language) -> Result<Problem
     solution.add_aligned(answer, unknown); // 3 = x
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_str,
         solution: solution.to_string(),
@@ -316,7 +316,7 @@ fn positive_coefs_lhs_has_zero(name: String, _lang: &Language) -> Result<Problem
 // 6x - 6 = 4x
 /// Difficulty: 3
 #[problem]
-fn positive_coefs_rhs_has_zero(name: String, _lang: &Language) -> Result<Problem> {
+fn positive_coefs_rhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
     let answer = num_gen::integer().range(-8, 8).exclude(0).random();
     let lhs_range = num_gen::integer().range(2, 9);
@@ -346,7 +346,7 @@ fn positive_coefs_rhs_has_zero(name: String, _lang: &Language) -> Result<Problem
     solution.add_aligned(unknown, answer); // x = 3
 
     Ok(Problem {
-        name,
+        id,
         question,
         answer: answer_str,
         solution: solution.to_string(),
