@@ -3,7 +3,7 @@ pub async fn welcome() -> String {
         "Welcome to the Stencil API! \n
 Endpoints (with base /api):\n
 /pdf/example - Generate an example stencil
-/pdf - Generate a custom stencil (GET request with JSON body required)
+/pdf - Generate a custom stencil (POST request with JSON body required)
 /help - See the schema for custom stencil requests",
     )
 }
