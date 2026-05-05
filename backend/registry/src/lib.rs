@@ -1,3 +1,8 @@
+//! The `registry` module is responsible for holding static data which is retrieved during startup.
+//!
+//! This data is mostly accessed during problem generation, and since data about problems
+//! won't change during runtime (in production), this is done to minimize DB hits (100 problems
+//! would cause AT LEAST 100 DB hits).
 use anyhow::{Context, Result};
 use db::{self, PrefixEntry, ProblemEntry};
 use std::collections::HashMap;
@@ -13,18 +18,20 @@ pub enum RegistryError {
     RegistryMutexIsPoisoned { registry: String },
 }
 
-/// A map between a `Problem's` full name (`{module}_{problem}`) and a [`ProblemEntry`].
+/// A map between a `Problem's` id in the DB and a [`ProblemEntry`] struct.
 ///
 /// The `ProblemEntry` contains all the information about the problem, like questions for each
 /// language, its difficulty, etc.
 pub static PROBLEM_DATA: LazyLock<RwLock<HashMap<i32, ProblemEntry>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
+/// A map between a `Prefix's` id in the DB and a [`PrefixEntry`] struct.
 pub static PREFIX_DATA: LazyLock<RwLock<HashMap<i32, PrefixEntry>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 
-/// Loads data about every problem in the database to the PROBLEM_DATA hashmap
-/// to lessen database hits during runtime and to keep it all in memory for referencing
+/// Loads data about every problem in the database to the `PROBLEM_DATA` hashmap.
+///
+/// Accessed during startup
 pub async fn load_problem_data() -> Result<()> {
     let problems = db::get_all_problem_data().await?;
     for problem in problems {
@@ -38,7 +45,8 @@ pub async fn load_problem_data() -> Result<()> {
 }
 
 /// Loads every prefix in the database to the PREFIX_DATA hashmap
-/// to lessen database hits during runtime
+///
+/// Accessed during startup
 pub async fn load_prefix_data() -> Result<()> {
     let prefixes = db::get_all_prefix_data().await?;
     for prefix in prefixes {
@@ -51,6 +59,7 @@ pub async fn load_prefix_data() -> Result<()> {
     Ok(())
 }
 
+/// Get information about prefixes through their `id`
 pub fn get_prefix_data(id: i32) -> Result<PrefixEntry> {
     let prefix = PREFIX_DATA
         .read()

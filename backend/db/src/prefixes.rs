@@ -1,5 +1,5 @@
 use super::common::{error_context, error_context_by_name};
-use crate::{PrefixEntry, PrefixTranslations, TranslatedPrefix};
+use crate::{PrefixEntry, PrefixTexts, PrefixTranslations};
 use anyhow::{Context, Result};
 
 struct DbPrefixRow {
@@ -17,11 +17,11 @@ impl From<DbPrefixRow> for PrefixEntry {
             id: row.id,
             name: row.name,
             translations: PrefixTranslations {
-                sv: TranslatedPrefix {
+                sv: PrefixTexts {
                     text: row.text_sv,
                     group_text: row.group_text_sv,
                 },
-                en: TranslatedPrefix {
+                en: PrefixTexts {
                     text: row.text_en,
                     group_text: row.group_text_en,
                 },

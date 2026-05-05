@@ -1,7 +1,7 @@
 use super::common::{error_context, error_context_by_name};
 use crate::{
-    Answer, DescriptionTranslations, ProblemEntry, ProblemTranslations, Question, Solution,
-    TranslatedProblem,
+    Answer, DescriptionTranslations, ProblemEntry, ProblemTexts, ProblemTranslations, Question,
+    Solution,
 };
 use anyhow::{Context, Result};
 
@@ -34,12 +34,12 @@ impl From<DbProblemRow> for ProblemEntry {
             module: row.module,
             prefix_id: row.prefix_id,
             translations: ProblemTranslations {
-                sv: TranslatedProblem {
+                sv: ProblemTexts {
                     question: row.question_sv,
                     answer: row.answer_sv,
                     solution: row.solution_sv,
                 },
-                en: TranslatedProblem {
+                en: ProblemTexts {
                     question: row.question_en,
                     answer: row.answer_en,
                     solution: row.solution_en,
