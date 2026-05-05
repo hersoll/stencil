@@ -3,14 +3,17 @@ use serde::{Deserialize, Serialize};
 use sqlx::prelude::Type;
 use std::{fmt::Display, ops::Deref};
 
+/// Newtype that simply contains a [`String`].
 #[derive(Debug, Clone, Deserialize, Serialize, Type)]
 #[sqlx(transparent)]
 pub struct Question(String);
 
+/// Newtype that simply contains a [`String`].
 #[derive(Debug, Clone, Deserialize, Serialize, Type)]
 #[sqlx(transparent)]
 pub struct Answer(String);
 
+/// Newtype that simply contains a [`String`].
 #[derive(Debug, Clone, Deserialize, Serialize, Type)]
 #[sqlx(transparent)]
 pub struct Solution(String);

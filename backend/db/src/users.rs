@@ -2,6 +2,7 @@ use anyhow::Result;
 
 pub struct UserData {
     pub username: String,
+    /// Hashed
     pub password: String,
 }
 
