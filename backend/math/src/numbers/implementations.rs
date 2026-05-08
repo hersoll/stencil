@@ -16,7 +16,12 @@ impl Display for Number {
                     write!(f, "{}", *integer / 10i32.pow(*decimals as u32))
                 } else {
                     // num() is a formatting library which outputs the decimals with commas
-                    write!(f, "num(\"{}\")", self.value())
+                    if let Some(decimals) = f.precision() {
+                        // Write with the given number of decimals
+                        write!(f, "num(\"{:.*}\")", decimals, self.value())
+                    } else {
+                        write!(f, "num(\"{}\")", self.value())
+                    }
                 }
             }
             Number::Fraction {
@@ -156,15 +161,17 @@ mod tests {
     #[test]
     fn creation_and_display() {
         let integer: Number = 3.into();
-        let decimal: Number = 1.2.into();
+        let decimal: Number = 1.39.into();
         let fraction: Number = (3, 4).into();
         let irrational = PI;
         let negative: Number = (-2).into();
 
         assert_eq!(format!("{integer}"), "3");
         assert_eq!(format!("{integer:+}"), "+3");
-        assert_eq!(format!("{decimal}"), "num(\"1.2\")");
-        assert_eq!(format!("{decimal:+}"), "+num(\"1.2\")");
+        assert_eq!(format!("{decimal}"), "num(\"1.39\")");
+        assert_eq!(format!("{decimal:.3}"), "num(\"1.390\")");
+        assert_eq!(format!("{decimal:.1}"), "num(\"1.4\")");
+        assert_eq!(format!("{decimal:+}"), "+num(\"1.39\")");
         assert_eq!(format!("{fraction}"), "3/4");
         assert_eq!(format!("{fraction:+}"), "+3/4");
         assert_eq!(format!("{irrational}"), "pi");
