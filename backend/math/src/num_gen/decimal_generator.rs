@@ -3,12 +3,18 @@ use crate::{Number, float_to_int};
 use super::common::{NumberKind, generate_value};
 
 pub struct DecimalGenerator {
+    /// Which numbers can the generator choose from?
+    ///
+    /// See [`NumberKind`] for more info.
     numbers: NumberKind,
+    /// How many decimals will the generated number have?
     decimal_places: u8,
 }
 
 /// Typestate version where decimal places and range/choices have been set. Allows the user to call `.random()`,
 /// `.and_random()`, etc. as well as `.exclude()`.
+///
+/// See [`DecimalGenerator`] for info on the fields
 pub struct FinishedDecimalGenerator {
     numbers: NumberKind,
     exclusions: Vec<i32>,
@@ -34,7 +40,7 @@ impl Default for DecimalGenerator {
 /// let num = num_gen::decimal().range(1.234, 1.236).random();
 /// assert!(num == 1.234 || num == 1.235 || num == 1.236); // Range is inclusive
 ///
-/// let num = num_gen::decimal().with_places(2).range(1.2, 1.3).random();
+/// let num = num_gen::decimal().with_decimals(2).range(1.2, 1.3).random();
 /// assert!(num > 1.2 && num < 1.3); // Forces 2 decimal places, num can't be 1.2
 ///
 /// let nums = num_gen::decimal().choose(&[1.2, 1.54, 1.456]);
@@ -42,22 +48,26 @@ impl Default for DecimalGenerator {
 /// let num_two = nums.random(); // random() can be called multiple times on the same range
 /// assert!(num_one == 1.2 || num_one == 1.54 || num_one == 1.456);
 ///
-/// let nums = num_gen::decimal().with_places(1).range(-0.1, 0.5).exclude_multiple(&[0.1, 0.2, 0.4]);
+/// let nums = num_gen::decimal().with_decimals(1).range(-0.1, 0.5).exclude_multiple(&[0.1, 0.2, 0.4]);
 /// let num = nums.random();
-/// let num_positive = nums.negative();
+/// let num_negative = nums.negative();
 /// assert!(num == -0.1 || num == 0.3 || num == 0.5);
-/// assert_eq!(num_positive, -0.1);
+/// assert_eq!(num_negative, -0.1);
 /// ```
 pub fn decimal() -> DecimalGenerator {
     DecimalGenerator::default()
 }
 
 impl DecimalGenerator {
-    pub fn with_places(mut self, places: u8) -> Self {
+    /// Forces the generated number to have the given amount of decimals
+    ///
+    /// For example, prevents the generator from producing 0.3 when decimal places is 2.
+    pub fn with_decimals(mut self, places: u8) -> Self {
         self.decimal_places = places;
         self
     }
 
+    /// Choose from the provided numbers when generating.
     pub fn choose(mut self, numbers: &[f64]) -> FinishedDecimalGenerator {
         let int_numbers: Vec<i32> = numbers
             .iter()
@@ -72,10 +82,10 @@ impl DecimalGenerator {
         }
     }
 
-    // The reason this accepts impl Into<Number> while actually just passing on an i32, is that we
-    // will sometimes call this method with a Number that depends on a previous Number, like:
-    // `range(k, 1.34)`
-    // We need to accomodate for this.
+    /// Makes the generator pick a number in the specified range. Inclusive.
+    ///
+    /// The reason this is `impl Into<Number>` and not `f64` is to allow for dependency on other
+    /// generated numbers. For example `.range(k, 5.0)`.
     pub fn range(
         mut self,
         min: impl Into<Number>,
@@ -113,11 +123,13 @@ impl DecimalGenerator {
 }
 
 impl FinishedDecimalGenerator {
+    /// Exclude a specific number from generation
     pub fn exclude(mut self, num: f64) -> Self {
         self.exclusions.push(float_to_int(num, self.decimal_places));
         self
     }
 
+    /// Exclude several numbers from generation.
     pub fn exclude_multiple(mut self, nums: &[f64]) -> Self {
         let mut nums: Vec<i32> = nums
             .iter()
@@ -127,22 +139,27 @@ impl FinishedDecimalGenerator {
         self
     }
 
+    /// Generate a random number from the previously configured parameters.
     pub fn random(&self) -> Number {
         self.generate_decimal_with_filters(&[])
     }
 
+    /// Generate a positive value (0 inclusive).
     pub fn positive(&self) -> Number {
         self.generate_decimal_with_filters(&[|n| *n >= 0])
     }
 
+    /// Generate a negative value (0 inclusive)
     pub fn negative(&self) -> Number {
         self.generate_decimal_with_filters(&[|n| *n <= 0])
     }
 
+    /// Generate a random value, and also pass on the `FinishedDecimalGenerator` object.
     pub fn and_random(self) -> (Number, Self) {
         (self.random(), self)
     }
 
+    /// Helper function, used in `.random()` and its derivatives
     fn generate_decimal_with_filters(&self, extra_filters: &[fn(&i32) -> bool]) -> Number {
         let mut filters: Vec<fn(&i32) -> bool> = vec![|n| n % 10 != 0];
         filters.extend_from_slice(extra_filters);
@@ -154,6 +171,7 @@ impl FinishedDecimalGenerator {
         }
     }
 
+    /// Returns the number of choices the generator has to choose from.
     #[allow(clippy::len_without_is_empty)]
     #[allow(clippy::cast_sign_loss)]
     pub fn len(&self) -> usize {
@@ -173,7 +191,7 @@ mod tests {
 
     #[test]
     fn range() {
-        let decimal_range = num_gen::decimal().with_places(2).range(1.2, 1.4);
+        let decimal_range = num_gen::decimal().with_decimals(2).range(1.2, 1.4);
         for _ in 0..100 {
             let num = decimal_range.random();
             assert!(num.value() >= 1.2 && num.value() <= 1.4);
@@ -183,7 +201,7 @@ mod tests {
             }
         }
 
-        let decimal_range = num_gen::decimal().with_places(1).range(1.27, 1.34);
+        let decimal_range = num_gen::decimal().with_decimals(1).range(1.27, 1.34);
         for _ in 0..10 {
             let num = decimal_range.random();
             assert!(num.value() == 1.3);
