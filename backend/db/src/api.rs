@@ -91,7 +91,7 @@ impl TopicWithProblems {
                 .iter()
                 .map(|p| ProblemInformation {
                     id: p.id,
-                    difficulty: p.difficulty,
+                    difficulty: p.absolute_difficulty.number as i32,
                     desc: p.get_desc(lang),
                 })
                 .collect(),

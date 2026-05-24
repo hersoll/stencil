@@ -1,7 +1,10 @@
 use crate::{Answer, Question, Solution, common::DbDescRow};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
-use types::lang::Language;
+use types::{
+    difficulty::{AbsoluteDifficulty, RelativeDifficulty},
+    lang::Language,
+};
 
 /// Trait for all structs with a [`DescriptionTranslations`] field.
 ///
@@ -168,7 +171,8 @@ pub struct ProblemEntry {
     pub id: i32,
     pub name: String,
     pub desc: DescriptionTranslations,
-    pub difficulty: i32,
+    pub absolute_difficulty: AbsoluteDifficulty,
+    pub relative_difficulty: RelativeDifficulty,
     pub module: String,
     pub prefix_id: Option<i32>,
     pub translations: ProblemTranslations,

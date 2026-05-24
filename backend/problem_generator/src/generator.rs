@@ -1,5 +1,5 @@
-use crate::picker::CountPerDifficultyNumber;
-pub use crate::{Difficulty, picker};
+pub use crate::picker;
+use crate::picker::CountPerDifficultyCategoryNumber;
 use anyhow::{Context, Result, anyhow};
 use math::Number;
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
@@ -10,12 +10,13 @@ use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
 use std::{cmp::Ordering, collections::HashSet};
 use tracing::error;
+use types::difficulty::{AbsoluteDifficulty, DifficultyCategory, RelativeDifficulty};
 pub use types::problems::Problem;
 use types::{errors::ApiError, lang::Language};
 
 const DEFAULT_SCORE: u8 = 100;
-const DEFAULT_STARTING_DIFFICULTY: Difficulty = Difficulty::Intro;
-const DEFAULT_ENDING_DIFFICULTY: Difficulty = Difficulty::Hard;
+const DEFAULT_STARTING_DIFFICULTY: DifficultyCategory = DifficultyCategory::Intro;
+const DEFAULT_ENDING_DIFFICULTY: DifficultyCategory = DifficultyCategory::Hard;
 const DEFAULT_PROBLEM_COUNT: u8 = 10;
 
 pub type ProblemGenerator = fn(i32, Language) -> Result<Problem>;
@@ -37,8 +38,8 @@ pub struct ProblemOptions {
     /// Which problems to exclude from the generator
     #[serde(default)]
     pub exclusions: Vec<i32>,
-    pub starting_difficulty: Difficulty,
-    pub ending_difficulty: Difficulty,
+    pub starting_difficulty: DifficultyCategory,
+    pub ending_difficulty: DifficultyCategory,
     /// Number of problems
     pub n: u8,
 }
@@ -67,8 +68,8 @@ impl Default for ProblemOptions {
 pub struct ProblemPool<'pool> {
     pub problem_candidates: Vec<ProblemCandidate>,
     pub lang: &'pool Language,
-    pub starting_difficulty: Difficulty,
-    pub ending_difficulty: Difficulty,
+    pub starting_difficulty: DifficultyCategory,
+    pub ending_difficulty: DifficultyCategory,
     pub n: u8,
 }
 
@@ -80,7 +81,8 @@ pub struct ProblemPool<'pool> {
 #[derive(Debug, Clone, Eq)]
 pub struct ProblemCandidate {
     pub id: i32,
-    pub difficulty: u8,
+    pub absolute_difficulty: AbsoluteDifficulty,
+    pub relative_difficulty: RelativeDifficulty,
 
     /// The "score" is what the module uses to determine which problem is chosen.
     /// When a problem is generated, that problem's score is lowered.
@@ -103,22 +105,24 @@ impl PartialEq for ProblemCandidate {
 /// Generates problems and distributes them across the desired difficulties.
 ///
 /// As the "main" function of this module, this function takes the input [`ProblemOptions`] and
-/// finds out which [`Difficulties`](Difficulty) to choose and how many problems from each, and then
+/// finds out which [`Difficulties`](DifficultyCategory) to choose and how many problems from each, and then
 /// generates those problems and returns them.
 pub async fn generate_problem_set(
     options: ProblemOptions,
     lang: &Language,
 ) -> Result<Vec<Problem>, ApiError> {
-    let ids = db::get_valid_problem_ids_from_topics(options.topics, options.exclusions).await?;
+    // Is of type {id: i32, absolute_difficulty, relative_difficulty}
+    let problems =
+        db::get_valid_problems_from_pdf_request(options.topics, options.exclusions).await?;
 
     // Construct an initial list of candidates from the problem ids
-    let problem_candidates: Vec<ProblemCandidate> = ids
+    let problem_candidates: Vec<ProblemCandidate> = problems
         .into_iter()
-        .map(|id| {
-            let difficulty = get_problem_data(id)?.difficulty as u8;
+        .map(|problem| {
             Ok(ProblemCandidate {
-                id,
-                difficulty,
+                id: problem.id,
+                absolute_difficulty: problem.absolute_difficulty,
+                relative_difficulty: problem.relative_difficulty,
                 score: DEFAULT_SCORE.max(options.n),
                 generated_identifiers: HashSet::new(),
             })
@@ -143,7 +147,7 @@ pub async fn generate_problem_set(
 
 fn generate_problems(
     problem_pool: &mut ProblemPool,
-    distribution_by_difficulty_num: CountPerDifficultyNumber,
+    distribution_by_difficulty_num: CountPerDifficultyCategoryNumber,
     rng: &mut ThreadRng,
 ) -> Result<Vec<Problem>> {
     // The actual generated problems
@@ -153,7 +157,7 @@ fn generate_problems(
     // This will speed up the problem generation significantly
     let mut problem_indices_by_difficulty: [Vec<usize>; 11] = Default::default();
     for (i, candidate) in problem_pool.problem_candidates.iter().enumerate() {
-        let difficulty = candidate.difficulty as usize;
+        let difficulty = candidate.absolute_difficulty.number as usize;
         //Check bounds
         if difficulty < problem_indices_by_difficulty.len() {
             problem_indices_by_difficulty[difficulty].push(i);

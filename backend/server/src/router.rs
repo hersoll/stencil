@@ -52,10 +52,11 @@ pub fn create_router() -> Router {
         .route("/edit/topic", post(db::edit::create_topic))
         .route("/edit/topic", patch(db::edit::update_topic))
         .route("/edit/topic", delete(db::edit::delete_topic))
-        .route(
-            "/edit/topic/{id}/problems",
-            get(db::edit::get_problems_from_topic),
-        )
+        // Probably not in use, remove if nothing has broken
+        // .route(
+        //     "/edit/topic/{id}/problems",
+        //     get(db::edit::get_problems_from_topic),
+        // )
         .route(
             "/edit/topic/{id}/chapters",
             get(db::edit::get_chapters_from_topic),
