@@ -6,7 +6,7 @@ use axum::{
     http::{StatusCode, header},
     response::{IntoResponse, Response},
 };
-use problem_generator::generator::ProblemOptions;
+use problems::generator::ProblemOptions;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 use tokio::{fs, process::Command};
@@ -117,11 +117,8 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     let start = Instant::now();
     for (i, set) in sets.into_iter().enumerate() {
         debug!(set_index = i, "Processing problem set");
-        let problem_set = problem_generator::generator::generate_problem_set(
-            set.problems,
-            &document_options.lang,
-        )
-        .await?;
+        let problem_set =
+            problems::generator::generate_problem_set(set.problems, &document_options.lang).await?;
         problem_sets.push(problem_set);
         debug!(set_index = i, "Generated every problem for set");
     }
