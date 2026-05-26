@@ -5,7 +5,8 @@ use types::{lang::Language, problems::Problem};
 use typst_writer::{self, formatting::parentheses};
 
 /// 3(x+1)
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn positive_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
     let (factor, f_range) = num_gen::integer().range(2, 5).and_random();
@@ -34,8 +35,41 @@ fn positive_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
     })
 }
 
+/// 3(2a-4)
+/// Absolute difficulty: 2
+/// Relative difficulty: 2
+#[problem]
+fn with_coefficient_on_variable(id: i32, _lang: Language) -> Result<Problem> {
+    let (factor, f_range) = num_gen::integer().range(2, 5).and_random();
+    let unknown = symbols::get_unknown()?;
+    let coef = num_gen::integer().range(2, 5).random();
+    let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
+
+    let t1 = coef * unknown;
+    let t2 = Term::from_num(constant);
+    let exp = Polynomial::from_terms(&[&t1, &t2]);
+
+    let question = format!("${factor}({exp})$");
+    let answer = (factor * exp.clone()).simplify();
+    let solution = format!(
+        "${factor}({exp}) = colored({factor} dot) {t1} {sign} colored({factor} dot) {abs_const} = {answer}$",
+        sign = if constant > 0 { "+" } else { "-" },
+        abs_const = constant.abs()
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![factor, constant],
+        combinations: f_range.len() * c_range.len(),
+    })
+}
+
 /// -2(x+4)
-/// Difficulty: 1
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
 #[problem]
 fn negative_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
     let (factor, f_range) = num_gen::integer().range(-5, -2).and_random();
@@ -66,25 +100,30 @@ fn negative_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
     })
 }
 
-/// 3(2a-4)
-/// Difficulty: 2
+/// 3 - (2x - 1)
+/// Absolute difficulty: 3
+/// Relative difficulty: 4
 #[problem]
-fn with_coefficient_on_variable(id: i32, _lang: Language) -> Result<Problem> {
-    let (factor, f_range) = num_gen::integer().range(2, 5).and_random();
+fn const_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
+    let (initial_const, i_range) = num_gen::integer().range(1, 8).and_random();
     let unknown = symbols::get_unknown()?;
-    let coef = num_gen::integer().range(2, 5).random();
-    let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
+    let coef = num_gen::integer().range(2, 6).random();
+    let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
 
-    let t1 = coef * unknown;
-    let t2 = Term::from_num(constant);
-    let exp = Polynomial::from_terms(&[&t1, &t2]);
+    let t1 = Term::from_num(initial_const);
+    let t2 = coef * unknown;
+    let t3 = Term::from_num(constant);
 
-    let question = format!("${factor}({exp})$");
-    let answer = (factor * exp.clone()).simplify();
+    let exp_1 = Polynomial::from_terms(&[&t1]);
+    let exp_2 = Polynomial::from_terms(&[&t2, &t3]);
+
+    let question = format!("${exp_1}-({exp_2})$");
+    let answer = (exp_1.clone() - exp_2.clone()).simplify();
     let solution = format!(
-        "${factor}({exp}) = colored({factor} dot) {t1} {sign} colored({factor} dot) {abs_const} = {answer}$",
-        sign = if constant > 0 { "+" } else { "-" },
-        abs_const = constant.abs()
+        "$&{exp_1}-({exp_2}) = {exp_1} {t2_m:+} {t3_m:+} = \\
+            = &{answer}$",
+        t2_m = -&t2,
+        t3_m = -&t3,
     );
 
     Ok(Problem {
@@ -92,43 +131,51 @@ fn with_coefficient_on_variable(id: i32, _lang: Language) -> Result<Problem> {
         question,
         answer: format!("${answer}$"),
         solution,
-        identifiers: vec![factor, constant],
-        combinations: f_range.len() * c_range.len(),
+        identifiers: vec![initial_const, constant],
+        combinations: i_range.len() * c_range.len(),
     })
 }
 
-/// x(x+1)
-/// Difficulty: 2
+/// 2x - (7x - 1)
+/// Absolute difficulty: 3
+/// Relative difficulty: 4
 #[problem]
-fn multiply_by_variable(id: i32, _lang: Language) -> Result<Problem> {
+fn var_term_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
+    let (initial, i_range) = num_gen::integer().range(1, 4).and_random();
     let unknown = symbols::get_unknown()?;
-    let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
+    let coef = num_gen::integer().range(5, 10).random();
+    let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
 
-    let factor = Term::from(unknown);
-    let t1 = Term::from(unknown);
-    let t2 = Term::from_num(constant);
-    let exp = Polynomial::from_terms(&[&t1, &t2]);
+    let t1 = initial * unknown;
+    let t2 = coef * unknown;
+    let t3 = Term::from_num(constant);
 
-    let question = format!("${factor}({exp})$");
-    let answer = (factor.clone() * exp.clone()).simplify();
+    let exp_1 = Polynomial::from_terms(&[&t1]);
+    let exp_2 = Polynomial::from_terms(&[&t2, &t3]);
+
+    let question = format!("${exp_1}-({exp_2})$");
+    let answer = exp_1.clone() - exp_2.clone();
+    let simplified = answer.simplify();
     let solution = format!(
-        "${factor}({exp}) = colored({factor} dot) {t1} {sign} colored({factor} dot) {abs_const} = {answer}$",
-        sign = if constant > 0 { "+" } else { "-" },
-        abs_const = constant.abs()
+        "$&{exp_1}-({exp_2}) = {exp_1} {t2_m:+} {t3_m:+} = \\
+            = &{answer} = {simplified}$",
+        t2_m = -&t2,
+        t3_m = -&t3,
     );
 
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: format!("${simplified}$"),
         solution,
-        identifiers: vec![constant],
-        combinations: c_range.len(),
+        identifiers: vec![initial, constant],
+        combinations: i_range.len() * c_range.len(),
     })
 }
 
 /// (2x + 1) + (3x - 4)
-/// Difficulty: 2
+/// Absolute difficulty: 2
+/// Relative difficulty: 5
 #[problem]
 fn add_parentheses(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -168,7 +215,8 @@ fn add_parentheses(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (2x + 1) - (3x - 4)
-/// Difficulty: 3
+/// Absolute difficulty: 3
+/// Relative difficulty: 6
 #[problem]
 fn subtract_parentheses(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -211,113 +259,9 @@ fn subtract_parentheses(id: i32, _lang: Language) -> Result<Problem> {
     })
 }
 
-/// -4(3 - 4x)
-/// Difficulty: 2
-#[problem]
-fn negative_factor_and_coef(id: i32, _lang: Language) -> Result<Problem> {
-    let (factor, f_range) = num_gen::integer().range(-8, -2).and_random();
-    let unknown = symbols::get_unknown()?;
-    let coef = num_gen::integer().range(-5, -2).random();
-    let (constant, c_range) = num_gen::integer().range(2, 9).and_random();
-
-    let t1 = Term::from_num(constant);
-    let t2 = coef * unknown;
-    let exp = Polynomial::from_terms(&[&t1, &t2]);
-
-    let question = format!("${factor}({exp})$");
-    let answer = factor * exp.clone();
-    let simplified_answer = answer.simplify();
-    let solution = format!(
-        "$&{factor}({exp}) = colored({factor_p} dot) {t1_p} + colored({factor_p} dot) {t2_p} =\\
-            =&{answer} = {simplified_answer}$",
-        factor_p = parentheses(&factor),
-        t1_p = parentheses(&t1),
-        t2_p = parentheses(&t2),
-    );
-
-    Ok(Problem {
-        id,
-        question,
-        answer: format!("${simplified_answer}$"),
-        solution,
-        identifiers: vec![factor, constant],
-        combinations: f_range.len() * c_range.len(),
-    })
-}
-
-/// 3 - (2x - 1)
-/// Difficulty: 3
-#[problem]
-fn const_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
-    let (initial_const, i_range) = num_gen::integer().range(1, 8).and_random();
-    let unknown = symbols::get_unknown()?;
-    let coef = num_gen::integer().range(2, 6).random();
-    let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
-
-    let t1 = Term::from_num(initial_const);
-    let t2 = coef * unknown;
-    let t3 = Term::from_num(constant);
-
-    let exp_1 = Polynomial::from_terms(&[&t1]);
-    let exp_2 = Polynomial::from_terms(&[&t2, &t3]);
-
-    let question = format!("${exp_1}-({exp_2})$");
-    let answer = (exp_1.clone() - exp_2.clone()).simplify();
-    let solution = format!(
-        "$&{exp_1}-({exp_2}) = {exp_1} {t2_m:+} {t3_m:+} = \\
-            = &{answer}$",
-        t2_m = -&t2,
-        t3_m = -&t3,
-    );
-
-    Ok(Problem {
-        id,
-        question,
-        answer: format!("${answer}$"),
-        solution,
-        identifiers: vec![initial_const, constant],
-        combinations: i_range.len() * c_range.len(),
-    })
-}
-
-/// 2x - (7x - 1)
-/// Difficulty: 3
-#[problem]
-fn var_term_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
-    let (initial, i_range) = num_gen::integer().range(1, 4).and_random();
-    let unknown = symbols::get_unknown()?;
-    let coef = num_gen::integer().range(5, 10).random();
-    let (constant, c_range) = num_gen::integer().range(-7, -1).and_random();
-
-    let t1 = initial * unknown;
-    let t2 = coef * unknown;
-    let t3 = Term::from_num(constant);
-
-    let exp_1 = Polynomial::from_terms(&[&t1]);
-    let exp_2 = Polynomial::from_terms(&[&t2, &t3]);
-
-    let question = format!("${exp_1}-({exp_2})$");
-    let answer = exp_1.clone() - exp_2.clone();
-    let simplified = answer.simplify();
-    let solution = format!(
-        "$&{exp_1}-({exp_2}) = {exp_1} {t2_m:+} {t3_m:+} = \\
-            = &{answer} = {simplified}$",
-        t2_m = -&t2,
-        t3_m = -&t3,
-    );
-
-    Ok(Problem {
-        id,
-        question,
-        answer: format!("${simplified}$"),
-        solution,
-        identifiers: vec![initial, constant],
-        combinations: i_range.len() * c_range.len(),
-    })
-}
-
 /// 4(2x + 1) + 2(3x - 4)
-/// Difficulty: 3
+/// Absolute difficulty: 3
+/// Relative difficulty: 7
 #[problem]
 fn multiply_and_add(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -359,8 +303,75 @@ fn multiply_and_add(id: i32, _lang: Language) -> Result<Problem> {
     })
 }
 
+/// -4(3 - 4x)
+/// Absolute difficulty: 4
+/// Relative difficulty: 8
+#[problem]
+fn negative_factor_and_coef(id: i32, _lang: Language) -> Result<Problem> {
+    let (factor, f_range) = num_gen::integer().range(-8, -2).and_random();
+    let unknown = symbols::get_unknown()?;
+    let coef = num_gen::integer().range(-5, -2).random();
+    let (constant, c_range) = num_gen::integer().range(2, 9).and_random();
+
+    let t1 = Term::from_num(constant);
+    let t2 = coef * unknown;
+    let exp = Polynomial::from_terms(&[&t1, &t2]);
+
+    let question = format!("${factor}({exp})$");
+    let answer = factor * exp.clone();
+    let simplified_answer = answer.simplify();
+    let solution = format!(
+        "$&{factor}({exp}) = colored({factor_p} dot) {t1_p} + colored({factor_p} dot) {t2_p} =\\
+            =&{answer} = {simplified_answer}$",
+        factor_p = parentheses(&factor),
+        t1_p = parentheses(&t1),
+        t2_p = parentheses(&t2),
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${simplified_answer}$"),
+        solution,
+        identifiers: vec![factor, constant],
+        combinations: f_range.len() * c_range.len(),
+    })
+}
+
+/// x(x+1)
+/// Absolute difficulty: 4
+/// Relative difficulty: 9
+#[problem]
+fn multiply_by_variable(id: i32, _lang: Language) -> Result<Problem> {
+    let unknown = symbols::get_unknown()?;
+    let (constant, c_range) = num_gen::integer().range(-7, 7).exclude(0).and_random();
+
+    let factor = Term::from(unknown);
+    let t1 = Term::from(unknown);
+    let t2 = Term::from_num(constant);
+    let exp = Polynomial::from_terms(&[&t1, &t2]);
+
+    let question = format!("${factor}({exp})$");
+    let answer = (factor.clone() * exp.clone()).simplify();
+    let solution = format!(
+        "${factor}({exp}) = colored({factor} dot) {t1} {sign} colored({factor} dot) {abs_const} = {answer}$",
+        sign = if constant > 0 { "+" } else { "-" },
+        abs_const = constant.abs()
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![constant],
+        combinations: c_range.len(),
+    })
+}
+
 /// 4(2x + 1) - (3x - 4)
-/// Difficulty: 3
+/// Absolute difficulty: 4
+/// Relative difficulty: 9
 #[problem]
 fn multiply_first_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -404,7 +415,8 @@ fn multiply_first_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 4(2x + 1) - 2(3x - 4)
-/// Difficulty: 4
+/// Absolute difficulty: 4
+/// Relative difficulty: 10
 #[problem]
 fn multiply_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -449,7 +461,8 @@ fn multiply_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 3x(1 - 2x)
-/// Difficulty: 5
+/// Absolute difficulty: 5
+/// Relative difficulty: 11
 #[problem]
 fn multiply_by_variable_term(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -489,7 +502,8 @@ fn multiply_by_variable_term(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// x(3x + 1) - 3(2 + x)
-/// Difficulty: 6
+/// Absolute difficulty: 5
+/// Relative difficulty: 12
 #[problem]
 fn one_variable_one_constant(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -532,7 +546,8 @@ fn one_variable_one_constant(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 3(3x + 1) - x(2 + x)
-/// Difficulty: 6
+/// Absolute difficulty: 6
+/// Relative difficulty: 13
 #[problem]
 fn one_constant_one_variable(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -575,7 +590,8 @@ fn one_constant_one_variable(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 3x(3x + 1) - 2x(2 + x)
-/// Difficulty: 7
+/// Absolute difficulty: 6
+/// Relative difficulty: 14
 #[problem]
 fn multiply_both_by_variable_terms(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -616,7 +632,8 @@ fn multiply_both_by_variable_terms(id: i32, _lang: Language) -> Result<Problem> 
 }
 
 /// 2x(1 + y) - 3(x + y)
-/// Difficulty: 8
+/// Absolute difficulty: 7
+/// Relative difficulty: 15
 #[problem]
 fn mixing_variables(id: i32, _lang: Language) -> Result<Problem> {
     let (unknown1, unknown2) = symbols::get_two_unknowns()?;
@@ -661,7 +678,8 @@ fn mixing_variables(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// x^2(1 - y) + 3x(y - 1) - y(3x + 1)
-/// Difficulty: 9
+/// Absolute difficulty: 8
+/// Relative difficulty: 16
 #[problem]
 fn mixing_variables_and_exponents(id: i32, _lang: Language) -> Result<Problem> {
     let (unknown1, unknown2) = symbols::get_two_unknowns()?;

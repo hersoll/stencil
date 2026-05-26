@@ -9,7 +9,8 @@ use typst_writer::{
 };
 
 /// 5 - 9
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn subtract_larger(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 5).and_random();
@@ -41,7 +42,8 @@ fn subtract_larger(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// 5 - 78
-/// Difficulty: 1
+/// Absolute difficulty: 1
+/// Relative difficulty: 2
 #[problem]
 fn subtract_larger_with_large_number(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 7).and_random();
@@ -70,7 +72,8 @@ fn subtract_larger_with_large_number(id: i32, lang: Language) -> Result<Problem>
 }
 
 /// 15 - 78
-/// Difficulty: 1
+/// Absolute difficulty: 1
+/// Relative difficulty: 3
 #[problem]
 fn subtract_larger_with_large_numbers(id: i32, lang: Language) -> Result<Problem> {
     let first_digit = num_gen::integer().range(1, 5).random();
@@ -101,7 +104,8 @@ fn subtract_larger_with_large_numbers(id: i32, lang: Language) -> Result<Problem
 }
 
 /// -4 + 2
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 4
 #[problem]
 fn start_negative_addition_below_zero(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-9, -2).and_random();
@@ -131,7 +135,8 @@ fn start_negative_addition_below_zero(id: i32, lang: Language) -> Result<Problem
 }
 
 /// -4 + 6
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 4
 #[problem]
 fn start_negative_addition_above_zero(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-9, -2).and_random();
@@ -161,7 +166,8 @@ fn start_negative_addition_above_zero(id: i32, lang: Language) -> Result<Problem
 }
 
 /// -4 - 6
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 5
 #[problem]
 fn start_negative_subtraction(id: i32, lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-5, -2).and_random();
@@ -185,7 +191,8 @@ fn start_negative_subtraction(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// 4 + (-2)
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 6
 #[problem]
 fn add_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 10).and_random();
@@ -206,7 +213,8 @@ fn add_negative(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 4 - (-2)
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 7
 #[problem]
 fn subtract_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 10).and_random();
@@ -227,7 +235,8 @@ fn subtract_negative(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 4 * (-2)
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 4
 #[problem]
 fn positive_times_negative(id: i32, lang: Language) -> Result<Problem> {
     let (first_val, first_range) = num_gen::integer().range(1, 10).and_random();
@@ -248,7 +257,8 @@ fn positive_times_negative(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// (-4) * 2
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 4
 #[problem]
 fn negative_times_positive(id: i32, lang: Language) -> Result<Problem> {
     let (first_val, first_range) = num_gen::integer().range(-10, -1).and_random();
@@ -269,7 +279,8 @@ fn negative_times_positive(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// (-4) * (-2)
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 5
 #[problem]
 fn negative_times_negative(id: i32, lang: Language) -> Result<Problem> {
     let (first_val, first_range) = num_gen::integer().range(-10, -1).and_random();
@@ -290,7 +301,8 @@ fn negative_times_negative(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// (-4) + (-2)
-/// Difficulty: 3
+/// Absolute difficulty: 1
+/// Relative difficulty: 8
 #[problem]
 fn negative_plus_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-10, -1).and_random();
@@ -316,7 +328,8 @@ fn negative_plus_negative(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (-4) - (-2)
-/// Difficulty: 3
+/// Absolute difficulty: 1
+/// Relative difficulty: 9
 #[problem]
 fn negative_minus_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-10, -1).and_random();

@@ -5,7 +5,8 @@ use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::{SolutionWithSteps, divide_number, subtract_number, subtract_term};
 
 /// 4x + 1 = 2x + 3
-/// Difficulty: 1
+/// Absolute difficulty: 2
+/// Relative difficulty: 1
 #[problem]
 fn two_positive_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -51,7 +52,8 @@ fn two_positive_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 2x + 1 = 4x + 3
-/// Difficulty: 1
+/// Absolute difficulty: 2
+/// Relative difficulty: 1
 #[problem]
 fn two_positive_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -97,7 +99,8 @@ fn two_positive_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 4x + 1 = 4 - 2x
-/// Difficulty: 2
+/// Absolute difficulty: 2
+/// Relative difficulty: 2
 #[problem]
 fn one_negative_coef_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -141,7 +144,8 @@ fn one_negative_coef_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 4 - 2x = 1 + 4x
-/// Difficulty: 2
+/// Absolute difficulty: 2
+/// Relative difficulty: 2
 #[problem]
 fn one_negative_coef_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -183,7 +187,8 @@ fn one_negative_coef_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 // 4 - 4x = 8 - 2x
-/// Difficulty: 3
+/// Absolute difficulty: 3
+/// Relative difficulty: 3
 #[problem]
 fn two_negative_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -227,7 +232,8 @@ fn two_negative_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 // 4 - 2x = 8 - 4x
-/// Difficulty: 3
+/// Absolute difficulty: 3
+/// Relative difficulty: 3
 #[problem]
 fn two_negative_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -272,7 +278,8 @@ fn two_negative_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 // 4x = 6x - 6
-/// Difficulty: 3
+/// Absolute difficulty: 3
+/// Relative difficulty: 4
 #[problem]
 fn positive_coefs_lhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -314,7 +321,8 @@ fn positive_coefs_lhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 // 6x - 6 = 4x
-/// Difficulty: 3
+/// Absolute difficulty: 3
+/// Relative difficulty: 4
 #[problem]
 fn positive_coefs_rhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;

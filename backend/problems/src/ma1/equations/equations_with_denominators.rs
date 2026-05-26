@@ -5,7 +5,8 @@ use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::{self, SolutionWithSteps, divide_number, multiply_number};
 
 /// x/3 = 4
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn one_denom_one_variable(id: i32, _lang: Language) -> Result<Problem> {
     let denominator_range = num_gen::integer().range(2, 10);
@@ -33,7 +34,8 @@ fn one_denom_one_variable(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// x/5 + x = 12
-/// Difficulty: 2
+/// Absolute difficulty: 5
+/// Relative difficulty: 2
 #[problem]
 fn one_denom_and_unit_variable_integers_positive(id: i32, _lang: Language) -> Result<Problem> {
     let denominator_range = num_gen::integer().range(3, 5);
@@ -68,7 +70,8 @@ fn one_denom_and_unit_variable_integers_positive(id: i32, _lang: Language) -> Re
     })
 }
 /// x - x/3 = 8
-/// Difficulty: 2
+/// Absolute difficulty: 5
+/// Relative difficulty: 3
 #[problem]
 fn unit_variable_and_one_denom_integers_positive(id: i32, _lang: Language) -> Result<Problem> {
     let denominator_range = num_gen::integer().range(3, 5);
@@ -104,7 +107,8 @@ fn unit_variable_and_one_denom_integers_positive(id: i32, _lang: Language) -> Re
 }
 
 /// x/4 - x = 9
-/// Difficulty: 3
+/// Absolute difficulty: 5
+/// Relative difficulty: 3
 #[problem]
 fn unit_variable_and_one_denom_integers_with_negatives(
     id: i32,

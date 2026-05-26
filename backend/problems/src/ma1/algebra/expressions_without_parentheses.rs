@@ -7,7 +7,8 @@ use registry::get_problem_data;
 use types::{lang::Language, problems::Problem};
 
 /// 3x + 4 + 2x + 1
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn one_variable_and_constants_no_negatives(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -53,7 +54,8 @@ fn one_variable_and_constants_no_negatives(id: i32, _lang: Language) -> Result<P
 }
 
 /// 3x - 5 - 5x + 2
-/// Difficulty: 1
+/// Absolute difficulty: 1
+/// Relative difficulty: 2
 #[problem]
 fn one_variable_and_constants(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -95,7 +97,8 @@ fn one_variable_and_constants(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 2x - 3y + 3x - 8y + 1
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 3
 #[problem]
 fn two_variables_and_constants(id: i32, _lang: Language) -> Result<Problem> {
     let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
@@ -153,7 +156,8 @@ fn two_variables_and_constants(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// Evaluate 3x - 1 when x = -3
-/// Difficulty: 1
+/// Absolute difficulty: 1
+/// Relative difficulty: 3
 #[problem]
 fn evaluate_simple(id: i32, lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -199,7 +203,8 @@ fn evaluate_simple(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Evaluate 3x - 2y + 1 when x = -3 and y = 2
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 4
 #[problem]
 fn evaluate_intermediate(id: i32, lang: Language) -> Result<Problem> {
     let (first_unknown, second_unknown) = symbols::get_two_unknowns()?;
@@ -248,7 +253,8 @@ fn evaluate_intermediate(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// x^2 + 2x + 3x^2 - 4x
-/// Difficulty: 3
+/// Absolute difficulty: 3
+/// Relative difficulty: 5
 #[problem]
 fn one_variable_different_exponents(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -293,7 +299,8 @@ fn one_variable_different_exponents(id: i32, _lang: Language) -> Result<Problem>
 }
 
 /// 3x - xy + 4x + 4xy - y^2
-/// Difficulty: 5
+/// Absolute difficulty: 5
+/// Relative difficulty: 6
 #[problem]
 fn simplify_variable_combinations(id: i32, _lang: Language) -> Result<Problem> {
     let mut rng = rand::rng();
@@ -343,7 +350,8 @@ fn simplify_variable_combinations(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// Evaluate 3x2 + 2xy^2 + 3x if x = -3 and y = 2
-/// Difficulty: 5
+/// Absolute difficulty: 5
+/// Relative difficulty: 7
 #[problem]
 fn evaluate_advanced(id: i32, lang: Language) -> Result<Problem> {
     let mut total_terms = 2;

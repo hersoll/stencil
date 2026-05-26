@@ -5,7 +5,8 @@ use math::num_gen;
 use types::{lang::Language, problems::Problem};
 
 /// Which change factor is equivalent to an increase of 10%?
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn integer_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
     let increase_range = num_gen::integer().range(2, 99);
@@ -31,7 +32,8 @@ fn integer_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Which change factor is equivalent to a decrease of 10%?
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn integer_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
     let decrease_range = num_gen::integer().range(2, 29).exclude(10).exclude(20);
@@ -57,7 +59,8 @@ fn integer_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 1.23
-/// Difficulty: 0
+/// Absolute difficulty: 2
+/// Relative difficulty: 2
 #[problem]
 fn factor_to_increase_two_decimals(id: i32, lang: Language) -> Result<Problem> {
     let factor_range = num_gen::decimal().with_decimals(2).range(1.04, 1.25);
@@ -82,7 +85,8 @@ fn factor_to_increase_two_decimals(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 0.87
-/// Difficulty: 0
+/// Absolute difficulty: 2
+/// Relative difficulty: 2
 #[problem]
 fn factor_to_decrease_two_decimals(id: i32, lang: Language) -> Result<Problem> {
     let factor_range = num_gen::decimal().with_decimals(2).range(0.73, 0.98); // yes, very arbitrary :)
@@ -108,7 +112,8 @@ fn factor_to_decrease_two_decimals(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 0.23
-/// Difficulty: 1
+/// Absolute difficulty: 3
+/// Relative difficulty: 3
 #[problem]
 fn factor_to_large_decrease_two_decimals(id: i32, lang: Language) -> Result<Problem> {
     let factor_range = num_gen::decimal().with_decimals(2).range(0.11, 0.39);
@@ -134,7 +139,8 @@ fn factor_to_large_decrease_two_decimals(id: i32, lang: Language) -> Result<Prob
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 1.2
-/// Difficulty: 1
+/// Absolute difficulty: 2
+/// Relative difficulty: 2
 #[problem]
 fn factor_to_increase_one_decimal(id: i32, lang: Language) -> Result<Problem> {
     let factor_range = num_gen::decimal().with_decimals(1).range(1.1, 1.9);
@@ -160,7 +166,8 @@ fn factor_to_increase_one_decimal(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 0.8
-/// Difficulty: 1
+/// Absolute difficulty: 2
+/// Relative difficulty: 2
 #[problem]
 fn factor_to_decrease_one_decimal(id: i32, lang: Language) -> Result<Problem> {
     let factor_range = num_gen::decimal().with_decimals(1).range(0.1, 0.9);
@@ -186,7 +193,8 @@ fn factor_to_decrease_one_decimal(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 2.12
-/// Difficulty: 1
+/// Absolute difficulty: 4
+/// Relative difficulty: 4
 #[problem]
 fn factor_to_increase_above_2(id: i32, lang: Language) -> Result<Problem> {
     let factor_range = num_gen::decimal().with_decimals(2).range(2.01, 2.99);
@@ -212,7 +220,8 @@ fn factor_to_increase_above_2(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 8.12
-/// Difficulty: 2
+/// Absolute difficulty: 4
+/// Relative difficulty: 5
 #[problem]
 fn factor_to_increase_large_number(id: i32, lang: Language) -> Result<Problem> {
     let factor_range = num_gen::decimal().with_decimals(2).range(5.0, 9.99);
@@ -238,7 +247,8 @@ fn factor_to_increase_large_number(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Which change factor is equivalent to an increase of 4.3%?
-/// Difficulty: 2
+/// Absolute difficulty: 3
+/// Relative difficulty: 5
 #[problem]
 fn decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
     let increase_range = num_gen::decimal().with_decimals(1).range(2, 10);
@@ -264,7 +274,8 @@ fn decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Which change factor is equivalent to a decrease of 4.3%?
-/// Difficulty: 2
+/// Absolute difficulty: 3
+/// Relative difficulty: 5
 #[problem]
 fn decimal_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
     let decrease_range = num_gen::decimal().with_decimals(1).range(1, 10);
@@ -290,7 +301,8 @@ fn decimal_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Which change factor is equivalent to an increase of 10.3%?
-/// Difficulty: 2
+/// Absolute difficulty: 3
+/// Relative difficulty: 4
 #[problem]
 fn large_decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
     let increase_range = num_gen::decimal().with_decimals(1).range(10, 40);
@@ -316,7 +328,8 @@ fn large_decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> 
 }
 
 /// Which change factor is equivalent to a decrease of 14.3%?
-/// Difficulty: 2
+/// Absolute difficulty: 3
+/// Relative difficulty: 3
 #[problem]
 fn large_decimal_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
     let decrease_range = num_gen::decimal().with_decimals(1).range(10, 40);

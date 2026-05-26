@@ -14,7 +14,8 @@ use typst_writer::formatting::{SolutionWithSteps, equation_solution};
 // and problems like f(x) = 3 are known as "calculating x"
 
 /// y = 3x + 1, x = 3
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn without_notation_y(id: i32, lang: Language) -> Result<Problem> {
     let (k, k_range) = num_gen::integer().range(2, 10).and_random();
@@ -53,7 +54,8 @@ fn without_notation_y(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// y = 2x + 2, y = 2
-/// Difficulty: 1
+/// Absolute difficulty: 2
+/// Relative difficulty: 2
 #[problem]
 fn without_notation_x(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
@@ -87,7 +89,8 @@ fn without_notation_x(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// f(3), no negatives
-/// Difficulty: 2
+/// Absolute difficulty: 4
+/// Relative difficulty: 3
 #[problem]
 fn find_y_no_negatives(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
@@ -123,7 +126,8 @@ fn find_y_no_negatives(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find x where f(x) = 2
-/// Difficulty: 3
+/// Absolute difficulty: 4
+/// Relative difficulty: 4
 #[problem]
 fn find_x_where_f_x(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(2, 10).and_random();
@@ -161,7 +165,8 @@ fn find_x_where_f_x(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Solve the equation f(x) = 4
-/// Difficulty: 3
+/// Absolute difficulty: 4
+/// Relative difficulty: 6
 #[problem]
 fn equation_f_x_equals(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer()
@@ -206,7 +211,8 @@ fn equation_f_x_equals(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// f(-3)
-/// Difficulty: 3
+/// Absolute difficulty: 4
+/// Relative difficulty: 5
 #[problem]
 fn find_y(id: i32, lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer()
@@ -251,7 +257,8 @@ fn find_y(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// f(x) = 2x + 4. Bestäm f(a+1)
-/// Difficulty: 6
+/// Absolute difficulty: 7
+/// Relative difficulty: 6
 #[problem]
 fn insert_algebra_positive(id: i32, lang: Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
@@ -298,7 +305,8 @@ fn insert_algebra_positive(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// f(x) = 4 - 2x. Bestäm f(2a-1)
-/// Difficulty: 7
+/// Absolute difficulty: 7
+/// Relative difficulty: 7
 #[problem]
 fn insert_algebra_negative(id: i32, lang: Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
@@ -346,7 +354,8 @@ fn insert_algebra_negative(id: i32, lang: Language) -> Result<Problem> {
 }
 
 // f(x) = 3x - 2. Find the value of f(f(4))
-// Difficulty: 8
+/// Absolute difficulty: 8
+/// Relative difficulty: 8
 #[problem]
 fn insert_number_twice(id: i32, lang: Language) -> Result<Problem> {
     let (k, k_range) = num_gen::integer().range(2, 5).and_random();

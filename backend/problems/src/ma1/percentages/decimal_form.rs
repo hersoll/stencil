@@ -4,7 +4,8 @@ use math::num_gen;
 use types::{lang::Language, problems::Problem};
 
 /// Write 56% in decimal form
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn two_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
     let percentage_range = num_gen::integer()
@@ -28,7 +29,8 @@ fn two_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// Write 156% in decimal form
-/// Difficulty: 1
+/// Absolute difficulty: 1
+/// Relative difficulty: 2
 #[problem]
 fn three_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
     let percentage_range = num_gen::integer()
@@ -52,7 +54,8 @@ fn three_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// Convert 0,3 to percent form
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 2
 #[problem]
 fn decimal_to_percent(id: i32, _lang: Language) -> Result<Problem> {
     let percentage_range = num_gen::integer().numbers(&[10, 20, 30, 40, 50, 60, 70, 80, 90]);

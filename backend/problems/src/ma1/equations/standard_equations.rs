@@ -11,7 +11,8 @@ use typst_writer::{
 };
 
 /// x + 3 = 12
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn only_addition_or_subtraction(id: i32, _lang: Language) -> Result<Problem> {
     let answer = num_gen::integer().range(0, 9).random();
@@ -35,7 +36,8 @@ fn only_addition_or_subtraction(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 3x = 12
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn only_multiplication(id: i32, _lang: Language) -> Result<Problem> {
     let answer = num_gen::integer().range(2, 5).random();
@@ -59,7 +61,8 @@ fn only_multiplication(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 4x + 1 = 13
-/// Difficulty: 1
+/// Absolute difficulty: 1
+/// Relative difficulty: 2
 #[problem]
 fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -96,7 +99,8 @@ fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 6x + 8 = 20
-/// Difficulty: 2
+/// Absolute difficulty: 1
+/// Relative difficulty: 3
 #[problem]
 fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
@@ -134,7 +138,8 @@ fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 6x + 8 = 19
-/// Difficulty: 3
+/// Absolute difficulty: 2
+/// Relative difficulty: 4
 #[problem]
 fn positive_rational(id: i32, _lang: Language) -> Result<Problem> {
     let (denominator, denominator_range) = num_gen::integer().range(2, 9).and_random();
