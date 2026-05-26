@@ -6,7 +6,8 @@ use types::{lang::Language, problems::Problem};
 use typst_writer::formatting::{equation_solution, parentheses};
 
 /// Calculate k between (1, 3) and (4, 9) [positive integers]
-/// Difficulty: 1
+/// Absolute difficulty: 2
+/// Relative difficulty: 1
 #[problem]
 fn find_k_all_positives(id: i32, lang: Language) -> Result<Problem> {
     let small_range = num_gen::integer().range(1, 5);
@@ -40,7 +41,8 @@ fn find_k_all_positives(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Calculate k between (1, -2) and (-5, 3)
-/// Difficulty: 2
+/// Absolute difficulty: 3
+/// Relative difficulty: 2
 #[problem]
 fn find_k_with_negatives(id: i32, lang: Language) -> Result<Problem> {
     let small_range = num_gen::integer().range(-5, 5).exclude(0);
@@ -79,7 +81,8 @@ fn find_k_with_negatives(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Calculate k between (27, 32) and (34, 18)
-/// Difficulty: 2
+/// Absolute difficulty: 3
+/// Relative difficulty: 2
 #[problem]
 fn find_k_large_integers(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::integer().range(-3, 3).random();
@@ -115,7 +118,8 @@ fn find_k_large_integers(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find the equation of the line between (1, 3) and (4, 9) [positive integers]
-/// Difficulty: 3
+/// Absolute difficulty: 4
+/// Relative difficulty: 3
 #[problem]
 fn find_equation_small_positives(id: i32, lang: Language) -> Result<Problem> {
     let small_range = num_gen::integer().range(1, 5);
@@ -165,7 +169,8 @@ fn find_equation_small_positives(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find the equation of the line between (1, -3) and (-4, 9)
-/// Difficulty: 4
+/// Absolute difficulty: 4
+/// Relative difficulty: 4
 #[problem]
 fn find_equation_with_negatives(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::integer()
@@ -226,7 +231,8 @@ fn find_equation_with_negatives(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find the equation of the line between (17, 30) and (29, 54)
-/// Difficulty: 4
+/// Absolute difficulty: 4
+/// Relative difficulty: 4
 #[problem]
 fn find_equation_large_integers(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::integer()
@@ -284,7 +290,8 @@ fn find_equation_large_integers(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find the equation of the line between (17, 30) and (29, 30)
-/// Difficulty: 4
+/// Absolute difficulty: 6
+/// Relative difficulty: 6
 #[problem]
 fn find_equation_k_zero(id: i32, lang: Language) -> Result<Problem> {
     let k = Number::Integer(0);
@@ -334,7 +341,8 @@ fn find_equation_k_zero(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find the equation of the line between (17, 30) and (29, 42)
-/// Difficulty: 4
+/// Absolute difficulty: 5
+/// Relative difficulty: 5
 #[problem]
 fn find_equation_k_one(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::integer().numbers(&[-1, 1]).random();
@@ -386,7 +394,8 @@ fn find_equation_k_one(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find the equation of the line between (17, 30) and (23, 40)
-/// Difficulty: 6
+/// Absolute difficulty: 6
+/// Relative difficulty: 7
 #[problem]
 fn find_equation_k_fraction(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::fraction().denoms(&[6, 9, 12]).max(2).random();

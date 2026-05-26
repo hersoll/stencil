@@ -4,7 +4,8 @@ use math::{Term, num_gen, symbols};
 use types::{lang::Language, problems::Problem};
 
 /// 5^4 * 5^2
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn simple_multiplication(id: i32, _lang: Language) -> Result<Problem> {
     let base = num_gen::integer().range(4, 9).random();
@@ -28,7 +29,8 @@ fn simple_multiplication(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// x^4 * x^2
-/// Difficulty: 1
+/// Absolute difficulty: 1
+/// Relative difficulty: 2
 #[problem]
 fn simple_multiplication_variables(id: i32, _lang: Language) -> Result<Problem> {
     let base = symbols::get_unknown()?;
@@ -52,7 +54,8 @@ fn simple_multiplication_variables(id: i32, _lang: Language) -> Result<Problem> 
 }
 
 /// 5^4 / 5^2
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn simple_division(id: i32, _lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().range(4, 9).and_random();
@@ -76,7 +79,8 @@ fn simple_division(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// a^4 / a^2
-/// Difficulty: 1
+/// Absolute difficulty: 1
+/// Relative difficulty: 2
 #[problem]
 fn simple_division_variables(id: i32, _lang: Language) -> Result<Problem> {
     let base = symbols::get_unknown()?;
@@ -99,7 +103,8 @@ fn simple_division_variables(id: i32, _lang: Language) -> Result<Problem> {
     })
 }
 /// (5^4)^2
-/// Difficulty: 1
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
 #[problem]
 fn double_exponentiation(id: i32, _lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().range(2, 9).and_random();
@@ -122,7 +127,8 @@ fn double_exponentiation(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (x^4)^2
-/// Difficulty: 1
+/// Absolute difficulty: 2
+/// Relative difficulty: 4
 #[problem]
 fn double_exponentiation_variables(id: i32, _lang: Language) -> Result<Problem> {
     let base = symbols::get_unknown()?;
@@ -144,8 +150,9 @@ fn double_exponentiation_variables(id: i32, _lang: Language) -> Result<Problem> 
     })
 }
 
-// (5^3 * 5^6) / 5^2
-// Difficulty: 2
+/// (5^3 * 5^6) / 5^2
+/// Absolute difficulty: 3
+/// Relative difficulty: 5
 #[problem]
 fn multiplication_and_division(id: i32, _lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().range(3, 9).and_random();
@@ -175,7 +182,8 @@ fn multiplication_and_division(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (4x)^2
-/// Difficulty: 2
+/// Absolute difficulty: 3
+/// Relative difficulty: 6
 #[problem]
 fn variable_term_power_2(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
@@ -199,7 +207,8 @@ fn variable_term_power_2(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (2x)^3
-/// Difficulty: 2
+/// Absolute difficulty: 3
+/// Relative difficulty: 7
 #[problem]
 fn variable_term_power_3(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
@@ -223,7 +232,8 @@ fn variable_term_power_3(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (2x)^3 / 4x
-/// Difficulty: 5
+/// Absolute difficulty: 4
+/// Relative difficulty: 8
 #[problem]
 fn variable_term_power_and_divide_x(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
@@ -258,7 +268,8 @@ fn variable_term_power_and_divide_x(id: i32, _lang: Language) -> Result<Problem>
 }
 
 /// (3x)^3 / 9x^2
-/// Difficulty: 5
+/// Absolute difficulty: 5
+/// Relative difficulty: 9
 #[problem]
 fn variable_term_power_and_divide_x_squared(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;

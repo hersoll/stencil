@@ -19,6 +19,8 @@ fn quadratics_template(symmetry: Number, distance: Number) -> (String, String, S
     (question, answer, solution)
 }
 
+/// Absolute difficulty: 4
+/// Relative difficulty: 1
 #[problem]
 fn small_numbers_positive_p(id: i32, _lang: Language) -> Result<Problem> {
     let (symmetry, sym_range) = num_gen::integer().range(-3, -1).and_random();
@@ -35,6 +37,8 @@ fn small_numbers_positive_p(id: i32, _lang: Language) -> Result<Problem> {
     })
 }
 
+/// Absolute difficulty: 4
+/// Relative difficulty: 2
 #[problem]
 fn positive_p(id: i32, _lang: Language) -> Result<Problem> {
     let (symmetry, sym_range) = num_gen::integer().range(-8, -1).and_random();
