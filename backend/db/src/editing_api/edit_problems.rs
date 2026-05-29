@@ -12,11 +12,10 @@ pub async fn get_problems() -> Result<impl IntoResponse, ApiError> {
     match problems::get_all_problem_data().await {
         Ok(mut problems) => {
             for problem in problems.iter_mut() {
-                let topics = topics::get_topics_from_problem(&problem.id)
+                let topic_data = topics::get_topic_data_for_problem(&problem.id)
                     .await
                     .map_err(|e| ApiError::Database(e.to_string()))?;
-                let topic_ids: Vec<i32> = topics.iter().map(|t| t.id).collect();
-                problem.topic_ids = topic_ids;
+                problem.topic_data = topic_data;
             }
             Ok((StatusCode::OK, Json(json!(problems))))
         }
@@ -38,8 +37,14 @@ pub async fn create_problem(
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {problem:#?}");
     let problem_id = problems::create_problem_from_entry(&problem).await?;
-    relationships::update_parents_for_child::<TopicProblems>(&problem.topic_ids, &problem_id)
-        .await?;
+    let topic_ids: Vec<i32> = problem
+        .topic_data
+        .iter()
+        .map(|topic| topic.topic_id)
+        .collect();
+    relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem_id).await?;
+    problems::update_difficulties_for_problem_with_id(&problem_id, &problem.topic_data).await?;
+
     Ok((
         StatusCode::OK,
         format!(
@@ -53,8 +58,13 @@ pub async fn update_problem(
     Json(problem): Json<ProblemEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {problem:#?}");
-    relationships::update_parents_for_child::<TopicProblems>(&problem.topic_ids, &problem.id)
-        .await?;
+    let topic_ids: Vec<i32> = problem
+        .topic_data
+        .iter()
+        .map(|topic| topic.topic_id)
+        .collect();
+    relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem.id).await?;
+    problems::update_difficulties_for_problem_with_id(&problem.id, &problem.topic_data).await?;
     let problem_name = problems::update_problem_from_entry(problem).await?;
 
     Ok((
@@ -74,16 +84,3 @@ pub async fn delete_problem(
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }
-
-// TODO: Probably not in use, remove if nothing has broken
-//
-// /// Find and get all problems associated with a certain topic ID
-// pub async fn get_problems_from_topic(
-//     Path(topic_id): Path<i32>,
-// ) -> Result<impl IntoResponse, ApiError> {
-//     tracing::debug!("Recieved: {topic_id:#?}");
-//     match problems::get_topic_problems(&topic_id).await {
-//         Ok(problems) => Ok((StatusCode::OK, Json(json!(problems)))),
-//         Err(e) => Err(ApiError::Database(e.to_string())),
-//     }
-// }

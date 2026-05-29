@@ -3,7 +3,6 @@ pub mod middleware;
 pub mod pdf_generation;
 pub mod router;
 pub mod startup;
-pub mod text_endpoints;
 
 use std::net::SocketAddr;
 

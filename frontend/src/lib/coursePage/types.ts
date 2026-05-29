@@ -1,23 +1,20 @@
 export type ProblemData = {
   id: number;
-  difficulty: number;
+  absolute_difficulty: number;
   desc: string;
 };
 
 export type TopicWithProblems = {
   id: number;
-  desc: string;
   problems: ProblemData[];
 };
 
 export type TopicData = {
-  name: string;
   id: number;
   desc: string;
 };
 
-export type ChapterData = {
-  name: string;
+export type ChapterWithTopics = {
   id: number;
   desc: string;
   topics: TopicData[];
@@ -27,7 +24,6 @@ export type CourseData = {
   name: string;
   id: number;
   desc: string;
-  chapters: ChapterData[];
 };
 
 export type SetOptions = {

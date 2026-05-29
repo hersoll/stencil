@@ -2,4 +2,4 @@
   import CoursePage from '$src/lib/CoursePage/CoursePage.svelte';
 </script>
 
-<CoursePage course="ma1b" />
+<CoursePage course_name="ma1b" />

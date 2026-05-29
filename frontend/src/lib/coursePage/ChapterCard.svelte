@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { ChapterData } from './types';
+  import type { ChapterWithTopics } from './types';
   import { sets } from '$src/states.svelte';
-  let { chapter }: { chapter: ChapterData } = $props();
+  let { chapter }: { chapter: ChapterWithTopics } = $props();
 
   function handleChange(event: Event) {
     const checkbox = event.target as HTMLInputElement;
@@ -24,13 +24,13 @@
     {#each chapter.topics as topic}
       <span>
         <input
-          name={topic.name}
-          id={topic.name}
+          name={'topic_' + topic.id}
+          id={'topic_' + topic.id}
           value={topic.id}
           type="checkbox"
           onchange={handleChange}
         />
-        <label for={topic.name} class="no-select">{topic.desc}</label>
+        <label for={'topic_' + topic.id} class="no-select">{topic.desc}</label>
       </span>
     {/each}
   </div>

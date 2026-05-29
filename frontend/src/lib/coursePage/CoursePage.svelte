@@ -1,7 +1,7 @@
 <script lang="ts">
   import { API_URL } from '$src/main';
   import i18n from '$src/i18n.svelte';
-  import { type CourseData } from './types';
+  import { type ChapterWithTopics, type CourseData } from './types';
   import { applyMasonry } from './masonry';
   import ChapterDisplay from './ChapterCard.svelte';
   import InitialSetOptions from './InitialSetOptions.svelte';
@@ -13,20 +13,21 @@
   import { fade, fly } from 'svelte/transition';
   import { error, sets } from '$src/states.svelte';
 
-  let { course }: { course: string } = $props();
-  let course_data: CourseData | null = $state(null);
+  let { course_name }: { course_name: string } = $props();
+  let chapters_with_topics: ChapterWithTopics[] = $state([]);
+  let course_data: CourseData | null | undefined = $state(null);
 
   let container = $state<HTMLElement | undefined>();
 
   let show_loading_message = $state(false);
   const delay = setTimeout(() => {
-    if (!course_data) show_loading_message = true;
+    if (!chapters_with_topics) show_loading_message = true;
   }, 600);
 
   // Ensures the chapter cards are in their proper layout
   $effect(() => {
     const el = container;
-    if (el && course_data) {
+    if (el && chapters_with_topics) {
       requestAnimationFrame(() => {
         if (el) {
           const cleanup = applyMasonry(el);
@@ -37,15 +38,21 @@
   });
 
   async function loadCourseData() {
+    const course_res = await fetch(`${API_URL}/${i18n.currentLanguage}/course`);
+    if (!course_res.ok) {
+      error.message = `Status code ${course_res.status} \n ${await course_res.text()}`;
+    }
+    let courses: CourseData[] = await course_res.json();
+    course_data = courses.find(course => course.name == course_name);
     const res = await fetch(
-      `${API_URL}/${i18n.currentLanguage}/course/${course}`
+      `${API_URL}/${i18n.currentLanguage}/course/${course_name}`
     );
     if (!res.ok) {
       error.message = `Status code ${res.status} \n ${await res.text()}`;
     }
     show_loading_message = false;
     clearTimeout(delay);
-    course_data = await res.json();
+    chapters_with_topics = await res.json();
   }
 
   $effect(() => {
@@ -81,13 +88,13 @@
   <h1 class="loading-message" in:fade={{ duration: 200 }}>
     {i18n.t('loading')}...
   </h1>
-{:else if course_data}
+{:else if course_data && chapters_with_topics}
   <main>
     <div class="col">
       <section class="main-container" in:fly={{ y: 60, duration: 600 }}>
         <h1 class="title">
           <span class="subject-prefix">{i18n.t('mathematics')} - {' '}</span
-          >{course_data?.desc}
+          >{course_data.desc}
         </h1>
         <h2 class="subtitle">{i18n.t('instructions')}</h2>
         <button
@@ -104,7 +111,7 @@
           id="chapter-container"
           bind:this={container}
         >
-          {#each course_data?.chapters.filter(c => c.topics.length > 0) as chapter}
+          {#each chapters_with_topics?.filter(c => c.topics.length > 0) as chapter}
             <ChapterDisplay {chapter} />
           {/each}
         </div>

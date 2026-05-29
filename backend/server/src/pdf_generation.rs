@@ -1,4 +1,3 @@
-use crate::text_endpoints;
 use anyhow::{Result, anyhow};
 use axum::{
     Json,
@@ -79,10 +78,8 @@ pub async fn generate_pdf_from_http(payload: Result<Json<PDFRequest>, JsonReject
                 format!(
                     "Rejected request: {rejection}
 It seems like the request was sent without a JSON.
-To generate a custom stencil, you need to attach a JSON body in the following format: 
-
 "
-                ) + &text_endpoints::get_http_schema(),
+                ),
             )
                 .into_response()
         }

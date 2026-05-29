@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use super::common::{DbDescRow, error_context, error_context_by_name};
-use crate::{DescriptionTranslations, TopicEntry};
+use crate::{DescriptionTranslations, TopicEntry, TopicSpecificData};
 use anyhow::{Context, Result};
 
 pub async fn get_all_topic_data() -> Result<Vec<TopicEntry>> {
@@ -99,22 +99,26 @@ pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32,
     Ok(map)
 }
 
-pub async fn get_topics_from_problem(problem_id: &i32) -> Result<Vec<TopicEntry>> {
+pub async fn get_topic_data_for_problem(problem_id: &i32) -> Result<Vec<TopicSpecificData>> {
     let pool = crate::get_pool();
-    let topics = sqlx::query_as!(
-        DbDescRow,
-        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en
-        FROM topics t
-        JOIN topic_problems tp ON t.id = tp.topic_id
-        WHERE tp.problem_id = $1
-        ORDER BY t.name"#,
+    let topic_data = sqlx::query_as!(
+        TopicSpecificData,
+        r#"SELECT topic_id, absolute_difficulty, relative_difficulty
+        FROM topic_problems
+        WHERE problem_id = $1
+        ORDER BY topic_id"#,
         problem_id
     )
     .fetch_all(pool)
     .await
-    .with_context(|| format!("Failed to get topics from problem {}", problem_id))?;
+    .with_context(|| {
+        format!(
+            "Failed to get topic data for problem with id {}",
+            problem_id
+        )
+    })?;
 
-    Ok(topics.into_iter().map(TopicEntry::from).collect())
+    Ok(topic_data)
 }
 
 pub async fn create_topic_from_entry(topic: TopicEntry) -> Result<i32> {

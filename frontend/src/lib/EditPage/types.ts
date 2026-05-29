@@ -81,7 +81,8 @@ export type ProblemEntryRaw = {
   module: string;
   name: string;
   desc: DescriptionTranslations;
-  difficulty: number;
+  absolute_difficulty: number;
+  relative_difficulty: number;
   prefix_id: number | null;
   translations: ProblemTranslations;
   topic_ids: number[];
@@ -179,7 +180,8 @@ export const defaultProblemEntry = {
   module: '',
   name: '',
   desc: { ...defaultDescriptionTranslations },
-  difficulty: 0,
+  absolute_difficulty: 2,
+  relative_difficulty: 2,
   prefix_id: null,
   translations: {
     sv: { ...defaultTranslatedProblem },

@@ -45,6 +45,14 @@ pub trait HasReplacements {
     }
 }
 
+/// Used in problems, which contain both the related topics and the associated difficulties
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct TopicSpecificData {
+    pub topic_id: i32,
+    pub absolute_difficulty: AbsoluteDifficulty,
+    pub relative_difficulty: RelativeDifficulty,
+}
+
 /// The texts associated with a specific problem in a certain [`Language`]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ProblemTexts {
@@ -171,12 +179,10 @@ pub struct ProblemEntry {
     pub id: i32,
     pub name: String,
     pub desc: DescriptionTranslations,
-    pub absolute_difficulty: AbsoluteDifficulty,
-    pub relative_difficulty: RelativeDifficulty,
     pub module: String,
     pub prefix_id: Option<i32>,
     pub translations: ProblemTranslations,
-    pub topic_ids: Vec<i32>,
+    pub topic_data: Vec<TopicSpecificData>,
 }
 impl HasDesc for ProblemEntry {
     fn desc(&self) -> &DescriptionTranslations {

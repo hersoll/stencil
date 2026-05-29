@@ -73,17 +73,25 @@
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">
-    <label for="difficulty">Difficulty</label>
+    <label for="absolute_difficulty">Absolute Difficulty</label>
+    <label for="relative_difficulty">Relative Difficulty</label>
     <label for="module">Module</label>
     <label for="name">Name</label>
 
     <input
-      name="difficulty"
+      name="absolute_difficulty"
       type="number"
       class="editing-text-input"
-      bind:value={problem.difficulty}
-      min="0"
+      bind:value={problem.absolute_difficulty}
+      min="1"
       max="10"
+    />
+    <input
+      name="relative_difficulty"
+      type="number"
+      class="editing-text-input"
+      bind:value={problem.relative_difficulty}
+      min="1"
     />
     <input
       name="module"

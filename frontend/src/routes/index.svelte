@@ -5,11 +5,12 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   type CourseData = {
-    desc: string;
     id: number;
+    name: string;
+    desc: string;
   };
 
-  let data: Record<string, CourseData> = $state({});
+  let data: CourseData[] = $state([]);
   let loading = $state(false);
 
   async function loadCourses() {
@@ -42,8 +43,12 @@
   <div class="main-div" in:fly={{ y: 60, duration: 600 }}>
     <h2>{i18n.t('course_selector')}</h2>
     <div class="btn-container">
-      <button onclick={() => navigate('/ma1b')}>{data['ma1b']?.desc}</button>
-      <button onclick={() => navigate('/ma2b')}>{data['ma2b']?.desc}</button>
+      <button onclick={() => navigate('/ma1b')}
+        >{data.find(course => course.name == 'ma1b')?.desc}</button
+      >
+      <button onclick={() => navigate('/ma2b')}
+        >{data.find(course => course.name == 'ma2b')?.desc}</button
+      >
     </div>
   </div>
 {/if}

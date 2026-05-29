@@ -1,13 +1,13 @@
-pub mod api;
 mod chapters;
 mod common;
 mod courses;
 mod db_types;
-pub mod edit;
+pub mod editing_api;
 pub mod i18n;
 mod newtypes;
 mod prefixes;
 mod problems;
+pub mod public_api;
 mod relationships;
 mod topics;
 pub mod users;

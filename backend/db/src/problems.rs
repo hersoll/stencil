@@ -1,7 +1,7 @@
 use super::common::{error_context, error_context_by_name};
 use crate::{
     Answer, DescriptionTranslations, ProblemEntry, ProblemTexts, ProblemTranslations, Question,
-    Solution,
+    Solution, TopicSpecificData,
 };
 use anyhow::{Context, Result};
 use types::difficulty::{AbsoluteDifficulty, RelativeDifficulty};
@@ -21,7 +21,7 @@ struct DbProblemRow {
     solution_en: Solution,
 }
 
-struct DbProblemRowWithDifficulties {
+struct DbProblemRowWithTopicDifficulties {
     id: i32,
     name: String,
     desc_sv: String,
@@ -34,6 +34,7 @@ struct DbProblemRowWithDifficulties {
     answer_en: Answer,
     solution_sv: Solution,
     solution_en: Solution,
+    topic_id: i32,
     absolute_difficulty: AbsoluteDifficulty,
     relative_difficulty: RelativeDifficulty,
 }
@@ -47,8 +48,6 @@ impl From<DbProblemRow> for ProblemEntry {
                 sv: row.desc_sv,
                 en: row.desc_en,
             },
-            absolute_difficulty: AbsoluteDifficulty::from_num(1),
-            relative_difficulty: RelativeDifficulty::from_num(1),
             module: row.module,
             prefix_id: row.prefix_id,
             translations: ProblemTranslations {
@@ -63,13 +62,13 @@ impl From<DbProblemRow> for ProblemEntry {
                     solution: row.solution_en,
                 },
             },
-            topic_ids: Vec::new(),
+            topic_data: Vec::new(),
         }
     }
 }
 
-impl From<DbProblemRowWithDifficulties> for ProblemEntry {
-    fn from(row: DbProblemRowWithDifficulties) -> Self {
+impl From<DbProblemRowWithTopicDifficulties> for ProblemEntry {
+    fn from(row: DbProblemRowWithTopicDifficulties) -> Self {
         ProblemEntry {
             id: row.id,
             name: row.name,
@@ -77,8 +76,6 @@ impl From<DbProblemRowWithDifficulties> for ProblemEntry {
                 sv: row.desc_sv,
                 en: row.desc_en,
             },
-            absolute_difficulty: row.absolute_difficulty,
-            relative_difficulty: row.relative_difficulty,
             module: row.module,
             prefix_id: row.prefix_id,
             translations: ProblemTranslations {
@@ -93,7 +90,11 @@ impl From<DbProblemRowWithDifficulties> for ProblemEntry {
                     solution: row.solution_en,
                 },
             },
-            topic_ids: Vec::new(),
+            topic_data: vec![TopicSpecificData {
+                topic_id: row.topic_id,
+                absolute_difficulty: row.absolute_difficulty,
+                relative_difficulty: row.relative_difficulty,
+            }],
         }
     }
 }
@@ -101,7 +102,7 @@ impl From<DbProblemRowWithDifficulties> for ProblemEntry {
 /// Gets all of the info about every problem
 ///
 /// Used for:
-/// - Loading problems into registry during startup  NOTE: Will need to change to include difficulty? Check if difficulty is fetched in registry
+/// - Loading problems into registry during startup
 /// - Getting the list of all problems on the edit page
 pub async fn get_all_problem_data() -> Result<Vec<ProblemEntry>> {
     let pool = crate::get_pool();
@@ -139,7 +140,7 @@ pub async fn get_problems_from_ids(problem_ids: &[i32]) -> Result<Vec<ProblemEnt
     Ok(problems.into_iter().map(ProblemEntry::from).collect())
 }
 
-/// Get all problems (with difficulties) that are included in a certain topic.
+/// Get all problems (with difficulties for that topic) that are included in a certain topic.
 ///
 /// Used for:
 /// - Finding all the problems to list with a topic when editing topics
@@ -147,10 +148,10 @@ pub async fn get_problems_from_ids(problem_ids: &[i32]) -> Result<Vec<ProblemEnt
 pub async fn get_topic_problems(topic_id: &i32) -> Result<Vec<ProblemEntry>> {
     let pool = crate::get_pool();
     let problems = sqlx::query_as!(
-            DbProblemRowWithDifficulties,
+            DbProblemRowWithTopicDifficulties,
             r#"SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module, 
             p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,
-            tp.absolute_difficulty, tp.relative_difficulty
+            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = $1
@@ -261,4 +262,27 @@ pub async fn delete_problem_with_id(id: i32) -> Result<String> {
         .with_context(|| error_context("delete", "problem", id))?;
 
     Ok(result.name)
+}
+
+pub async fn update_difficulties_for_problem_with_id(
+    problem_id: &i32,
+    topic_data: &[TopicSpecificData],
+) -> Result<()> {
+    let pool = crate::get_pool();
+    for topic in topic_data {
+        let _result = sqlx::query!(
+            r#"UPDATE topic_problems SET absolute_difficulty = $3, relative_difficulty = $4
+            WHERE problem_id = $1 AND topic_id = $2
+            RETURNING problem_id"#,
+            problem_id,
+            topic.topic_id,
+            topic.absolute_difficulty.number as i32,
+            topic.relative_difficulty.number as i32
+        )
+        .fetch_one(pool)
+        .await
+        .with_context(|| "failed to update difficulty for problem")?;
+    }
+
+    Ok(())
 }
