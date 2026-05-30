@@ -62,7 +62,7 @@ impl From<Option<String>> for Question {
     fn from(value: Option<String>) -> Self {
         match value {
             Some(s) => Question(s),
-            None => Question(String::from("No question in DB!")),
+            None => Question(String::new()),
         }
     }
 }
@@ -71,7 +71,7 @@ impl From<Option<String>> for Answer {
     fn from(value: Option<String>) -> Self {
         match value {
             Some(s) => Answer(s),
-            None => Answer(String::from("No answer in DB!")),
+            None => Answer(String::new()),
         }
     }
 }
@@ -80,7 +80,7 @@ impl From<Option<String>> for Solution {
     fn from(value: Option<String>) -> Self {
         match value {
             Some(s) => Solution(s),
-            None => Solution(String::from("No answer in DB!")),
+            None => Solution(String::new()),
         }
     }
 }

@@ -20,6 +20,10 @@ use tracing::info;
 
 use types::errors::ApiError;
 
+pub async fn protected() -> String {
+    String::from("You successfully reached a protected route!")
+}
+
 pub async fn login(Query(params): Query<HashMap<String, String>>) -> Response {
     let return_to = params
         .get("return")

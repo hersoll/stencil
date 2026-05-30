@@ -121,7 +121,7 @@
   }
 
   $effect(() => {
-    if (courses.length == 0) fetchCourse();
+    if (course_ids || courses.length == 0) fetchCourse();
   });
 </script>
 

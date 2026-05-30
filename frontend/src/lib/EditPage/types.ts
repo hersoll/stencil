@@ -1,3 +1,5 @@
+import type { TopicData } from '../CoursePage/types';
+
 type WithoutKind<T> = Omit<T, 'kind'>;
 
 export function stripKind<T extends { kind: string }>(
@@ -68,24 +70,34 @@ export type ChapterEntryRaw = {
   topic_ids: number[];
 };
 
+export type ProblemIdAndDifficulties = {
+  id: number;
+  absolute_difficulty: number;
+  relative_difficulty: number;
+};
+
 export type TopicEntryRaw = {
   id: number;
   name: string;
   desc: DescriptionTranslations;
   chapter_ids: number[];
-  problem_ids: number[];
+  problems: ProblemIdAndDifficulties[];
+};
+
+export type TopicDifficultyData = {
+  topic_id: number;
+  absolute_difficulty: number;
+  relative_difficulty: number;
 };
 
 export type ProblemEntryRaw = {
   id: number;
-  module: string;
   name: string;
   desc: DescriptionTranslations;
-  absolute_difficulty: number;
-  relative_difficulty: number;
+  module: string;
   prefix_id: number | null;
   translations: ProblemTranslations;
-  topic_ids: number[];
+  topic_data: TopicDifficultyData[];
 };
 
 export type PrefixEntryRaw = {
@@ -171,7 +183,7 @@ export const defaultTopicEntry = {
   name: '',
   desc: { ...defaultDescriptionTranslations },
   chapter_ids: [],
-  problem_ids: []
+  problems: []
 } satisfies TopicEntry;
 
 export const defaultProblemEntry = {
@@ -180,14 +192,12 @@ export const defaultProblemEntry = {
   module: '',
   name: '',
   desc: { ...defaultDescriptionTranslations },
-  absolute_difficulty: 2,
-  relative_difficulty: 2,
   prefix_id: null,
   translations: {
     sv: { ...defaultTranslatedProblem },
     en: { ...defaultTranslatedProblem }
   },
-  topic_ids: []
+  topic_data: []
 } satisfies ProblemEntry;
 
 export const defaultPrefixEntry = {

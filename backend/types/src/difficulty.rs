@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 /// ten problems with absolute difficulty 3, but these problems could have relative difficulties of
 /// 15 - 24 if there are fourteen easier problems in that topic.
 #[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(transparent)]
 pub struct RelativeDifficulty {
     pub number: u8,
 }
@@ -23,6 +24,7 @@ pub struct RelativeDifficulty {
 /// Note that absolute difficulties **are** bounded (1-10). See [`DifficultyCategory`] for their
 /// meanings.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(transparent)]
 pub struct AbsoluteDifficulty {
     pub number: u8,
 }

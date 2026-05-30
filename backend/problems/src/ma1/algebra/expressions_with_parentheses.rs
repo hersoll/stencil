@@ -174,7 +174,7 @@ fn var_term_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (2x + 1) + (3x - 4)
-/// Absolute difficulty: 2
+/// Absolute difficulty: 3
 /// Relative difficulty: 5
 #[problem]
 fn add_parentheses(id: i32, _lang: Language) -> Result<Problem> {

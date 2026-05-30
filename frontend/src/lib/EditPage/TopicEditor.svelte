@@ -36,11 +36,7 @@
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        topic,
-        problems: topic.problem_ids,
-        chapters: topic.chapter_ids
-      })
+      body: JSON.stringify(topic)
     });
 
     serverMessage.show(response);
@@ -76,7 +72,7 @@
     <ProblemsField
       --height="26rem"
       {topic}
-      bind:problem_ids={topic.problem_ids}
+      bind:problem_data_in_topic={topic.problems}
       bind:dropPriority
       {serverMessage}
       parentDraggedOver={draggedOver}

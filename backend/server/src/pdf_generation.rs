@@ -84,9 +84,13 @@ It seems like the request was sent without a JSON.
                 .into_response()
         }
         Err(JsonRejection::JsonDataError(err)) => {
+            info!("Rejected request body: {err}");
+
             (StatusCode::BAD_REQUEST, err.to_string()).into_response()
         }
         Err(JsonRejection::JsonSyntaxError(err)) => {
+            info!("Rejected request body: {err}");
+
             (StatusCode::BAD_REQUEST, err.to_string()).into_response()
         }
         Err(_) => (

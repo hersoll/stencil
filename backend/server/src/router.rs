@@ -32,6 +32,7 @@ pub fn create_router() -> Router {
     // Only included in dev build
     #[cfg(not(feature = "docker"))]
     let protected_routes = Router::new()
+        .route("/edit", get(middleware::auth::protected))
         .route("/edit/login", get(middleware::auth::login))
         .route("/create/{user}/{pass}", post(middleware::auth::create_user))
         // ========================================
@@ -39,8 +40,8 @@ pub fn create_router() -> Router {
         // ========================================
         .route("/edit/problem", get(db::editing_api::get_problems))
         .route(
-            "/edit/problem/ids",
-            post(db::editing_api::get_problems_from_ids),
+            "/edit/problem/from_topic",
+            post(db::editing_api::get_problems_from_topic_id),
         )
         .route("/edit/problem", post(db::editing_api::create_problem))
         .route("/edit/problem", patch(db::editing_api::update_problem))

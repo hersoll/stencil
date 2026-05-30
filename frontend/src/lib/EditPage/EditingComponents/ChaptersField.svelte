@@ -121,7 +121,7 @@
   }
 
   $effect(() => {
-    if (chapters.length == 0) fetchChapter();
+    if (chapter_ids || chapters.length == 0) fetchChapter();
   });
 </script>
 

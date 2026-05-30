@@ -4,6 +4,7 @@ use crate::{
     Solution, TopicSpecificData,
 };
 use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
 use types::difficulty::{AbsoluteDifficulty, RelativeDifficulty};
 
 struct DbProblemRow {
@@ -165,10 +166,34 @@ pub async fn get_topic_problems(topic_id: &i32) -> Result<Vec<ProblemEntry>> {
     Ok(problems.into_iter().map(ProblemEntry::from).collect())
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ProblemIdAndDifficulties {
     pub id: i32,
     pub absolute_difficulty: AbsoluteDifficulty,
     pub relative_difficulty: RelativeDifficulty,
+}
+impl ProblemIdAndDifficulties {
+    pub fn from_entry_and_topic_id(entry: &ProblemEntry, topic_id: i32) -> Self {
+        let (absolute_difficulty, relative_difficulty) = match entry
+            .topic_data
+            .iter()
+            .find(|topic| topic.topic_id == topic_id)
+        {
+            Some(topic) => (
+                topic.absolute_difficulty.clone(),
+                topic.relative_difficulty.clone(),
+            ),
+            None => (
+                AbsoluteDifficulty::from_num(4),
+                RelativeDifficulty::from_num(4),
+            ),
+        };
+        Self {
+            id: entry.id,
+            absolute_difficulty,
+            relative_difficulty,
+        }
+    }
 }
 
 /// Get problems from topics for PDF generation.
@@ -272,16 +297,37 @@ pub async fn update_difficulties_for_problem_with_id(
     for topic in topic_data {
         let _result = sqlx::query!(
             r#"UPDATE topic_problems SET absolute_difficulty = $3, relative_difficulty = $4
-            WHERE problem_id = $1 AND topic_id = $2
-            RETURNING problem_id"#,
+            WHERE problem_id = $1 AND topic_id = $2"#,
             problem_id,
             topic.topic_id,
             topic.absolute_difficulty.number as i32,
             topic.relative_difficulty.number as i32
         )
-        .fetch_one(pool)
+        .execute(pool)
         .await
         .with_context(|| "failed to update difficulty for problem")?;
+    }
+
+    Ok(())
+}
+
+pub async fn update_difficulties_for_topic_with_id(
+    topic_id: &i32,
+    problems: &[ProblemIdAndDifficulties],
+) -> Result<()> {
+    let pool = crate::get_pool();
+    for problem in problems {
+        let _result = sqlx::query!(
+            r#"UPDATE topic_problems SET absolute_difficulty = $3, relative_difficulty = $4
+            WHERE problem_id = $1 AND topic_id = $2"#,
+            problem.id,
+            topic_id,
+            problem.absolute_difficulty.number as i32,
+            problem.relative_difficulty.number as i32
+        )
+        .execute(pool)
+        .await
+        .with_context(|| "failed to update difficulty for topic")?;
     }
 
     Ok(())

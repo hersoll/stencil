@@ -87,6 +87,7 @@
 
 <style>
   .prefix-container {
+    grid-column: 1 / 3;
     cursor: grab;
     display: grid;
     padding: 0.5rem;

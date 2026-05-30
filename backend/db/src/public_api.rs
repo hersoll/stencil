@@ -7,6 +7,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use tracing::info;
 use types::{errors::ApiError, lang::Language};
 
 /// Relevant data which is sent when a user requests a list of courses for the home page
@@ -196,6 +197,7 @@ pub async fn get_problems_for_topics(
     let topic_ids = match payload {
         Ok(Json(topics)) => topics,
         Err(e) => {
+            info!("{}", e.to_string());
             return Err(ApiError::BadRequest(e.to_string()));
         }
     };

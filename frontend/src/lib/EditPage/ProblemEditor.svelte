@@ -9,7 +9,7 @@
   import LanguageHeader from './EditingComponents/LanguageHeader.svelte';
   import NewOrEditingLabel from './EditingComponents/NewOrEditingLabel.svelte';
   import SubmitButton from './EditingComponents/SubmitButton.svelte';
-  import TopicsField from './EditingComponents/TopicsField.svelte';
+  import TopicsFieldForProblems from './EditingComponents/TopicsFieldForProblems.svelte';
 
   let {
     problem = $bindable(),
@@ -73,26 +73,11 @@
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">
-    <label for="absolute_difficulty">Absolute Difficulty</label>
-    <label for="relative_difficulty">Relative Difficulty</label>
+    <div></div>
     <label for="module">Module</label>
     <label for="name">Name</label>
 
-    <input
-      name="absolute_difficulty"
-      type="number"
-      class="editing-text-input"
-      bind:value={problem.absolute_difficulty}
-      min="1"
-      max="10"
-    />
-    <input
-      name="relative_difficulty"
-      type="number"
-      class="editing-text-input"
-      bind:value={problem.relative_difficulty}
-      min="1"
-    />
+    <div></div>
     <input
       name="module"
       type="text"
@@ -111,9 +96,9 @@
     <ProblemTranslationsField bind:problem />
   </div>
   <div class="attachments-grid">
-    <TopicsField
+    <TopicsFieldForProblems
       --height="20.5rem"
-      bind:topic_ids={problem.topic_ids}
+      bind:topic_data={problem.topic_data}
       {serverMessage}
       bind:entry={problem}
       {draggedEntry}
@@ -138,7 +123,6 @@
     margin-top: 2rem;
     display: grid;
     grid-template-columns: 6rem 1fr 1fr;
-    grid-template-rows: 8rem auto;
-    column-gap: 1rem;
+    gap: 1rem;
   }
 </style>

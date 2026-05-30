@@ -70,7 +70,7 @@ impl From<SpecialTopicRow> for TopicEntry {
                 en: value.desc_en,
             },
             chapter_ids: Vec::new(),
-            problem_ids: Vec::new(),
+            problems: Vec::new(),
         }
     }
 }
