@@ -1,5 +1,3 @@
-import type { TopicData } from '../CoursePage/types';
-
 type WithoutKind<T> = Omit<T, 'kind'>;
 
 export function stripKind<T extends { kind: string }>(

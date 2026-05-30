@@ -2,12 +2,7 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from '../ServerMessage.svelte';
-  import {
-    type Entry,
-    type ProblemEntryRaw,
-    type ProblemIdAndDifficulties,
-    type TopicEntry
-  } from '../types';
+  import { type Entry, type ProblemEntryRaw, type TopicEntry } from '../types';
 
   let {
     topic = $bindable(),

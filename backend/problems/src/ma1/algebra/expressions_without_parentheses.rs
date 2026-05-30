@@ -203,7 +203,7 @@ fn evaluate_simple(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Evaluate 3x - 2y + 1 when x = -3 and y = 2
-/// Absolute difficulty: 1
+/// Absolute difficulty: 2
 /// Relative difficulty: 4
 #[problem]
 fn evaluate_intermediate(id: i32, lang: Language) -> Result<Problem> {

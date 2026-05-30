@@ -2,7 +2,7 @@
   import { API_URL } from '$src/main';
   import { fly } from 'svelte/transition';
   import ServerMessage from './ServerMessage.svelte';
-  import type { PrefixEntry } from './types';
+  import type { Entry, PrefixEntry } from './types';
   import LanguageHeader from './EditingComponents/LanguageHeader.svelte';
   import NewOrEditingLabel from './EditingComponents/NewOrEditingLabel.svelte';
   import SubmitButton from './EditingComponents/SubmitButton.svelte';
@@ -10,9 +10,13 @@
 
   let {
     prefix = $bindable(),
+    originalEntry = $bindable(),
+    activeEntry = $bindable(),
     draggedOver
   }: {
     prefix: PrefixEntry;
+    originalEntry: string;
+    activeEntry: Entry | null;
     draggedOver: boolean;
   } = $props();
 
@@ -33,6 +37,7 @@
       body: JSON.stringify(prefix)
     });
 
+    originalEntry = JSON.stringify(activeEntry);
     serverMessage.show(response);
   }
 </script>

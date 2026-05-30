@@ -14,11 +14,15 @@
     topic = $bindable(),
     draggedEntry,
     draggedOver,
+    originalEntry = $bindable(),
+    activeEntry = $bindable(),
     dropPriority = $bindable()
   }: {
     topic: TopicEntry;
     draggedOver: boolean;
     draggedEntry: Entry | null;
+    originalEntry: string;
+    activeEntry: Entry | null;
     dropPriority: boolean;
   } = $props();
 
@@ -39,6 +43,7 @@
       body: JSON.stringify(topic)
     });
 
+    originalEntry = JSON.stringify(activeEntry);
     serverMessage.show(response);
   }
 </script>
@@ -72,7 +77,6 @@
     <ProblemsField
       --height="26rem"
       {topic}
-      bind:problem_data_in_topic={topic.problems}
       bind:dropPriority
       {serverMessage}
       parentDraggedOver={draggedOver}

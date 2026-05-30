@@ -107,17 +107,26 @@
     <ProblemEditor
       bind:problem={activeEntry}
       {draggedOver}
+      bind:originalEntry
+      bind:activeEntry
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
     />
   {:else if activeEntry?.kind == 'prefix'}
-    <PrefixEditor bind:prefix={activeEntry} {draggedOver} />
+    <PrefixEditor
+      bind:prefix={activeEntry}
+      {draggedOver}
+      bind:activeEntry
+      bind:originalEntry
+    />
   {:else if activeEntry?.kind == 'topic'}
     <TopicEditor
       bind:topic={activeEntry}
       {draggedOver}
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
+      bind:activeEntry
+      bind:originalEntry
     />
   {:else if activeEntry?.kind == 'chapter'}
     <ChapterEditor
@@ -125,6 +134,8 @@
       {draggedOver}
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
+      bind:activeEntry
+      bind:originalEntry
     />
   {:else if activeEntry?.kind == 'course'}
     <CourseEditor
@@ -132,6 +143,8 @@
       {draggedOver}
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
+      bind:activeEntry
+      bind:originalEntry
     />
   {/if}
 </div>

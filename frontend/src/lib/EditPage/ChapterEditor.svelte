@@ -14,11 +14,15 @@
     chapter = $bindable(),
     draggedEntry,
     draggedOver,
+    originalEntry = $bindable(),
+    activeEntry = $bindable(),
     dropPriority = $bindable()
   }: {
     chapter: ChapterEntry;
     draggedOver: boolean;
     draggedEntry: Entry | null;
+    originalEntry: string;
+    activeEntry: Entry | null;
     dropPriority: boolean;
   } = $props();
 
@@ -39,6 +43,7 @@
       body: JSON.stringify(chapter)
     });
 
+    originalEntry = JSON.stringify(activeEntry);
     serverMessage.show(response);
   }
 </script>

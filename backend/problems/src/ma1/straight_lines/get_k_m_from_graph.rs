@@ -7,7 +7,8 @@ use types::{lang::Language, problems::Problem};
 use typst_writer::graphing::{Axes, Graph};
 
 /// Find m in graph
-/// Difficulty: 0
+/// Absolute difficulty: 1
+/// Relative difficulty: 1
 #[problem]
 fn find_m(id: i32, lang: Language) -> Result<Problem> {
     // k = -1 makes x-intersect and y-intersect the same - not ideal for learning
@@ -58,7 +59,8 @@ fn find_m(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find k in graph
-/// Difficulty: 1
+/// Absolute difficulty: 3
+/// Relative difficulty: 2
 #[problem]
 fn find_k(id: i32, lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer().range(-3, 3).exclude(0);
@@ -98,7 +100,8 @@ fn find_k(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find k and m in graph (k and m are integers)
-/// Difficulty: 2
+/// Absolute difficulty: 4
+/// Relative difficulty: 3
 #[problem]
 fn find_k_and_m_integers(id: i32, _lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer().range(-3, 3).exclude(0);
@@ -140,7 +143,8 @@ fn find_k_and_m_integers(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// Draw the graph of 3x - 1
-/// Difficulty: 3
+/// Absolute difficulty: 4
+/// Relative difficulty: 4
 #[problem]
 fn draw_own_easy_integers(id: i32, lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer()
@@ -201,7 +205,8 @@ fn draw_own_easy_integers(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find k and m in graph (k and m are large numbers), y = 40x + 300
-/// Difficulty: 4
+/// Absolute difficulty: 5
+/// Relative difficulty: 5
 #[problem]
 fn find_k_and_m_large_numbers(id: i32, _lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer().range(-3, 3).exclude(0);
@@ -239,7 +244,8 @@ fn find_k_and_m_large_numbers(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// Draw the graph of y = x + 1
-/// Difficulty: 4
+/// Absolute difficulty: 5
+/// Relative difficulty: 5
 #[problem]
 fn draw_own_unit_k(id: i32, lang: Language) -> Result<Problem> {
     let k_range = num_gen::integer().numbers(&[-1, 1]);
@@ -284,7 +290,8 @@ fn draw_own_unit_k(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Draw the graph of y = 2
-/// Difficulty: 4
+/// Absolute difficulty: 5
+/// Relative difficulty: 6
 #[problem]
 fn draw_own_horizontal(id: i32, lang: Language) -> Result<Problem> {
     let k = 0;
@@ -325,7 +332,8 @@ fn draw_own_horizontal(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Find k and m in graph (k is a fraction)
-/// Difficulty: 5
+/// Absolute difficulty: 6
+/// Relative difficulty: 7
 #[problem]
 fn find_k_m_fraction(id: i32, _lang: Language) -> Result<Problem> {
     let (k, k_range) = num_gen::fraction()
@@ -367,7 +375,8 @@ fn find_k_m_fraction(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// Draw the graph of y = 3x/5 + 2
-/// Difficulty: 6
+/// Absolute difficulty: 7
+/// Relative difficulty: 8
 #[problem]
 fn draw_own_fraction(id: i32, lang: Language) -> Result<Problem> {
     let (k, k_range) = num_gen::fraction().denoms(&[3, 5, 7]).and_random();

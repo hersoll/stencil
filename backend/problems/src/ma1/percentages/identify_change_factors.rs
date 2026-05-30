@@ -329,7 +329,7 @@ fn large_decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> 
 
 /// Which change factor is equivalent to a decrease of 14.3%?
 /// Absolute difficulty: 3
-/// Relative difficulty: 3
+/// Relative difficulty: 4
 #[problem]
 fn large_decimal_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
     let decrease_range = num_gen::decimal().with_decimals(1).range(10, 40);

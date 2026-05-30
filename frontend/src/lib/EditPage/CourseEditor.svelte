@@ -13,11 +13,15 @@
     course = $bindable(),
     draggedEntry,
     draggedOver,
+    originalEntry = $bindable(),
+    activeEntry = $bindable(),
     dropPriority = $bindable()
   }: {
     course: CourseEntry;
     draggedOver: boolean;
     draggedEntry: Entry | null;
+    originalEntry: string;
+    activeEntry: Entry | null;
     dropPriority: boolean;
   } = $props();
 
@@ -38,6 +42,7 @@
       body: JSON.stringify(course)
     });
 
+    originalEntry = JSON.stringify(activeEntry);
     serverMessage.show(response);
   }
 </script>

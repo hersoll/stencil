@@ -14,11 +14,15 @@
   let {
     problem = $bindable(),
     draggedEntry,
+    originalEntry = $bindable(),
+    activeEntry = $bindable(),
     draggedOver,
     dropPriority = $bindable()
   }: {
     problem: ProblemEntry;
     draggedOver: boolean;
+    originalEntry: string;
+    activeEntry: Entry | null;
     draggedEntry: Entry | null;
     dropPriority: boolean;
   } = $props();
@@ -42,6 +46,7 @@
     });
 
     serverMessage.show(response);
+    originalEntry = JSON.stringify(activeEntry);
   }
 
   async function loadPrefixData() {

@@ -170,7 +170,7 @@ fn find_equation_small_positives(id: i32, lang: Language) -> Result<Problem> {
 
 /// Find the equation of the line between (1, -3) and (-4, 9)
 /// Absolute difficulty: 4
-/// Relative difficulty: 4
+/// Relative difficulty: 5
 #[problem]
 fn find_equation_with_negatives(id: i32, lang: Language) -> Result<Problem> {
     let k = num_gen::integer()
