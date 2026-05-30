@@ -21,7 +21,8 @@ pub async fn get_chapters_from_ids(chapter_ids: &[i32]) -> Result<Vec<ChapterEnt
         DbDescRow,
         r#"SELECT c.id, c.name, c.desc_sv, c.desc_en
         FROM chapters c
-        WHERE c.id = ANY($1)"#,
+        JOIN UNNEST($1::int[]) WITH ORDINALITY AS u(id, ord) ON c.id = u.id
+        ORDER BY u.ord"#,
         chapter_ids
     )
     .fetch_all(pool)

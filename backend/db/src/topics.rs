@@ -23,7 +23,8 @@ pub async fn get_topics_from_ids(topic_ids: &[i32]) -> Result<Vec<TopicEntry>> {
         DbDescRow,
         r#"SELECT t.id, t.name, t.desc_sv, t.desc_en
         FROM topics t
-        WHERE t.id = ANY($1)"#,
+        JOIN UNNEST($1::int[]) WITH ORDINALITY AS u(id, ord) ON t.id = u.id
+        ORDER BY u.ord"#,
         topic_ids
     )
     .fetch_all(pool)

@@ -69,7 +69,7 @@ impl From<i32> for AbsoluteDifficulty {
 impl RelativeDifficulty {
     /// Constructor method
     pub fn from_num(number: u8) -> Self {
-        if !(1..=10).contains(&number) {
+        if number < 1 {
             tracing::error!("RelativeDifficulty recieved a number outside its bounds: {number}");
             return Self { number: 1 };
         }

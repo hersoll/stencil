@@ -65,7 +65,7 @@ pub async fn create_chapter(
 pub async fn update_chapter(
     Json(chapter): Json<ChapterEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
-    tracing::debug!("Recieved: {chapter:#?}",);
+    tracing::debug!("Recieved: {chapter:#?}");
     let chapter_id = chapters::update_chapter_from_entry(&chapter).await?;
     relationships::update_children_for_parent::<ChapterTopics>(&chapter_id, &chapter.topic_ids)
         .await?;

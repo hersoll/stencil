@@ -83,6 +83,7 @@
     const [removed_entry] = newOrder_topics.splice(draggedIndex, 1);
     newOrder_topics.splice(targetIndex, 0, removed_entry);
     topics = newOrder_topics;
+    topic_ids = topics.map(t => t.id);
 
     draggedIndex = targetIndex;
   }

@@ -37,7 +37,8 @@ pub async fn get_courses_from_ids(course_ids: &[i32]) -> Result<Vec<CourseEntry>
         DbDescRow,
         r#"SELECT c.id, c.name, c.desc_sv, c.desc_en
         FROM courses c
-        WHERE c.id = ANY($1)"#,
+        JOIN UNNEST($1::int[]) WITH ORDINALITY AS u(id, ord) ON c.id = u.id
+        ORDER BY u.ord"#,
         course_ids
     )
     .fetch_all(pool)
@@ -71,7 +72,7 @@ pub async fn get_courses_from_chapter(chapter_id: &i32) -> Result<Vec<CourseEntr
         FROM courses co
         JOIN course_chapters coch ON co.id = coch.course_id
         WHERE coch.chapter_id = $1
-        ORDER BY co.name"#,
+        ORDER BY coch.order_index, co.name"#,
         chapter_id
     )
     .fetch_all(pool)

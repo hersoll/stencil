@@ -111,32 +111,10 @@ pub async fn get_all_problem_data() -> Result<Vec<ProblemEntry>> {
         DbProblemRow,
         r#"SELECT id, name, desc_sv, desc_en, question_sv, question_en,
             answer_sv, answer_en, solution_sv, solution_en, prefix_id, module
-            FROM problems ORDER BY module"#,
+            FROM problems ORDER BY module, name"#,
     )
     .fetch_all(pool)
     .await?;
-
-    Ok(problems.into_iter().map(ProblemEntry::from).collect())
-}
-
-/// Returns the problems that correspond to certain IDs
-///
-/// Used for:
-/// - Getting the problems that correlate to a certain topic in the editing page
-/// -  NOTE: Could we not just use get_topic_problems instead? And get difficulties for free?
-pub async fn get_problems_from_ids(problem_ids: &[i32]) -> Result<Vec<ProblemEntry>> {
-    let pool = crate::get_pool();
-    let problems = sqlx::query_as!(
-        DbProblemRow,
-        r#"SELECT p.id, p.name, p.desc_sv, p.desc_en, p.question_sv, p.question_en,
-            p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id, p.module 
-        FROM problems p
-        WHERE p.id = ANY($1)"#,
-        problem_ids
-    )
-    .fetch_all(pool)
-    .await
-    .with_context(|| format!("Failed to get problems with ids {problem_ids:?}"))?;
 
     Ok(problems.into_iter().map(ProblemEntry::from).collect())
 }
