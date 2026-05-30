@@ -8,6 +8,12 @@ use crate::{
 };
 use types::errors::ApiError;
 
+/// Returns all the data about every problem in the DB as a `Vec<ProblemEntry>`.
+///
+/// This includes which topics are linked to each problem, and the difficulty of the problem in that
+/// topic.
+/// Used when listing every problem in the editing list - since every entry will need data attached
+/// to it when dragging into the editing area
 pub async fn get_problems() -> Result<impl IntoResponse, ApiError> {
     match problems::get_all_problem_data().await {
         Ok(mut problems) => {
@@ -23,15 +29,24 @@ pub async fn get_problems() -> Result<impl IntoResponse, ApiError> {
     }
 }
 
-pub async fn get_problems_from_ids(
-    Json(problem_ids): Json<Vec<i32>>,
+/// Given a topic ID, returns data about problems in that as a `Vec<ProblemEntry>`
+///
+/// Note that this breaks the pattern of the other entries (which had something like `get_problems_from_ids`),
+/// since we need the difficulties for problems and to do that we need to know which topic we're
+/// talking about, we can't simply extract problems in a vacuum.
+///
+/// Used in the topic editing area, where that entry already knows which problem IDs it's
+/// connected to and simply wants to list those problems in the list
+pub async fn get_problems_from_topic_id(
+    Json(topic_id): Json<i32>,
 ) -> Result<impl IntoResponse, ApiError> {
-    match problems::get_problems_from_ids(&problem_ids).await {
+    match problems::get_topic_problems(&topic_id).await {
         Ok(problems) => Ok((StatusCode::OK, Json(json!(problems)))),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }
 
+/// Create a problem, including its connections to topics, in the DB
 pub async fn create_problem(
     Json(problem): Json<ProblemEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
@@ -42,7 +57,7 @@ pub async fn create_problem(
         .iter()
         .map(|topic| topic.topic_id)
         .collect();
-    relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem_id).await?;
+    relationships::update_parents_for_child::<TopicProblems>(&problem_id, &topic_ids).await?;
     problems::update_difficulties_for_problem_with_id(&problem_id, &problem.topic_data).await?;
 
     Ok((
@@ -54,6 +69,7 @@ pub async fn create_problem(
     ))
 }
 
+/// Update a problem, including its connections to topics, in the DB
 pub async fn update_problem(
     Json(problem): Json<ProblemEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
@@ -63,7 +79,7 @@ pub async fn update_problem(
         .iter()
         .map(|topic| topic.topic_id)
         .collect();
-    relationships::update_parents_for_child::<TopicProblems>(&topic_ids, &problem.id).await?;
+    relationships::update_parents_for_child::<TopicProblems>(&problem.id, &topic_ids).await?;
     problems::update_difficulties_for_problem_with_id(&problem.id, &problem.topic_data).await?;
     let problem_name = problems::update_problem_from_entry(problem).await?;
 
@@ -73,6 +89,8 @@ pub async fn update_problem(
     ))
 }
 
+/// Delete a problem, including its connections to topics, from the DB
+///
 /// Accepts an entire ProblemEntry to keep ergonomics the same
 /// If optimization is needed, can be made to only need an ID
 pub async fn delete_problem(

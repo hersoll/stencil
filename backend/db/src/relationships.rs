@@ -92,8 +92,8 @@ pub(crate) async fn update_children_for_parent<R: Relationship>(
 /// - Keeps existing order_index values
 /// - Appends the child to new parents at the end
 pub(crate) async fn update_parents_for_child<R: Relationship>(
-    parent_ids: &[i32],
     child_id: &i32,
+    parent_ids: &[i32],
 ) -> Result<()> {
     let pool = crate::get_pool();
 

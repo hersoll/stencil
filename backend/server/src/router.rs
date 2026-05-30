@@ -56,15 +56,6 @@ pub fn create_router() -> Router {
         .route("/edit/topic", post(db::editing_api::create_topic))
         .route("/edit/topic", patch(db::editing_api::update_topic))
         .route("/edit/topic", delete(db::editing_api::delete_topic))
-        // Probably not in use, remove if nothing has broken
-        // .route(
-        //     "/edit/topic/{id}/problems",
-        //     get(db::edit::get_problems_from_topic),
-        // )
-        .route(
-            "/edit/topic/{id}/chapters",
-            get(db::editing_api::get_chapters_from_topic),
-        )
         // ========================================
         //      CHAPTERS
         // ========================================
@@ -76,14 +67,6 @@ pub fn create_router() -> Router {
         .route("/edit/chapter", post(db::editing_api::create_chapter))
         .route("/edit/chapter", patch(db::editing_api::update_chapter))
         .route("/edit/chapter", delete(db::editing_api::delete_chapter))
-        .route(
-            "/edit/chapter/{id}/topics",
-            get(db::editing_api::get_topics_from_chapter),
-        )
-        .route(
-            "/edit/chapter/{id}/courses",
-            get(db::editing_api::get_courses_from_chapter),
-        )
         // ========================================
         //      COURSES
         // ========================================
@@ -95,10 +78,6 @@ pub fn create_router() -> Router {
         .route("/edit/course", post(db::editing_api::create_course))
         .route("/edit/course", patch(db::editing_api::update_course))
         .route("/edit/course", delete(db::editing_api::delete_course))
-        .route(
-            "/edit/course/{id}/chapters",
-            get(db::editing_api::get_chapters_from_course),
-        )
         // ========================================
         //      PREFIXES
         // ========================================

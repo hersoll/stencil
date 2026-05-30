@@ -116,6 +116,10 @@ pub async fn update_course_from_entry(course: CourseEntry) -> Result<String> {
 
 pub async fn delete_course_with_id(id: i32) -> Result<String> {
     let pool = crate::get_pool();
+    let _result = sqlx::query!(r#"DELETE FROM course_chapters WHERE course_id = $1"#, id)
+        .execute(pool)
+        .await
+        .with_context(|| error_context("delete", "course", id))?;
     let result = sqlx::query!(r#"DELETE FROM courses WHERE id = $1 RETURNING name"#, id)
         .fetch_one(pool)
         .await

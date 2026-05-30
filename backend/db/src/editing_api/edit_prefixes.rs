@@ -4,6 +4,7 @@ use serde_json::json;
 use crate::{PrefixEntry, prefixes};
 use types::errors::ApiError;
 
+/// Returns all the data about every prefix in the DB as a `Vec<PrefixEntry>`.
 pub async fn get_prefixes() -> Result<impl IntoResponse, ApiError> {
     match prefixes::get_all_prefix_data().await {
         Ok(prefixes) => Ok((StatusCode::OK, Json(json!(prefixes)))),
@@ -11,6 +12,9 @@ pub async fn get_prefixes() -> Result<impl IntoResponse, ApiError> {
     }
 }
 
+/// Get a specific prefix using its ID
+///
+/// Used in the problem editor do display information about the connected prefix
 pub async fn get_prefix_from_id(Path(prefix_id): Path<i32>) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {prefix_id:#?}");
     match prefixes::get_prefix_from_id(&prefix_id).await {
@@ -19,6 +23,7 @@ pub async fn get_prefix_from_id(Path(prefix_id): Path<i32>) -> Result<impl IntoR
     }
 }
 
+/// Create a topic in the DB
 pub async fn create_prefix(
     Json(payload): Json<PrefixEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
@@ -32,6 +37,7 @@ pub async fn create_prefix(
     }
 }
 
+/// Update a prefix in the DB
 pub async fn update_prefix(
     Json(payload): Json<PrefixEntry>,
 ) -> Result<impl IntoResponse, ApiError> {
@@ -41,7 +47,8 @@ pub async fn update_prefix(
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }
-
+/// Delete a prefix from the DB
+///
 /// Accepts an entire PrefixEntry to keep ergonomics the same
 /// If optimization is needed, can be made to only need an ID
 pub async fn delete_prefix(

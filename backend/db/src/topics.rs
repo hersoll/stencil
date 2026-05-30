@@ -121,15 +121,14 @@ pub async fn get_topic_data_for_problem(problem_id: &i32) -> Result<Vec<TopicSpe
     Ok(topic_data)
 }
 
-pub async fn create_topic_from_entry(topic: TopicEntry) -> Result<i32> {
+pub async fn create_topic_from_entry(topic: &TopicEntry) -> Result<i32> {
     let pool = crate::get_pool();
-    let desc = topic.desc;
     let created = sqlx::query!(
         r#"INSERT INTO topics (name, desc_sv, desc_en) VALUES ($1, $2, $3) 
                RETURNING id"#,
         topic.name,
-        desc.sv,
-        desc.en,
+        topic.desc.sv,
+        topic.desc.en,
     )
     .fetch_one(pool)
     .await
@@ -158,6 +157,15 @@ pub async fn update_topic_from_entry(topic: TopicEntry) -> Result<String> {
 
 pub async fn delete_topic_with_id(id: i32) -> Result<String> {
     let pool = crate::get_pool();
+    let _result = sqlx::query!(r#"DELETE FROM chapter_topics WHERE topic_id = $1"#, id)
+        .execute(pool)
+        .await
+        .with_context(|| error_context("delete", "topic", id))?;
+    let _result = sqlx::query!(r#"DELETE FROM topic_problems WHERE topic_id = $1"#, id)
+        .execute(pool)
+        .await
+        .with_context(|| error_context("delete", "topic", id))?;
+
     let result = sqlx::query!(r#"DELETE FROM topics WHERE id = $1 RETURNING name"#, id)
         .fetch_one(pool)
         .await

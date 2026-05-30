@@ -102,6 +102,14 @@ pub async fn update_chapter_from_entry(chapter: &ChapterEntry) -> Result<i32> {
 
 pub async fn delete_chapter_with_id(id: i32) -> Result<String> {
     let pool = crate::get_pool();
+    let _result = sqlx::query!(r#"DELETE FROM chapter_topics WHERE chapter_id = $1"#, id)
+        .execute(pool)
+        .await
+        .with_context(|| error_context("delete", "chapter", id))?;
+    let _result = sqlx::query!(r#"DELETE FROM course_chapters WHERE chapter_id = $1"#, id)
+        .execute(pool)
+        .await
+        .with_context(|| error_context("delete", "chapter", id))?;
     let result = sqlx::query!(r#"DELETE FROM chapters WHERE id = $1 RETURNING name"#, id)
         .fetch_one(pool)
         .await
