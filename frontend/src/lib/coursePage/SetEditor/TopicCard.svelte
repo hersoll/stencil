@@ -48,12 +48,12 @@
     topic.problems
       .filter(problem =>
         difficulty_in_range(
-          problem.difficulty,
+          problem.absolute_difficulty,
           problems.starting_difficulty,
           problems.ending_difficulty
         )
       )
-      .sort((p1, p2) => p1.difficulty - p2.difficulty)
+      .sort((p1, p2) => p1.absolute_difficulty - p2.absolute_difficulty)
   );
 </script>
 
@@ -67,9 +67,9 @@
           : ''}"
         onclick={() => excludeProblem(problem.id)}
       >
-        <p class="no-select problem-descriptor">{problem.desc}</p>
-        <p class="no-select difficulty-descriptor">
-          {i18n.t(num_to_difficulty_str(problem.difficulty))}
+        <p class="no-select clickable problem-descriptor">{problem.desc}</p>
+        <p class="no-select clickable difficulty-descriptor">
+          {i18n.t(num_to_difficulty_str(problem.absolute_difficulty))}
         </p>
       </button>
     {/each}
@@ -132,7 +132,7 @@
     }
 
     &:hover {
-      p {
+      .clickable {
         color: light-dark(
           oklch(from var(--text-muted) calc(l + 0.2) c h),
           oklch(from var(--text-muted) calc(l - 0.2) c h)
@@ -142,7 +142,7 @@
 
     &:active {
       background-color: var(--bg-light);
-      p {
+      .clickable {
         color: var(--text);
       }
     }

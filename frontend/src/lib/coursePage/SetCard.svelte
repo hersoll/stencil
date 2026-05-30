@@ -7,22 +7,24 @@
 
   import {
     difficulty_to_string,
-    type ProblemData,
-    type ProblemSetSpec
+    type ProblemSetSpec,
+    type TopicWithProblems
   } from './types';
 
   let {
     set = $bindable(),
     id,
     onDelete
-  }: { set: ProblemSetSpec; onDelete: () => void; id: number } = $props();
-  let topics = $state<{ id: number; desc: string; problems: ProblemData[] }[]>(
-    []
-  );
+  }: {
+    set: ProblemSetSpec;
+    onDelete: () => void;
+    id: number;
+  } = $props();
+  let topics_with_problems = $state<TopicWithProblems[]>([]);
 
   let show_loading_message = $state(false);
   const delay = setTimeout(() => {
-    if (topics.length == 0) show_loading_message = true;
+    if (topics_with_problems.length == 0) show_loading_message = true;
   }, 600);
 
   async function fetchProblems() {
@@ -38,7 +40,7 @@
     if (!res.ok) {
       error.message = `Status code ${res.status} \n ${await res.text()}`;
     }
-    topics = await res.json();
+    topics_with_problems = await res.json();
   }
 
   $effect(() => {
@@ -53,22 +55,22 @@
   popovertarget="set-editor-{id}"
   class="set-container"
   in:fly={{ y: -40, duration: 400 }}
-  disabled={topics.length == 0}
+  disabled={topics_with_problems.length == 0}
 >
-  {#if topics.length == 1}
+  {#if topics_with_problems.length == 1}
     <h3 in:fade={{ duration: 200 }}>
-      {topics[0].desc}
+      {topics_with_problems[0].desc}
     </h3>
-  {:else if topics.length == 2}
+  {:else if topics_with_problems.length == 2}
     <h3 in:fade={{ duration: 200 }}>
-      {topics[0].desc}
+      {topics_with_problems[0].desc}
     </h3>
     <h3 in:fade={{ duration: 200 }}>
-      {topics[1].desc}
+      {topics_with_problems[1].desc}
     </h3>
-  {:else if topics.length > 2}
+  {:else if topics_with_problems.length > 2}
     <h3 in:fade={{ duration: 200 }}>
-      {topics.length}
+      {topics_with_problems.length}
       {i18n.t('topics').toLowerCase()}
     </h3>
   {:else if show_loading_message}
@@ -94,7 +96,7 @@
   </div>
 </button>
 
-<SetEditor bind:set {onDelete} {id} {topics} />
+<SetEditor bind:set {onDelete} {id} topics={topics_with_problems} />
 
 <style>
   .set-container {

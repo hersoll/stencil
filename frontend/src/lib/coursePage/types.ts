@@ -6,6 +6,7 @@ export type ProblemData = {
 
 export type TopicWithProblems = {
   id: number;
+  desc: string;
   problems: ProblemData[];
 };
 
@@ -36,9 +37,9 @@ export type SetOptions = {
 export type Difficulty = 'Intro' | 'Easy' | 'Medium' | 'Hard';
 
 export function num_to_difficulty_str(num: number): string {
-  if (num <= 1) {
+  if (num <= 3) {
     return 'difficulty_intro';
-  } else if (num <= 4) {
+  } else if (num <= 5) {
     return 'difficulty_easy';
   } else if (num <= 7) {
     return 'difficulty_medium';
@@ -72,16 +73,16 @@ export function difficulty_in_range(
   let starting_num: number, ending_num: number;
   switch (starting) {
     case 'Intro': {
-      starting_num = 0;
+      starting_num = 1;
       break;
     }
     case 'Easy': {
-      starting_num = 2;
+      starting_num = 4;
       break;
     }
 
     case 'Medium': {
-      starting_num = 5;
+      starting_num = 6;
       break;
     }
 
@@ -92,11 +93,11 @@ export function difficulty_in_range(
   }
   switch (ending) {
     case 'Intro': {
-      ending_num = 1;
+      ending_num = 3;
       break;
     }
     case 'Easy': {
-      ending_num = 4;
+      ending_num = 5;
       break;
     }
 

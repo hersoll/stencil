@@ -94,9 +94,13 @@ impl HTTPProblemData {
 ///
 /// When the end user edit a sets, they need to see every problem associated with each topic.
 /// This struct tells the frontend which problems are connected to each topic.
+///
+/// The struct also contains the descs for ease of use in the frontend. Otherwise there would have
+/// to be a lot of mapping and passing things around.
 #[derive(Serialize, Deserialize)]
 struct TopicWithProblems {
     id: i32,
+    desc: String,
     problems: Vec<HTTPProblemData>,
 }
 
@@ -206,6 +210,7 @@ pub async fn get_problems_for_topics(
             .collect();
         let topic_with_problems = TopicWithProblems {
             id: topic.id,
+            desc: topic.get_desc(lang),
             problems,
         };
         topics_with_problems.push(topic_with_problems);

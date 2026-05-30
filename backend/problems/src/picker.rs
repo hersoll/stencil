@@ -26,7 +26,7 @@ struct AvailableDifficulties {
 
 /// Struct representing how many of each [`DifficultyCategory`] number should be generated.
 ///
-/// Has a length of 11 since the difficulties go from 0-10.
+/// Has a length of 11 since the difficulties go from 1-10, and the last one will be index 10
 #[derive(Debug, Copy, Clone)]
 pub struct CountPerDifficultyCategoryNumber(pub [u8; 11]);
 
