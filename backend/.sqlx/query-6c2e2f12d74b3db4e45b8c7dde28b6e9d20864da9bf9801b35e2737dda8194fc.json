@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT p.id, p.name, p.difficulty, p.desc_sv, p.desc_en, p.question_sv, p.question_en,\n            p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id, p.module \n        FROM problems p\n        WHERE p.id = ANY($1)",
+  "query": "SELECT id, name, desc_sv, desc_en, question_sv, question_en,\n            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module\n            FROM problems ORDER BY module, name",
   "describe": {
     "columns": [
       {
@@ -15,67 +15,59 @@
       },
       {
         "ordinal": 2,
-        "name": "difficulty",
-        "type_info": "Int4"
-      },
-      {
-        "ordinal": 3,
         "name": "desc_sv",
         "type_info": "Text"
       },
       {
-        "ordinal": 4,
+        "ordinal": 3,
         "name": "desc_en",
         "type_info": "Text"
       },
       {
-        "ordinal": 5,
+        "ordinal": 4,
         "name": "question_sv",
         "type_info": "Text"
       },
       {
-        "ordinal": 6,
+        "ordinal": 5,
         "name": "question_en",
         "type_info": "Text"
       },
       {
-        "ordinal": 7,
+        "ordinal": 6,
         "name": "answer_sv",
         "type_info": "Text"
       },
       {
-        "ordinal": 8,
+        "ordinal": 7,
         "name": "answer_en",
         "type_info": "Text"
       },
       {
-        "ordinal": 9,
+        "ordinal": 8,
         "name": "solution_sv",
         "type_info": "Text"
       },
       {
-        "ordinal": 10,
+        "ordinal": 9,
         "name": "solution_en",
         "type_info": "Text"
       },
       {
-        "ordinal": 11,
+        "ordinal": 10,
         "name": "prefix_id",
         "type_info": "Int4"
       },
       {
-        "ordinal": 12,
+        "ordinal": 11,
         "name": "module",
         "type_info": "Text"
       }
     ],
     "parameters": {
-      "Left": [
-        "Int4Array"
-      ]
+      "Left": []
     },
     "nullable": [
-      false,
       false,
       false,
       false,
@@ -90,5 +82,5 @@
       false
     ]
   },
-  "hash": "01dd5560d6e29665eadabaa404740c52235bbe830600612a579da4ce89870c86"
+  "hash": "6c2e2f12d74b3db4e45b8c7dde28b6e9d20864da9bf9801b35e2737dda8194fc"
 }

@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT p.id, tp.relative_difficulty, tp.absolute_difficulty \n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = ANY($1)\n          AND NOT p.id = ANY($2)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "relative_difficulty",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "absolute_difficulty",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "b366e35b2944e06821062fb07055897ffaf83061fc155a874445cf4dcc07956a"
+}

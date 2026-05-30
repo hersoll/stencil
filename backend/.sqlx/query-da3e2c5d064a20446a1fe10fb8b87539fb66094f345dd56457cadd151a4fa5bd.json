@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE topic_problems SET absolute_difficulty = $3, relative_difficulty = $4\n            WHERE problem_id = $1 AND topic_id = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "da3e2c5d064a20446a1fe10fb8b87539fb66094f345dd56457cadd151a4fa5bd"
+}

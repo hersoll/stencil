@@ -94,7 +94,7 @@ pub fn create_router() -> Router {
 
     #[cfg(feature = "docker")]
     let api_router = Router::new()
-        .merge(standard_routes)
+        .merge(user_routes)
         .layer(tower_governor::GovernorLayer::new(
             middleware::rate_limiting::json_limit(),
         ))

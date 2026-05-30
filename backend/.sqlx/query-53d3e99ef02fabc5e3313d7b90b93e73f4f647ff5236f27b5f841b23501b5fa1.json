@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM chapter_topics WHERE chapter_id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "53d3e99ef02fabc5e3313d7b90b93e73f4f647ff5236f27b5f841b23501b5fa1"
+}
