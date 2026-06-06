@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 /// This means that relative difficulties and absolute difficulties won't match. A topic can have
 /// ten problems with absolute difficulty 3, but these problems could have relative difficulties of
 /// 15 - 24 if there are fourteen easier problems in that topic.
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct RelativeDifficulty {
     pub number: u8,
@@ -23,7 +23,7 @@ pub struct RelativeDifficulty {
 ///
 /// Note that absolute difficulties **are** bounded (1-10). See [`DifficultyCategory`] for their
 /// meanings.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct AbsoluteDifficulty {
     pub number: u8,
@@ -115,8 +115,8 @@ impl DifficultyCategory {
 
     /// Returns every [`AbsoluteDifficulty`] in the span of a `starting_difficulty` and an `ending_difficulty`.
     pub fn categories_to_absolute_difficulties(
-        starting_difficulty: DifficultyCategory,
-        ending_difficulty: DifficultyCategory,
+        starting_difficulty: &DifficultyCategory,
+        ending_difficulty: &DifficultyCategory,
     ) -> Vec<AbsoluteDifficulty> {
         let minimum_number = match starting_difficulty {
             DifficultyCategory::Intro => 1,

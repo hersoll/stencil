@@ -56,8 +56,8 @@ impl CountPerDifficultyCategory {
 pub fn filter_pool_by_difficulty(problem_pool: &mut ProblemPool) -> Result<(), ApiError> {
     // A range of numbers, for example 3..7, as a Vec
     let difficulty_range = DifficultyCategory::categories_to_absolute_difficulties(
-        problem_pool.starting_difficulty,
-        problem_pool.ending_difficulty,
+        &problem_pool.starting_difficulty,
+        &problem_pool.ending_difficulty,
     );
 
     problem_pool

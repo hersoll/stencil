@@ -176,22 +176,32 @@ impl ProblemIdAndDifficulties {
 
 /// Get problems from topics for PDF generation.
 ///
-/// Similar
+/// Similar to [`get_topic_problems()`] except it:
+/// - Takes multiple `topic_ids`
+/// - Allows for exclusions
+/// - Filter out all problems not in the desired difficulty range
 #[allow(clippy::cast_sign_loss)]
 pub async fn get_valid_problems_from_pdf_request(
     topic_ids: Vec<i32>,
     exclusions: Vec<i32>,
+    allowed_difficulties: Vec<AbsoluteDifficulty>,
 ) -> Result<Vec<ProblemIdAndDifficulties>> {
     let pool = crate::get_pool();
+    let allowed_difficulty_numbers: Vec<i32> = allowed_difficulties
+        .into_iter()
+        .map(|diff| diff.number as i32)
+        .collect();
     let problems = sqlx::query_as!(
         ProblemIdAndDifficulties,
         r#"SELECT p.id, tp.relative_difficulty, tp.absolute_difficulty 
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = ANY($1)
-          AND NOT p.id = ANY($2)"#,
+          AND NOT p.id = ANY($2)
+          AND tp.absolute_difficulty = ANY($3)"#,
         &topic_ids,
-        &exclusions
+        &exclusions,
+        &allowed_difficulty_numbers
     )
     .fetch_all(pool)
     .await?;

@@ -112,22 +112,27 @@ pub async fn generate_problem_set(
     lang: &Language,
 ) -> Result<Vec<Problem>, ApiError> {
     // Is of type {id: i32, absolute_difficulty, relative_difficulty}
-    let problems =
-        db::get_valid_problems_from_pdf_request(options.topics, options.exclusions).await?;
+    let problems = db::get_valid_problems_from_pdf_request(
+        options.topics,
+        options.exclusions,
+        DifficultyCategory::categories_to_absolute_difficulties(
+            &options.starting_difficulty,
+            &options.ending_difficulty,
+        ),
+    )
+    .await?;
 
     // Construct an initial list of candidates from the problem ids
     let problem_candidates: Vec<ProblemCandidate> = problems
         .into_iter()
-        .map(|problem| {
-            Ok(ProblemCandidate {
-                id: problem.id,
-                absolute_difficulty: problem.absolute_difficulty,
-                relative_difficulty: problem.relative_difficulty,
-                score: DEFAULT_SCORE.max(options.n),
-                generated_identifiers: HashSet::new(),
-            })
+        .map(|problem| ProblemCandidate {
+            id: problem.id,
+            absolute_difficulty: problem.absolute_difficulty,
+            relative_difficulty: problem.relative_difficulty,
+            score: DEFAULT_SCORE.max(options.n),
+            generated_identifiers: HashSet::new(),
         })
-        .collect::<Result<Vec<ProblemCandidate>>>()?;
+        .collect();
 
     let mut problem_pool = ProblemPool {
         problem_candidates,
