@@ -19,7 +19,7 @@ pub async fn get_course_by_id(id: i32) -> Result<CourseEntry> {
     let pool = crate::get_pool();
     let course = sqlx::query_as!(
         DbDescRow,
-        r#"SELECT id, name, desc_sv, desc_en        
+        r#"SELECT id, name, desc_sv, desc_en
             FROM courses
             WHERE id = $1"#,
         id,
