@@ -165,6 +165,7 @@ fn order_problems(problems: &[ProblemForSelection]) -> Vec<i32> {
     todo!()
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
