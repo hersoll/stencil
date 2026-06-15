@@ -68,8 +68,9 @@ export type ChapterEntryRaw = {
   topic_ids: number[];
 };
 
-export type ProblemIdAndDifficulties = {
-  id: number;
+export type ProblemIdsAndDifficulties = {
+  problem_id: number;
+  topic_id: number;
   absolute_difficulty: number;
   relative_difficulty: number;
 };
@@ -79,7 +80,7 @@ export type TopicEntryRaw = {
   name: string;
   desc: DescriptionTranslations;
   chapter_ids: number[];
-  problems: ProblemIdAndDifficulties[];
+  problems: ProblemIdsAndDifficulties[];
 };
 
 export type TopicDifficultyData = {

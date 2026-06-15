@@ -1,4 +1,4 @@
-use crate::{Answer, ProblemIdAndDifficulties, Question, Solution, common::DbDescRow};
+use crate::{Answer, ProblemIdsAndDifficulties, Question, Solution, common::DbDescRow};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 use types::{
@@ -151,7 +151,7 @@ pub struct TopicEntry {
     pub name: String,
     pub desc: DescriptionTranslations,
     pub chapter_ids: Vec<i32>,
-    pub problems: Vec<ProblemIdAndDifficulties>,
+    pub problems: Vec<ProblemIdsAndDifficulties>,
 }
 impl HasDesc for TopicEntry {
     fn desc(&self) -> &DescriptionTranslations {

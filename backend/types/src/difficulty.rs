@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 
 /// Designates how hard a problem is relative to the other problems in that topic
@@ -8,10 +10,15 @@ use serde::{Deserialize, Serialize};
 /// This means that relative difficulties and absolute difficulties won't match. A topic can have
 /// ten problems with absolute difficulty 3, but these problems could have relative difficulties of
 /// 15 - 24 if there are fourteen easier problems in that topic.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
+#[derive(Copy, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
 #[serde(transparent)]
 pub struct RelativeDifficulty {
     pub number: u8,
+}
+impl std::fmt::Debug for RelativeDifficulty {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.number)
+    }
 }
 
 /// Designates how hard a problem is in the course
@@ -23,10 +30,16 @@ pub struct RelativeDifficulty {
 ///
 /// Note that absolute difficulties **are** bounded (1-10). See [`DifficultyCategory`] for their
 /// meanings.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Copy, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct AbsoluteDifficulty {
     pub number: u8,
+}
+
+impl std::fmt::Debug for AbsoluteDifficulty {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.number)
+    }
 }
 
 /// User-facing enum for categorizing difficulties
@@ -113,24 +126,30 @@ impl DifficultyCategory {
             .collect()
     }
 
+    pub fn to_minimum_difficulty_num(difficulty_category: &DifficultyCategory) -> u8 {
+        match difficulty_category {
+            DifficultyCategory::Intro => 1,
+            DifficultyCategory::Easy => 4,
+            DifficultyCategory::Medium => 6,
+            DifficultyCategory::Hard => 8,
+        }
+    }
+
+    pub fn to_maximum_difficulty_num(difficulty_category: &DifficultyCategory) -> u8 {
+        match difficulty_category {
+            DifficultyCategory::Intro => 3,
+            DifficultyCategory::Easy => 5,
+            DifficultyCategory::Medium => 7,
+            DifficultyCategory::Hard => 10,
+        }
+    }
     /// Returns every [`AbsoluteDifficulty`] in the span of a `starting_difficulty` and an `ending_difficulty`.
     pub fn categories_to_absolute_difficulties(
         starting_difficulty: &DifficultyCategory,
         ending_difficulty: &DifficultyCategory,
     ) -> Vec<AbsoluteDifficulty> {
-        let minimum_number = match starting_difficulty {
-            DifficultyCategory::Intro => 1,
-            DifficultyCategory::Easy => 4,
-            DifficultyCategory::Medium => 6,
-            DifficultyCategory::Hard => 8,
-        };
-
-        let maximum_number = match ending_difficulty {
-            DifficultyCategory::Intro => 3,
-            DifficultyCategory::Easy => 5,
-            DifficultyCategory::Medium => 7,
-            DifficultyCategory::Hard => 10,
-        };
+        let minimum_number = Self::to_minimum_difficulty_num(starting_difficulty);
+        let maximum_number = Self::to_maximum_difficulty_num(ending_difficulty);
 
         (minimum_number..=maximum_number)
             .map(AbsoluteDifficulty::from_num)

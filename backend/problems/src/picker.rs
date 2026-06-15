@@ -1,4 +1,4 @@
-use db::ProblemIdAndDifficulties;
+use db::ProblemIdsAndDifficulties;
 use rand::prelude::*;
 use std::{collections::HashMap, iter::zip};
 use types::{
@@ -22,10 +22,10 @@ struct ProblemForSelection {
 }
 
 impl ProblemForSelection {
-    fn from_problem(problem: &ProblemIdAndDifficulties) -> Self {
+    fn from_problem(problem: &ProblemIdsAndDifficulties) -> Self {
         Self {
-            problem_id: problem.id,
-            topic_id: 0,
+            problem_id: problem.problem_id,
+            topic_id: problem.topic_id,
             absolute_difficulty: problem.absolute_difficulty,
             relative_difficulty: problem.relative_difficulty,
             occurrences: 0,
@@ -38,12 +38,13 @@ impl ProblemForSelection {
 /// Generates a `Vec` of length `n` with the order and id of every problem in the set.
 pub fn select_problems(
     number_of_problems: u8,
-    problems: &[ProblemIdAndDifficulties],
+    problems: &[ProblemIdsAndDifficulties],
     min_difficulty: AbsoluteDifficulty,
     max_difficulty: AbsoluteDifficulty,
 ) -> Result<Vec<i32>, ApiError> {
     // Surely we parse this earlier?
     if problems.is_empty() {
+        tracing::error!("Problem set is empty");
         return Err(BadRequest(String::from(
             "Problem set contains no valid problems",
         )));
@@ -57,6 +58,8 @@ pub fn select_problems(
 
     let difficulties_with_problems =
         check_which_difficulties_have_problems(&problems, min_difficulty, max_difficulty);
+    tracing::debug!("These absolute difficulties have problems: {difficulties_with_problems:?}");
+
     let distribution_function =
         get_difficulty_distribution_function(min_difficulty, max_difficulty);
 

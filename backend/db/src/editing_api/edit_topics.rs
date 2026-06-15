@@ -2,7 +2,7 @@ use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
 use crate::{
-    ProblemIdAndDifficulties, TopicEntry, chapters, problems,
+    ProblemIdsAndDifficulties, TopicEntry, chapters, problems,
     relationships::{self, ChapterTopics, TopicProblems},
     topics,
 };
@@ -22,7 +22,7 @@ pub async fn get_topics() -> Result<impl IntoResponse, ApiError> {
                     .map_err(|e| ApiError::Database(e.to_string()))?;
                 topic.problems = problems
                     .iter()
-                    .map(|p| ProblemIdAndDifficulties::from_entry_and_topic_id(p, topic.id))
+                    .map(|p| ProblemIdsAndDifficulties::from_entry_and_topic_id(p, topic.id))
                     .collect();
                 let chapters = chapters::get_chapters_from_topic(&topic.id)
                     .await
@@ -52,10 +52,10 @@ pub async fn get_topics_from_ids(
 pub async fn create_topic(Json(topic): Json<TopicEntry>) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {topic:#?}",);
     let topic_id = topics::create_topic_from_entry(&topic).await?;
-    let problem_ids: Vec<i32> = topic.problems.iter().map(|p| p.id).collect();
+    let problem_ids: Vec<i32> = topic.problems.iter().map(|p| p.problem_id).collect();
     relationships::update_children_for_parent::<TopicProblems>(&topic_id, &problem_ids).await?;
     relationships::update_parents_for_child::<ChapterTopics>(&topic_id, &topic.chapter_ids).await?;
-    problems::update_difficulties_for_topic_with_id(&topic_id, &topic.problems).await?;
+    problems::update_difficulties_for_problems(&topic.problems).await?;
 
     Ok((
         StatusCode::CREATED,
@@ -66,10 +66,10 @@ pub async fn create_topic(Json(topic): Json<TopicEntry>) -> Result<impl IntoResp
 /// Update a topic, including its connections to chapters and problems, in the DB
 pub async fn update_topic(Json(topic): Json<TopicEntry>) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {topic:#?}");
-    let problem_ids: Vec<i32> = topic.problems.iter().map(|p| p.id).collect();
+    let problem_ids: Vec<i32> = topic.problems.iter().map(|p| p.problem_id).collect();
     relationships::update_children_for_parent::<TopicProblems>(&topic.id, &problem_ids).await?;
     relationships::update_parents_for_child::<ChapterTopics>(&topic.id, &topic.chapter_ids).await?;
-    problems::update_difficulties_for_topic_with_id(&topic.id, &topic.problems).await?;
+    problems::update_difficulties_for_problems(&topic.problems).await?;
     let topic_name = topics::update_topic_from_entry(topic).await?;
 
     Ok((StatusCode::OK, format!("Successfully updated {topic_name}")))

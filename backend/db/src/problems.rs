@@ -145,29 +145,28 @@ pub async fn get_topic_problems(topic_id: &i32) -> Result<Vec<ProblemEntry>> {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct ProblemIdAndDifficulties {
-    pub id: i32,
+pub struct ProblemIdsAndDifficulties {
+    pub problem_id: i32,
+    pub topic_id: i32,
     pub absolute_difficulty: AbsoluteDifficulty,
     pub relative_difficulty: RelativeDifficulty,
 }
-impl ProblemIdAndDifficulties {
+impl ProblemIdsAndDifficulties {
     pub fn from_entry_and_topic_id(entry: &ProblemEntry, topic_id: i32) -> Self {
         let (absolute_difficulty, relative_difficulty) = match entry
             .topic_data
             .iter()
             .find(|topic| topic.topic_id == topic_id)
         {
-            Some(topic) => (
-                topic.absolute_difficulty.clone(),
-                topic.relative_difficulty.clone(),
-            ),
+            Some(topic) => (topic.absolute_difficulty, topic.relative_difficulty),
             None => (
                 AbsoluteDifficulty::from_num(4),
                 RelativeDifficulty::from_num(4),
             ),
         };
         Self {
-            id: entry.id,
+            problem_id: entry.id,
+            topic_id,
             absolute_difficulty,
             relative_difficulty,
         }
@@ -185,15 +184,15 @@ pub async fn get_valid_problems_from_pdf_request(
     topic_ids: Vec<i32>,
     exclusions: Vec<i32>,
     allowed_difficulties: Vec<AbsoluteDifficulty>,
-) -> Result<Vec<ProblemIdAndDifficulties>> {
+) -> Result<Vec<ProblemIdsAndDifficulties>> {
     let pool = crate::get_pool();
     let allowed_difficulty_numbers: Vec<i32> = allowed_difficulties
         .into_iter()
         .map(|diff| diff.number as i32)
         .collect();
     let problems = sqlx::query_as!(
-        ProblemIdAndDifficulties,
-        r#"SELECT p.id, tp.relative_difficulty, tp.absolute_difficulty 
+        ProblemIdsAndDifficulties,
+        r#"SELECT p.id AS problem_id, tp.relative_difficulty, tp.absolute_difficulty, tp.topic_id 
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = ANY($1)
@@ -299,17 +298,16 @@ pub async fn update_difficulties_for_problem_with_id(
     Ok(())
 }
 
-pub async fn update_difficulties_for_topic_with_id(
-    topic_id: &i32,
-    problems: &[ProblemIdAndDifficulties],
+pub async fn update_difficulties_for_problems(
+    problems: &[ProblemIdsAndDifficulties],
 ) -> Result<()> {
     let pool = crate::get_pool();
     for problem in problems {
         let _result = sqlx::query!(
             r#"UPDATE topic_problems SET absolute_difficulty = $3, relative_difficulty = $4
             WHERE problem_id = $1 AND topic_id = $2"#,
-            problem.id,
-            topic_id,
+            problem.problem_id,
+            problem.topic_id,
             problem.absolute_difficulty.number as i32,
             problem.relative_difficulty.number as i32
         )

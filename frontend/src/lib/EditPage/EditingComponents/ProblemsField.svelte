@@ -30,7 +30,8 @@
   function addProblem(problem: ProblemEntryRaw) {
     problems_to_show.push(problem);
     topic.problems.push({
-      id: problem.id,
+      problem_id: problem.id,
+      topic_id: topic.id,
       absolute_difficulty: 4,
       relative_difficulty: 4
     });
@@ -38,7 +39,9 @@
 
   function removeProblem(problem: ProblemEntryRaw) {
     problems_to_show = problems_to_show.filter(p => p.id !== problem.id);
-    topic.problems = topic.problems.filter(data => data.id !== problem.id);
+    topic.problems = topic.problems.filter(
+      data => data.problem_id !== problem.id
+    );
   }
 
   // The area is entered while dragging
@@ -147,9 +150,9 @@
     <h4>Absolute</h4>
     <h4>Relative</h4>
   </div>
-  {#each topic.problems as problem, i (problem.id)}
+  {#each topic.problems as problem, i (problem.problem_id)}
     {@const problem_data = problems_to_show.find(
-      problem_data => problem_data.id === problem.id
+      problem_data => problem_data.id === problem.problem_id
     )}
     {#if problem_data}
       <button
