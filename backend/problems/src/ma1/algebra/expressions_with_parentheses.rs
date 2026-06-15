@@ -532,7 +532,7 @@ fn one_variable_one_constant(id: i32, _lang: Language) -> Result<Problem> {
     let answer = (mult_1.clone() + mult_2.clone()).simplify();
     let solution = format!(
         "$&{variable_factor}({exp_1}) {factor_term:+}({exp_2}) = \\
-         =&{mult_1}{mult_2:+} = {answer}$"
+         =&{mult_1}{mult_2:+} = \\ =&{answer}$"
     );
 
     Ok(Problem {
@@ -569,14 +569,14 @@ fn one_constant_one_variable(id: i32, _lang: Language) -> Result<Problem> {
 
     let exp_1 = Polynomial::from_terms(&[&t1, &t2]).sorted();
     let exp_2 = Polynomial::from_terms(&[&t3, &t4]).sorted();
-    let mult_1 = variable_factor.clone() * exp_1.clone();
-    let mult_2 = factor_term.clone() * exp_2.clone();
+    let mult_1 = factor_term.clone() * exp_1.clone();
+    let mult_2 = variable_factor.clone() * exp_2.clone();
 
     let question = format!("${factor_term}({exp_1}) {variable_factor:+}({exp_2})$");
     let answer = (mult_1.clone() + mult_2.clone()).simplify();
     let solution = format!(
         "$&{factor_term}({exp_1}) {variable_factor:+}({exp_2}) = \\
-         =&{mult_1}{mult_2:+} = {answer}$"
+         =&{mult_1}{mult_2:+} = \\ =&{answer}$"
     );
 
     Ok(Problem {
