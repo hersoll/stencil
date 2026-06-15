@@ -1,5 +1,6 @@
 use db::ProblemIdAndDifficulties;
-use std::iter::zip;
+use rand::prelude::*;
+use std::{collections::HashMap, iter::zip};
 use types::{
     difficulty::{AbsoluteDifficulty, RelativeDifficulty},
     errors::ApiError::{self, BadRequest},
@@ -12,7 +13,8 @@ const NORMAL_DISTRIBUTION_STDEV: f64 = 2.2;
 
 /// Helper struct for easier data grouping
 struct ProblemForSelection {
-    id: i32,
+    problem_id: i32,
+    topic_id: i32,
     absolute_difficulty: AbsoluteDifficulty,
     relative_difficulty: RelativeDifficulty,
     /// How many times the problem will occur in the set (determined by [`get_count_per_problem()`])
@@ -22,7 +24,8 @@ struct ProblemForSelection {
 impl ProblemForSelection {
     fn from_problem(problem: &ProblemIdAndDifficulties) -> Self {
         Self {
-            id: problem.id,
+            problem_id: problem.id,
+            topic_id: 0,
             absolute_difficulty: problem.absolute_difficulty,
             relative_difficulty: problem.relative_difficulty,
             occurrences: 0,
@@ -64,8 +67,11 @@ pub fn select_problems(
     );
 
     // Determine the count of each problem (one difficulty at a time)
-    zip(difficulties_with_problems, problem_count_per_difficulty)
-        .for_each(|(difficulty, count)| set_count_per_problem(&mut problems, difficulty, count));
+    zip(difficulties_with_problems, problem_count_per_difficulty).for_each(
+        |(difficulty, count)| {
+            set_count_per_problem_for_difficulty(&mut problems, difficulty, count)
+        },
+    );
 
     Ok(order_problems(&problems))
 }
@@ -152,12 +158,56 @@ fn get_problem_count_per_difficulty(
 /// individual problem should be generated to fill the `number_of_problems` quota.
 ///
 /// Done for **a single `AbsoluteDifficulty`** at a time!
-fn set_count_per_problem(
+fn set_count_per_problem_for_difficulty(
     problems: &mut [ProblemForSelection],
     difficulty: AbsoluteDifficulty,
     number_of_problems: u8,
 ) {
-    todo!()
+    let mut problems_in_difficulty: Vec<&mut ProblemForSelection> = problems
+        .iter_mut()
+        .filter(|p| p.absolute_difficulty == difficulty)
+        .collect();
+    let problem_count = problems_in_difficulty.len();
+    // Used for determining which problems should be increased; the ones from a "lower count" difficulty
+    let mut count_per_relative_difficulty: HashMap<RelativeDifficulty, u8> = HashMap::new();
+
+    let minimum_occurrence_per_problem = (number_of_problems as usize / problem_count) as u8;
+    let number_left_to_distribute = (number_of_problems as usize % problem_count) as u8;
+    problems_in_difficulty.iter_mut().for_each(|problem| {
+        problem.occurrences = minimum_occurrence_per_problem;
+        *count_per_relative_difficulty
+            .entry(problem.relative_difficulty)
+            .or_insert(0) += problem.occurrences;
+    });
+
+    let mut rng = rand::rng();
+    for _ in 0..number_left_to_distribute {
+        let lowest_relative_difficulty = *count_per_relative_difficulty
+            .iter()
+            // First sort by count, then choose the lowest difficulty if multiple with lowest count
+            .min_by_key(|(diff, count)| (*count, diff.number))
+            .map(|(diff, _)| diff)
+            .unwrap(); // Will have at least one difficulty :)
+        let min_occurrences = problems_in_difficulty
+            .iter()
+            .filter(|p| p.relative_difficulty == lowest_relative_difficulty)
+            .map(|p| p.occurrences)
+            .min()
+            .unwrap();
+
+        problems_in_difficulty
+            .iter_mut()
+            .filter(|p| {
+                p.relative_difficulty == lowest_relative_difficulty
+                    && p.occurrences == min_occurrences
+            })
+            .choose(&mut rng)
+            .unwrap()
+            .occurrences += 1;
+        *count_per_relative_difficulty
+            .get_mut(&lowest_relative_difficulty)
+            .unwrap() += 1;
+    }
 }
 
 /// Decides the order the problems will appear in, expressed as a `Vec` of `id`s.
@@ -169,14 +219,31 @@ fn order_problems(problems: &[ProblemForSelection]) -> Vec<i32> {
 mod tests {
     use super::*;
 
+    const TEST_PROBLEMS: [(i32, u8, u8); 13] = [
+        (1, 1, 1),
+        (2, 1, 1),
+        (3, 1, 2),
+        (4, 2, 3),
+        (5, 2, 4),
+        (6, 2, 5),
+        (7, 2, 5),
+        (8, 3, 6),
+        (9, 3, 6),
+        (10, 3, 7),
+        (11, 4, 8),
+        (12, 5, 9),
+        (13, 5, 10),
+    ];
+
     /// Helper function
     fn problem_from_nums(
-        id: i32,
+        problem_id: i32,
         absolute_difficulty: u8,
         relative_difficulty: u8,
     ) -> ProblemForSelection {
         ProblemForSelection {
-            id,
+            problem_id,
+            topic_id: 0,
             absolute_difficulty: AbsoluteDifficulty::from_num(absolute_difficulty),
             relative_difficulty: RelativeDifficulty::from_num(relative_difficulty),
             occurrences: 0,
@@ -200,6 +267,29 @@ mod tests {
                 AbsoluteDifficulty::from_num(2),
                 AbsoluteDifficulty::from_num(3)
             ]
-        )
+        );
+    }
+
+    #[test]
+    fn sets_problem_count() {
+        let mut problems: Vec<ProblemForSelection> = TEST_PROBLEMS
+            .into_iter()
+            .map(|(a, b, c)| problem_from_nums(a, b, c))
+            .collect();
+        let difficulties = [1, 2, 3, 4, 5];
+        let counts = [4, 5, 5, 4, 2];
+        for (difficulty, count) in zip(difficulties, counts) {
+            set_count_per_problem_for_difficulty(
+                &mut problems,
+                AbsoluteDifficulty::from_num(difficulty),
+                count,
+            );
+        }
+        let problem_occurrences: Vec<u8> =
+            problems.iter().map(|problem| problem.occurrences).collect();
+        assert!(
+            problem_occurrences == vec![1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 4, 1, 1]
+                || problem_occurrences == vec![1, 1, 2, 2, 1, 1, 1, 2, 1, 2, 4, 1, 1]
+        );
     }
 }

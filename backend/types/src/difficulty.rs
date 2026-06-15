@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 /// This means that relative difficulties and absolute difficulties won't match. A topic can have
 /// ten problems with absolute difficulty 3, but these problems could have relative difficulties of
 /// 15 - 24 if there are fourteen easier problems in that topic.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
 #[serde(transparent)]
 pub struct RelativeDifficulty {
     pub number: u8,
