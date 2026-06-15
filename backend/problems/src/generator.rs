@@ -83,7 +83,6 @@ pub async fn generate_problem_set(
             &options.ending_difficulty,
         )),
     )?;
-    tracing::debug!("Problem order: {problem_ids:?}");
 
     let problem_set = generate_problems(&problem_ids, lang)?;
     Ok(problem_set)

@@ -99,7 +99,7 @@ fn two_positive_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 4x + 1 = 4 - 2x
-/// Absolute difficulty: 2
+/// Absolute difficulty: 3
 /// Relative difficulty: 2
 #[problem]
 fn one_negative_coef_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
@@ -144,7 +144,7 @@ fn one_negative_coef_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// 4 - 2x = 1 + 4x
-/// Absolute difficulty: 2
+/// Absolute difficulty: 3
 /// Relative difficulty: 2
 #[problem]
 fn one_negative_coef_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
@@ -187,7 +187,7 @@ fn one_negative_coef_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 // 4 - 4x = 8 - 2x
-/// Absolute difficulty: 3
+/// Absolute difficulty: 4
 /// Relative difficulty: 3
 #[problem]
 fn two_negative_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
@@ -232,7 +232,7 @@ fn two_negative_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 // 4 - 2x = 8 - 4x
-/// Absolute difficulty: 3
+/// Absolute difficulty: 4
 /// Relative difficulty: 3
 #[problem]
 fn two_negative_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
@@ -278,7 +278,7 @@ fn two_negative_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 // 4x = 6x - 6
-/// Absolute difficulty: 3
+/// Absolute difficulty: 4
 /// Relative difficulty: 4
 #[problem]
 fn positive_coefs_lhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
@@ -321,7 +321,7 @@ fn positive_coefs_lhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 // 6x - 6 = 4x
-/// Absolute difficulty: 3
+/// Absolute difficulty: 4
 /// Relative difficulty: 4
 #[problem]
 fn positive_coefs_rhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {

@@ -9,7 +9,8 @@ use types::{
 /// Standard deviation for the difficulty distribution.
 ///
 /// Currently eyeballed to make a function that "looks good".
-const NORMAL_DISTRIBUTION_STDEV: f64 = 2.2;
+const NORMAL_DISTRIBUTION_STDEV: f64 = 3.1;
+const NORMAL_DISTRIBUTION_MEAN: f64 = 4.3;
 
 /// Helper struct for easier data grouping
 struct ProblemForSelection {
@@ -68,6 +69,7 @@ pub fn select_problems(
         distribution_function,
         number_of_problems,
     );
+    tracing::debug!("Problem count per absolute difficulty: {problem_count_per_difficulty:?}");
 
     // Determine the count of each problem (one difficulty at a time)
     zip(difficulties_with_problems, problem_count_per_difficulty).for_each(
@@ -112,10 +114,11 @@ fn get_difficulty_distribution_function(
     min_difficulty: AbsoluteDifficulty,
     max_difficulty: AbsoluteDifficulty,
 ) -> impl Fn(u8) -> f64 {
-    let mean = (min_difficulty.number + max_difficulty.number - 1) as f64 / 2.0;
+    // Currently not used, static mean instead
+    let _mean = (min_difficulty.number + max_difficulty.number - 1) as f64 / 2.0;
 
     move |x| {
-        let diff = x as f64 - mean;
+        let diff = x as f64 - NORMAL_DISTRIBUTION_MEAN;
         f64::exp(-0.5 * (diff / NORMAL_DISTRIBUTION_STDEV).powi(2))
     }
 }
@@ -217,6 +220,11 @@ fn set_count_per_problem_for_difficulty(
 fn order_problems(problems: &mut [ProblemForSelection]) -> Vec<i32> {
     let mut order_per_difficulty: HashMap<u8, Vec<i32>> = HashMap::new();
 
+    // To keep orders fresh, shuffle within each relative difficulty group
+    let mut rng = rand::rng();
+    problems.shuffle(&mut rng);
+    problems.sort_by_key(|problem| problem.relative_difficulty.number);
+
     // Start by filling the Map with one of each problem
     for problem in &mut *problems {
         if problem.occurrences > 0 {
@@ -227,6 +235,7 @@ fn order_problems(problems: &mut [ProblemForSelection]) -> Vec<i32> {
             problem.occurrences -= 1;
         }
     }
+
     // Then, alternate between placing problems at the end of their own Vec, or inject them in the
     // middle of the next Vec
     let mut place_at_end = true;
