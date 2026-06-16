@@ -10,6 +10,9 @@ use types::{
 ///
 /// Currently eyeballed to make a function that "looks good".
 const NORMAL_DISTRIBUTION_STDEV: f64 = 3.1;
+/// Mean for the difficulty distribution.
+///
+/// Currently eyeballed to make a function that "looks good".
 const NORMAL_DISTRIBUTION_MEAN: f64 = 4.3;
 
 /// Helper struct for easier data grouping
@@ -51,34 +54,40 @@ pub fn select_problems(
         )));
     }
 
-    // Re-structure the data to include `occurrences`
+    // Re-structure the data into [`ProblemForSelection`] to include `occurrences`
     let mut problems: Vec<ProblemForSelection> = problems
         .iter()
         .map(ProblemForSelection::from_problem)
         .collect();
 
-    let difficulties_with_problems =
+    let absolute_difficulties_with_problems =
         check_which_difficulties_have_problems(&problems, min_difficulty, max_difficulty);
-    tracing::debug!("These absolute difficulties have problems: {difficulties_with_problems:?}");
+    tracing::debug!(
+        "Absolute difficulties with problems: \n{absolute_difficulties_with_problems:?}"
+    );
 
     let distribution_function =
         get_difficulty_distribution_function(min_difficulty, max_difficulty);
 
-    let problem_count_per_difficulty = get_problem_count_per_difficulty(
-        &difficulties_with_problems,
+    let problem_count_per_absolute_difficulty = get_problem_count_per_difficulty(
+        &absolute_difficulties_with_problems,
         distribution_function,
         number_of_problems,
     );
-    tracing::debug!("Problem count per absolute difficulty: {problem_count_per_difficulty:?}");
-
-    // Determine the count of each problem (one difficulty at a time)
-    zip(difficulties_with_problems, problem_count_per_difficulty).for_each(
-        |(difficulty, count)| {
-            set_count_per_problem_for_difficulty(&mut problems, difficulty, count)
-        },
+    tracing::debug!(
+        "Problem count per absolute_difficulty:\n{problem_count_per_absolute_difficulty:?}"
     );
 
-    Ok(order_problems(&mut problems))
+    // Determine the count of each problem (one difficulty at a time)
+    zip(
+        absolute_difficulties_with_problems,
+        problem_count_per_absolute_difficulty,
+    )
+    .for_each(|(difficulty, count)| {
+        set_count_per_problem_for_difficulty(&mut problems, difficulty, count)
+    });
+
+    Ok(order_problems(problems))
 }
 
 /// Returns a `Vec` of every `AbsoluteDifficulty` in the range that has at least one problem.
@@ -169,17 +178,66 @@ fn set_count_per_problem_for_difficulty(
     difficulty: AbsoluteDifficulty,
     number_of_problems: u8,
 ) {
+    // The problem count per topic is used to determine how many occurrences to assign to each topic
+    let mut problems_per_topic: HashMap<i32, u8> = HashMap::new();
+
     let mut problems_in_difficulty: Vec<&mut ProblemForSelection> = problems
         .iter_mut()
         .filter(|p| p.absolute_difficulty == difficulty)
         .collect();
+    problems_in_difficulty
+        .iter()
+        .for_each(|p| *problems_per_topic.entry(p.topic_id).or_default() += 1);
+
     let problem_count = problems_in_difficulty.len();
-    // Used for determining which problems should be increased; the ones from a "lower count" difficulty
+
+    // The number of occurences should be proportional to the amount of problems per topic.
+    // Since some rounding might happen, we want to do the topics with the lowest counts first since
+    // they are more sensitive to rounding errors
+    let mut occurrences_per_topic: Vec<(i32, u8)> = problems_per_topic.into_iter().collect();
+    occurrences_per_topic.sort_by_key(|(_, count)| *count);
+    occurrences_per_topic = occurrences_per_topic
+        .iter()
+        .map(|(topic_id, count)| {
+            let ratio = *count as f64 / problem_count as f64;
+            let float_count = ratio * number_of_problems as f64;
+            let int_count = float_count.round() as u8;
+            (*topic_id, int_count)
+        })
+        .collect();
+
+    // Handle rounding errors
+    let mut total_occurrence: u8 = occurrences_per_topic.iter().map(|(_, count)| *count).sum();
+    let last_index = occurrences_per_topic.len() - 1;
+    while total_occurrence > number_of_problems {
+        occurrences_per_topic[last_index].1 -= 1;
+        total_occurrence -= 1;
+    }
+    while total_occurrence < number_of_problems {
+        occurrences_per_topic[last_index].1 += 1;
+        total_occurrence += 1;
+    }
+    for (topic_id, occurrence_count) in occurrences_per_topic {
+        let mut problems_in_topic: Vec<&mut ProblemForSelection> = problems_in_difficulty
+            .iter_mut()
+            .map(|p| &mut **p)
+            .filter(|problem| problem.topic_id == topic_id)
+            .collect();
+        set_count_for_one_topic(&mut problems_in_topic, occurrence_count as usize);
+    }
+}
+
+fn set_count_for_one_topic(
+    problems: &mut [&mut ProblemForSelection],
+    number_of_occurrences: usize,
+) {
+    let problem_count = problems.len();
+    // Used for determining which difficulty should have its problems increased in occurrence
     let mut count_per_relative_difficulty: HashMap<RelativeDifficulty, u8> = HashMap::new();
 
-    let minimum_occurrence_per_problem = (number_of_problems as usize / problem_count) as u8;
-    let number_left_to_distribute = (number_of_problems as usize % problem_count) as u8;
-    problems_in_difficulty.iter_mut().for_each(|problem| {
+    let minimum_occurrence_per_problem = (number_of_occurrences / problem_count) as u8;
+    let number_left_to_distribute = (number_of_occurrences % problem_count) as u8;
+    problems.iter_mut().for_each(|problem| {
         problem.occurrences = minimum_occurrence_per_problem;
         *count_per_relative_difficulty
             .entry(problem.relative_difficulty)
@@ -194,14 +252,14 @@ fn set_count_per_problem_for_difficulty(
             .min_by_key(|(diff, count)| (*count, diff.number))
             .map(|(diff, _)| diff)
             .unwrap(); // Will have at least one difficulty :)
-        let min_occurrences = problems_in_difficulty
+        let min_occurrences = problems
             .iter()
             .filter(|p| p.relative_difficulty == lowest_relative_difficulty)
             .map(|p| p.occurrences)
             .min()
             .unwrap();
 
-        problems_in_difficulty
+        problems
             .iter_mut()
             .filter(|p| {
                 p.relative_difficulty == lowest_relative_difficulty
@@ -217,8 +275,65 @@ fn set_count_per_problem_for_difficulty(
 }
 
 /// Decides the order the problems will appear in, expressed as a `Vec` of `id`s.
-fn order_problems(problems: &mut [ProblemForSelection]) -> Vec<i32> {
-    let mut order_per_difficulty: HashMap<u8, Vec<i32>> = HashMap::new();
+fn order_problems(problems: Vec<ProblemForSelection>) -> Vec<i32> {
+    let mut problems_by_topic: HashMap<i32, Vec<ProblemForSelection>> = HashMap::new();
+    for problem in problems {
+        problems_by_topic
+            .entry(problem.topic_id)
+            .or_default()
+            .push(problem);
+    }
+
+    let mut ordered_problems_by_topic_and_absolute_difficulty: HashMap<
+        AbsoluteDifficulty,
+        Vec<Vec<i32>>,
+    > = HashMap::new();
+    for (_, problem_vec) in problems_by_topic {
+        let topic_map = order_problems_in_topic(problem_vec);
+        for (difficulty, order) in topic_map {
+            ordered_problems_by_topic_and_absolute_difficulty
+                .entry(difficulty)
+                .or_default()
+                .push(order);
+        }
+    }
+
+    // Weave the vecs from different topics together
+    let mut ordered_problems_by_absolute_difficulty: HashMap<AbsoluteDifficulty, Vec<i32>> =
+        HashMap::new();
+    for (difficulty, orders) in ordered_problems_by_topic_and_absolute_difficulty {
+        ordered_problems_by_absolute_difficulty.insert(difficulty, interweave(&orders));
+    }
+    tracing::debug!(
+        "Problem order per absolute_difficulty:\n {ordered_problems_by_absolute_difficulty:?}"
+    );
+
+    let mut orders_as_vec: Vec<_> = ordered_problems_by_absolute_difficulty
+        .into_iter()
+        .collect();
+    orders_as_vec.sort_by_key(|(difficulty, _)| *difficulty);
+    orders_as_vec.into_iter().flat_map(|(_, vec)| vec).collect()
+}
+
+/// Takes the problems one topic at a time and decides the order they should appear in
+///
+/// The reason it does one topic at a time is that the RelativeDifficulty is topic-specific. We
+/// can't mix different topics since the relative difficulties will have wildly different meanings.
+///
+/// Returns a HashMap which groups the problems by absolute difficulty. This makes it easy to mix problems
+/// from different topics
+fn order_problems_in_topic(
+    mut problems: Vec<ProblemForSelection>,
+) -> HashMap<AbsoluteDifficulty, Vec<i32>> {
+    // During the ordering, we want the problems to increase according to their relative difficulty
+    // (and we also want to "interweave" them depending on their relative difficulty).
+    //
+    // Thus we start by collecting them into categories depending on their relative difficulty, and
+    // later split them depending on absolute difficulty
+    let mut order_per_relative_difficulty: HashMap<
+        RelativeDifficulty,
+        Vec<(i32, AbsoluteDifficulty)>,
+    > = HashMap::new();
 
     // To keep orders fresh, shuffle within each relative difficulty group
     let mut rng = rand::rng();
@@ -228,10 +343,10 @@ fn order_problems(problems: &mut [ProblemForSelection]) -> Vec<i32> {
     // Start by filling the Map with one of each problem
     for problem in &mut *problems {
         if problem.occurrences > 0 {
-            order_per_difficulty
-                .entry(problem.relative_difficulty.number)
+            order_per_relative_difficulty
+                .entry(problem.relative_difficulty)
                 .or_default()
-                .push(problem.problem_id);
+                .push((problem.problem_id, problem.absolute_difficulty));
             problem.occurrences -= 1;
         }
     }
@@ -242,25 +357,28 @@ fn order_problems(problems: &mut [ProblemForSelection]) -> Vec<i32> {
     while problems.iter().any(|p| p.occurrences > 0) {
         for problem in problems.iter_mut().filter(|p| p.occurrences > 0) {
             if place_at_end {
-                order_per_difficulty
-                    .entry(problem.relative_difficulty.number)
+                order_per_relative_difficulty
+                    .entry(problem.relative_difficulty)
                     .or_default()
-                    .push(problem.problem_id);
+                    .push((problem.problem_id, problem.absolute_difficulty));
             } else {
-                let next_difficulty = order_per_difficulty
+                let next_difficulty = order_per_relative_difficulty
                     .keys()
-                    .filter(|&&k| k > problem.relative_difficulty.number)
+                    .filter(|&&k| k > problem.relative_difficulty)
                     .min()
                     .copied();
                 if let Some(difficulty) = next_difficulty {
-                    let next_vec = order_per_difficulty.get_mut(&difficulty).unwrap();
+                    let next_vec = order_per_relative_difficulty.get_mut(&difficulty).unwrap();
                     let insertion_index = next_vec.len().div_ceil(2);
-                    next_vec.insert(insertion_index, problem.problem_id);
+                    next_vec.insert(
+                        insertion_index,
+                        (problem.problem_id, problem.absolute_difficulty),
+                    );
                 } else {
-                    order_per_difficulty
-                        .entry(problem.relative_difficulty.number)
+                    order_per_relative_difficulty
+                        .entry(problem.relative_difficulty)
                         .or_default()
-                        .push(problem.problem_id);
+                        .push((problem.problem_id, problem.absolute_difficulty));
                 }
             }
             problem.occurrences -= 1;
@@ -269,9 +387,53 @@ fn order_problems(problems: &mut [ProblemForSelection]) -> Vec<i32> {
         place_at_end = !place_at_end;
     }
 
-    let mut entries: Vec<_> = order_per_difficulty.into_iter().collect();
+    // For easier iteration, turn the previous hashmap into a flat vec
+    let mut entries: Vec<_> = order_per_relative_difficulty.into_iter().collect();
     entries.sort_by_key(|(k, _)| *k);
-    entries.into_iter().flat_map(|(_, v)| v).collect()
+    let flat_order = entries.into_iter().flat_map(|(_, v)| v);
+
+    let mut order_per_absolute_difficulty: HashMap<AbsoluteDifficulty, Vec<i32>> = HashMap::new();
+    // Since we have mixed the problems a bit, the absolute difficulties won't be ordered. But there
+    // are still clearly defined "chunks". For example, it might look like this:
+    //
+    // 1, 1, 1, 2, 2, 1, 2, 3, 3, 2, 2, 3, 4, 4, 3
+    // ---1---  ----2-----  ------3------  ---4---
+    // So every problem in the same chunk goes into their respective vec.
+    let mut current_difficulty = AbsoluteDifficulty::from_num(1);
+
+    for problem in flat_order {
+        while problem.1 > current_difficulty {
+            // next chunk
+            current_difficulty.number += 1;
+        }
+        order_per_absolute_difficulty
+            .entry(current_difficulty)
+            .or_default()
+            .push(problem.0);
+    }
+    order_per_absolute_difficulty
+}
+
+fn interweave(vecs: &[Vec<i32>]) -> Vec<i32> {
+    let total: usize = vecs.iter().map(|v| v.len()).sum();
+    let lengths: Vec<usize> = vecs.iter().map(|v| v.len()).collect();
+    let mut indices = vec![0usize; vecs.len()]; // how many we've taken from each vec
+    let mut result = Vec::with_capacity(total);
+
+    for i in 0..total {
+        // Pick the vec that is most "due" based on how much of its quota we've used
+        let best = (0..vecs.len())
+            .filter(|&j| indices[j] < lengths[j])
+            .max_by_key(|&j| {
+                // Bresenham-style: how far ahead of its fair share is this vec?
+                (lengths[j] * (i + 1)) as isize - (indices[j] * total) as isize
+            })
+            .unwrap();
+
+        result.push(vecs[best][indices[best]]);
+        indices[best] += 1;
+    }
+    result
 }
 
 #[cfg(test)]
@@ -350,34 +512,5 @@ mod tests {
             problem_occurrences == vec![1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 4, 1, 1]
                 || problem_occurrences == vec![1, 1, 2, 2, 1, 1, 1, 2, 1, 2, 4, 1, 1]
         );
-    }
-
-    #[test]
-    fn orders_problems() {
-        let mut problems: Vec<ProblemForSelection> = TEST_PROBLEMS
-            .into_iter()
-            .map(|(a, b, c)| problem_from_nums(a, b, c))
-            .collect();
-        let difficulties = [1, 2, 3, 4, 5];
-        let counts = [4, 5, 5, 4, 2];
-        for (difficulty, count) in zip(difficulties, counts) {
-            set_count_per_problem_for_difficulty(
-                &mut problems,
-                AbsoluteDifficulty::from_num(difficulty),
-                count,
-            );
-        }
-        let order = order_problems(&mut problems);
-        dbg!(&order);
-        assert!(
-            order
-                == vec![
-                    1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 9, 8, 10, 10, 11, 11, 11, 12, 11, 13
-                ]
-                || order
-                    == vec![
-                        1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 9, 9, 10, 10, 11, 11, 11, 12, 11, 13
-                    ]
-        )
     }
 }

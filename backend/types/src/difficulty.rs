@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use serde::{Deserialize, Serialize};
 
 /// Designates how hard a problem is relative to the other problems in that topic
@@ -10,7 +8,7 @@ use serde::{Deserialize, Serialize};
 /// This means that relative difficulties and absolute difficulties won't match. A topic can have
 /// ten problems with absolute difficulty 3, but these problems could have relative difficulties of
 /// 15 - 24 if there are fourteen easier problems in that topic.
-#[derive(Copy, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
+#[derive(Copy, Clone, Eq, PartialEq, Deserialize, Serialize, Hash, PartialOrd, Ord)]
 #[serde(transparent)]
 pub struct RelativeDifficulty {
     pub number: u8,
@@ -30,7 +28,7 @@ impl std::fmt::Debug for RelativeDifficulty {
 ///
 /// Note that absolute difficulties **are** bounded (1-10). See [`DifficultyCategory`] for their
 /// meanings.
-#[derive(Copy, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Copy, Clone, PartialEq, Eq, Deserialize, Serialize, Hash, PartialOrd, Ord)]
 #[serde(transparent)]
 pub struct AbsoluteDifficulty {
     pub number: u8,
