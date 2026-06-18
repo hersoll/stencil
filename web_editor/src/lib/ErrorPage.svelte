@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { error } from '$src/globalStates.svelte';
+  import { error } from '$src/lib/error.svelte';
   import { fly } from 'svelte/transition';
 </script>
 

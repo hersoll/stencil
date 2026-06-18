@@ -9,7 +9,6 @@
     box-shadow 0.4s;
 }
 :root {
-  --navbar-margin: 20rem;
   --bg-dark: light-dark(oklch(0.9 0 264), oklch(0.16 0 264));
   --bg: light-dark(oklch(0.95 0 264), oklch(0.22 0 264));
   --bg-light: light-dark(oklch(1 0 264), oklch(0.28 0 264));
@@ -91,14 +90,17 @@
 }
 
 body {
-  padding: 0;
+  padding: 0 1rem;
   margin: 0;
-  margin-left: var(--navbar-margin);
-  position: relative;
-
+  display: flex;
+  justify-content: center;
   &.no-scroll {
     overflow: hidden;
   }
+}
+
+#app {
+  display: flex;
 }
 
 .no-select {

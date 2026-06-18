@@ -1,0 +1,166 @@
+<script lang="ts">
+  import ConfirmDialog from './ConfirmDialog.svelte';
+  import ChapterEditor from './EditingPages/ChapterEditor.svelte';
+  import CourseEditor from './EditingPages/CourseEditor.svelte';
+  import './editingArea.css';
+  import PrefixEditor from './EditingPages/PrefixEditor.svelte';
+  import ProblemEditor from './EditingPages/ProblemEditor.svelte';
+  import TopicEditor from './EditingPages/TopicEditor.svelte';
+  import type { Entry } from './types';
+
+  let {
+    originalEntry = $bindable(),
+    activeEntry = $bindable(),
+    clickedEntry,
+    entryHasBeenEdited,
+    editDialog
+  }: {
+    originalEntry: string;
+    activeEntry: Entry | null;
+    clickedEntry: Entry | null;
+    entryHasBeenEdited: boolean;
+    editDialog: ConfirmDialog;
+  } = $props();
+
+  let draggedOver = $state(false);
+
+  /// used to store the "real" value while drag preview is showing
+  let temp_storage: Entry | null;
+  /// Keep track of drags over children to know when there is an
+  /// actual enter/exit
+  let dragDepth = $state(0);
+  /// We might want to drop something into a child component.
+  /// This prevents the parent (this) from overriding those areas
+  let childHasDropPriority = $state(false);
+
+  //Required for handling child components
+  function handleDragOver(e: DragEvent) {
+    e.preventDefault();
+  }
+
+  function handleDragEnter(e: DragEvent) {
+    e.preventDefault();
+    dragDepth++;
+    if (dragDepth === 1) {
+      if (activeEntry) {
+        temp_storage = { ...activeEntry };
+      }
+      if (
+        clickedEntry &&
+        !entryHasBeenEdited &&
+        (activeEntry?.kind == clickedEntry.kind || !activeEntry)
+      ) {
+        activeEntry = { ...clickedEntry };
+        originalEntry = JSON.stringify(activeEntry);
+      }
+      draggedOver = true;
+    }
+  }
+
+  function handleDragLeave() {
+    dragDepth--;
+    if (dragDepth == 0) {
+      draggedOver = false;
+      // Are we actually dragging an entry?
+      // And are we doing a preview?
+      if (clickedEntry && clickedEntry.kind === activeEntry?.kind) {
+        if (temp_storage && !entryHasBeenEdited) {
+          activeEntry = { ...temp_storage };
+          originalEntry = JSON.stringify(activeEntry);
+        } else {
+          activeEntry = null;
+        }
+      }
+      temp_storage = null;
+    }
+  }
+
+  function handleDrop(e: DragEvent) {
+    dragDepth--;
+    e.preventDefault();
+    // Drop is on parent area and not child area
+    if (!childHasDropPriority && clickedEntry) {
+      if (entryHasBeenEdited) {
+        editDialog.show();
+      } else {
+        activeEntry = { ...clickedEntry };
+        originalEntry = JSON.stringify(activeEntry);
+      }
+    }
+    draggedOver = false;
+    temp_storage = null;
+    childHasDropPriority = false;
+  }
+</script>
+
+<div
+  role="region"
+  id="editing-area"
+  class="editing-area"
+  class:drag-over={draggedOver}
+  ondragover={handleDragOver}
+  ondragenter={handleDragEnter}
+  ondragleave={handleDragLeave}
+  ondrop={handleDrop}
+>
+  {#if activeEntry?.kind == 'problem'}
+    <ProblemEditor
+      bind:problem={activeEntry}
+      {draggedOver}
+      bind:originalEntry
+      bind:activeEntry
+      draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
+    />
+  {:else if activeEntry?.kind == 'prefix'}
+    <PrefixEditor
+      bind:prefix={activeEntry}
+      {draggedOver}
+      bind:activeEntry
+      bind:originalEntry
+    />
+  {:else if activeEntry?.kind == 'topic'}
+    <TopicEditor
+      bind:topic={activeEntry}
+      {draggedOver}
+      draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
+      bind:activeEntry
+      bind:originalEntry
+    />
+  {:else if activeEntry?.kind == 'chapter'}
+    <ChapterEditor
+      bind:chapter={activeEntry}
+      {draggedOver}
+      draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
+      bind:activeEntry
+      bind:originalEntry
+    />
+  {:else if activeEntry?.kind == 'course'}
+    <CourseEditor
+      bind:course={activeEntry}
+      {draggedOver}
+      draggedEntry={clickedEntry}
+      bind:dropPriority={childHasDropPriority}
+      bind:activeEntry
+      bind:originalEntry
+    />
+  {/if}
+</div>
+
+<style>
+  .editing-area {
+    min-height: 20rem;
+    width: 53.5rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 6px 4px 20px oklch(from var(--bg) calc(l - 0.1) c h) inset;
+    height: min-content;
+  }
+
+  .drag-over {
+    background-color: var(--bg-dark);
+    box-shadow: 6px 4px 20px oklch(from var(--bg-dark) calc(l - 0.2) c h) inset;
+  }
+</style>
