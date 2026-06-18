@@ -3,7 +3,7 @@
   import { API_URL } from '$src/main';
   import { error, set_states } from '$src/globalStates.svelte';
   import { fade, fly } from 'svelte/transition';
-  import SetEditor from '../CoursePage/SetEditor/SetEditor.svelte';
+  import SetEditor from '../EditSetView/SetEditor.svelte';
 
   import {
     difficulty_to_string,
@@ -18,9 +18,12 @@
     set: ProblemSetSpec;
     id: number;
   } = $props();
-  let topics_with_problems = $state<TopicWithProblems[]>([]);
 
+  const MAX_TOPICS_SHOWN = 3;
+
+  let topics_with_problems = $state<TopicWithProblems[]>([]);
   let show_loading_message = $state(false);
+
   const delay = setTimeout(() => {
     if (topics_with_problems.length == 0) show_loading_message = true;
   }, 600);
@@ -61,27 +64,20 @@
   in:fly={{ y: -40, duration: 400 }}
   disabled={topics_with_problems.length == 0}
 >
-  {#if topics_with_problems.length == 1}
+  {#if show_loading_message}
+    <h3 in:fade={{ duration: 500 }}>{i18n.t('loading')}...</h3>
+  {:else if topics_with_problems.length <= MAX_TOPICS_SHOWN}
+    {#each topics_with_problems as topic}
+      <h3 in:fade={{ duration: 200 }}>{topic.desc}</h3>
+    {/each}
+  {:else}
     <h3 in:fade={{ duration: 200 }}>
       {topics_with_problems[0].desc}
     </h3>
-  {:else if topics_with_problems.length == 2}
     <h3 in:fade={{ duration: 200 }}>
-      {topics_with_problems[0].desc}
-    </h3>
-    <h3 in:fade={{ duration: 200 }}>
-      {topics_with_problems[1].desc}
-    </h3>
-  {:else if topics_with_problems.length > 2}
-    <h3 in:fade={{ duration: 200 }}>
-      {topics_with_problems.length}
+      + {topics_with_problems.length - 1}
       {i18n.t('topics').toLowerCase()}
     </h3>
-  {:else if show_loading_message}
-    <h3 in:fade={{ duration: 500 }}>{i18n.t('loading')}...</h3>
-  {:else}
-    <!-- svelte-ignore a11y_missing_content -->
-    <h3>&nbsp;</h3>
   {/if}
   <div class="set-description">
     <p in:fade={{ duration: 300 }}>
@@ -110,24 +106,25 @@
 <style>
   .set-container {
     text-align: left;
-    background-color: var(--bg-light);
-    border: 2px solid transparent;
-    padding: 1rem;
-    border-radius: 1rem;
+    background-color: var(--bg);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
     position: relative;
-    transition: border 0.15s;
-    box-shadow: var(--shadow-elevation-medium);
+    width: 100%;
+    border: none;
+    transition: background-color 0.3s;
 
     &:hover {
-      border: 2px solid var(--secondary);
+      background-color: var(--bg-dark);
+      border: none;
       cursor: pointer;
       &:disabled {
-        border: 2px solid transparent;
+        border: none;
         cursor: default;
       }
     }
     h3 {
-      font-size: 1.2rem;
+      font-size: 1rem;
       color: var(--text);
 
       overflow: hidden;

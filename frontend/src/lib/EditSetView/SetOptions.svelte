@@ -1,6 +1,6 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import DifficultySelector from '../../AddSetView/DifficultySelector.svelte';
+  import DifficultySelector from '../AddSetView/DifficultySelector.svelte';
   import type { ProblemSetSpec } from '$src/types.ts';
   let { set = $bindable() }: { set: ProblemSetSpec } = $props();
 

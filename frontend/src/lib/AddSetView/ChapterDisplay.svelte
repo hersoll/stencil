@@ -29,13 +29,12 @@
   }
 
   .chapter-card {
-    background-color: var(--bg-light);
-    border-radius: 1rem;
-    padding: 1rem;
-    box-shadow: var(--shadow-elevation-medium);
+    background-color: var(--bg);
     height: fit-content;
     min-height: 0;
     justify-self: stretch;
     break-inside: avoid;
+    border-top: 1px solid gray;
+    padding: 1rem 0;
   }
 </style>
