@@ -2,6 +2,8 @@
   import CourseSelector from './CourseSelector.svelte';
   import type { View } from '../../types.ts';
   import SetDisplay from './SetDisplay.svelte';
+  import { fetchPdf, loadingState } from '$src/globalStates.svelte';
+  import i18n from '$src/i18n.svelte';
 
   let {
     course = $bindable(),
@@ -17,11 +19,21 @@
     <a class="home-link" href="/">Stencil</a>
     <CourseSelector bind:course />
   </div>
-  <button onclick={() => (view = 'add_set')}>Add set</button>
+  <button onclick={() => (view = 'add_set')}>Add sets</button>
   <SetDisplay />
   <div class="bottom-buttons">
-    <button onclick={() => (view = 'layout')}>Layout</button>
-    <button onclick={() => (view = 'pdf')}>View PDF</button>
+    <button onclick={() => (view = 'layout')}>View and Edit Layout</button>
+    <button
+      class="primary"
+      onclick={() => {
+        fetchPdf();
+        view = 'pdf';
+      }}
+      disabled={loadingState.loading}
+      type="submit"
+    >
+      {i18n.t('create_pdf')}
+    </button>
   </div>
 </nav>
 

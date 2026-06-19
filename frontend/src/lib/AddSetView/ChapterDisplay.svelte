@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { ChapterWithTopics } from '$src/types';
-  import { set_states } from '$src/globalStates.svelte';
   import { onMount } from 'svelte';
   import TopicCheckbox from './TopicCheckbox.svelte';
   let { chapter }: { chapter: ChapterWithTopics } = $props();
@@ -32,6 +31,7 @@
     background-color: var(--bg);
     height: fit-content;
     min-height: 0;
+    min-width: 20rem;
     justify-self: stretch;
     break-inside: avoid;
     border-top: 1px solid gray;

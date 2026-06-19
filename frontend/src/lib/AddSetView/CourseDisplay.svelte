@@ -58,7 +58,9 @@
 <style>
   .chapter-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(2, auto);
+    grid-template-rows: repeat(4, auto);
     gap: 1rem;
   }
 </style>
