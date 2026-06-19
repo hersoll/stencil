@@ -23,9 +23,9 @@
 
 <style>
   .create-btn {
-    font-size: 1.2rem;
-    width: 20rem;
-    height: 3rem;
+    font-size: 1.1rem;
+    width: 15rem;
+    padding: 0.5rem 0;
     box-shadow: var(--shadow-elevation-medium);
   }
 </style>

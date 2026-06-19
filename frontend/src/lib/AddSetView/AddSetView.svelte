@@ -21,13 +21,15 @@
 
   .options {
     position: fixed;
+    background-color: var(--bg);
+    border-top: 2px solid lightgray;
     right: 0;
     bottom: 0;
     left: var(--navbar-margin);
 
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: space-between;
+    align-items: end;
     padding: 1rem;
     gap: 2rem;
   }

@@ -1,6 +1,7 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import { PDFState } from '$src/globalStates.svelte';
+  import { fly } from 'svelte/transition';
 
   function downloadPDF(e: Event) {
     e.preventDefault();
@@ -12,20 +13,18 @@
   }
 </script>
 
-<form action="">
-  {#if PDFState.url != ''}
-    <div class="iframe-container">
-      <iframe src={PDFState.url} title="PDF Viewer"></iframe>
-    </div>
-    <button
-      disabled={!PDFState.url}
-      onclick={downloadPDF}
-      type="button"
-      class="download-btn"
-    >
-      {i18n.t('download')}
-    </button>
-  {/if}
+<form action="" in:fly={{ y: -60, duration: 400 }}>
+  <div class="iframe-container">
+    <iframe src={PDFState.url} title="PDF Viewer"></iframe>
+  </div>
+  <button
+    disabled={!PDFState.url}
+    onclick={downloadPDF}
+    type="button"
+    class="download-btn"
+  >
+    {i18n.t('download')}
+  </button>
 </form>
 
 <style>

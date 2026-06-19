@@ -45,7 +45,12 @@
   name="course"
   id="course"
   bind:value={course}
-  onchange={() => (set_states.pending_set = defaultProblemOptions)}
+  onchange={() => {
+    set_states.pending_set = defaultProblemOptions;
+    if (course) {
+      localStorage.setItem('course', course);
+    }
+  }}
 >
   <option value="ma1b">{getCourseDesc('ma1b')}</option>
   <option value="ma2b">{getCourseDesc('ma2b')}</option>
@@ -76,5 +81,9 @@
     font-size: 1rem;
     background: none;
     border: none;
+    border-radius: 1rem;
+    &:hover {
+      background-color: var(--bg-dark);
+    }
   }
 </style>

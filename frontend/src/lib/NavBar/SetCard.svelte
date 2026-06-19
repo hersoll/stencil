@@ -61,7 +61,7 @@
 <button
   popovertarget="set-editor-{id}"
   class="set-container"
-  in:fly={{ y: -40, duration: 400 }}
+  in:fly={{ y: 40, duration: 400 }}
   disabled={topics_with_problems.length == 0}
 >
   {#if show_loading_message}
@@ -124,7 +124,7 @@
       }
     }
     h3 {
-      font-size: 1rem;
+      font-size: 0.9rem;
       color: var(--text);
 
       overflow: hidden;
@@ -132,11 +132,14 @@
       white-space: nowrap;
     }
     p {
+      font-size: 0.8rem;
       margin-top: 0.15rem;
       color: var(--text-muted);
     }
     .set-description {
-      margin-top: 0.5rem;
+      margin-top: 0.2rem;
+      display: flex;
+      flex-direction: column;
     }
   }
 </style>
