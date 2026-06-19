@@ -47,26 +47,28 @@
   bind:value={course}
   onchange={() => (set_states.pending_set = defaultProblemOptions)}
 >
-  <optgroup label="Nivå 1">
-    <option value="ma1a">{getCourseDesc('ma1a')}</option>
-    <option value="ma1b">{getCourseDesc('ma1b')}</option>
-    <option value="ma1c">{getCourseDesc('ma1c')}</option>
-  </optgroup>
-  <optgroup label="Nivå 2">
-    <option value="ma2a">{getCourseDesc('ma2a')}</option>
-    <option value="ma2b">{getCourseDesc('ma2b')}</option>
-    <option value="ma2c">{getCourseDesc('ma2c')}</option>
-  </optgroup>
-  <optgroup label="Fortsättning, nivå 1">
-    <option value="maf1b">{getCourseDesc('maf1b')}</option>
-    <option value="maf1c">{getCourseDesc('maf1c')}</option>
-  </optgroup>
-  <optgroup label="Fortsättning, nivå 2">
-    <option value="maf2">{getCourseDesc('maf2')}</option>
-  </optgroup>
-  <optgroup label="Fördjupning">
-    <option value="mafd">{getCourseDesc('mafd')}</option>
-  </optgroup>
+  <option value="ma1b">{getCourseDesc('ma1b')}</option>
+  <option value="ma2b">{getCourseDesc('ma2b')}</option>
+  <!-- <optgroup label="Nivå 1"> -->
+  <!--   <option value="ma1a">{getCourseDesc('ma1a')}</option> -->
+  <!--   <option value="ma1b">{getCourseDesc('ma1b')}</option> -->
+  <!--   <option value="ma1c">{getCourseDesc('ma1c')}</option> -->
+  <!-- </optgroup> -->
+  <!-- <optgroup label="Nivå 2"> -->
+  <!--   <option value="ma2a">{getCourseDesc('ma2a')}</option> -->
+  <!--   <option value="ma2b">{getCourseDesc('ma2b')}</option> -->
+  <!--   <option value="ma2c">{getCourseDesc('ma2c')}</option> -->
+  <!-- </optgroup> -->
+  <!-- <optgroup label="Fortsättning, nivå 1"> -->
+  <!--   <option value="maf1b">{getCourseDesc('maf1b')}</option> -->
+  <!--   <option value="maf1c">{getCourseDesc('maf1c')}</option> -->
+  <!-- </optgroup> -->
+  <!-- <optgroup label="Fortsättning, nivå 2"> -->
+  <!--   <option value="maf2">{getCourseDesc('maf2')}</option> -->
+  <!-- </optgroup> -->
+  <!-- <optgroup label="Fördjupning"> -->
+  <!--   <option value="mafd">{getCourseDesc('mafd')}</option> -->
+  <!-- </optgroup> -->
 </select>
 
 <style>
