@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { fetchPdf, loadingState, set_states } from '$src/globalStates.svelte';
+  import {
+    fetchPdf,
+    loadingState,
+    PDFState,
+    set_states
+  } from '$src/globalStates.svelte';
   import type { View } from '$src/types';
   import i18n from '$src/i18n.svelte';
   import NavButton from './NavButton.svelte';
@@ -20,11 +25,15 @@
   <button
     disabled={loadingState.loading || set_states.added_sets.length == 0}
     onclick={() => {
+      // To prevent the old PDF from flickering when switching to PDF view, we "deload" it first.
+      // If we are already in PDF view, it looks weird if we deload it since the entire iframe disappears.
+      if (view != 'pdf') {
+        PDFState.url = '';
+      }
       fetchPdf();
       view = 'pdf';
     }}
   >
-    <!-- {loadingState.loading ? i18n.t('loading') : i18n.t('create_pdf')} -->
     {i18n.t('create_pdf')}
   </button>
 </NavButton>

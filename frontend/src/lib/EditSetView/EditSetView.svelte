@@ -29,8 +29,6 @@
         <SetButtons />
       </div>
     </div>
-  {:else}
-    <h1>No set found</h1>
   {/if}
 </main>
 
