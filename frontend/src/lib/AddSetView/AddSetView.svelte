@@ -4,6 +4,26 @@
   import InitialSetOptions from './InitialSetOptions.svelte';
 
   let { course_name }: { course_name: string } = $props();
+
+  function deselectAllTopics() {
+    const chapterContainer = document.getElementById('chapter-container');
+    chapterContainer
+      ?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
+      .forEach(box => {
+        box.checked = false;
+        box.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+  }
+
+  function selectAllTopics() {
+    const chapterContainer = document.getElementById('chapter-container');
+    chapterContainer
+      ?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
+      .forEach(box => {
+        box.checked = true;
+        box.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+  }
 </script>
 
 <main>

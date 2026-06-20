@@ -60,7 +60,7 @@
     </div>
     <div class="col">
       <SetOptions bind:set />
-      <SetButtons {onDelete} />
+      <SetButtons />
     </div>
   </div>
 </div>

@@ -7,6 +7,7 @@
   import ErrorPage from './lib/ErrorPage.svelte';
   import AddSetView from './lib/AddSetView/AddSetView.svelte';
   import PDFView from './lib/PDFView/PDFView.svelte';
+  import EditSetView from './lib/EditSetView/EditSetView.svelte';
 
   type CourseData = {
     id: number;
@@ -67,6 +68,8 @@
   <h2>Layout View</h2>
 {:else if view === 'pdf'}
   <PDFView />
+{:else if view === 'edit_set'}
+  <EditSetView />
 {/if}
 
 <style>

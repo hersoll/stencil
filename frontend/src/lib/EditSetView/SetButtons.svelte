@@ -1,6 +1,14 @@
 <script lang="ts">
+  import { set_states } from '$src/globalStates.svelte';
   import i18n from '$src/i18n.svelte';
-  let { onDelete } = $props();
+
+  function onDelete() {
+    set_states.added_sets = set_states.added_sets.filter(
+      set => set.id !== set_states.current_edited_set_id
+    );
+    set_states.current_edited_set_id = null;
+    set_states.current_edited_set_contents = null;
+  }
 </script>
 
 <div class="btn-container">

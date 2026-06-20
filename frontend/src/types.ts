@@ -1,4 +1,4 @@
-export type View = 'add_set' | 'layout' | 'pdf';
+export type View = 'add_set' | 'layout' | 'pdf' | 'edit_set';
 
 export type ProblemData = {
   id: number;

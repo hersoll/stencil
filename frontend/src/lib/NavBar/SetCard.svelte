@@ -3,20 +3,21 @@
   import { API_URL } from '$src/main';
   import { error, set_states } from '$src/globalStates.svelte';
   import { fade, fly } from 'svelte/transition';
-  import SetEditor from '../EditSetView/SetEditor.svelte';
-
   import {
     difficulty_to_string,
     type ProblemSetSpec,
-    type TopicWithProblems
+    type TopicWithProblems,
+    type View
   } from '$src/types';
 
   let {
     set = $bindable(),
-    id
+    set_id,
+    view = $bindable()
   }: {
     set: ProblemSetSpec;
-    id: number;
+    set_id: number;
+    view: View;
   } = $props();
 
   const MAX_TOPICS_SHOWN = 3;
@@ -44,9 +45,8 @@
     topics_with_problems = await res.json();
   }
   function deleteSet() {
-    document.getElementById(`set-editor-${id}`)?.hidePopover();
     set_states.added_sets = set_states.added_sets.filter(
-      added_set => added_set.id !== id
+      added_set => added_set.id !== set_id
     );
   }
 
@@ -57,12 +57,18 @@
   });
 </script>
 
-<!-- TODO: Make draggable (HTML draggable=true)-->
 <button
-  popovertarget="set-editor-{id}"
-  class="set-container"
+  class="set-container {view === 'edit_set' &&
+  set_states.current_edited_set_id === set_id
+    ? 'selected'
+    : ''}"
   in:fly={{ y: 40, duration: 400 }}
   disabled={topics_with_problems.length == 0}
+  onclick={() => {
+    set_states.current_edited_set_id = set_id;
+    set_states.current_edited_set_contents = topics_with_problems;
+    view = 'edit_set';
+  }}
 >
   {#if show_loading_message}
     <h3 in:fade={{ duration: 500 }}>{i18n.t('loading')}...</h3>
@@ -96,13 +102,6 @@
   </div>
 </button>
 
-<SetEditor
-  bind:set
-  onDelete={() => deleteSet()}
-  {id}
-  topics={topics_with_problems}
-/>
-
 <style>
   .set-container {
     text-align: left;
@@ -122,6 +121,10 @@
         border: none;
         cursor: default;
       }
+    }
+
+    &.selected {
+      background-color: var(--bg-dark);
     }
     h3 {
       font-size: 0.9rem;

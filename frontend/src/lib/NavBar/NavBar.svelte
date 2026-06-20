@@ -23,7 +23,7 @@
   <AddSetsButton bind:view />
   <LayoutButton bind:view />
   <PDFButton bind:view />
-  <SetDisplay />
+  <SetDisplay bind:view />
 </nav>
 
 <style>

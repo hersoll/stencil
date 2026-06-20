@@ -1,17 +1,17 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import { set_states, set_id } from '$src/globalStates.svelte';
+  import { set_states } from '$src/globalStates.svelte';
   import { defaultSetOptions } from '$src/types';
 
   function submitSet() {
     set_states.added_sets.push({
-      id: set_id.count,
+      id: set_states.set_count,
       set: {
         problems: structuredClone($state.snapshot(set_states.pending_set)),
         options: defaultSetOptions
       }
     });
-    set_id.count += 1;
+    set_states.set_count += 1;
   }
 </script>
 

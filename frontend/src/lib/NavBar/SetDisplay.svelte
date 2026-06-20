@@ -1,6 +1,12 @@
 <script lang="ts">
   import { set_states } from '$src/globalStates.svelte';
+  import type { View } from '$src/types';
   import SetCard from './SetCard.svelte';
+  let {
+    view = $bindable()
+  }: {
+    view: View;
+  } = $props();
 </script>
 
 <div class="sets-container">
@@ -9,7 +15,7 @@
     <p>Sektioner</p>
   </div>
   {#each set_states.added_sets as set}
-    <SetCard set={set.set} id={set.id} />
+    <SetCard set={set.set} set_id={set.id} bind:view />
   {/each}
 </div>
 
