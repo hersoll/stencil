@@ -2,35 +2,19 @@
   import CourseDisplay from './CourseDisplay.svelte';
   import CreateSetButton from './CreateSetButton.svelte';
   import InitialSetOptions from './InitialSetOptions.svelte';
+  import SelectAllButton from './SelectAllButton.svelte';
 
   let { course_name }: { course_name: string } = $props();
-
-  function deselectAllTopics() {
-    const chapterContainer = document.getElementById('chapter-container');
-    chapterContainer
-      ?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
-      .forEach(box => {
-        box.checked = false;
-        box.dispatchEvent(new Event('change', { bubbles: true }));
-      });
-  }
-
-  function selectAllTopics() {
-    const chapterContainer = document.getElementById('chapter-container');
-    chapterContainer
-      ?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
-      .forEach(box => {
-        box.checked = true;
-        box.dispatchEvent(new Event('change', { bubbles: true }));
-      });
-  }
 </script>
 
 <main>
   <CourseDisplay {course_name} />
   <div class="options">
     <InitialSetOptions />
-    <CreateSetButton />
+    <div class="right-buttons">
+      <SelectAllButton />
+      <CreateSetButton />
+    </div>
   </div>
 </main>
 
@@ -51,6 +35,11 @@
     justify-content: space-between;
     align-items: end;
     padding: 1rem;
+    gap: 2rem;
+  }
+
+  .right-buttons {
+    display: flex;
     gap: 2rem;
   }
 </style>

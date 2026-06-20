@@ -47,7 +47,7 @@
   .options {
     display: flex;
     gap: 3rem;
-    align-items: end;
+    align-items: center;
   }
   label {
     font-size: 1.2rem;
@@ -57,8 +57,8 @@
   .n-container,
   .difficulty-container {
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    align-items: center;
+    gap: 1rem;
   }
 
   .number-picker,
