@@ -28,6 +28,9 @@
 </form>
 
 <style>
+  form {
+    height: 100%;
+  }
   button {
     font-size: 1.2rem;
     width: 15rem;
@@ -46,13 +49,14 @@
   .iframe-container {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     padding: 1rem;
 
     iframe {
       width: 100%;
       height: 100%;
       border-radius: 1rem;
+      border: none;
     }
   }
 </style>
