@@ -35,9 +35,11 @@
     display: flex;
     height: 100%;
     flex-direction: column;
-    justify-content: space-between;
   }
   .course {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -60,10 +62,9 @@
   }
 
   .options {
+    flex: 0 0 auto;
     background-color: var(--bg);
     border-top: 2px solid lightgray;
-    right: 0;
-    bottom: 0;
     left: var(--navbar-margin);
 
     display: flex;
