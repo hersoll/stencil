@@ -59,4 +59,9 @@
       border: none;
     }
   }
+  /* TODO: 
+      - Footer in PDF View with pdf renaming
+      - Footer in navbar with settings + donate + close icon
+      - Redesign EditSetView
+ */
 </style>
