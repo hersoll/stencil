@@ -90,6 +90,13 @@
   color-scheme: light;
 }
 
+html,
+body,
+div#app,
+main {
+  height: 100%;
+  margin: 0;
+}
 body {
   padding: 0;
   margin: 0;

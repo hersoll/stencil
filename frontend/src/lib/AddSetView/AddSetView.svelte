@@ -8,7 +8,19 @@
 </script>
 
 <main>
-  <CourseDisplay {course_name} />
+  <div class="course">
+    <div class="align-wrapper">
+      <div class="heading">
+        <h1>Lägg till sektioner</h1>
+        <p class="subtitle">
+          Välj ett eller flera områden att inkludera och klicka sedan på <strong
+            >Lägg till sektion</strong
+          >
+        </p>
+      </div>
+      <CourseDisplay {course_name} />
+    </div>
+  </div>
   <div class="options">
     <InitialSetOptions />
     <div class="right-buttons">
@@ -20,11 +32,34 @@
 
 <style>
   main {
-    padding: 1rem;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .course {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .align-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+    }
+  }
+
+  .heading {
+    margin-bottom: 1.5rem;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+    }
   }
 
   .options {
-    position: fixed;
     background-color: var(--bg);
     border-top: 2px solid lightgray;
     right: 0;
