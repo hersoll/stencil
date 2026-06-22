@@ -8,11 +8,13 @@
 
 <main>
   {#if PDFState.url}
-    <PDFDisplay />
-    <div class="footer">
-      <PDFNameInput />
-      <PDFDownloadButton />
-    </div>
+    <form action="">
+      <PDFDisplay />
+      <div class="footer">
+        <PDFNameInput />
+        <PDFDownloadButton />
+      </div>
+    </form>
   {:else if !loadingState.loading}
     <div class="text-container">
       <h2>Du har inte skapat någon PDF än!</h2>
@@ -27,6 +29,10 @@
 
 <style>
   main {
+    height: 100%;
+  }
+
+  form {
     height: 100%;
     display: flex;
     flex-direction: column;

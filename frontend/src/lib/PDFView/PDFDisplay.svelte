@@ -3,19 +3,13 @@
   import { fly } from 'svelte/transition';
 </script>
 
-<form action="" in:fly={{ y: -60, duration: 400 }}>
-  <div class="iframe-container">
-    <iframe src={PDFState.url} title="PDF Viewer"></iframe>
-  </div>
-</form>
+<div class="iframe-container" in:fly={{ y: -60, duration: 400 }}>
+  <iframe src={PDFState.url} title="PDF Viewer"></iframe>
+</div>
 
 <style>
-  form {
-    height: 100%;
-    flex: 1 1 auto;
-  }
-
   .iframe-container {
+    flex: 1 1 auto;
     position: relative;
     width: 100%;
     height: 100%;

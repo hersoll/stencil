@@ -15,7 +15,7 @@
 <button
   disabled={!PDFState.url}
   onclick={downloadPDF}
-  type="button"
+  type="submit"
   class="download-btn"
 >
   {i18n.t('download')}
