@@ -4,10 +4,12 @@
   import { loadingState, error } from '$src/globalStates.svelte';
   import NavBar from '$src/lib/NavBar/NavBar.svelte';
   import type { View } from '$src/types';
-  import ErrorPage from './lib/ErrorPage.svelte';
+  import ErrorView from './lib/ErrorView.svelte';
   import AddSetView from './lib/AddSetView/AddSetView.svelte';
   import PDFView from './lib/PDFView/PDFView.svelte';
   import EditSetView from './lib/EditSetView/EditSetView.svelte';
+  import LoadingView from './lib/LoadingView.svelte';
+  import StartUpView from './lib/StartUpView.svelte';
 
   let activeCourseName: string | null = $state(
     localStorage.getItem('course') || null
@@ -47,15 +49,11 @@
 <NavBar bind:course={activeCourseName} bind:view />
 
 {#if error.message}
-  <ErrorPage />
+  <ErrorView />
 {:else if showLoadingMessage}
-  <main>
-    <p>Laddar...</p>
-  </main>
+  <LoadingView />
 {:else if !activeCourseName}
-  <main>
-    <h2>Välj en kurs</h2>
-  </main>
+  <StartUpView />
 {:else if view === 'addSet'}
   <AddSetView courseName={activeCourseName} />
 {:else if view === 'layout'}
@@ -67,10 +65,6 @@
 {/if}
 
 <style>
-  main {
-    margin: 0 auto;
-    padding: 1rem;
-  }
   h2 {
     font-size: 2rem;
     margin: 0;
