@@ -4,12 +4,16 @@
   import LanguageSwitch from './LanguageSwitch.svelte';
 
   let settingsOpened = $state(false);
+  // svelte-ignore non_reactive_update
+  let settingsButton: HTMLButtonElement;
 
-  function clickOutside(node: HTMLElement) {
+  function clickOutside(node: HTMLElement, trigger: HTMLElement) {
     const handleClick = (event: MouseEvent) => {
       const target = event.target as Node | null;
 
-      if (target && !node.contains(target)) {
+      if (!target) return;
+
+      if (!node.contains(target) && !trigger.contains(target)) {
         settingsOpened = false;
       }
     };
@@ -26,6 +30,7 @@
 
 <div class="settings-container">
   <button
+    bind:this={settingsButton}
     class="settings-icon"
     onclick={() => (settingsOpened = !settingsOpened)}
     ><img
@@ -37,7 +42,7 @@
   {#if settingsOpened}
     <div
       class="settings-menu"
-      use:clickOutside
+      use:clickOutside={settingsButton}
       transition:fade={{ duration: 100 }}
     >
       <ThemeSwitch />
@@ -49,6 +54,8 @@
 <style>
   .settings-container {
     position: relative;
+    display: flex;
+    align-items: center;
   }
   .settings-icon {
     background: none;

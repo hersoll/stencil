@@ -82,6 +82,7 @@
     background: none;
     border: none;
     border-radius: 1rem;
+    padding: 0 0.5rem;
     &:hover {
       background-color: var(--bg-dark);
     }

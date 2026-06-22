@@ -57,6 +57,7 @@
   }
   button {
     margin: 0;
+    min-width: 2rem; /* Keeps same width when icons are loading in */
     padding: 0.5rem;
     padding-bottom: 0.3rem;
     padding-top: 0.5rem;

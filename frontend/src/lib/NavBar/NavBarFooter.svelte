@@ -18,6 +18,7 @@
   footer {
     flex: 0 0 auto;
     display: flex;
+    align-items: center;
     justify-content: space-between;
     width: 100%;
     padding: 0.5rem 0.25rem 0 0.25rem; /* NavBar adds padding to sides and bottom */
