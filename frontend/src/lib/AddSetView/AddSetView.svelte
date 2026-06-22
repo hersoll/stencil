@@ -21,12 +21,10 @@
       <CourseDisplay {courseName} />
     </div>
   </div>
-  <div class="options">
+  <div class="footer">
     <InitialSetOptions />
-    <div class="right-buttons">
-      <SelectAllButton />
-      <CreateSetButton />
-    </div>
+    <SelectAllButton />
+    <CreateSetButton />
   </div>
 </main>
 
@@ -35,6 +33,8 @@
     display: flex;
     height: 100%;
     flex-direction: column;
+
+    container: main / inline-size;
   }
   .course {
     flex: 1 1 auto;
@@ -61,21 +61,33 @@
     }
   }
 
-  .options {
+  .footer {
     flex: 0 0 auto;
     background-color: var(--bg);
     border-top: 2px solid lightgray;
     left: var(--navbar-margin);
 
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    width: 100%;
     align-items: end;
     padding: 1rem;
-    gap: 2rem;
+    column-gap: 2rem;
+    row-gap: 1rem;
   }
 
-  .right-buttons {
-    display: flex;
-    gap: 2rem;
+  /* Too wide for all items in one row */
+  @container main (width < 71.25rem) {
+    .footer {
+      grid-template-columns: auto auto;
+      justify-content: center;
+    }
+  }
+  /* Too wide for three items in top row */
+  @container main (width < 54.5rem) {
+    .footer {
+      grid-template-columns: auto auto;
+      justify-content: center;
+    }
   }
 </style>

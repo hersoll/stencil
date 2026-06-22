@@ -31,7 +31,14 @@
 
 <style>
   button {
-    width: 6rem;
-    padding: 0.7rem;
+    font-size: 1.1rem;
+    width: 7rem;
+    padding: 0.5rem;
+  }
+  /* Too wide for three items in top row */
+  @container main (width < 54.5rem) {
+    button {
+      justify-self: end;
+    }
   }
 </style>

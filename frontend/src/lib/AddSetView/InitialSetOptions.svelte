@@ -46,6 +46,7 @@
 <style>
   .options {
     display: flex;
+    width: 100%;
     gap: 3rem;
     align-items: center;
   }
@@ -80,5 +81,24 @@
   .number-picker {
     width: 5rem;
     line-height: 1.5rem;
+  }
+  @container main (width < 71.25rem) {
+    .options {
+      width: fit-content;
+    }
+  }
+  /* Too wide for three items in top row */
+  @container main (width < 54.5rem) {
+    .options {
+      grid-column: 1 / -1;
+      justify-self: center;
+    }
+  }
+
+  /* Too wide for three items in top row */
+  @container main (width < 45.5rem) {
+    .options {
+      gap: 1rem;
+    }
   }
 </style>
