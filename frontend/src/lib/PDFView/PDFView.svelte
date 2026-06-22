@@ -1,12 +1,18 @@
 <script lang="ts">
   import { loadingState, PDFState } from '$src/globalStates.svelte';
-  import PDFCard from './PDFCard.svelte';
+  import PDFDisplay from './PDFDisplay.svelte';
   import i18n from '$src/i18n.svelte';
+  import PDFDownloadButton from './PDFDownloadButton.svelte';
+  import PDFNameInput from './PDFNameInput.svelte';
 </script>
 
 <main>
   {#if PDFState.url}
-    <PDFCard />
+    <PDFDisplay />
+    <div class="footer">
+      <PDFNameInput />
+      <PDFDownloadButton />
+    </div>
   {:else if !loadingState.loading}
     <div class="text-container">
       <h2>Du har inte skapat någon PDF än!</h2>
@@ -22,7 +28,19 @@
 <style>
   main {
     height: 100%;
+    display: flex;
+    flex-direction: column;
   }
+
+  .footer {
+    display: flex;
+    justify-content: center;
+    flex: 0 0 auto;
+    gap: 1rem;
+    padding: 1rem;
+    border-top: 2px solid lightgray;
+  }
+
   .text-container {
     display: flex;
     height: 100dvh;

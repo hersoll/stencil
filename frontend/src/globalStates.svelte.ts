@@ -37,7 +37,11 @@ export function stopLoading() {
   loadingState.loading = false;
 }
 
-export const PDFState = $state({ url: '' });
+export const PDFState = $state<{
+  url: string;
+  fileName: string;
+}>({ url: '', fileName: 'stencil' });
+
 export const fetchPdf = async (): Promise<void> => {
   startLoading();
 

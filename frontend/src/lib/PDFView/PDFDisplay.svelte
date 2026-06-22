@@ -1,49 +1,18 @@
 <script lang="ts">
-  import i18n from '$src/i18n.svelte';
   import { PDFState } from '$src/globalStates.svelte';
   import { fly } from 'svelte/transition';
-
-  function downloadPDF(e: Event) {
-    e.preventDefault();
-    if (!PDFState.url) return;
-    const link = document.createElement('a');
-    link.href = PDFState.url;
-    link.download = 'stencil.pdf';
-    link.click();
-  }
 </script>
 
 <form action="" in:fly={{ y: -60, duration: 400 }}>
   <div class="iframe-container">
     <iframe src={PDFState.url} title="PDF Viewer"></iframe>
   </div>
-  <button
-    disabled={!PDFState.url}
-    onclick={downloadPDF}
-    type="button"
-    class="download-btn"
-  >
-    {i18n.t('download')}
-  </button>
 </form>
 
 <style>
   form {
     height: 100%;
-  }
-  button {
-    font-size: 1.2rem;
-    width: 15rem;
-    box-shadow: var(--shadow-elevation-medium);
-    &:disabled {
-      background-color: var(--secondary);
-      color: var(--text);
-    }
-  }
-  .download-btn {
-    position: absolute;
-    right: 3rem;
-    bottom: 3rem;
+    flex: 1 1 auto;
   }
 
   .iframe-container {
