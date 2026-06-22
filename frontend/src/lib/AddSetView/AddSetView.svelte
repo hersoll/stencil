@@ -90,4 +90,12 @@
       justify-content: center;
     }
   }
+  @container main (width < 52rem) {
+    .course {
+      padding-top: 2rem;
+    }
+    .subtitle {
+      width: 24rem;
+    }
+  }
 </style>

@@ -39,8 +39,19 @@
 <style>
   .chapter-container {
     display: grid;
-    grid-auto-flow: column;
-    grid-template-rows: repeat(4, auto);
+    grid-template-columns: repeat(3, auto);
     gap: 1rem;
+  }
+
+  @container main (width < 76rem) {
+    .chapter-container {
+      grid-template-columns: repeat(2, auto);
+    }
+  }
+
+  @container main (width < 52rem) {
+    .chapter-container {
+      grid-template-columns: auto;
+    }
   }
 </style>
