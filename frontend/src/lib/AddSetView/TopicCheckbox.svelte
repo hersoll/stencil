@@ -29,6 +29,14 @@
 </span>
 
 <style>
+  span {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
+  input {
+    margin-top: 0.1rem;
+  }
   label {
     color: var(--text-muted);
     cursor: pointer;
