@@ -82,13 +82,13 @@
     width: 5rem;
     line-height: 1.5rem;
   }
-  @container main (width < 71.25rem) {
+  @container main (width < 73rem) {
     .options {
       width: fit-content;
     }
   }
   /* Too wide for three items in top row */
-  @container main (width < 54.5rem) {
+  @container main (width < 56rem) {
     .options {
       grid-column: 1 / -1;
       justify-self: center;
@@ -96,7 +96,7 @@
   }
 
   /* Too wide for three items in top row */
-  @container main (width < 45.5rem) {
+  @container main (width < 47rem) {
     .options {
       gap: 1rem;
     }

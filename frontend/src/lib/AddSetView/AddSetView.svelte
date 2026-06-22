@@ -77,14 +77,14 @@
   }
 
   /* Too wide for all items in one row */
-  @container main (width < 71.25rem) {
+  @container main (width < 73rem) {
     .footer {
       grid-template-columns: auto auto;
       justify-content: center;
     }
   }
   /* Too wide for three items in top row */
-  @container main (width < 54.5rem) {
+  @container main (width < 56rem) {
     .footer {
       grid-template-columns: auto auto;
       justify-content: center;

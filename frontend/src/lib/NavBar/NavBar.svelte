@@ -5,6 +5,7 @@
   import PDFButton from './PDFButton.svelte';
   import AddSetsButton from './AddSetsButton.svelte';
   import LayoutButton from './LayoutButton.svelte';
+  import NavBarFooter from './NavBarFooter.svelte';
 
   let {
     course = $bindable(),
@@ -24,6 +25,7 @@
   <LayoutButton bind:view />
   <PDFButton bind:view />
   <SetDisplay bind:view />
+  <NavBarFooter />
 </nav>
 
 <style>

@@ -36,7 +36,7 @@
     padding: 0.5rem;
   }
   /* Too wide for three items in top row */
-  @container main (width < 54.5rem) {
+  @container main (width < 56rem) {
     button {
       justify-self: end;
     }

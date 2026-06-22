@@ -35,14 +35,14 @@
   }
 
   /* Too wide for all buttons in one row */
-  @container main (width < 71.25rem) {
+  @container main (width < 73rem) {
     .create-btn {
       grid-column: 1 / -1;
       justify-self: center;
     }
   }
   /* Too wide for three items in top row */
-  @container main (width < 54.5rem) {
+  @container main (width < 56rem) {
     .create-btn {
       grid-column: 2 / -1;
       justify-self: start;
