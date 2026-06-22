@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { set_states } from '$src/globalStates.svelte';
+  import { setState } from '$src/globalStates.svelte';
   import type { TopicData } from '$src/types';
 
   let { topic }: { topic: TopicData } = $props();
@@ -7,9 +7,9 @@
   function handleChange(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     if (checkbox.checked) {
-      set_states.pending_set.topics.push(Number(checkbox.value));
+      setState.pendingSet.topics.push(Number(checkbox.value));
     } else {
-      set_states.pending_set.topics = set_states.pending_set.topics.filter(
+      setState.pendingSet.topics = setState.pendingSet.topics.filter(
         t => t != Number(checkbox.value)
       );
     }
@@ -22,7 +22,7 @@
     id={'topic_' + topic.id}
     value={topic.id}
     type="checkbox"
-    checked={set_states.pending_set.topics.includes(topic.id)}
+    checked={setState.pendingSet.topics.includes(topic.id)}
     onchange={handleChange}
   />
   <label for={'topic_' + topic.id} class="no-select">{topic.desc}</label>

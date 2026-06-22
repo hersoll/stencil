@@ -1,7 +1,7 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import DifficultySelector from './DifficultySelector.svelte';
-  import { set_states } from '$src/globalStates.svelte';
+  import { setState } from '$src/globalStates.svelte';
 
   const MIN_PROBLEMS = 1;
   const MAX_PROBLEMS = 250;
@@ -9,12 +9,12 @@
   function handleBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      set_states.pending_set.n = Math.max(
+      setState.pendingSet.n = Math.max(
         MIN_PROBLEMS,
         Math.min(MAX_PROBLEMS, value)
       );
     } else {
-      set_states.pending_set.n = MIN_PROBLEMS;
+      setState.pendingSet.n = MIN_PROBLEMS;
     }
   }
 </script>
@@ -26,7 +26,7 @@
       name="n"
       class="number-picker"
       type="number"
-      bind:value={set_states.pending_set.n}
+      bind:value={setState.pendingSet.n}
       min="1"
       max="250"
       onblur={handleBlur}
@@ -36,9 +36,9 @@
     <label for="difficulty-row">{i18n.t('difficulty')}:</label>
     <div class="difficulty-row">
       {i18n.t('from')}
-      <DifficultySelector set={set_states.pending_set} type="starting" />
+      <DifficultySelector set={setState.pendingSet} type="starting" />
       {i18n.t('to')}
-      <DifficultySelector set={set_states.pending_set} type="ending" />
+      <DifficultySelector set={setState.pendingSet} type="ending" />
     </div>
   </div>
 </div>

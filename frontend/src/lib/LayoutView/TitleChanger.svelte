@@ -1,6 +1,6 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import { document_options } from '$src/globalStates.svelte';
+  import { documentOptions } from '$src/globalStates.svelte';
 </script>
 
 <div class="title-container">
@@ -9,7 +9,7 @@
     name="title"
     placeholder={i18n.t('title_placeholder')}
     type="text"
-    bind:value={document_options.title}
+    bind:value={documentOptions.title}
   />
 </div>
 

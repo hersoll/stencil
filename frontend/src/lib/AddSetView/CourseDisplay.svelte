@@ -9,12 +9,12 @@
   } from '$src/globalStates.svelte';
   import ChapterDisplay from './ChapterDisplay.svelte';
 
-  let { course_name }: { course_name: string } = $props();
+  let { courseName }: { courseName: string } = $props();
 
   async function loadCourseData() {
     startLoading();
     const res = await fetch(
-      `${API_URL}/${i18n.currentLanguage}/course/${course_name}`
+      `${API_URL}/${i18n.currentLanguage}/course/${courseName}`
     );
     if (!res.ok) {
       error.message = `Status code ${res.status} \n ${await res.text()}`;
@@ -24,7 +24,7 @@
   }
 
   $effect(() => {
-    if (course_name && i18n.currentLanguage) {
+    if (courseName && i18n.currentLanguage) {
       loadCourseData();
     }
   });

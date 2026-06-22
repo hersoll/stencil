@@ -1,23 +1,23 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import { set_states } from '$src/globalStates.svelte';
+  import { setState } from '$src/globalStates.svelte';
   import { defaultSetOptions } from '$src/types';
 
   function submitSet() {
-    set_states.added_sets.push({
-      id: set_states.set_count,
+    setState.addedSets.push({
+      id: setState.setCount,
       set: {
-        problems: structuredClone($state.snapshot(set_states.pending_set)),
+        problems: structuredClone($state.snapshot(setState.pendingSet)),
         options: defaultSetOptions
       }
     });
-    set_states.set_count += 1;
+    setState.setCount += 1;
   }
 </script>
 
 <button
   class="primary create-btn"
-  disabled={set_states.pending_set.topics.length == 0}
+  disabled={setState.pendingSet.topics.length == 0}
   onclick={submitSet}>{i18n.t('add_set')}</button
 >
 

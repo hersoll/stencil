@@ -6,23 +6,32 @@
 
   let difficulty = {
     get value() {
-      return type == 'starting'
-        ? set.starting_difficulty
-        : set.ending_difficulty;
+      return type == 'starting' ? set.startingDifficulty : set.endingDifficulty;
     },
     set value(val) {
       if (type == 'starting') {
-        set.starting_difficulty = val;
+        set.startingDifficulty = val;
       } else {
-        set.ending_difficulty = val;
+        set.endingDifficulty = val;
       }
     }
   };
-  let starting_difficulty_num = $derived(
-    { Intro: 0, Easy: 1, Medium: 2, Hard: 3 }[set.starting_difficulty]
+  // Only used for ordering in the difficulty list and comparing
+  let startingDifficultyNum = $derived(
+    {
+      difficulty_intro: 0,
+      difficulty_easy: 1,
+      difficulty_medium: 2,
+      difficulty_hard: 3
+    }[set.startingDifficulty]
   );
-  let ending_difficulty_num = $derived(
-    { Intro: 0, Easy: 1, Medium: 2, Hard: 3 }[set.ending_difficulty]
+  let endingDifficultyNum = $derived(
+    {
+      difficulty_intro: 0,
+      difficulty_easy: 1,
+      difficulty_medium: 2,
+      difficulty_hard: 3
+    }[set.endingDifficulty]
   );
 
   /** 
@@ -30,29 +39,29 @@
   */
   $effect(() => {
     // Only trigger once, otherwise there will be two triggers
-    if (type == 'ending' && starting_difficulty_num > ending_difficulty_num) {
-      set.ending_difficulty = set.starting_difficulty;
+    if (type == 'ending' && startingDifficultyNum > endingDifficultyNum) {
+      set.endingDifficulty = set.startingDifficulty;
     }
   });
 </script>
 
 <select name="difficulty" id="difficulty" bind:value={difficulty.value}>
   <option
-    value="Intro"
-    disabled={type == 'ending' && starting_difficulty_num > 0}
+    value="difficulty_intro"
+    disabled={type == 'ending' && startingDifficultyNum > 0}
     >{i18n.t('difficulty_intro')}</option
   >
   <option
-    value="Easy"
-    disabled={type == 'ending' && starting_difficulty_num > 1}
+    value="difficulty_easy"
+    disabled={type == 'ending' && startingDifficultyNum > 1}
     >{i18n.t('difficulty_easy')}</option
   >
   <option
-    value="Medium"
-    disabled={type == 'ending' && starting_difficulty_num > 2}
+    value="difficulty_medium"
+    disabled={type == 'ending' && startingDifficultyNum > 2}
     >{i18n.t('difficulty_medium')}</option
   >
-  <option value="Hard">{i18n.t('difficulty_hard')}</option>
+  <option value="difficulty_hard">{i18n.t('difficulty_hard')}</option>
 </select>
 
 <style>

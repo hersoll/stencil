@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { set_states } from '$src/globalStates.svelte';
+  import { setState } from '$src/globalStates.svelte';
   import type { View } from '$src/types';
   import SetCard from './SetCard.svelte';
   let {
@@ -14,8 +14,8 @@
     <img src="section.svg" alt="Section icon" />
     <p>Sektioner</p>
   </div>
-  {#each set_states.added_sets as set}
-    <SetCard set={set.set} set_id={set.id} bind:view />
+  {#each setState.addedSets as set}
+    <SetCard set={set.set} setID={set.id} bind:view />
   {/each}
 </div>
 

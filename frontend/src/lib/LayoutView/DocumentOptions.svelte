@@ -1,6 +1,6 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import { document_options } from '$src/states.svelte';
+  import { documentOptions } from '$src/globalStates.svelte';
   import { fly } from 'svelte/transition';
 
   /* VERY ugly to do one handleBlur() for each, but it was the best way I found */
@@ -9,12 +9,12 @@
   function handleFontSizeBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      document_options.font_size = Math.max(
+      documentOptions.fontSize = Math.max(
         FONT_SIZE_MIN,
         Math.min(FONT_SIZE_MAX, value)
       );
     } else {
-      document_options.font_size = FONT_SIZE_MIN;
+      documentOptions.fontSize = FONT_SIZE_MIN;
     }
   }
   const ANSWER_COLUMNS_MIN = 1;
@@ -24,12 +24,12 @@
   ) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      document_options.answer_columns = Math.max(
+      documentOptions.answerColumns = Math.max(
         ANSWER_COLUMNS_MIN,
         Math.min(ANSWER_COLUMNS_MAX, value)
       );
     } else {
-      document_options.answer_columns = ANSWER_COLUMNS_MIN;
+      documentOptions.answerColumns = ANSWER_COLUMNS_MIN;
     }
   }
   const MARGIN_MIN = 0;
@@ -37,23 +37,23 @@
   function handleXMarginBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      document_options.x_margin = Math.max(
+      documentOptions.xMargin = Math.max(
         MARGIN_MIN,
         Math.min(MARGIN_MAX, value)
       );
     } else {
-      document_options.x_margin = MARGIN_MIN;
+      documentOptions.xMargin = MARGIN_MIN;
     }
   }
   function handleYMarginBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      document_options.y_margin = Math.max(
+      documentOptions.yMargin = Math.max(
         MARGIN_MIN,
         Math.min(MARGIN_MAX, value)
       );
     } else {
-      document_options.y_margin = MARGIN_MIN;
+      documentOptions.yMargin = MARGIN_MIN;
     }
   }
 
@@ -64,12 +64,12 @@
   ) {
     const value = parseInt(event.currentTarget.value);
     if (!isNaN(value)) {
-      document_options.par_spacing = Math.max(
+      documentOptions.parSpacing = Math.max(
         PAR_SPACING_MIN,
         Math.min(PAR_SPACING_MAX, value)
       );
     } else {
-      document_options.par_spacing = null;
+      documentOptions.parSpacing = null;
     }
   }
 
@@ -80,12 +80,12 @@
   ) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      document_options.max_prefix_group = Math.max(
+      documentOptions.maxPrefixGroup = Math.max(
         PAR_SPACING_MIN,
         Math.min(PAR_SPACING_MAX, value)
       );
     } else {
-      document_options.max_prefix_group = PREFIX_GROUP_MIN;
+      documentOptions.maxPrefixGroup = PREFIX_GROUP_MIN;
     }
   }
 </script>
@@ -100,7 +100,7 @@
       <select
         name="write_solutions"
         id="write_solutions"
-        bind:value={document_options.write_solutions}
+        bind:value={documentOptions.writeSolutions}
       >
         <option value="First"
           >{i18n.t('document_option_solutions_first')}</option
@@ -118,7 +118,7 @@
       <input
         name="answer-columns"
         type="number"
-        bind:value={document_options.answer_columns}
+        bind:value={documentOptions.answerColumns}
         min={ANSWER_COLUMNS_MIN}
         max={ANSWER_COLUMNS_MAX}
         onblur={handleAnswerColumnsBlur}
@@ -131,7 +131,7 @@
       <input
         name="prefix-group"
         type="number"
-        bind:value={document_options.max_prefix_group}
+        bind:value={documentOptions.maxPrefixGroup}
         min={PREFIX_GROUP_MIN}
         max={PREFIX_GROUP_MAX}
         onblur={handlePrefixGroupBlur}
@@ -141,7 +141,7 @@
     <!-- LANGUAGE -->
     <div class="language container">
       <label for="language">{i18n.t('document_option_language')}</label>
-      <select name="language" id="language" bind:value={document_options.lang}>
+      <select name="language" id="language" bind:value={documentOptions.lang}>
         <option value="Sv">{i18n.t('language_sv')}</option>
         <option value="En">{i18n.t('language_en')}</option>
       </select>
@@ -153,7 +153,7 @@
       <input
         name="font-size"
         type="number"
-        bind:value={document_options.font_size}
+        bind:value={documentOptions.fontSize}
         min={FONT_SIZE_MIN}
         max={FONT_SIZE_MAX}
         onblur={handleFontSizeBlur}
@@ -165,7 +165,7 @@
       <select
         name="paper_size"
         id="paper_size"
-        bind:value={document_options.paper_size}
+        bind:value={documentOptions.paperSize}
       >
         <option value="A4">A4</option>
         <option value="A5">A5</option>
@@ -178,7 +178,7 @@
       <input
         name="x-margin"
         type="number"
-        bind:value={document_options.x_margin}
+        bind:value={documentOptions.xMargin}
         min={MARGIN_MIN}
         max={MARGIN_MAX}
         onblur={handleXMarginBlur}
@@ -186,7 +186,7 @@
       <input
         name="y-margin"
         type="number"
-        bind:value={document_options.y_margin}
+        bind:value={documentOptions.yMargin}
         min={MARGIN_MIN}
         max={MARGIN_MAX}
         onblur={handleYMarginBlur}
@@ -199,7 +199,7 @@
       <input
         name="par-spacing-amount"
         type="number"
-        bind:value={document_options.par_spacing}
+        bind:value={documentOptions.parSpacing}
         min={PAR_SPACING_MIN}
         max={PAR_SPACING_MAX}
         onblur={handleParSpacingBlur}
@@ -213,7 +213,7 @@
         name="color"
         type="checkbox"
         class="checkbox"
-        bind:checked={document_options.color}
+        bind:checked={documentOptions.color}
       />
     </div>
   </div>

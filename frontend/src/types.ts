@@ -1,8 +1,8 @@
-export type View = 'add_set' | 'layout' | 'pdf' | 'edit_set';
+export type View = 'addSet' | 'layout' | 'pdf' | 'editSet';
 
 export type ProblemData = {
   id: number;
-  absolute_difficulty: number;
+  absoluteDifficulty: number;
   desc: string;
 };
 
@@ -30,15 +30,19 @@ export type CourseData = {
 };
 
 export type SetOptions = {
-  question_columns: number;
+  questionColumns: number;
   heading: string;
   spacing: number | null;
-  pagebreak_after: boolean;
+  pagebreakAfter: boolean;
 };
 
-export type Difficulty = 'Intro' | 'Easy' | 'Medium' | 'Hard';
+export type Difficulty =
+  | 'difficulty_intro'
+  | 'difficulty_easy'
+  | 'difficulty_medium'
+  | 'difficulty_hard';
 
-export function num_to_difficulty_str(num: number): string {
+export function numToDifficultyStr(num: number): string {
   if (num <= 3) {
     return 'difficulty_intro';
   } else if (num <= 5) {
@@ -50,78 +54,61 @@ export function num_to_difficulty_str(num: number): string {
   }
 }
 
-export function difficulty_to_string(difficulty: Difficulty): string {
-  switch (difficulty) {
-    case 'Intro': {
-      return 'difficulty_intro';
-    }
-    case 'Easy': {
-      return 'difficulty_easy';
-    }
-    case 'Medium': {
-      return 'difficulty_medium';
-    }
-    case 'Hard': {
-      return 'difficulty_hard';
-    }
-  }
-}
-
-export function difficulty_in_range(
+export function difficultyInRange(
   difficulty: number,
   starting: Difficulty,
   ending: Difficulty
 ): boolean {
-  let starting_num: number, ending_num: number;
+  let startingNum: number, endingNum: number;
   switch (starting) {
-    case 'Intro': {
-      starting_num = 1;
+    case 'difficulty_intro': {
+      startingNum = 1;
       break;
     }
-    case 'Easy': {
-      starting_num = 4;
-      break;
-    }
-
-    case 'Medium': {
-      starting_num = 6;
+    case 'difficulty_easy': {
+      startingNum = 4;
       break;
     }
 
-    case 'Hard': {
-      starting_num = 8;
+    case 'difficulty_medium': {
+      startingNum = 6;
+      break;
+    }
+
+    case 'difficulty_hard': {
+      startingNum = 8;
       break;
     }
   }
   switch (ending) {
-    case 'Intro': {
-      ending_num = 3;
+    case 'difficulty_intro': {
+      endingNum = 3;
       break;
     }
-    case 'Easy': {
-      ending_num = 5;
-      break;
-    }
-
-    case 'Medium': {
-      ending_num = 7;
+    case 'difficulty_easy': {
+      endingNum = 5;
       break;
     }
 
-    case 'Hard': {
-      ending_num = 10;
+    case 'difficulty_medium': {
+      endingNum = 7;
+      break;
+    }
+
+    case 'difficulty_hard': {
+      endingNum = 10;
       break;
     }
   }
 
-  return difficulty >= starting_num && difficulty <= ending_num;
+  return difficulty >= startingNum && difficulty <= endingNum;
 }
 
 export type ProblemOptions = {
   topics: number[];
   exclusions: number[];
-  starting_difficulty: Difficulty;
-  ending_difficulty: Difficulty;
+  startingDifficulty: Difficulty;
+  endingDifficulty: Difficulty;
   n: number;
 };
 
@@ -136,44 +123,44 @@ export type SetState = { id: number; set: ProblemSetSpec };
 export const defaultProblemOptions: ProblemOptions = {
   topics: [],
   exclusions: [],
-  starting_difficulty: 'Intro',
-  ending_difficulty: 'Hard',
+  startingDifficulty: 'difficulty_intro',
+  endingDifficulty: 'difficulty_hard',
   n: 20
 };
 export const defaultSetOptions: SetOptions = {
-  question_columns: 2,
+  questionColumns: 2,
   heading: '',
   spacing: null,
-  pagebreak_after: false
+  pagebreakAfter: false
 };
 export const defaultProblemSet: ProblemSetSpec = {
   problems: defaultProblemOptions,
   options: defaultSetOptions
 };
 export type DocumentOptions = {
-  font_size: number;
+  fontSize: number;
   title: string;
-  answer_columns: number;
+  answerColumns: number;
   lang: 'Sv' | 'En';
-  write_solutions: 'None' | 'First' | 'All';
+  writeSolutions: 'None' | 'First' | 'All';
   color: boolean;
-  paper_size: 'A4' | 'A5';
-  x_margin: number;
-  y_margin: number;
-  par_spacing: number | null;
-  max_prefix_group: number;
+  paperSize: 'A4' | 'A5';
+  xMargin: number;
+  yMargin: number;
+  parSpacing: number | null;
+  maxPrefixGroup: number;
 };
 
 export const defaultDocumentOptions: DocumentOptions = {
-  font_size: 10,
+  fontSize: 10,
   title: '',
-  answer_columns: 3,
+  answerColumns: 3,
   lang: 'Sv',
-  write_solutions: 'First',
+  writeSolutions: 'First',
   color: true,
-  paper_size: 'A4',
-  x_margin: 20,
-  y_margin: 20,
-  par_spacing: null,
-  max_prefix_group: 3
+  paperSize: 'A4',
+  xMargin: 20,
+  yMargin: 20,
+  parSpacing: null,
+  maxPrefixGroup: 3
 };

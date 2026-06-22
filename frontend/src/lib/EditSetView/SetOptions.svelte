@@ -21,12 +21,12 @@
   function handleColumnsBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      set.options.question_columns = Math.max(
+      set.options.questionColumns = Math.max(
         MIN_COLUMNS,
         Math.min(MAX_COLUMNS, value)
       );
     } else {
-      set.options.question_columns = MIN_COLUMNS;
+      set.options.questionColumns = MIN_COLUMNS;
     }
   }
 
@@ -85,9 +85,9 @@
         <input
           type="number"
           id="columns"
-          bind:value={set.options.question_columns}
+          bind:value={set.options.questionColumns}
           onchange={e =>
-            (set.options.question_columns = e.currentTarget.valueAsNumber)}
+            (set.options.questionColumns = e.currentTarget.valueAsNumber)}
           onblur={handleColumnsBlur}
         />
       </div>
@@ -106,9 +106,8 @@
         <input
           type="checkbox"
           id="pagebreak"
-          checked={set.options.pagebreak_after}
-          onchange={e =>
-            (set.options.pagebreak_after = e.currentTarget.checked)}
+          checked={set.options.pagebreakAfter}
+          onchange={e => (set.options.pagebreakAfter = e.currentTarget.checked)}
         />
       </div>
     </div>

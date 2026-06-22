@@ -9,11 +9,9 @@
   let {
     set = $bindable(),
     id,
-    onDelete,
     topics
   }: {
     set: ProblemSetSpec;
-    onDelete: () => void;
     id: number;
     topics: TopicWithProblems[];
   } = $props();
@@ -42,12 +40,7 @@
   });
 </script>
 
-<div
-  popover
-  id="set-editor-{id}"
-  class="set-editor"
-  ontoggle={handlePopoverToggle}
->
+<div id="set-editor-{id}" class="set-editor" ontoggle={handlePopoverToggle}>
   <h1>{i18n.t('edit_set')}</h1>
   <p class="text-muted subtitle">
     {i18n.t('click_to_exclude')}

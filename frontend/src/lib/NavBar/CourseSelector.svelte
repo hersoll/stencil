@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    set_states,
+    setState,
     startLoading,
     stopLoading
   } from '$src/globalStates.svelte';
@@ -46,7 +46,7 @@
   id="course"
   bind:value={course}
   onchange={() => {
-    set_states.pending_set = defaultProblemOptions;
+    setState.pendingSet = defaultProblemOptions;
     if (course) {
       localStorage.setItem('course', course);
     }

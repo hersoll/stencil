@@ -3,7 +3,7 @@
     fetchPdf,
     loadingState,
     PDFState,
-    set_states
+    setState
   } from '$src/globalStates.svelte';
   import type { View } from '$src/types';
   import i18n from '$src/i18n.svelte';
@@ -23,7 +23,7 @@
   <img src="pdf.svg" alt={'PDF icon'} />
   <p>PDF</p>
   <button
-    disabled={loadingState.loading || set_states.added_sets.length == 0}
+    disabled={loadingState.loading || setState.addedSets.length == 0}
     onclick={() => {
       // To prevent the old PDF from flickering when switching to PDF view, we "deload" it first.
       // If we are already in PDF view, it looks weird if we deload it since the entire iframe disappears.

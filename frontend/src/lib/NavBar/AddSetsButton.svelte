@@ -10,8 +10,8 @@
 </script>
 
 <NavButton
-  onclick={() => (view = 'add_set')}
-  class={view === 'add_set' ? 'selected' : ''}
+  onclick={() => (view = 'addSet')}
+  class={view === 'addSet' ? 'selected' : ''}
 >
   <img src="add.svg" alt={'Plus icon'} />
   <p>Lägg till sektioner</p>

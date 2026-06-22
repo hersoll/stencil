@@ -4,7 +4,7 @@
   import InitialSetOptions from './InitialSetOptions.svelte';
   import SelectAllButton from './SelectAllButton.svelte';
 
-  let { course_name }: { course_name: string } = $props();
+  let { courseName }: { courseName: string } = $props();
 </script>
 
 <main>
@@ -18,7 +18,7 @@
           >
         </p>
       </div>
-      <CourseDisplay {course_name} />
+      <CourseDisplay {courseName} />
     </div>
   </div>
   <div class="options">

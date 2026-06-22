@@ -32,6 +32,7 @@ pub struct AnswerSet {
 
 /// Options that dictate how a QuestionSet should be formatted
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct QuestionSetOptions {
     pub question_columns: u8,
     pub heading: String,
@@ -51,6 +52,7 @@ impl Default for QuestionSetOptions {
 
 /// Options that concerns the document as a whole
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct DocumentOptions {
     pub font_size: u8,
     pub title: String,

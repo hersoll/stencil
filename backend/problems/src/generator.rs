@@ -28,6 +28,7 @@ pub static PROBLEM_NAME_TO_FUNCTION_MAP: LazyLock<RwLock<HashMap<String, Problem
 ///
 /// Should be included in the HTTP request in the form of a Vec<ProblemSetSpec>
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ProblemOptions {
     /// Topics to draw problems from
     pub topics: Vec<i32>,

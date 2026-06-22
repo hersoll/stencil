@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { set_states } from '$src/globalStates.svelte';
+  import { setState } from '$src/globalStates.svelte';
   import i18n from '$src/i18n.svelte';
+
   function deselectAllTopics() {
     const chapterContainer = document.getElementById('chapter-container');
     chapterContainer
@@ -22,7 +23,7 @@
   }
 </script>
 
-{#if set_states.pending_set.topics.length == 0}
+{#if setState.pendingSet.topics.length == 0}
   <button onclick={selectAllTopics}> {i18n.t('select_all')} </button>
 {:else}
   <button onclick={deselectAllTopics}> {i18n.t('clear')} </button>

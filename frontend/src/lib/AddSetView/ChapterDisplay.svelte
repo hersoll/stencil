@@ -1,10 +1,7 @@
 <script lang="ts">
   import type { ChapterWithTopics } from '$src/types';
-  import { onMount } from 'svelte';
   import TopicCheckbox from './TopicCheckbox.svelte';
   let { chapter }: { chapter: ChapterWithTopics } = $props();
-
-  onMount(() => {});
 </script>
 
 <div class="chapter-card">

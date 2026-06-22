@@ -70,6 +70,7 @@ impl ChapterWithTopics {
 ///
 /// Not sent on its own, but as part of [`TopicWithProblems`].
 #[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct HTTPProblemData {
     id: i32,
     absolute_difficulty: i32,

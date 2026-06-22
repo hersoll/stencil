@@ -9,18 +9,12 @@
   import PDFView from './lib/PDFView/PDFView.svelte';
   import EditSetView from './lib/EditSetView/EditSetView.svelte';
 
-  type CourseData = {
-    id: number;
-    name: string;
-    desc: string;
-  };
-
-  let active_course_name: string | null = $state(
+  let activeCourseName: string | null = $state(
     localStorage.getItem('course') || null
   );
 
   // Keeps track of which page to show
-  let view: View = $state('add_set');
+  let view: View = $state('addSet');
 
   let showLoadingMessage = $state(false);
   let loadingTimeout: ReturnType<typeof setTimeout> | null = $state(null);
@@ -50,7 +44,7 @@
   });
 </script>
 
-<NavBar bind:course={active_course_name} bind:view />
+<NavBar bind:course={activeCourseName} bind:view />
 
 {#if error.message}
   <ErrorPage />
@@ -58,17 +52,17 @@
   <main>
     <p>Laddar...</p>
   </main>
-{:else if !active_course_name}
+{:else if !activeCourseName}
   <main>
     <h2>Välj en kurs</h2>
   </main>
-{:else if view === 'add_set'}
-  <AddSetView course_name={active_course_name} />
+{:else if view === 'addSet'}
+  <AddSetView courseName={activeCourseName} />
 {:else if view === 'layout'}
   <h2>Layout View</h2>
 {:else if view === 'pdf'}
   <PDFView />
-{:else if view === 'edit_set'}
+{:else if view === 'editSet'}
   <EditSetView />
 {/if}
 

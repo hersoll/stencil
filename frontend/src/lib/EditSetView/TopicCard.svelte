@@ -1,8 +1,8 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import {
-    difficulty_in_range,
-    num_to_difficulty_str,
+    difficultyInRange,
+    numToDifficultyStr,
     type ProblemOptions,
     type TopicWithProblems
   } from '$src/types';
@@ -12,15 +12,15 @@
     topic
   }: { problems: ProblemOptions; topic: TopicWithProblems } = $props();
 
-  let excluded_problem_count = $state(0);
+  let excludedProblemCount = $state(0);
 
   function excludeProblem(id: number) {
     if (problems.exclusions.includes(id)) {
       problems.exclusions = problems.exclusions.filter(e => e !== id);
-      excluded_problem_count--;
+      excludedProblemCount--;
     } else {
       problems.exclusions.push(id);
-      excluded_problem_count++;
+      excludedProblemCount++;
     }
   }
 
@@ -44,23 +44,23 @@
       });
   }
 
-  let problems_to_display = $derived(
+  let problemsToDisplay = $derived(
     topic.problems
       .filter(problem =>
-        difficulty_in_range(
-          problem.absolute_difficulty,
-          problems.starting_difficulty,
-          problems.ending_difficulty
+        difficultyInRange(
+          problem.absoluteDifficulty,
+          problems.startingDifficulty,
+          problems.endingDifficulty
         )
       )
-      .sort((p1, p2) => p1.absolute_difficulty - p2.absolute_difficulty)
+      .sort((p1, p2) => p1.absoluteDifficulty - p2.absoluteDifficulty)
   );
 </script>
 
 <div class="topic-container" id="topic-container">
   <h2>{topic.desc}</h2>
-  {#if problems_to_display.length > 0}
-    {#each problems_to_display as problem}
+  {#if problemsToDisplay.length > 0}
+    {#each problemsToDisplay as problem}
       <button
         class="problem-grid {problems.exclusions.includes(problem.id)
           ? 'excluded'
@@ -69,14 +69,14 @@
       >
         <p class="no-select clickable problem-descriptor">{problem.desc}</p>
         <p class="no-select clickable difficulty-descriptor">
-          {i18n.t(num_to_difficulty_str(problem.absolute_difficulty))}
+          {i18n.t(numToDifficultyStr(problem.absoluteDifficulty))}
         </p>
       </button>
     {/each}
     <button
       class="select-all-btn"
-      onclick={excluded_problem_count == 0 ? excludeAll : includeAll}
-      >{excluded_problem_count == 0
+      onclick={excludedProblemCount == 0 ? excludeAll : includeAll}
+      >{excludedProblemCount == 0
         ? i18n.t('select_all')
         : i18n.t('clear')}</button
     >
