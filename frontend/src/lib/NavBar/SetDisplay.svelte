@@ -12,7 +12,7 @@
 <div class="sets-container">
   <div class="set-header">
     <img src="section.svg" alt="Section icon" />
-    <p>Sektioner</p>
+    <p class="no-select">Sektioner</p>
   </div>
   {#each setState.addedSets as set}
     <SetCard set={set.set} setID={set.id} bind:view />
