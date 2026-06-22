@@ -55,10 +55,14 @@ impl std::fmt::Debug for AbsoluteDifficulty {
 /// Hard: 8, 9, 10
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Deserialize, Serialize, PartialOrd)]
 pub enum DifficultyCategory {
+    #[serde(rename = "difficulty_intro")]
     Intro,
     #[default]
+    #[serde(rename = "difficulty_easy")]
     Easy,
+    #[serde(rename = "difficulty_medium")]
     Medium,
+    #[serde(rename = "difficulty_hard")]
     Hard,
 }
 
