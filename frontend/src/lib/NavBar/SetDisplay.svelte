@@ -2,6 +2,7 @@
   import { setState } from '$src/globalStates.svelte';
   import type { View } from '$src/types';
   import SetCard from './SetCard.svelte';
+  import i18n from '$src/i18n.svelte';
   let {
     view = $bindable(),
     navbarOpen
@@ -21,7 +22,7 @@
   >
     <img src="section.svg" alt="Section icon" />
     {#if navbarOpen}
-      <p class="no-select">Sektioner</p>
+      <p class="no-select">{i18n.t('sets_nav')}</p>
     {:else if setState.addedSets.length > 0}
       <p class="no-select">{setState.addedSets.length}</p>
     {:else}

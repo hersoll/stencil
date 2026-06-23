@@ -4,7 +4,7 @@
 </script>
 
 <div class="language-switch">
-  <p class="language-label">Språk</p>
+  <p class="language-label">{i18n.t('language')}</p>
   <div class="language-buttons">
     <button
       class={currentLang === 'sv' ? 'active_language' : ''}

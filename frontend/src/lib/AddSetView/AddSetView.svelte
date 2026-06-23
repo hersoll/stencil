@@ -3,6 +3,7 @@
   import CreateSetButton from './CreateSetButton.svelte';
   import InitialSetOptions from './InitialSetOptions.svelte';
   import SelectAllButton from './SelectAllButton.svelte';
+  import i18n from '$src/i18n.svelte';
 
   let { courseName }: { courseName: string } = $props();
 </script>
@@ -10,11 +11,10 @@
 <div class="course">
   <div class="align-wrapper">
     <div class="heading">
-      <h1>Lägg till sektioner</h1>
+      <h1>{i18n.t('add_sets_heading')}</h1>
       <p class="subtitle">
-        Välj ett eller flera områden att inkludera och klicka sedan på <strong
-          >Lägg till sektion</strong
-        >
+        {i18n.t('add_sets_instruction')}
+        <strong>{i18n.t('add_set')}</strong>
       </p>
     </div>
     <CourseDisplay {courseName} />
@@ -50,6 +50,9 @@
     h1 {
       font-size: 2rem;
       margin-bottom: 0.25rem;
+    }
+    strong {
+      color: var(--primary-text);
     }
   }
 

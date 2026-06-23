@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { View } from '$src/types';
+  import i18n from '$src/i18n.svelte';
   import NavButton from './NavButton.svelte';
 
   let {
@@ -19,7 +20,7 @@
 >
   <img src="layout.svg" alt={'Layout icon'} />
   {#if navbarOpen}
-    <p>Se och ändra layout</p>
+    <p>{i18n.t('layout_nav')}</p>
   {/if}
 </NavButton>
 

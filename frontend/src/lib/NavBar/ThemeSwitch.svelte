@@ -1,5 +1,6 @@
 <script lang="ts">
   let theme = $state(localStorage.getItem('theme') || 'system');
+  import i18n from '$src/i18n.svelte';
 
   function setTheme(newTheme: string) {
     theme = newTheme;
@@ -9,7 +10,7 @@
 </script>
 
 <div class="theme-switch">
-  <p class="theme-label">Tema</p>
+  <p class="theme-label">{i18n.t('theme')}</p>
 
   <div class="theme-buttons">
     <button

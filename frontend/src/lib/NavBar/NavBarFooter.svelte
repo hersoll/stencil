@@ -1,5 +1,6 @@
 <script lang="ts">
   import SettingsMenu from './SettingsMenu.svelte';
+  import i18n from '$src/i18n.svelte';
 
   let { navbarOpen = $bindable() }: { navbarOpen: boolean } = $props();
 </script>
@@ -7,7 +8,7 @@
 <footer class={navbarOpen ? 'open' : 'closed'}>
   {#if navbarOpen}
     <SettingsMenu />
-    <button style="color: gray;">Stötta hemsidan</button>
+    <button style="color: gray;">{i18n.t('support_me')}</button>
   {/if}
   <button onclick={() => (navbarOpen = !navbarOpen)}
     ><img

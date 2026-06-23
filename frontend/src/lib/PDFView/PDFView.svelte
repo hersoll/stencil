@@ -16,11 +16,9 @@
   </form>
 {:else if !loadingState.loading}
   <div class="text-container">
-    <h2>Du har inte skapat någon PDF än!</h2>
+    <h2>{i18n.t('no_pdf_found')}</h2>
     <p>
-      Lägg till minst en sektion och klicka på <strong
-        >{i18n.t('create_pdf')}</strong
-      >
+      {i18n.t('create_pdf_instruction')} <strong>{i18n.t('create_pdf')}</strong>
     </p>
   </div>
 {/if}

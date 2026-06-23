@@ -45,6 +45,13 @@
   onMount(async () => {
     await i18n.init();
   });
+
+  // Newly added strings:
+  // - startup_message
+  // - create_set_instruction
+  // - no_pdf_found
+  // - support_me
+  // Probably missed some...
 </script>
 
 <NavBar bind:course={activeCourseName} bind:view bind:navbarOpen />
