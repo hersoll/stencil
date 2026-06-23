@@ -3,18 +3,24 @@
   import NavButton from './NavButton.svelte';
 
   let {
-    view = $bindable()
+    view = $bindable(),
+    navbarOpen
   }: {
     view: View;
+    navbarOpen: boolean;
   } = $props();
 </script>
 
 <NavButton
   onclick={() => (view = 'layout')}
-  class={view === 'layout' ? 'selected' : ''}
+  class="{view === 'layout' ? 'selected' : ''} {navbarOpen
+    ? 'nav-open'
+    : 'nav-closed'}"
 >
   <img src="layout.svg" alt={'Layout icon'} />
-  <p>Se och ändra layout</p>
+  {#if navbarOpen}
+    <p>Se och ändra layout</p>
+  {/if}
 </NavButton>
 
 <style>

@@ -6,34 +6,29 @@
   import PDFNameInput from './PDFNameInput.svelte';
 </script>
 
-<main>
-  {#if PDFState.url}
-    <form action="">
-      <PDFDisplay />
-      <div class="footer">
-        <PDFNameInput />
-        <PDFDownloadButton />
-      </div>
-    </form>
-  {:else if !loadingState.loading}
-    <div class="text-container">
-      <h2>Du har inte skapat någon PDF än!</h2>
-      <p>
-        Lägg till minst en sektion och klicka på <strong
-          >{i18n.t('create_pdf')}</strong
-        >
-      </p>
+{#if PDFState.url}
+  <form action="">
+    <PDFDisplay />
+    <div class="footer">
+      <PDFNameInput />
+      <PDFDownloadButton />
     </div>
-  {/if}
-</main>
+  </form>
+{:else if !loadingState.loading}
+  <div class="text-container">
+    <h2>Du har inte skapat någon PDF än!</h2>
+    <p>
+      Lägg till minst en sektion och klicka på <strong
+        >{i18n.t('create_pdf')}</strong
+      >
+    </p>
+  </div>
+{/if}
 
 <style>
-  main {
-    height: 100%;
-  }
-
   form {
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
   }

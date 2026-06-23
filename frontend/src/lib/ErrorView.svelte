@@ -3,14 +3,14 @@
   import { fly } from 'svelte/transition';
 </script>
 
-<main in:fly={{ y: 60, duration: 600 }}>
+<div class="error-container" in:fly={{ y: 60, duration: 600 }}>
   <h1>ERROR</h1>
   <pre>{error.message}</pre>
   <button onclick={() => (error.message = '')}>Reset</button>
-</main>
+</div>
 
 <style>
-  main {
+  .error-container {
     text-align: center;
     margin: 4rem auto;
     width: fit-content;

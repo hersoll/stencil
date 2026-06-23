@@ -24,6 +24,9 @@
         background-color: var(--bg-dark);
       }
     }
+    &.nav-closed {
+      border-radius: 0.5rem;
+    }
 
     &:disabled {
       color: gray;

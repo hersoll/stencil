@@ -12,11 +12,13 @@
   let {
     set = $bindable(),
     setID,
-    view = $bindable()
+    view = $bindable(),
+    navbarOpen
   }: {
     set: ProblemSetSpec;
     setID: number;
     view: View;
+    navbarOpen: boolean;
   } = $props();
 
   const MAX_TOPICS_SHOWN = 3;
@@ -61,7 +63,8 @@
   class="set-container {view === 'editSet' &&
   setState.currentEditedSetID === setID
     ? 'selected'
-    : ''}"
+    : ''}
+  {navbarOpen ? 'nav-open' : 'nav-closed'}"
   in:fly={{ y: 40, duration: 400 }}
   disabled={topicsWithProblems.length == 0}
   onclick={() => {
@@ -112,6 +115,10 @@
     width: 100%;
     border: none;
     transition: background-color 0.3s;
+
+    &.nav-closed {
+      display: none;
+    }
 
     &:hover {
       background-color: var(--bg-dark);

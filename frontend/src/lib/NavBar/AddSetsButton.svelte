@@ -3,18 +3,24 @@
   import NavButton from './NavButton.svelte';
 
   let {
-    view = $bindable()
+    view = $bindable(),
+    navbarOpen
   }: {
     view: View;
+    navbarOpen: boolean;
   } = $props();
 </script>
 
 <NavButton
   onclick={() => (view = 'addSet')}
-  class={view === 'addSet' ? 'selected' : ''}
+  class="{view === 'addSet' ? 'selected' : ''} {navbarOpen
+    ? 'nav-open'
+    : 'nav-closed'}"
 >
   <img src="add.svg" alt={'Plus icon'} />
-  <p>Lägg till sektioner</p>
+  {#if navbarOpen}
+    <p>Lägg till sektioner</p>
+  {/if}
 </NavButton>
 
 <style>

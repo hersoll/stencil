@@ -1,12 +1,12 @@
 <script lang="ts">
 </script>
 
-<main>
+<div class="loader-container">
   <span class="loader"></span>
-</main>
+</div>
 
 <style>
-  main {
+  .loader-container {
     display: flex;
     align-items: center;
     justify-content: center;

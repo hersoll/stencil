@@ -9,23 +9,27 @@
 
   let {
     course = $bindable(),
-    view = $bindable()
+    view = $bindable(),
+    navbarOpen = $bindable()
   }: {
     course: string | null;
     view: View;
+    navbarOpen: boolean;
   } = $props();
 </script>
 
-<nav>
-  <div class="nav-header">
-    <a class="home-link" href="/">Stencil</a>
-    <CourseSelector bind:course />
+<nav class={navbarOpen ? 'open' : 'closed'}>
+  <div class="nav-header {navbarOpen ? 'open' : 'closed'}">
+    <a class="home-link {navbarOpen ? 'open' : 'closed'}" href="/">Stencil</a>
+    {#if navbarOpen}
+      <CourseSelector bind:course />
+    {/if}
   </div>
-  <AddSetsButton bind:view />
-  <LayoutButton bind:view />
-  <PDFButton bind:view />
-  <SetDisplay bind:view />
-  <NavBarFooter />
+  <AddSetsButton bind:view {navbarOpen} />
+  <LayoutButton bind:view {navbarOpen} />
+  <PDFButton bind:view {navbarOpen} />
+  <SetDisplay bind:view {navbarOpen} />
+  <NavBarFooter bind:navbarOpen />
 </nav>
 
 <style>
@@ -43,6 +47,10 @@
 
     background-color: var(--bg);
     border-right: 2px solid lightgray;
+
+    &.closed {
+      width: var(--navbar-closed-margin);
+    }
   }
   .nav-header {
     flex: 0 0 auto;
@@ -50,12 +58,23 @@
     padding-left: 0.5rem;
     justify-content: space-between;
     margin-bottom: 0.5rem;
+
+    &.closed {
+      padding: 0;
+      margin-left: -0.25rem;
+      height: 2rem;
+      align-items: center;
+    }
+
     .home-link {
       margin: 0;
       color: var(--primary-text);
       font-size: 1.25rem;
       font-weight: 700;
       text-decoration: none;
+      &.closed {
+        font-size: 0.7rem;
+      }
     }
   }
 </style>

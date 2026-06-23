@@ -7,40 +7,32 @@
   let { courseName }: { courseName: string } = $props();
 </script>
 
-<main>
-  <div class="course">
-    <div class="align-wrapper">
-      <div class="heading">
-        <h1>Lägg till sektioner</h1>
-        <p class="subtitle">
-          Välj ett eller flera områden att inkludera och klicka sedan på <strong
-            >Lägg till sektion</strong
-          >
-        </p>
-      </div>
-      <CourseDisplay {courseName} />
+<div class="course">
+  <div class="align-wrapper">
+    <div class="heading">
+      <h1>Lägg till sektioner</h1>
+      <p class="subtitle">
+        Välj ett eller flera områden att inkludera och klicka sedan på <strong
+          >Lägg till sektion</strong
+        >
+      </p>
     </div>
+    <CourseDisplay {courseName} />
   </div>
-  <div class="footer">
-    <InitialSetOptions />
-    <SelectAllButton />
-    <CreateSetButton />
-  </div>
-</main>
+</div>
+<div class="footer">
+  <InitialSetOptions />
+  <SelectAllButton />
+  <CreateSetButton />
+</div>
 
 <style>
-  main {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-
-    container: main / inline-size;
-  }
   .course {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;

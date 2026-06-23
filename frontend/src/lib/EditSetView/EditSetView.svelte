@@ -10,7 +10,7 @@
   );
 </script>
 
-<main>
+<div class="container">
   {#if set && setState.currentEditedSetContents}
     <h1>{i18n.t('edit_set')}</h1>
     <p class="text-muted subtitle">
@@ -28,10 +28,10 @@
       </div>
     </div>
   {/if}
-</main>
+</div>
 
 <style>
-  main {
+  .container {
     height: 100vh;
     width: 80rem;
 

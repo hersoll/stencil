@@ -1,13 +1,17 @@
 <script lang="ts">
   import SettingsMenu from './SettingsMenu.svelte';
+
+  let { navbarOpen = $bindable() }: { navbarOpen: boolean } = $props();
 </script>
 
-<footer>
-  <SettingsMenu />
-  <button style="color: gray;">Stötta hemsidan</button>
-  <button
+<footer class={navbarOpen ? 'open' : 'closed'}>
+  {#if navbarOpen}
+    <SettingsMenu />
+    <button style="color: gray;">Stötta hemsidan</button>
+  {/if}
+  <button onclick={() => (navbarOpen = !navbarOpen)}
     ><img
-      src="navbar_close.svg"
+      src={navbarOpen ? 'navbar_close.svg' : 'navbar_open.svg'}
       alt="Close navbar"
       style="width: 1.2rem;"
     /></button
@@ -24,6 +28,10 @@
     padding: 0.5rem 0.25rem 0 0.25rem; /* NavBar adds padding to sides and bottom */
 
     border-top: 1px solid lightgray;
+
+    &.closed {
+      justify-content: center;
+    }
   }
 
   button {
