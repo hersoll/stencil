@@ -15,21 +15,21 @@ use typst_writer::{
 /// Relative difficulty: 1
 #[problem]
 fn only_addition_or_subtraction(id: i32, _lang: Language) -> Result<Problem> {
-    let answer = num_gen::integer().range(0, 9).random();
+    let answer = num_gen::integer().range(1, 9).random();
     let (constant, constant_range) = num_gen::integer().range(-answer, 9).exclude(0).and_random();
     let unknown = symbols::get_unknown()?;
 
-    let mut solution = SolutionWithSteps::new();
-    solution
+    let solution = SolutionWithSteps::new()
         .add_aligned(format!("{unknown}{constant:+}"), answer + constant) // x + 3 = 12
         .with_step(subtract_number(constant))
-        .add_aligned(unknown, answer); // x = 9
+        .add_aligned(unknown, answer)
+        .to_string(); // x = 9
 
     Ok(Problem {
         id,
         question: format!("${unknown}{constant:+} = {}$", answer + constant),
         answer: format!("${unknown} = {answer}$"),
-        solution: solution.to_string(),
+        solution,
         identifiers: vec![constant],
         combinations: constant_range.len(),
     })
@@ -44,17 +44,17 @@ fn only_multiplication(id: i32, _lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(3, 9).and_random();
     let unknown = symbols::get_unknown()?;
 
-    let mut solution = SolutionWithSteps::new();
-    solution
+    let solution = SolutionWithSteps::new()
         .add_aligned(format!("{coefficient}{unknown}"), coefficient * answer) // 3x = 12
         .with_step(divide_number(coefficient))
-        .add_aligned(unknown, answer); // x = 4
+        .add_aligned(unknown, answer) // x = 4
+        .to_string();
 
     Ok(Problem {
         id,
         question: format!("${coefficient}{unknown} = {}$", answer * coefficient),
         answer: format!("${unknown} = {answer}$"),
-        solution: solution.to_string(),
+        solution,
         identifiers: vec![coefficient],
         combinations: coefficient_range.len(),
     })
@@ -74,8 +74,7 @@ fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
         .and_random();
     let term = Term::from_num_and_vars(coefficient, unknown);
 
-    let mut solution = SolutionWithSteps::new();
-    solution
+    let solution = SolutionWithSteps::new()
         .add_aligned(
             format!("{term}{constant:+}"),
             coefficient * answer + constant,
@@ -83,7 +82,8 @@ fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
         .with_step(subtract_number(constant))
         .add_aligned(&term, coefficient * answer)
         .with_step(divide_number(coefficient))
-        .add_aligned(unknown, answer);
+        .add_aligned(unknown, answer)
+        .to_string();
 
     Ok(Problem {
         id,
@@ -92,7 +92,7 @@ fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
             rhs = coefficient * answer + constant
         ),
         answer: format!("${unknown} = {answer}$"),
-        solution: solution.to_string(),
+        solution,
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     })
@@ -113,8 +113,7 @@ fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
 
     let term = Term::from_num_and_vars(coefficient, unknown);
 
-    let mut solution = SolutionWithSteps::new();
-    solution
+    let solution = SolutionWithSteps::new()
         .add_aligned(
             format!("{term}{constant:+}"),
             coefficient * answer + constant,
@@ -122,7 +121,8 @@ fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
         .with_step(subtract_number(constant))
         .add_aligned(&term, coefficient * answer)
         .with_step(divide_number(coefficient))
-        .add_aligned(unknown, answer);
+        .add_aligned(unknown, answer)
+        .to_string();
 
     Ok(Problem {
         id,
@@ -131,7 +131,7 @@ fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
             rhs = coefficient * answer + constant
         ),
         answer: format!("${unknown} = {answer}$"),
-        solution: solution.to_string(),
+        solution,
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
     })
