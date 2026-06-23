@@ -11,9 +11,7 @@
   import LoadingView from './lib/LoadingView.svelte';
   import StartUpView from './lib/StartUpView.svelte';
 
-  let activeCourseName: string | null = $state(
-    localStorage.getItem('course') || null
-  );
+  let activeCourseName: string = $state(localStorage.getItem('course') || '');
 
   // Keeps track of which page to show
   let view: View = $state('addSet');
@@ -45,13 +43,6 @@
   onMount(async () => {
     await i18n.init();
   });
-
-  // Newly added strings:
-  // - startup_message
-  // - create_set_instruction
-  // - no_pdf_found
-  // - support_me
-  // Probably missed some...
 </script>
 
 <NavBar bind:course={activeCourseName} bind:view bind:navbarOpen />

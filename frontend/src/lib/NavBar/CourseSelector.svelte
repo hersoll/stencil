@@ -11,7 +11,7 @@
   let {
     course = $bindable()
   }: {
-    course: string | null;
+    course: string;
   } = $props();
 
   // Loaded from backend
@@ -52,6 +52,7 @@
     }
   }}
 >
+  <option value="" disabled selected hidden>{i18n.t('select_course')}</option>
   <option value="ma1b">{getCourseDesc('ma1b')}</option>
   <option value="ma2b">{getCourseDesc('ma2b')}</option>
   <!-- <optgroup label="Nivå 1"> -->
@@ -83,8 +84,12 @@
     border: none;
     border-radius: 1rem;
     padding: 0 0.5rem;
+    text-align: right;
     &:hover {
       background-color: var(--bg-dark);
+    }
+    &:has(option[value='']:checked) {
+      color: black;
     }
   }
 </style>

@@ -12,7 +12,7 @@
     view = $bindable(),
     navbarOpen = $bindable()
   }: {
-    course: string | null;
+    course: string;
     view: View;
     navbarOpen: boolean;
   } = $props();
