@@ -16,7 +16,7 @@
   }
 </script>
 
-<span>
+<div>
   <input
     name={'topic_' + topic.id}
     id={'topic_' + topic.id}
@@ -26,24 +26,37 @@
     onchange={handleChange}
   />
   <label for={'topic_' + topic.id} class="no-select">{topic.desc}</label>
-</span>
+</div>
 
 <style>
-  span {
+  div {
     display: flex;
     gap: 0.25rem;
     align-items: center;
+    label {
+      color: var(--text-muted);
+    }
+    &:hover {
+      cursor: pointer;
+      label {
+        color: var(--primary-text);
+      }
+      input {
+        cursor: pointer;
+      }
+    }
   }
   input {
     margin-top: 0.1rem;
   }
   label {
-    color: var(--text-muted);
     cursor: pointer;
-    transition: color 0.15s;
+    transition: color 0.2s;
     &:hover {
       color: var(--primary-text);
+      cursor: pointer;
     }
+
     &:active {
       color: var(--secondary-text);
     }

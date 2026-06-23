@@ -34,6 +34,10 @@
     font-size: 1.1rem;
     width: 7rem;
     padding: 0.5rem;
+    box-shadow: var(--shadow-elevation-low);
+    &:active {
+      box-shadow: none;
+    }
   }
   /* Too wide for three items in top row */
   @container main (width < 56rem) {

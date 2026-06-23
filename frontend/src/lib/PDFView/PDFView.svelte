@@ -37,7 +37,7 @@
     flex: 0 0 auto;
     gap: 1rem;
     padding: 1rem;
-    border-top: 2px solid lightgray;
+    border-top: 2px solid var(--border);
   }
 
   .text-container {

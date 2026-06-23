@@ -32,7 +32,7 @@
     width: 24rem;
     justify-self: stretch;
     break-inside: avoid;
-    border-top: 1px solid gray;
+    border-top: 1px solid var(--border);
     padding: 1rem 0;
   }
 </style>

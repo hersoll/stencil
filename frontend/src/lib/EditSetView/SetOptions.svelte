@@ -139,7 +139,7 @@
       font-size: 1rem;
       border-radius: 0.5rem;
       border: none;
-      border: 1px solid var(--bg-dark);
+      border: 1px solid var(--highlight);
       box-shadow: var(--shadow-elevation-low);
       padding: 0.5rem;
     }
@@ -163,7 +163,7 @@
     width: min-content;
     border-radius: 0.5rem;
     border: none;
-    border: 1px solid var(--bg-dark);
+    border: 1px solid var(--highlight);
     box-shadow: var(--shadow-elevation-low);
 
     p {

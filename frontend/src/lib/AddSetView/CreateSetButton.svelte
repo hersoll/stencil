@@ -28,6 +28,7 @@
     padding: 0.5rem;
     &:enabled {
       box-shadow: var(--shadow-elevation-medium);
+      color: var(--text-in-primary);
     }
     &:active {
       box-shadow: none;

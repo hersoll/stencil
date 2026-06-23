@@ -101,7 +101,7 @@
     direction: rtl;
 
     &::-webkit-scrollbar {
-      background: var(--bg-dark);
+      background: var(--highlight);
       border-radius: 1rem;
       box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
     }

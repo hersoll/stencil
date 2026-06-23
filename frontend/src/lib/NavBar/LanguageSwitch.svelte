@@ -46,14 +46,15 @@
     border-radius: 0;
 
     &:hover {
-      background-color: var(--bg-dark);
+      background-color: var(--highlight);
     }
     &:active {
       background: none;
     }
 
     &.active_language {
-      background-color: var(--bg-dark);
+      background-color: var(--highlight);
+      color: var(--text);
       cursor: default;
     }
   }

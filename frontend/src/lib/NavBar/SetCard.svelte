@@ -114,14 +114,13 @@
     position: relative;
     width: 100%;
     border: none;
-    transition: background-color 0.3s;
 
     &.nav-closed {
       display: none;
     }
 
     &:hover {
-      background-color: var(--bg-dark);
+      background-color: var(--highlight);
       border: none;
       cursor: pointer;
       &:disabled {
@@ -131,7 +130,7 @@
     }
 
     &.selected {
-      background-color: var(--bg-dark);
+      background-color: var(--highlight);
     }
     h3 {
       font-size: 0.9rem;

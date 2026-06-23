@@ -40,7 +40,7 @@
   disabled={!navbarOpen &&
     (loadingState.loading || setState.addedSets.length == 0)}
 >
-  <img src="pdf.svg" alt={'PDF icon'} />
+  <div class="svg-icon"></div>
   {#if navbarOpen}
     <p>PDF</p>
     <button
@@ -53,8 +53,9 @@
 </NavButton>
 
 <style>
-  img {
-    height: 0.9rem;
+  .svg-icon {
+    -webkit-mask: url('pdf.svg') center / contain no-repeat;
+    mask: url('pdf.svg') center / contain no-repeat;
   }
 
   button {
@@ -78,6 +79,7 @@
     &:enabled {
       background-color: var(--primary);
       box-shadow: var(--shadow-elevation-low);
+      color: var(--text-in-primary);
       border: none;
       &:active {
         background-color: var(--secondary);

@@ -33,11 +33,7 @@
     bind:this={settingsButton}
     class="settings-icon"
     onclick={() => (settingsOpened = !settingsOpened)}
-    ><img
-      src="settings.svg"
-      alt="Open settings"
-      style="width: 1.2rem;"
-    /></button
+    aria-label="Settings"><div class="svg-icon"></div></button
   >
   {#if settingsOpened}
     <div
@@ -63,6 +59,13 @@
     padding: 0;
     &:hover {
       border: none;
+    }
+
+    .svg-icon {
+      width: 1.1rem;
+      height: 1.1rem;
+      -webkit-mask: url('settings.svg') center / contain no-repeat;
+      mask: url('settings.svg') center / contain no-repeat;
     }
   }
   .settings-menu {

@@ -21,7 +21,7 @@
   }
   h1 {
     margin-bottom: 1rem;
-    color: darkred;
+    color: var(--danger);
   }
   pre {
     font-size: 1rem;

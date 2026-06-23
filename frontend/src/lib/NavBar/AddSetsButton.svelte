@@ -18,14 +18,15 @@
     ? 'nav-open'
     : 'nav-closed'}"
 >
-  <img src="add.svg" alt={'Plus icon'} />
+  <div class="svg-icon"></div>
   {#if navbarOpen}
     <p>{i18n.t('add_sets_nav')}</p>
   {/if}
 </NavButton>
 
 <style>
-  img {
-    height: 0.9rem;
+  .svg-icon {
+    -webkit-mask: url('add.svg') center / contain no-repeat;
+    mask: url('add.svg') center / contain no-repeat;
   }
 </style>

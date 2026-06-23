@@ -6,17 +6,18 @@
   transition:
     color 0.4s,
     background-color 0.4s,
-    box-shadow 0.4s;
+    box-shadow 0.1s;
 }
 :root {
   --navbar-margin: 18rem;
   --navbar-closed-margin: 3rem;
 
-  --bg-dark: light-dark(oklch(0.85 0 264), oklch(0.16 0 264));
-  --bg: light-dark(oklch(0.9 0 264), oklch(0.22 0 264));
-  --bg-light: light-dark(oklch(0.95 0 264), oklch(0.28 0 264));
+  --bg-dark: light-dark(oklch(0.85 0 264), oklch(0.24 0 264));
+  --bg: light-dark(oklch(0.9 0 264), oklch(0.3 0 264));
+  --bg-light: light-dark(oklch(0.95 0 264), oklch(0.34 0 264));
   --text: light-dark(oklch(0.15 0 264), oklch(0.96 0 264));
-  --text-muted: light-dark(oklch(0.4 0 264), oklch(0.84 0 264));
+  --text-muted: light-dark(oklch(0.45 0 264), oklch(0.84 0 264));
+  --text-in-primary: light-dark(oklch(0.15 0 264), oklch(0.2 0 264));
   --primary: oklch(0.76 0.1 326);
   --secondary: oklch(from var(--primary) calc(l - 0.1) c h);
   /* Text in light mode looks brighter, need to compensate with darker color */
@@ -25,12 +26,9 @@
     var(--primary)
   );
   --secondary-text: oklch(from var(--secondary) calc(l + 0.2) c h);
-  --highlight: light-dark(oklch(1 0 264), oklch(0.5 0 264));
-  --border: light-dark(oklch(0.6 0 264), oklch(0.4 0 264));
-  --border-muted: light-dark(oklch(0.7 0 264), oklch(0.3 0 264));
+  --highlight: light-dark(oklch(0.85 0 264), oklch(0.4 0 264));
+  --border: light-dark(oklch(0.82 0 264), oklch(0.4 0 264));
   --danger: light-dark(oklch(0.76 0.1 25), oklch(0.76 0.1 25));
-  --warning: light-dark(oklch(0.7 0.05 100), oklch(0.5 0.05 100));
-  --success: light-dark(oklch(0.76 0.1 160), oklch(0.76 0.1 160));
 
   --shadow-base: light-dark(oklch(0.75 0 0), oklch(0.15 0 0));
   --shadow-elevation-low:
@@ -75,8 +73,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: color 0.25s;
-  transition: background-color 0.25s;
 }
 
 :root:not([data-theme]),
@@ -103,10 +99,16 @@ body {
   padding: 0;
   margin: 0;
   position: relative;
+  background-color: var(--bg);
 
   &.no-scroll {
     overflow: hidden;
   }
+}
+.svg-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  background-color: var(--text);
 }
 
 .no-select {
@@ -146,19 +148,7 @@ button {
   font-family: inherit;
   background-color: var(--bg-light);
   cursor: pointer;
-  transition:
-    color 0.4s,
-    background-color 0.4s,
-    border-color 0.3s;
   border: 2px solid transparent;
-
-  &:hover {
-    border-color: var(--primary);
-  }
-  &:active {
-    background-color: var(--bg);
-    transition: background-color 0.1s;
-  }
 
   &.primary {
     background-color: var(--primary);

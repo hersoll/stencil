@@ -52,6 +52,9 @@
       font-size: 2rem;
       margin-bottom: 0.25rem;
     }
+    p {
+      color: var(--text-muted);
+    }
     strong {
       color: var(--primary-text);
     }
@@ -60,7 +63,7 @@
   .footer {
     flex: 0 0 auto;
     background-color: var(--bg);
-    border-top: 2px solid lightgray;
+    border-top: 2px solid var(--border);
     left: var(--navbar-margin);
 
     display: grid;

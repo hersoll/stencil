@@ -18,14 +18,15 @@
     ? 'nav-open'
     : 'nav-closed'}"
 >
-  <img src="layout.svg" alt={'Layout icon'} />
+  <div class="svg-icon"></div>
   {#if navbarOpen}
     <p>{i18n.t('layout_nav')}</p>
   {/if}
 </NavButton>
 
 <style>
-  img {
-    height: 0.9rem;
+  .svg-icon {
+    -webkit-mask: url('layout.svg') center / contain no-repeat;
+    mask: url('layout.svg') center / contain no-repeat;
   }
 </style>

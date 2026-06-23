@@ -46,7 +46,7 @@
     gap: 0.1rem;
 
     background-color: var(--bg);
-    border-right: 2px solid lightgray;
+    border-right: 2px solid var(--border);
 
     &.closed {
       width: var(--navbar-closed-margin);

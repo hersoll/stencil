@@ -20,7 +20,7 @@
       ? 'has-counter'
       : 'no-counter'}"
   >
-    <img src="section.svg" alt="Section icon" />
+    <div class="svg-icon"></div>
     {#if navbarOpen}
       <p class="no-select">{i18n.t('sets_nav')}</p>
     {:else if setState.addedSets.length > 0}
@@ -42,7 +42,7 @@
     margin-top: 0.5rem;
     flex-direction: column;
     gap: 0.25rem;
-    border-top: 2px solid lightgray;
+    border-top: 1px solid var(--border);
     padding-top: 0.8rem;
   }
 
@@ -63,7 +63,8 @@
     }
   }
 
-  img {
-    height: 0.8rem;
+  .svg-icon {
+    -webkit-mask: url('section.svg') center / contain no-repeat;
+    mask: url('section.svg') center / contain no-repeat;
   }
 </style>

@@ -12,6 +12,7 @@
     flex: 0 0 auto;
     display: flex;
     gap: 0.4rem;
+    height: 2.3rem;
     padding: 0.6rem 0.5rem;
     align-items: center;
     background-color: var(--bg);
@@ -21,7 +22,7 @@
     &.selected,
     &:hover {
       &:enabled {
-        background-color: var(--bg-dark);
+        background-color: var(--highlight);
       }
     }
     &.nav-closed {
