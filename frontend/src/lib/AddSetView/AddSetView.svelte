@@ -4,11 +4,12 @@
   import InitialSetOptions from './InitialSetOptions.svelte';
   import SelectAllButton from './SelectAllButton.svelte';
   import i18n from '$src/i18n.svelte';
+  import { fade } from 'svelte/transition';
 
   let { courseName }: { courseName: string } = $props();
 </script>
 
-<div class="course">
+<div class="course" in:fade={{ duration: 100 }}>
   <div class="align-wrapper">
     <div class="heading">
       <h1>{i18n.t('add_sets_heading')}</h1>
