@@ -7,6 +7,5 @@ stencil.typ
 about.toml
 about.hbs
 /**/target
-/node_modules
+/**/node_modules
 docker-compose.yml
-/**/Dockerfile
