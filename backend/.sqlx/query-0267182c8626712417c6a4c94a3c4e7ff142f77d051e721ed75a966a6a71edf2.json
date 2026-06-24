@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, name, desc_sv, desc_en        \n            FROM courses\n            WHERE id = $1",
+  "query": "SELECT id, name, desc_sv, desc_en\n            FROM courses\n            WHERE id = $1",
   "describe": {
     "columns": [
       {
@@ -36,5 +36,5 @@
       false
     ]
   },
-  "hash": "9909b1ac97d4ef2336fd36e842d22e6d35d0a920b323968948ed2a178824ad46"
+  "hash": "0267182c8626712417c6a4c94a3c4e7ff142f77d051e721ed75a966a6a71edf2"
 }
