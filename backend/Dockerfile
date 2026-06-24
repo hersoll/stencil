@@ -44,8 +44,6 @@ WORKDIR /app
 # Copy binary from builder
 COPY --from=builder /app/target/release/stencil /app/stencil
 
-# Copy .env if needed
-COPY .env /app/.env
 COPY preamble.typ /app/preamble.typ
 
 EXPOSE 3000
