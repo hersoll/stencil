@@ -2,6 +2,7 @@
   import type { View } from '$src/types';
   import i18n from '$src/i18n.svelte';
   import NavButton from './NavButton.svelte';
+  import LayoutIcon from '../SVGIcons/LayoutIcon.svelte';
 
   let {
     view = $bindable(),
@@ -18,15 +19,11 @@
     ? 'nav-open'
     : 'nav-closed'}"
 >
-  <div class="svg-icon"></div>
+  <LayoutIcon />
   {#if navbarOpen}
     <p>{i18n.t('layout_nav')}</p>
   {/if}
 </NavButton>
 
 <style>
-  .svg-icon {
-    -webkit-mask: url('layout.svg') center / contain no-repeat;
-    mask: url('layout.svg') center / contain no-repeat;
-  }
 </style>

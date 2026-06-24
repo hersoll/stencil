@@ -1,6 +1,8 @@
 <script lang="ts">
   import SettingsMenu from './SettingsMenu.svelte';
   import i18n from '$src/i18n.svelte';
+  import NavbarCloseIcon from '../SVGIcons/NavbarCloseIcon.svelte';
+  import NavbarOpenIcon from '../SVGIcons/NavbarOpenIcon.svelte';
 
   let { navbarOpen = $bindable() }: { navbarOpen: boolean } = $props();
 </script>
@@ -14,7 +16,11 @@
     onclick={() => (navbarOpen = !navbarOpen)}
     aria-label={navbarOpen ? 'Close navbar' : 'Open navbar'}
   >
-    <div class="svg-icon {navbarOpen ? 'open' : 'closed'}"></div>
+    {#if navbarOpen}
+      <NavbarCloseIcon />
+    {:else}
+      <NavbarOpenIcon />
+    {/if}
   </button>
 </footer>
 

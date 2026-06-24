@@ -2,6 +2,7 @@
   import { fade } from 'svelte/transition';
   import ThemeSwitch from './ThemeSwitch.svelte';
   import LanguageSwitch from './LanguageSwitch.svelte';
+  import SettingsIcon from '../SVGIcons/SettingsIcon.svelte';
 
   let settingsOpened = $state(false);
   // svelte-ignore non_reactive_update
@@ -33,8 +34,10 @@
     bind:this={settingsButton}
     class="settings-icon"
     onclick={() => (settingsOpened = !settingsOpened)}
-    aria-label="Settings"><div class="svg-icon"></div></button
+    aria-label="Settings"
   >
+    <SettingsIcon />
+  </button>
   {#if settingsOpened}
     <div
       class="settings-menu"

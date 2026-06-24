@@ -1,6 +1,9 @@
 <script lang="ts">
   let theme = $state(localStorage.getItem('theme') || 'system');
   import i18n from '$src/i18n.svelte';
+  import ThemeDarkIcon from '../SVGIcons/ThemeDarkIcon.svelte';
+  import ThemeLightIcon from '../SVGIcons/ThemeLightIcon.svelte';
+  import ThemeSystemIcon from '../SVGIcons/ThemeSystemIcon.svelte';
 
   function setTheme(newTheme: string) {
     theme = newTheme;
@@ -19,7 +22,7 @@
       onclick={() => setTheme('light')}
       aria-label="Light"
     >
-      <div class="svg-icon light"></div>
+      <ThemeLightIcon />
     </button>
     <button
       id="theme-dark"
@@ -27,7 +30,7 @@
       onclick={() => setTheme('dark')}
       aria-label="Dark"
     >
-      <div class="svg-icon dark"></div>
+      <ThemeDarkIcon />
     </button>
     <button
       id="theme-system"
@@ -35,7 +38,7 @@
       onclick={() => setTheme('system')}
       aria-label="System"
     >
-      <div class="svg-icon system"></div>
+      <ThemeSystemIcon />
     </button>
   </div>
 </div>
@@ -63,6 +66,7 @@
     margin: 0;
     min-width: 2rem; /* Keeps same width when icons are loading in */
     padding: 0.5rem;
+    padding-bottom: 0.35rem;
     background: none;
     border: none;
     border-radius: 0;
@@ -77,23 +81,6 @@
     &.active_theme {
       background-color: var(--highlight);
       cursor: default;
-    }
-
-    .svg-icon {
-      width: 1rem;
-      height: 1rem;
-      &.light {
-        -webkit-mask: url('theme_light.svg') center / contain no-repeat;
-        mask: url('theme_light.svg') center / contain no-repeat;
-      }
-      &.dark {
-        -webkit-mask: url('theme_dark.svg') center / contain no-repeat;
-        mask: url('theme_dark.svg') center / contain no-repeat;
-      }
-      &.system {
-        -webkit-mask: url('theme_system.svg') center / contain no-repeat;
-        mask: url('theme_system.svg') center / contain no-repeat;
-      }
     }
   }
 </style>

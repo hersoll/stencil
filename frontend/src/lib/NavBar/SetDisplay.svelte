@@ -3,6 +3,7 @@
   import type { View } from '$src/types';
   import SetCard from './SetCard.svelte';
   import i18n from '$src/i18n.svelte';
+  import SectionIcon from '../SVGIcons/SectionIcon.svelte';
   let {
     view = $bindable(),
     navbarOpen
@@ -20,7 +21,7 @@
       ? 'has-counter'
       : 'no-counter'}"
   >
-    <div class="svg-icon"></div>
+    <SectionIcon />
     {#if navbarOpen}
       <p class="no-select">{i18n.t('sets_nav')}</p>
     {:else if setState.addedSets.length > 0}

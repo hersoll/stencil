@@ -8,6 +8,7 @@
   import type { View } from '$src/types';
   import i18n from '$src/i18n.svelte';
   import NavButton from './NavButton.svelte';
+  import PDFIcon from '../SVGIcons/PDFIcon.svelte';
 
   let {
     view = $bindable(),
@@ -40,7 +41,7 @@
   disabled={!navbarOpen &&
     (loadingState.loading || setState.addedSets.length == 0)}
 >
-  <div class="svg-icon"></div>
+  <PDFIcon />
   {#if navbarOpen}
     <p>PDF</p>
     <button
@@ -53,11 +54,6 @@
 </NavButton>
 
 <style>
-  .svg-icon {
-    -webkit-mask: url('pdf.svg') center / contain no-repeat;
-    mask: url('pdf.svg') center / contain no-repeat;
-  }
-
   button {
     position: absolute;
     right: 0;
