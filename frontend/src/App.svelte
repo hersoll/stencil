@@ -45,6 +45,9 @@
   });
 </script>
 
+<svelte:head>
+  <title>{i18n.t('html_title')}</title>
+</svelte:head>
 <NavBar bind:course={activeCourseName} bind:view bind:navbarOpen />
 
 <main class={navbarOpen ? 'nav-open' : 'nav-closed'}>

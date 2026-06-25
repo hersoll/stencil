@@ -20,7 +20,9 @@
 
 <nav class={navbarOpen ? 'open' : 'closed'}>
   <div class="nav-header {navbarOpen ? 'open' : 'closed'}">
-    <a class="home-link {navbarOpen ? 'open' : 'closed'}" href="/">Stencil</a>
+    <a class="home-link {navbarOpen ? 'open' : 'closed'}" href="/"
+      >{navbarOpen ? 'stencil.nu' : 'stencil'}</a
+    >
     {#if navbarOpen}
       <CourseSelector bind:course />
     {/if}
