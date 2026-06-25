@@ -102,7 +102,7 @@ pub fn create_router() -> Router {
         ))
         .with_state(auth_limit);
 
-    let router = Router::new()
+    Router::new()
         .merge(user_routes)
         .merge(pdf_routes)
         .merge(protected_routes)
