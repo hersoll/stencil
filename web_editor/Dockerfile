@@ -7,8 +7,6 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-RUN rm -rf src/routes/edit.svelte
-RUN rm -rf src/lib/EditPage
 RUN npm run build
 
 # Production stage with nginx
