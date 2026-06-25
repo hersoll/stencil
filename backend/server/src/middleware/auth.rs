@@ -15,10 +15,14 @@ use axum::middleware::Next;
 use axum::response::IntoResponse;
 use axum::response::Response;
 use base64::Engine;
+use db::users::UserData;
 use tracing::error;
-use tracing::info;
 
 use types::errors::ApiError;
+
+/// Hash used for password verification if user does not enter a valid username. Prevents timing
+/// attacks.
+const DUMMY_HASH: &str = "$argon2i$v=19$m=16,t=2,p=1$ZGFkc2Fkd2Fkc2E$7gECsfaOVWjDZJXDzqy92g";
 
 pub async fn protected() -> String {
     String::from("You successfully reached a protected route!")
@@ -63,14 +67,24 @@ pub async fn authenticate(req: Request<Body>, next: Next) -> Response {
     };
 
     let Some((user, pass)) = creds.split_once(':') else {
-        error!("Unable to parse {creds} as user:pass");
+        error!("Unable to parse credentials as user:pass");
         return unauthorized();
     };
 
-    if let Ok(user_data) = db::users::get_user_data(user).await
-        && verify_password(pass, &user_data.password).is_ok()
-    {
-        info!("Logged in as {}", user_data.username);
+    let (user_data, found) = match db::users::get_user_data(user).await {
+        Ok(data) => (data, true),
+        Err(_) => (
+            UserData {
+                username: "not_found".to_string(),
+                password: DUMMY_HASH.to_string(),
+            },
+            false,
+        ),
+    };
+
+    let password_ok = verify_password(pass, &user_data.password).is_ok();
+
+    if found && password_ok {
         return next.run(req).await;
     }
     unauthorized()
