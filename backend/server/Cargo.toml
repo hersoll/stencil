@@ -20,7 +20,7 @@ base64 = "0.22.1"
 dotenvy = "0.15.7"
 anyhow = { version = "1.0.100", features = ["backtrace"] }
 serde = { version = "1.0.219", features = ["derive"] }
-tower-http = { version = "0.6.7", features = ["cors","trace"] }
+tower-http = { version = "0.7.0", features = ["cors","trace"] }
 tokio = { version = "1.46.1", features = ["full", "macros"] }
 tracing = "0.1.43"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }

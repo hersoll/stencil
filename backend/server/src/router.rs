@@ -1,5 +1,5 @@
 use crate::{
-    middleware::{self, auth::authenticate},
+    middleware::{self, auth::authenticate_with_limit, rate_limiting::AuthLimit},
     pdf_generation,
 };
 use axum::{
@@ -11,6 +11,8 @@ use std::time::Duration;
 use tower_http::trace::TraceLayer;
 
 pub fn create_router() -> Router {
+    let auth_limit = AuthLimit::new();
+
     let user_routes = Router::new()
         .route(
             "/translations/{lang}",
@@ -24,17 +26,21 @@ pub fn create_router() -> Router {
         .route(
             "/{lang}/problems",
             post(db::public_api::get_problems_for_topics),
-        );
+        )
+        .layer(tower_governor::GovernorLayer::new(
+            middleware::rate_limiting::json_limit(),
+        ));
     let pdf_routes = Router::new()
         .route("/pdf", post(pdf_generation::generate_pdf_from_http))
-        .route("/pdf/example", get(pdf_generation::generate_example_pdf));
+        .route("/pdf/example", get(pdf_generation::generate_example_pdf))
+        .layer(tower_governor::GovernorLayer::new(
+            middleware::rate_limiting::pdf_limit(),
+        ));
 
-    // Only included in dev build
-    #[cfg(not(feature = "docker"))]
     let protected_routes = Router::new()
         .route("/edit", get(middleware::auth::protected))
         .route("/edit/login", get(middleware::auth::login))
-        .route("/create/{user}/{pass}", post(middleware::auth::create_user))
+        //.route("/create/{user}/{pass}", post(middleware::auth::create_user))
         // ========================================
         //      PROBLEMS
         // ========================================
@@ -90,27 +96,19 @@ pub fn create_router() -> Router {
             "/edit/prefix/id/{prefix_id}",
             get(db::editing_api::get_prefix_from_id),
         )
-        .layer(axum::middleware::from_fn(authenticate));
-
-    #[cfg(feature = "docker")]
-    let api_router = Router::new()
-        .merge(user_routes)
-        .layer(tower_governor::GovernorLayer::new(
-            middleware::rate_limiting::json_limit(),
+        .layer(axum::middleware::from_fn_with_state(
+            auth_limit.clone(),
+            authenticate_with_limit,
         ))
-        .merge(pdf_routes)
-        .layer(tower_governor::GovernorLayer::new(
-            middleware::rate_limiting::pdf_limit(),
-        ));
+        .with_state(auth_limit);
 
-    #[cfg(not(feature = "docker"))]
-    let api_router = Router::new()
+    let router = Router::new()
         .merge(user_routes)
         .merge(pdf_routes)
         .merge(protected_routes);
 
     Router::new()
-        .nest("/api", api_router)
+        .nest("/api", router)
         .layer(middleware::cors::create_cors_layer())
         // Annoying type signature, don't try to extract to its own function...
         .layer(
