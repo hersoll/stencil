@@ -46,8 +46,8 @@ pub fn pdf_limit() -> Box<GovernorConfig<SmartIpKeyExtractor, NoOpMiddleware>> {
     Box::new(
         GovernorConfigBuilder::default()
             .key_extractor(SmartIpKeyExtractor)
-            .per_millisecond(500)
-            .burst_size(3)
+            .per_second(2)
+            .burst_size(5)
             .finish()
             .unwrap(),
     )
