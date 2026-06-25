@@ -108,7 +108,7 @@ pub fn create_router() -> Router {
         .merge(protected_routes);
 
     Router::new()
-        .nest("/api", router)
+        .nest("/", router)
         .layer(middleware::cors::create_cors_layer())
         // Annoying type signature, don't try to extract to its own function...
         .layer(

@@ -1,7 +1,7 @@
 import { mount } from 'svelte';
 import './App.css';
 import App from './App.svelte';
-export const API_URL = import.meta.env.VITE_API_URL || '/api';
+export const API_URL = '/api';
 
 const app = mount(App, {
   target: document.getElementById('app')!

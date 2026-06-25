@@ -3,12 +3,7 @@ use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 
 pub fn create_cors_layer() -> CorsLayer {
-    let frontend_port = if cfg!(feature = "docker") {
-        "5172"
-    } else {
-        "5173"
-    };
-    let frontend_url = format!("http://localhost:{frontend_port}");
+    let frontend_url = std::env::var("FRONTEND_URL").unwrap_or("http://localhost:5173".to_string());
 
     info!("Allowing connections from {frontend_url}.");
 
