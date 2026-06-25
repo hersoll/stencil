@@ -105,10 +105,7 @@ pub fn create_router() -> Router {
     let router = Router::new()
         .merge(user_routes)
         .merge(pdf_routes)
-        .merge(protected_routes);
-
-    Router::new()
-        .nest("/", router)
+        .merge(protected_routes)
         .layer(middleware::cors::create_cors_layer())
         // Annoying type signature, don't try to extract to its own function...
         .layer(
