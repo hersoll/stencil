@@ -82,7 +82,7 @@ pub async fn get_courses_from_chapter(chapter_id: &i32) -> Result<Vec<CourseEntr
     Ok(courses.into_iter().map(CourseEntry::from).collect())
 }
 
-pub async fn create_course_from_entry(course: CourseEntry) -> Result<i32> {
+pub async fn create_course_from_entry(course: &CourseEntry) -> Result<i32> {
     let pool = crate::get_pool();
     let created = sqlx::query!(
         r#"INSERT INTO courses (name, desc_sv, desc_en) VALUES ($1, $2, $3) 

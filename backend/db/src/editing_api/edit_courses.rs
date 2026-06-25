@@ -41,13 +41,11 @@ pub async fn get_courses_from_ids(
 }
 
 /// Create a course, including its connections to chapters, in the DB
-pub async fn create_course(
-    Json(payload): Json<(CourseEntry, Vec<i32>)>,
-) -> Result<impl IntoResponse, ApiError> {
-    tracing::debug!("Recieved: {payload:#?}");
-    let (course, chapter_ids) = payload;
-    let course_id = courses::create_course_from_entry(course).await?;
-    relationships::update_children_for_parent::<CourseChapters>(&course_id, &chapter_ids).await?;
+pub async fn create_course(Json(course): Json<CourseEntry>) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {course:#?}");
+    let course_id = courses::create_course_from_entry(&course).await?;
+    relationships::update_children_for_parent::<CourseChapters>(&course_id, &course.chapter_ids)
+        .await?;
 
     Ok((
         StatusCode::CREATED,
@@ -56,12 +54,10 @@ pub async fn create_course(
 }
 
 /// Update a course, including its connections to chapters, in the DB
-pub async fn update_course(
-    Json(payload): Json<(CourseEntry, Vec<i32>)>,
-) -> Result<impl IntoResponse, ApiError> {
-    tracing::debug!("Recieved: {payload:#?}");
-    let (course, chapter_ids) = payload;
-    relationships::update_children_for_parent::<CourseChapters>(&course.id, &chapter_ids).await?;
+pub async fn update_course(Json(course): Json<CourseEntry>) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {course:#?}");
+    relationships::update_children_for_parent::<CourseChapters>(&course.id, &course.chapter_ids)
+        .await?;
     let course_name = courses::update_course_from_entry(course).await?;
 
     Ok((
@@ -74,12 +70,9 @@ pub async fn update_course(
 ///
 /// Accepts an entire CourseEntry to keep ergonomics the same as [`create_course()`] and [`update_course()`]
 /// If optimization is needed, can be made to only need an ID
-pub async fn delete_course(
-    Json(payload): Json<CourseEntry>,
-) -> Result<impl IntoResponse, ApiError> {
-    tracing::debug!("Recieved: {payload:#?}");
-    let id = payload.id;
-    match courses::delete_course_with_id(id).await {
+pub async fn delete_course(Json(course): Json<CourseEntry>) -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved: {course:#?}");
+    match courses::delete_course_with_id(course.id).await {
         Ok(name) => Ok((StatusCode::OK, format!("Successfully deleted {name}"))),
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
