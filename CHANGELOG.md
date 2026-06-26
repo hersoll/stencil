@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.1] - 2026-06-26
+### Changed
+- Updated README.md, including example images
+
 ## [0.7.0] - 2026-06-26
 The first official GitHub release of `stencil`! This is version 0.7.0 since many many internal versions have been had before this proper Github release.
 I'm also publishing it now, in its unfinished state, to test the GitHub Actions CI.
@@ -18,7 +22,6 @@ I'm also publishing it now, in its unfinished state, to test the GitHub Actions 
 
 ### Roadmap
 To remind future me, here's the summer roadmap: 
-- **0.7.1:** Update README
 - **0.8.0:** "Contact me" popover 
 - **0.9.0:** Layout page
 - **0.10.0:** Mobile layout

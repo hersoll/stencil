@@ -1,44 +1,20 @@
-# Stencil
-Generate math problems programmatically and turn them into a problem sheet (swe: _stencil_).
+# stencil - The math problem sheet generator
+Generate math problems programmatically and turn them into a problem sheet (swedish: _stencil_).  
+Served as a website at [stencil.nu](https://www.stencil.nu/).
 
-Built with Rust, Svelte and Postgres.
+## Example
 
-## Backend
-The backend is responsible for generating and distributing problems across the stencil, as well as writing the Typst file and compiling it.
+<p align="center">
+  <img src="examples/questions.png" alt="Questions" width="49%">
+  <img src="examples/answers.png" alt="Answers" width="49%">
+</p>
 
-The backend consists of five main crates:
-- problem_generator
-- math
-- db
-- typst_writer
-- server
+## Features
+- Generate human-designed solutions for every problem
+- Control the layout of the stencil, including titles, spacing for handwriting, and more!
+- Opinionated selecting and spreading of problems to ensure a smooth difficulty curve with spaced repetition
+- Difficulty of problems are tuned to the Swedish grading system
+- B.Y.O.DB: While all problems are written in the source code, they can be arbitrarily divided into courses, chapters and topics with your own Postgres database
+- Custom web editor for easier DB modificiations
 
-### server
-Built on `axum`, the public-facing API has two main endpoint categories: the PDF endpoints and the Course endpoints.
-The PDF endpoints are for generating PDFs (no way!) and the Course endpoints are for retrieving data about courses, chapters, topics and problems.
-The two categories are rate-limited with different limits.
-
-#### PDF API
-When a HTTP request to generate a stencil is recieved, the HTTP request contains two things: a list of sets and some document-spanning options (`DocumentOptions`), which includes things like language and title.
-Each set has the following spec (`ProblemSetSpec`):
-- Which topics the problems should come from
-- Any problems to exclude from the set
-- The starting difficulty
-- The ending difficulty
-- How many problems the set contains
-- Special information about how to render this particular set (`SetOptions`), like:
-    - Number of columns
-    - Subtitle
-    - Spacing between problems
-    - etc.
-
-#### Course API
-The Course API can be accessed via the `/api/{lang}/{course}/{chapter}/{topic}` endpoint:
-
-- `/api/sv/course/ma1b` - get (in Swedish) every chapter in ma1b, every topic in each of those chapters (NOT every problem, to lessen network and memory usage)
-- `/api/en/course/ma2b/quadratics` - get (in English) every topic from the quadratics chapter
-- `/api/sv/course/ma1c/1` - get every topic from the chapter with an ID of 1 (alternative to doing it by name)
-- `/api/sv/course/ma1b/functions/f_x` - get every problem in the f(x) topic
-
-## Frontend
-Svelte
+Built using Rust, Svelte and Postgres. PDFs are generated using [Typst](https://github.com/typst/typst).
