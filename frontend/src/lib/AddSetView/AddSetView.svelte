@@ -1,15 +1,16 @@
 <script lang="ts">
   import CourseDisplay from './CourseDisplay.svelte';
   import CreateSetButton from './CreateSetButton.svelte';
-  import InitialSetOptions from './InitialSetOptions.svelte';
+  import SetOptions from './SetOptions.svelte';
   import SelectAllButton from './SelectAllButton.svelte';
+  import { setState } from '$src/globalStates.svelte';
 
   let { courseName }: { courseName: string } = $props();
 </script>
 
 <CourseDisplay {courseName} />
 <div class="footer">
-  <InitialSetOptions />
+  <SetOptions bind:set={setState.pendingSet} />
   <SelectAllButton />
   <CreateSetButton />
 </div>

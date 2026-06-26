@@ -1,17 +1,17 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import TopicCard from './TopicCard.svelte';
-  import SetOptions from './SetOptions.svelte';
-  import SetButtons from './SetButtons.svelte';
   import { setState } from '$src/globalStates.svelte';
+  import SetOptions from '../AddSetView/SetOptions.svelte';
+  import DeleteButton from './DeleteButton.svelte';
 
   let set = $derived(
     setState.addedSets.find(set => set.id === setState.currentEditedSetID)?.set
   );
 </script>
 
-<div class="topics-container">
-  {#if set && setState.currentEditedSetContents}
+{#if set && setState.currentEditedSetContents}
+  <div class="topics-container">
     <div
       class="flex-container"
       style="--max-column-count: {Math.min(
@@ -31,8 +31,12 @@
         {/each}
       </div>
     </div>
-  {/if}
-</div>
+  </div>
+  <div class="footer">
+    <SetOptions bind:set={set.problems} />
+    <DeleteButton />
+  </div>
+{/if}
 
 <style>
   :global(:root) {
@@ -76,6 +80,21 @@
 
     column-count: var(--max-column-count);
     column-gap: var(--topic-card-gap);
+  }
+
+  .footer {
+    flex: 0 0 auto;
+    background-color: var(--bg);
+    border-top: 2px solid var(--border);
+    left: var(--navbar-margin);
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    width: 100%;
+    align-items: end;
+    padding: 1rem;
+    column-gap: 2rem;
+    row-gap: 1rem;
   }
 
   /* Remember to adjust width based on --topic-card-width!
