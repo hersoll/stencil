@@ -18,6 +18,7 @@ I'm also publishing it now, in its unfinished state, to test the GitHub Actions 
 
 ### Roadmap
 To remind future me, here's the summer roadmap: 
+- **0.7.1:** Update README
 - **0.8.0:** "Contact me" popover 
 - **0.9.0:** Layout page
 - **0.10.0:** Mobile layout
