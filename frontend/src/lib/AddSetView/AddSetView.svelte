@@ -3,24 +3,11 @@
   import CreateSetButton from './CreateSetButton.svelte';
   import InitialSetOptions from './InitialSetOptions.svelte';
   import SelectAllButton from './SelectAllButton.svelte';
-  import i18n from '$src/i18n.svelte';
-  import { fade } from 'svelte/transition';
 
   let { courseName }: { courseName: string } = $props();
 </script>
 
-<div class="course" in:fade={{ duration: 100 }}>
-  <div class="align-wrapper">
-    <div class="heading">
-      <h1>{i18n.t('add_sets_heading')}</h1>
-      <p class="subtitle">
-        {i18n.t('add_sets_instruction')}
-        <strong>{i18n.t('add_set')}</strong>
-      </p>
-    </div>
-    <CourseDisplay {courseName} />
-  </div>
-</div>
+<CourseDisplay {courseName} />
 <div class="footer">
   <InitialSetOptions />
   <SelectAllButton />
@@ -28,38 +15,6 @@
 </div>
 
 <style>
-  .course {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    .align-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: start;
-    }
-  }
-
-  .heading {
-    margin-bottom: 1.5rem;
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 0.25rem;
-    }
-    p {
-      color: var(--text-muted);
-    }
-    strong {
-      color: var(--primary-text);
-    }
-  }
-
   .footer {
     flex: 0 0 auto;
     background-color: var(--bg);
@@ -87,14 +42,6 @@
     .footer {
       grid-template-columns: auto auto;
       justify-content: center;
-    }
-  }
-  @container main (width < 52rem) {
-    .course {
-      padding-top: 2rem;
-    }
-    .subtitle {
-      width: 24rem;
     }
   }
 </style>

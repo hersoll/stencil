@@ -28,6 +28,7 @@
   --secondary-text: oklch(from var(--secondary) calc(l + 0.2) c h);
   --highlight: light-dark(oklch(0.88 0 264), oklch(0.4 0 264));
   --border: light-dark(oklch(0.86 0 264), oklch(0.4 0 264));
+  --strong-border: light-dark(oklch(0.7 0 264), oklch(0.6 0 264));
   --danger: light-dark(oklch(0.76 0.1 25), oklch(0.76 0.1 25));
 
   --shadow-base: light-dark(oklch(0.75 0 0), oklch(0.15 0 0));

@@ -12,33 +12,35 @@
     topic
   }: { problems: ProblemOptions; topic: TopicWithProblems } = $props();
 
-  let excludedProblemCount = $state(0);
+  let excludedProblemCount = $derived(
+    problems.exclusions.filter(
+      id => topic.problems.find(problem => problem.id == id) != undefined
+    ).length
+  );
 
   function excludeProblem(id: number) {
     if (problems.exclusions.includes(id)) {
       problems.exclusions = problems.exclusions.filter(e => e !== id);
-      excludedProblemCount--;
     } else {
       problems.exclusions.push(id);
-      excludedProblemCount++;
     }
   }
 
   function excludeAll(event: MouseEvent) {
-    const topicContainer = (event.target as HTMLElement).parentElement;
+    const topicContainer = (event.target as HTMLElement).parentElement
+      ?.parentElement;
     topicContainer
-      ?.querySelectorAll<HTMLButtonElement>(
-        'button.problem-grid:not(.excluded)'
-      )
+      ?.querySelectorAll<HTMLButtonElement>('button.problem:not(.excluded)')
       .forEach(btn => {
         btn.click();
       });
   }
 
   function includeAll(event: MouseEvent) {
-    const topicContainer = (event.target as HTMLElement).parentElement;
+    const topicContainer = (event.target as HTMLElement).parentElement
+      ?.parentElement;
     topicContainer
-      ?.querySelectorAll<HTMLButtonElement>('button.problem-grid.excluded')
+      ?.querySelectorAll<HTMLButtonElement>('button.problem.excluded')
       .forEach(btn => {
         btn.click();
       });
@@ -58,11 +60,20 @@
 </script>
 
 <div class="topic-container" id="topic-container">
-  <h2>{topic.desc}</h2>
+  <div class="topic-header">
+    <h2>{topic.desc}</h2>
+    <button
+      class="select-all-btn"
+      onclick={excludedProblemCount == 0 ? excludeAll : includeAll}
+      >{excludedProblemCount == 0
+        ? i18n.t('select_all')
+        : i18n.t('clear')}</button
+    >
+  </div>
   {#if problemsToDisplay.length > 0}
     {#each problemsToDisplay as problem}
       <button
-        class="problem-grid {problems.exclusions.includes(problem.id)
+        class="problem {problems.exclusions.includes(problem.id)
           ? 'excluded'
           : ''}"
         onclick={() => excludeProblem(problem.id)}
@@ -73,13 +84,6 @@
         </p>
       </button>
     {/each}
-    <button
-      class="select-all-btn"
-      onclick={excludedProblemCount == 0 ? excludeAll : includeAll}
-      >{excludedProblemCount == 0
-        ? i18n.t('select_all')
-        : i18n.t('clear')}</button
-    >
   {:else}
     <span class="problem-grid">
       <p>{i18n.t('no_problems_in_range')}</p>
@@ -89,29 +93,34 @@
 </div>
 
 <style>
-  /* Used in parent to keep scrollbar on the left side*/
-  * {
-    direction: ltr;
-  }
   .topic-container {
     display: flex;
     flex-direction: column;
-    background-color: var(--bg-light);
-    border-radius: 1rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: var(--shadow-elevation-medium);
+    width: var(--topic-card-width);
+    padding-bottom: 1rem;
+    break-inside: avoid;
   }
 
-  .problem-grid {
-    padding: 0.1rem 0;
+  .topic-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--strong-border);
+  }
+
+  .problem {
+    padding: 0;
+    height: 1.75rem;
     display: grid;
-    grid-template-columns: 35rem 3.5rem;
-    padding-right: 1rem;
-    border: 2px solid transparent;
+    grid-template-columns: auto 3.5rem;
+    align-items: center;
+    border-radius: 0;
+    background: none;
     p {
       color: var(--text-muted);
       width: fit-content;
+      text-align: left;
       transition:
         color 0.15s,
         text-decoration 0.15s;
@@ -141,41 +150,28 @@
     }
 
     &:active {
-      background-color: var(--bg-light);
       .clickable {
         color: var(--text);
       }
     }
   }
-  h2 {
-    margin-top: -0.25rem;
-    margin-bottom: 0.5rem;
-  }
 
   .select-all-btn {
     width: fit-content;
+    padding: 0;
+    padding-bottom: 0.5rem;
+    font-size: 1.1rem;
     align-self: self-end;
-    margin-top: 1rem;
-    border: 2px solid var(--bg);
-    box-shadow: var(--shadow-elevation-low);
+    background: none;
+    border: none;
+    color: var(--primary-text);
+    transition: color 0.15s;
 
     &:hover {
-      border-color: var(--primary);
+      color: var(--seconday-text);
     }
-  }
-
-  @media (max-width: 50rem) {
-    .problem-grid {
-      grid-template-columns: 1fr;
-      grid-template-rows: 1fr 1fr;
-    }
-
-    .problem-descriptor {
-      max-width: 15rem;
-      text-align: left;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+    &:active {
+      color: var(--primary-text);
     }
   }
 </style>

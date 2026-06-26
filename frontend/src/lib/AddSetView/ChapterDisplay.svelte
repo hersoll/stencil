@@ -20,9 +20,9 @@
     display: grid;
   }
   h2 {
-    font-size: 1.4rem;
-    margin: 0 0 0.5rem 0;
     color: var(--text);
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--strong-border);
   }
 
   .chapter-card {
@@ -32,7 +32,6 @@
     width: 24rem;
     justify-self: stretch;
     break-inside: avoid;
-    border-top: 1px solid var(--border);
-    padding: 1rem 0;
+    padding-bottom: 1rem;
   }
 </style>

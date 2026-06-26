@@ -31,10 +31,19 @@
 <style>
   div {
     display: flex;
+    height: 1.75rem;
     gap: 0.25rem;
     align-items: center;
+    input {
+      margin-top: 0.1rem;
+    }
     label {
       color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s;
+      &:active {
+        color: var(--secondary-text);
+      }
     }
     &:hover {
       cursor: pointer;
@@ -44,21 +53,6 @@
       input {
         cursor: pointer;
       }
-    }
-  }
-  input {
-    margin-top: 0.1rem;
-  }
-  label {
-    cursor: pointer;
-    transition: color 0.2s;
-    &:hover {
-      color: var(--primary-text);
-      cursor: pointer;
-    }
-
-    &:active {
-      color: var(--secondary-text);
     }
   }
 </style>
