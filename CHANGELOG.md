@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Changed
+- Settings menu is now a native HTML popover element
+
 ## [0.7.1] - 2026-06-26
 ### Changed
 - Updated README.md, including example images
@@ -22,8 +26,8 @@ I'm also publishing it now, in its unfinished state, to test the GitHub Actions 
 
 ### Roadmap
 To remind future me, here's the summer roadmap: 
-- **0.8.0:** "Contact me" popover 
-- **0.9.0:** Layout page
-- **0.10.0:** Mobile layout
-- **0.11.0:** Metrics collection and stats webpage
+- **0.7.2:** "Contact me" popover 
+- **0.8.0:** Layout page
+- **0.9.0:** Mobile layout
+- **0.10.0:** Metrics collection and stats webpage
 - **1.0.0:** Release! 😵‍💫 Add as many problems as humanly possible.
