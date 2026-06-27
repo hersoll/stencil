@@ -1,6 +1,6 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import swishPng from '$src/assets/swish.png';
+  import swishQR from '$src/assets/swish.webp';
 
   const emailAddress = 'kontakt@stencil.nu';
 </script>
@@ -19,7 +19,7 @@
     <p class="contact-text">
       {i18n.t('support_the_site')}
     </p>
-    <img src={swishPng} alt="Swish QR" class="swish-image" />
+    <img src={swishQR} alt="Swish QR" class="swish-image" />
   </div>
 </div>
 
