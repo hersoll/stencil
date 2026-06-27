@@ -5,8 +5,7 @@ export default {
   kit: {
     alias: {
       $lib: 'src/lib',
-      $components: 'src/components',
-      $routes: 'src/routes'
+      $components: 'src/components'
     }
   }
 };

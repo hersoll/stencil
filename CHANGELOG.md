@@ -6,6 +6,7 @@
 
 ### Fixed
 - Removed dangling CSS style
+- Removed svelte router plugin
 
 ## [0.7.2] - 2026-06-27
 ### Added
