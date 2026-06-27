@@ -4,6 +4,9 @@
 ### Changed
 - Swish QR image optimized from 125 kB to 8 kB.
 
+### Fixed
+- Removed dangling CSS style
+
 ## [0.7.2] - 2026-06-27
 ### Added
 - New "Contact me" popover with email link and Swish QR

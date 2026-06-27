@@ -63,9 +63,4 @@
       margin: 0;
     }
   }
-
-  .svg-icon {
-    -webkit-mask: url('section.svg') center / contain no-repeat;
-    mask: url('section.svg') center / contain no-repeat;
-  }
 </style>
