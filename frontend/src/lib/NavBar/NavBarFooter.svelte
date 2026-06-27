@@ -1,8 +1,8 @@
 <script lang="ts">
   import SettingsMenu from './SettingsMenu.svelte';
-  import i18n from '$src/i18n.svelte';
   import NavbarCloseIcon from '../SVGIcons/NavbarCloseIcon.svelte';
   import NavbarOpenIcon from '../SVGIcons/NavbarOpenIcon.svelte';
+  import ContactMe from './ContactMe.svelte';
 
   let { navbarOpen = $bindable() }: { navbarOpen: boolean } = $props();
 </script>
@@ -10,7 +10,7 @@
 <footer class={navbarOpen ? 'open' : 'closed'}>
   {#if navbarOpen}
     <SettingsMenu />
-    <button style="color: var(--text-muted);">{i18n.t('support_me')}</button>
+    <ContactMe />
   {/if}
   <button
     onclick={() => (navbarOpen = !navbarOpen)}
@@ -47,19 +47,6 @@
     font-size: 0.7rem;
     &:hover {
       border: none;
-    }
-
-    .svg-icon {
-      width: 1.2rem;
-      height: 1.2rem;
-      &.open {
-        -webkit-mask: url('navbar_close.svg') center / contain no-repeat;
-        mask: url('navbar_close.svg') center / contain no-repeat;
-      }
-      &.closed {
-        -webkit-mask: url('navbar_open.svg') center / contain no-repeat;
-        mask: url('navbar_open.svg') center / contain no-repeat;
-      }
     }
   }
 </style>

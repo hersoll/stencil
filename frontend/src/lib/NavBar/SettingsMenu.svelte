@@ -40,14 +40,14 @@
     border: none;
     background: none;
 
-    transition: all 0.3s allow-discrete;
+    transition: all 0.25s allow-discrete;
     .settings-menu {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
 
       background-color: var(--bg-light);
-      border: 1px solid gray;
+      border: 1px solid var(--strong-border);
       padding: 0.5rem;
       border-radius: 0.5rem;
     }

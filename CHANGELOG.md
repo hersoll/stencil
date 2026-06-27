@@ -1,6 +1,9 @@
 # Changelog
 
-## [Unreleased]
+## [0.7.2] - 2026-06-27
+### Added
+- New "Contact me" popover with email link and Swish QR
+
 ### Changed
 - Settings menu is now a native HTML popover element
 
