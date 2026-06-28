@@ -8,6 +8,8 @@
     type TopicWithProblems,
     type View
   } from '$src/types';
+  import DeleteIcon from '../SVGIcons/DeleteIcon.svelte';
+  import ReorderIcon from '../SVGIcons/ReorderIcon.svelte';
 
   let {
     set = $bindable(),
@@ -59,54 +61,68 @@
   });
 </script>
 
-<button
-  class="set-container {view === 'editSet' &&
-  setState.currentEditedSetID === setID
-    ? 'selected'
-    : ''}
+<div class="card">
+  <button
+    class="set-btn {view === 'editSet' && setState.currentEditedSetID === setID
+      ? 'selected'
+      : ''}
   {navbarOpen ? 'nav-open' : 'nav-closed'}"
-  in:fly={{ y: 40, duration: 400 }}
-  disabled={topicsWithProblems.length == 0}
-  onclick={() => {
-    setState.currentEditedSetID = setID;
-    setState.currentEditedSetContents = topicsWithProblems;
-    view = 'editSet';
-  }}
->
-  {#if showLoadingMessage}
-    <h3 in:fade={{ duration: 500 }}>{i18n.t('loading')}...</h3>
-  {:else if topicsWithProblems.length <= MAX_TOPICS_SHOWN}
-    {#each topicsWithProblems as topic}
-      <h3 in:fade={{ duration: 200 }}>{topic.desc}</h3>
-    {/each}
-  {:else}
-    <h3 in:fade={{ duration: 200 }}>
-      {topicsWithProblems[0].desc}
-    </h3>
-    <h3 in:fade={{ duration: 200 }}>
-      + {topicsWithProblems.length - 1}
-      {i18n.t('topics').toLowerCase()}
-    </h3>
-  {/if}
-  <div class="set-description">
-    <p in:fade={{ duration: 300 }}>
-      {set.problems.n}
-      {i18n.t('problems').toLowerCase()}
-    </p>
-    <p in:fade={{ duration: 300 }}>
-      {set.problems.startingDifficulty == set.problems.endingDifficulty
-        ? i18n.t(set.problems.startingDifficulty)
-        : i18n.t(set.problems.startingDifficulty) +
-          ' ' +
-          i18n.t('to') +
-          ' ' +
-          i18n.t(set.problems.endingDifficulty)}
-    </p>
+    in:fly={{ y: 40, duration: 400 }}
+    disabled={topicsWithProblems.length == 0}
+    onclick={() => {
+      setState.currentEditedSetID = setID;
+      setState.currentEditedSetContents = topicsWithProblems;
+      view = 'editSet';
+    }}
+  >
+    {#if showLoadingMessage}
+      <h3 in:fade={{ duration: 500 }}>{i18n.t('loading')}...</h3>
+    {:else if topicsWithProblems.length <= MAX_TOPICS_SHOWN}
+      {#each topicsWithProblems as topic}
+        <h3 in:fade={{ duration: 200 }}>{topic.desc}</h3>
+      {/each}
+    {:else}
+      <h3 in:fade={{ duration: 200 }}>
+        {topicsWithProblems[0].desc}
+      </h3>
+      <h3 in:fade={{ duration: 200 }}>
+        + {topicsWithProblems.length - 1}
+        {i18n.t('topics').toLowerCase()}
+      </h3>
+    {/if}
+    <div class="set-description">
+      <p in:fade={{ duration: 300 }}>
+        {set.problems.n}
+        {i18n.t('problems').toLowerCase()}
+      </p>
+      <p in:fade={{ duration: 300 }}>
+        {set.problems.startingDifficulty == set.problems.endingDifficulty
+          ? i18n.t(set.problems.startingDifficulty)
+          : i18n.t(set.problems.startingDifficulty) +
+            ' ' +
+            i18n.t('to') +
+            ' ' +
+            i18n.t(set.problems.endingDifficulty)}
+      </p>
+    </div>
+  </button>
+
+  <div class="icon-container">
+    <button class="reorder-btn">
+      <ReorderIcon />
+    </button>
+
+    <button class="delete-btn" onclick={deleteSet}>
+      <DeleteIcon />
+    </button>
   </div>
-</button>
+</div>
 
 <style>
-  .set-container {
+  .card {
+    position: relative;
+  }
+  .set-btn {
     text-align: left;
     background-color: var(--bg);
     padding: 0.5rem;
@@ -114,6 +130,8 @@
     position: relative;
     width: 100%;
     border: none;
+    display: flex;
+    flex-direction: column;
 
     &.nav-closed {
       display: none;
@@ -145,10 +163,42 @@
       margin-top: 0.15rem;
       color: var(--text-muted);
     }
+
     .set-description {
       margin-top: 0.2rem;
       display: flex;
       flex-direction: column;
+    }
+  }
+  .icon-container {
+    position: absolute;
+    right: 0.2rem;
+    bottom: 0.2rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    button {
+      background: none;
+      padding: 0.3rem;
+      border: none;
+      transition: background-color 0.2s;
+    }
+
+    button > :global(svg) {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .delete-btn {
+      &:hover {
+        background-color: var(--danger);
+      }
+    }
+  }
+
+  .card:hover {
+    .icon-container :global(svg) {
+      opacity: 1;
     }
   }
 </style>

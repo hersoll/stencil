@@ -1,6 +1,9 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Delete icon on SetCard
+
 ### Changed
 - Swish QR image optimized from 125 kB to 8 kB.
 
