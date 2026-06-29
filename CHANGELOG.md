@@ -4,6 +4,7 @@
 ### Added
 - Delete icon on SetCard
 - Reorder icon on SetCard which reorders on drag
+- Error log when no Authorization header is present at all
 
 ### Changed
 - Swish QR image optimized from 125 kB to 8 kB.
@@ -12,6 +13,7 @@
 - Removed dangling CSS style
 - Removed svelte router plugin
 - Updated web_editor package-lock.json
+- Dev path for server in web_editor updated (Did it break production? We'll see 🥰)
 
 ## [0.7.2] - 2026-06-27
 ### Added
