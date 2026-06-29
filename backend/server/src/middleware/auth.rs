@@ -83,6 +83,7 @@ pub async fn authenticate_with_limit(
 
 async fn authenticate(auth_header: Option<String>) -> AuthResult {
     let Some(auth) = auth_header else {
+        error!("No Authorization header at all");
         return AuthResult::NoHeader;
     };
 
