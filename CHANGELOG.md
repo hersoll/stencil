@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Delete icon on SetCard
+- Reorder icon on SetCard which reorders on drag
 
 ### Changed
 - Swish QR image optimized from 125 kB to 8 kB.
@@ -10,6 +11,7 @@
 ### Fixed
 - Removed dangling CSS style
 - Removed svelte router plugin
+- Updated web_editor package-lock.json
 
 ## [0.7.2] - 2026-06-27
 ### Added

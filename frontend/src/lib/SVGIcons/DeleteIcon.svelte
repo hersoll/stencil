@@ -1,7 +1,7 @@
 <script lang="ts">
 </script>
 
-<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+<svg viewBox="0 0 23 24" xmlns="http://www.w3.org/2000/svg" fill="none">
   <path
     d="M10 12V17"
     stroke="color"
@@ -41,8 +41,9 @@
 
 <style>
   svg {
-    width: 0.9rem;
-    height: 0.9rem;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.15rem;
     stroke: var(--text-muted);
     transition: stroke 0.4s;
   }

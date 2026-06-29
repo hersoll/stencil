@@ -14,11 +14,13 @@
   let {
     set = $bindable(),
     setID,
+    setIndex,
     view = $bindable(),
     navbarOpen
   }: {
     set: ProblemSetSpec;
     setID: number;
+    setIndex: number;
     view: View;
     navbarOpen: boolean;
   } = $props();
@@ -27,6 +29,8 @@
 
   let topicsWithProblems = $state<TopicWithProblems[]>([]);
   let showLoadingMessage = $state(false);
+  let isDraggable = $state(false);
+  let isDragging = $derived(setState.draggedSetIndex == setIndex);
 
   const delay = setTimeout(() => {
     if (topicsWithProblems.length == 0) showLoadingMessage = true;
@@ -59,13 +63,46 @@
       fetchProblems();
     }
   });
+
+  function handleDragStart() {
+    setState.draggedSetIndex = setIndex;
+  }
+
+  function handleDragEnd() {
+    setState.draggedSetIndex = null;
+    isDraggable = false;
+  }
+  // Move the set if another set is dragged over it
+  function handleDragOver(e: DragEvent) {
+    e.preventDefault();
+
+    if (
+      setState.draggedSetIndex == null ||
+      setState.draggedSetIndex === setIndex
+    )
+      return;
+
+    const newSetOrder = [...setState.addedSets];
+    const [removed_set] = newSetOrder.splice(setState.draggedSetIndex, 1);
+    newSetOrder.splice(setIndex, 0, removed_set);
+    setState.addedSets = newSetOrder;
+
+    setState.draggedSetIndex = setIndex;
+  }
 </script>
 
-<div class="card">
+<div
+  class="card {view === 'editSet' && setState.currentEditedSetID === setID
+    ? 'selected'
+    : ''} 
+  {isDragging ? 'dragging' : ''}"
+  draggable={isDraggable}
+  ondragstart={handleDragStart}
+  ondragend={handleDragEnd}
+  ondragover={handleDragOver}
+>
   <button
-    class="set-btn {view === 'editSet' && setState.currentEditedSetID === setID
-      ? 'selected'
-      : ''}
+    class="set-btn
   {navbarOpen ? 'nav-open' : 'nav-closed'}"
     in:fly={{ y: 40, duration: 400 }}
     disabled={topicsWithProblems.length == 0}
@@ -108,7 +145,11 @@
   </button>
 
   <div class="icon-container">
-    <button class="reorder-btn">
+    <button
+      class="reorder-btn"
+      onmouseover={() => (isDraggable = true)}
+      onfocus={() => (isDraggable = true)}
+    >
       <ReorderIcon />
     </button>
 
@@ -121,14 +162,27 @@
 <style>
   .card {
     position: relative;
+    background-color: var(--bg);
+    border-radius: 0.5rem;
+    &.selected {
+      background-color: var(--highlight);
+      .icon-container {
+        .reorder-btn {
+          &:hover {
+            background-color: var(--bg);
+          }
+        }
+      }
+    }
+    &.dragging {
+      background-color: var(--highlight);
+    }
   }
   .set-btn {
     text-align: left;
-    background-color: var(--bg);
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    position: relative;
+    background: none;
     width: 100%;
+    padding: 0.5rem;
     border: none;
     display: flex;
     flex-direction: column;
@@ -147,9 +201,6 @@
       }
     }
 
-    &.selected {
-      background-color: var(--highlight);
-    }
     h3 {
       font-size: 0.9rem;
       color: var(--text);
@@ -179,14 +230,23 @@
     align-items: center;
     button {
       background: none;
-      padding: 0.3rem;
       border: none;
+      width: 1.5rem;
+      height: 1.5rem;
+      padding: 0;
       transition: background-color 0.2s;
     }
 
     button > :global(svg) {
       opacity: 0;
       transition: opacity 0.3s;
+    }
+
+    .reorder-btn {
+      &:hover {
+        cursor: grab;
+        background-color: var(--highlight);
+      }
     }
 
     .delete-btn {

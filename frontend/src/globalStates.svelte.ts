@@ -20,12 +20,14 @@ export let setState = $state<{
   currentEditedSetID: number | null;
   currentEditedSetContents: TopicWithProblems[] | null;
   setCount: number;
+  draggedSetIndex: number | null;
 }>({
   addedSets: [],
   pendingSet: defaultProblemOptions,
   currentEditedSetID: null,
   currentEditedSetContents: null,
-  setCount: 0
+  setCount: 0,
+  draggedSetIndex: null
 });
 export let documentOptions = $state<DocumentOptions>(defaultDocumentOptions);
 
