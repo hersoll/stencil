@@ -30,9 +30,17 @@
       <p class="no-select"></p>
     {/if}
   </div>
-  {#each setState.addedSets as set, i}
-    <SetCard set={set.set} setID={set.id} setIndex={i} bind:view {navbarOpen} />
-  {/each}
+  {#if navbarOpen}
+    {#each setState.addedSets as set, i}
+      <SetCard
+        set={set.set}
+        setID={set.id}
+        setIndex={i}
+        bind:view
+        {navbarOpen}
+      />
+    {/each}
+  {/if}
 </div>
 
 <style>

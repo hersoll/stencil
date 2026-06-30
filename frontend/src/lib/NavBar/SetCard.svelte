@@ -313,7 +313,7 @@
     }
 
     button {
-      padding: 0.3rem;
+      padding: 0.4rem;
       margin: 0;
       width: auto;
       height: auto;

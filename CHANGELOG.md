@@ -1,6 +1,13 @@
 # Changelog
 
-## [Unreleased]
+## [0.7.4] - ADD DATE
+### Changed
+- Padding increased on Move Up/Move Down buttons
+
+### Fixed
+- SetCard icons (delete, etc.) no longer appear when navbar is closed
+
+## [0.7.3] - 2026-06-30
 ### Added
 - Delete icon on SetCard
 - Reorder icon on SetCard with both click and drag functionality
@@ -44,8 +51,8 @@ I'm also publishing it now, in its unfinished state, to test the GitHub Actions 
 
 ### Roadmap
 To remind future me, here's the summer roadmap: 
-- **0.7.2:** "Contact me" popover 
 - **0.8.0:** Layout page
-- **0.9.0:** Mobile layout
-- **0.10.0:** Metrics collection and stats webpage
+- **0.9.0:** Metrics collection and stats webpage
+- **0.10.0:** Adjust selection algorithm
+- **0.11.0:** Mobile layout
 - **1.0.0:** Release! 😵‍💫 Add as many problems as humanly possible.
