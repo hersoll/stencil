@@ -64,6 +64,13 @@
     }
   });
 
+  function moveSetToIndex(newIndex: number) {
+    const newSetOrder = [...setState.addedSets];
+    const [removed_set] = newSetOrder.splice(newIndex, 1);
+    newSetOrder.splice(setIndex, 0, removed_set);
+    setState.addedSets = newSetOrder;
+  }
+
   function handleDragStart() {
     setState.draggedSetIndex = setIndex;
   }
@@ -82,11 +89,7 @@
     )
       return;
 
-    const newSetOrder = [...setState.addedSets];
-    const [removed_set] = newSetOrder.splice(setState.draggedSetIndex, 1);
-    newSetOrder.splice(setIndex, 0, removed_set);
-    setState.addedSets = newSetOrder;
-
+    moveSetToIndex(setState.draggedSetIndex);
     setState.draggedSetIndex = setIndex;
   }
 </script>
@@ -96,6 +99,7 @@
     ? 'selected'
     : ''} 
   {isDragging ? 'dragging' : ''}"
+  role="listitem"
   draggable={isDraggable}
   ondragstart={handleDragStart}
   ondragend={handleDragEnd}
@@ -149,6 +153,7 @@
       class="reorder-btn"
       onmouseover={() => (isDraggable = true)}
       onfocus={() => (isDraggable = true)}
+      popovertarget="reordering-popover-{setIndex}"
     >
       <ReorderIcon />
     </button>
@@ -156,6 +161,26 @@
     <button class="delete-btn" onclick={deleteSet}>
       <DeleteIcon />
     </button>
+    <div popover id="reordering-popover-{setIndex}" class="reordering-popover">
+      <button
+        class="move-up-btn"
+        disabled={setIndex === 0}
+        onclick={() => moveSetToIndex(setIndex - 1)}
+        popovertarget="reordering-popover-{setIndex}"
+        popovertargetaction="hide"
+      >
+        {i18n.t('move_up')}
+      </button>
+      <button
+        class="move-down-btn"
+        disabled={setIndex === setState.addedSets.length - 1}
+        onclick={() => moveSetToIndex(setIndex + 1)}
+        popovertarget="reordering-popover-{setIndex}"
+        popovertargetaction="hide"
+      >
+        {i18n.t('move_down')}
+      </button>
+    </div>
   </div>
 </div>
 
@@ -259,6 +284,50 @@
   .card:hover {
     .icon-container :global(svg) {
       opacity: 1;
+    }
+  }
+
+  .reordering-popover {
+    inset: auto;
+    margin: 0;
+    position-area: top;
+    opacity: 0;
+
+    padding: 0;
+    border: 2px solid var(--bg-light);
+    border-radius: 0.5rem;
+    background: none;
+    margin-bottom: 0.25rem;
+
+    transition: all 0.25s allow-discrete;
+
+    &:popover-open {
+      opacity: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    @starting-style {
+      &:popover-open {
+        opacity: 0;
+      }
+    }
+
+    button {
+      padding: 0.3rem;
+      margin: 0;
+      width: auto;
+      height: auto;
+      font-size: 0.8rem;
+      background-color: var(--bg-light);
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      &:hover:enabled {
+        background-color: var(--bg-dark);
+      }
+      &:disabled {
+        color: lightgray;
+      }
     }
   }
 </style>
