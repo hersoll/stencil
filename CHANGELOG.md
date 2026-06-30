@@ -3,7 +3,7 @@
 ## [Unreleased]
 ### Added
 - Delete icon on SetCard
-- Reorder icon on SetCard which reorders on drag
+- Reorder icon on SetCard with both click and drag functionality
 - Error log when no Authorization header is present at all
 
 ### Changed
