@@ -5,6 +5,7 @@
 - Padding increased on Move Up/Move Down buttons
 
 ### Fixed
+- Label "File name" in PDF View now changes with the language
 - SetCard icons (delete, etc.) no longer appear when navbar is closed
 
 ## [0.7.3] - 2026-06-30

@@ -1,9 +1,10 @@
 <script lang="ts">
   import { PDFState } from '$src/globalStates.svelte';
+  import i18n from '$src/i18n.svelte';
 </script>
 
 <div>
-  <label for="file-name">Filnamn</label>
+  <label for="file-name">{i18n.t('file_name')}</label>
   <input name="file-name" type="text" bind:value={PDFState.fileName} />
 </div>
 
