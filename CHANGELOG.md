@@ -1,7 +1,6 @@
 # TODO
 
-- Layout page
-- Fix Typst injections
+- Layout styling
 - Tooltips
 - Metrics collection and stats webpage
 - Adjust selection algorithm
@@ -9,7 +8,7 @@
 
 # Changelog
 
-## [0.8.0] - ADD DATE
+## [0.8.0] - TBD
 ### Added
 - Layout view where a rough layout of the stencil can be viewed and edited
 
@@ -19,6 +18,7 @@
 - The descriptions for topics and problems now live in the global state for easier access for multiple components
 
 ### Fixed
+- Prevented Typst injections when adding custom text to stencil
 - Label "File name" in PDF View now changes with the language
 - SetCard icons (delete, etc.) no longer appear when navbar is closed
 

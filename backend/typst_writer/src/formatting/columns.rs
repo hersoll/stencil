@@ -34,10 +34,10 @@ pub fn questions_to_balanced_columns(
         };
 
         let heading_setting = if let Some(option) = set_options.get(i) {
-            if option.heading.is_empty() {
+            if option.heading.as_ref().is_empty() {
                 String::new()
             } else {
-                format!(", title: [{}]", reformat_newlines(&option.heading))
+                format!(", title: [{}]", reformat_newlines(option.heading.as_ref()))
             }
         } else {
             String::new()

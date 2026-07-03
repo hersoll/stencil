@@ -1,7 +1,7 @@
 use crate::{colors, formatting, preamble::PREAMBLE_STR, prefix_handler};
 use anyhow::Result;
 use db;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 use tracing::{error, warn};
@@ -20,6 +20,34 @@ const DEFAULT_PAR_SPACING: Option<u8> = None;
 const DEFAULT_COLORS: bool = true;
 const DEFAULT_PAGE_BREAK_BEFORE_ANSWERS: bool = true;
 
+const DISALLOWED_CHARS: &str = "[]#\"'";
+
+#[derive(Debug, PartialEq, Clone, Serialize)]
+pub struct SanitizedTypstString(pub String);
+
+impl<'de> Deserialize<'de> for SanitizedTypstString {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let mut s = String::deserialize(deserializer)?;
+        s.retain(|c| !DISALLOWED_CHARS.contains(c));
+        Ok(Self(s))
+    }
+}
+
+impl AsRef<str> for SanitizedTypstString {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
+impl SanitizedTypstString {
+    fn new() -> Self {
+        Self(String::new())
+    }
+}
+
 /// A set of questions grouped together in the final PDF
 #[derive(Debug, Default)]
 pub struct QuestionSet {
@@ -36,7 +64,7 @@ pub struct AnswerSet {
 #[serde(rename_all = "camelCase")]
 pub struct QuestionSetOptions {
     pub question_columns: u8,
-    pub heading: String,
+    pub heading: SanitizedTypstString,
     pub spacing: Option<u16>,
     pub pagebreak_after: bool,
 }
@@ -44,7 +72,7 @@ impl Default for QuestionSetOptions {
     fn default() -> Self {
         QuestionSetOptions {
             question_columns: DEFAULT_QUESTION_COLUMNS,
-            heading: String::new(),
+            heading: SanitizedTypstString::new(),
             spacing: None,
             pagebreak_after: false,
         }
