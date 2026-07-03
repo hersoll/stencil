@@ -1,7 +1,6 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import { API_URL } from '$src/main';
-  import { error, setState } from '$src/globalStates.svelte';
+  import { setState } from '$src/globalStates.svelte';
   import { fade, fly } from 'svelte/transition';
   import {
     type ProblemSetSpec,
@@ -10,15 +9,18 @@
   } from '$src/types';
   import DeleteIcon from '../SVGIcons/DeleteIcon.svelte';
   import ReorderIcon from '../SVGIcons/ReorderIcon.svelte';
+  import { fetchProblemsForTopics } from '$src/commonFunctions.svelte';
 
   let {
-    set = $bindable(),
+    options = $bindable(),
+    topicsWithProblems = $bindable(),
     setID,
     setIndex,
     view = $bindable(),
     navbarOpen
   }: {
-    set: ProblemSetSpec;
+    options: ProblemSetSpec;
+    topicsWithProblems: TopicWithProblems[];
     setID: number;
     setIndex: number;
     view: View;
@@ -27,40 +29,24 @@
 
   const MAX_TOPICS_SHOWN = 3;
 
-  let topicsWithProblems = $state<TopicWithProblems[]>([]);
-  let showLoadingMessage = $state(false);
   let isDraggable = $state(false);
   let isDragging = $derived(setState.draggedSetIndex == setIndex);
-
-  const delay = setTimeout(() => {
-    if (topicsWithProblems.length == 0) showLoadingMessage = true;
-  }, 600);
-
-  async function fetchProblems() {
-    const res = await fetch(`${API_URL}/${i18n.currentLanguage}/problems`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(set.problems.topics)
-    });
-    showLoadingMessage = false;
-    clearTimeout(delay);
-    if (!res.ok) {
-      error.message = `Status code ${res.status} \n ${await res.text()}`;
-    }
-    topicsWithProblems = await res.json();
-  }
+  let fetchedForLanguage = $state(i18n.currentLanguage);
 
   function deleteSet() {
     setState.addedSets = setState.addedSets.filter(
       addedSet => addedSet.id !== setID
     );
   }
+  async function updateTopics() {
+    fetchedForLanguage = i18n.currentLanguage;
+    let topic_ids = topicsWithProblems.map(topic => topic.id);
+    topicsWithProblems = await fetchProblemsForTopics(topic_ids);
+  }
 
   $effect(() => {
-    if (i18n.currentLanguage) {
-      fetchProblems();
+    if (i18n.currentLanguage != fetchedForLanguage) {
+      updateTopics();
     }
   });
 
@@ -112,13 +98,10 @@
     disabled={topicsWithProblems.length == 0}
     onclick={() => {
       setState.currentEditedSetID = setID;
-      setState.currentEditedSetContents = topicsWithProblems;
       view = 'editSet';
     }}
   >
-    {#if showLoadingMessage}
-      <h3 in:fade={{ duration: 500 }}>{i18n.t('loading')}...</h3>
-    {:else if topicsWithProblems.length <= MAX_TOPICS_SHOWN}
+    {#if topicsWithProblems.length <= MAX_TOPICS_SHOWN}
       {#each topicsWithProblems as topic}
         <h3 in:fade={{ duration: 200 }}>{topic.desc}</h3>
       {/each}
@@ -133,17 +116,18 @@
     {/if}
     <div class="set-description">
       <p in:fade={{ duration: 300 }}>
-        {set.problems.n}
+        {options.problem_options.n}
         {i18n.t('problems').toLowerCase()}
       </p>
       <p in:fade={{ duration: 300 }}>
-        {set.problems.startingDifficulty == set.problems.endingDifficulty
-          ? i18n.t(set.problems.startingDifficulty)
-          : i18n.t(set.problems.startingDifficulty) +
+        {options.problem_options.startingDifficulty ==
+        options.problem_options.endingDifficulty
+          ? i18n.t(options.problem_options.startingDifficulty)
+          : i18n.t(options.problem_options.startingDifficulty) +
             ' ' +
             i18n.t('to') +
             ' ' +
-            i18n.t(set.problems.endingDifficulty)}
+            i18n.t(options.problem_options.endingDifficulty)}
       </p>
     </div>
   </button>

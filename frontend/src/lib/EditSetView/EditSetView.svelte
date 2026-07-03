@@ -6,18 +6,15 @@
   import DeleteButton from './DeleteButton.svelte';
 
   let set = $derived(
-    setState.addedSets.find(set => set.id === setState.currentEditedSetID)?.set
+    setState.addedSets.find(set => set.id === setState.currentEditedSetID)
   );
 </script>
 
-{#if set && setState.currentEditedSetContents}
+{#if set}
   <div class="topics-container">
     <div
       class="flex-container"
-      style="--max-column-count: {Math.min(
-        setState.currentEditedSetContents.length,
-        3
-      )}"
+      style="--max-column-count: {Math.min(set.topics.length, 3)}"
     >
       <div class="heading">
         <h1>{i18n.t('edit_set')}</h1>
@@ -26,14 +23,14 @@
         </p>
       </div>
       <div class="topics">
-        {#each setState.currentEditedSetContents as topic}
-          <TopicCard problems={set.problems} {topic} />
+        {#each set.topics as topic}
+          <TopicCard problems={set.options.problem_options} {topic} />
         {/each}
       </div>
     </div>
   </div>
   <div class="footer">
-    <SetOptions bind:set={set.problems} />
+    <SetOptions bind:problemOptions={set.options.problem_options} />
     <DeleteButton />
   </div>
 {/if}

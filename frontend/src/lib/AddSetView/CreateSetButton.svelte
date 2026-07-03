@@ -2,22 +2,28 @@
   import i18n from '$src/i18n.svelte';
   import { setState } from '$src/globalStates.svelte';
   import { defaultSetOptions } from '$src/types';
+  import { fetchProblemsForTopics } from '$src/commonFunctions.svelte';
 
-  function submitSet() {
+  let loadingSet = $state(false);
+
+  async function submitSet() {
+    loadingSet = true;
     setState.addedSets.push({
       id: setState.setCount,
-      set: {
-        problems: structuredClone($state.snapshot(setState.pendingSet)),
-        options: defaultSetOptions
-      }
+      options: {
+        problem_options: structuredClone($state.snapshot(setState.pendingSet)),
+        set_options: defaultSetOptions
+      },
+      topics: await fetchProblemsForTopics(setState.pendingSet.topics)
     });
     setState.setCount += 1;
+    loadingSet = false;
   }
 </script>
 
 <button
   class="primary create-btn"
-  disabled={setState.pendingSet.topics.length == 0}
+  disabled={setState.pendingSet.topics.length == 0 || loadingSet}
   onclick={submitSet}>{i18n.t('add_set')}</button
 >
 

@@ -114,11 +114,15 @@ export type ProblemOptions = {
 
 /// Should match the ProblemSetSpec of the backend
 export type ProblemSetSpec = {
-  problems: ProblemOptions;
-  options: SetOptions;
+  problem_options: ProblemOptions;
+  set_options: SetOptions;
 };
 
-export type SetState = { id: number; set: ProblemSetSpec };
+export type SetState = {
+  id: number;
+  options: ProblemSetSpec;
+  topics: TopicWithProblems[];
+};
 
 export const defaultProblemOptions: ProblemOptions = {
   topics: [],
@@ -134,8 +138,8 @@ export const defaultSetOptions: SetOptions = {
   pagebreakAfter: false
 };
 export const defaultProblemSet: ProblemSetSpec = {
-  problems: defaultProblemOptions,
-  options: defaultSetOptions
+  problem_options: defaultProblemOptions,
+  set_options: defaultSetOptions
 };
 export type DocumentOptions = {
   fontSize: number;
@@ -149,6 +153,7 @@ export type DocumentOptions = {
   yMargin: number;
   parSpacing: number | null;
   maxPrefixGroup: number;
+  pageBreakBeforeAnswers: boolean;
 };
 
 export const defaultDocumentOptions: DocumentOptions = {
@@ -162,5 +167,6 @@ export const defaultDocumentOptions: DocumentOptions = {
   xMargin: 20,
   yMargin: 20,
   parSpacing: null,
-  maxPrefixGroup: 3
+  maxPrefixGroup: 3,
+  pageBreakBeforeAnswers: true
 };

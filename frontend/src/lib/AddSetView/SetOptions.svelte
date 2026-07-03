@@ -3,7 +3,8 @@
   import DifficultySelector from './DifficultySelector.svelte';
   import type { ProblemOptions } from '$src/types';
 
-  let { set = $bindable() }: { set: ProblemOptions } = $props();
+  let { problemOptions = $bindable() }: { problemOptions: ProblemOptions } =
+    $props();
 
   const MIN_PROBLEMS = 1;
   const MAX_PROBLEMS = 250;
@@ -11,9 +12,9 @@
   function handleBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      set.n = Math.max(MIN_PROBLEMS, Math.min(MAX_PROBLEMS, value));
+      problemOptions.n = Math.max(MIN_PROBLEMS, Math.min(MAX_PROBLEMS, value));
     } else {
-      set.n = MIN_PROBLEMS;
+      problemOptions.n = MIN_PROBLEMS;
     }
   }
 </script>
@@ -25,7 +26,7 @@
       name="n"
       class="number-picker"
       type="number"
-      bind:value={set.n}
+      bind:value={problemOptions.n}
       min="1"
       max="250"
       onblur={handleBlur}
@@ -35,9 +36,9 @@
     <label for="difficulty-row">{i18n.t('difficulty')}:</label>
     <div class="difficulty-row">
       {i18n.t('from')}
-      <DifficultySelector {set} type="starting" />
+      <DifficultySelector {problemOptions} type="starting" />
       {i18n.t('to')}
-      <DifficultySelector {set} type="ending" />
+      <DifficultySelector {problemOptions} type="ending" />
     </div>
   </div>
 </div>

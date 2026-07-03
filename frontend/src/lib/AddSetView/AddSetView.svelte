@@ -10,7 +10,7 @@
 
 <CourseDisplay {courseName} />
 <div class="footer">
-  <SetOptions bind:set={setState.pendingSet} />
+  <SetOptions bind:problemOptions={setState.pendingSet} />
   <SelectAllButton />
   <CreateSetButton />
 </div>

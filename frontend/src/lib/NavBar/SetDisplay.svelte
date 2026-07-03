@@ -33,7 +33,8 @@
   {#if navbarOpen}
     {#each setState.addedSets as set, i}
       <SetCard
-        set={set.set}
+        options={set.options}
+        bind:topicsWithProblems={set.topics}
         setID={set.id}
         setIndex={i}
         bind:view

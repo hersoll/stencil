@@ -7,7 +7,6 @@
       set => set.id !== setState.currentEditedSetID
     );
     setState.currentEditedSetID = null;
-    setState.currentEditedSetContents = null;
   }
 </script>
 

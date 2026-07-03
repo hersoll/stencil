@@ -4,8 +4,7 @@ import {
   type ChapterWithTopics,
   type DocumentOptions,
   type ProblemOptions,
-  type SetState,
-  type TopicWithProblems
+  type SetState
 } from '$src/types';
 import { API_URL } from './main';
 
@@ -18,14 +17,12 @@ export let setState = $state<{
   addedSets: SetState[];
   pendingSet: ProblemOptions;
   currentEditedSetID: number | null;
-  currentEditedSetContents: TopicWithProblems[] | null;
   setCount: number;
   draggedSetIndex: number | null;
 }>({
   addedSets: [],
   pendingSet: defaultProblemOptions,
   currentEditedSetID: null,
-  currentEditedSetContents: null,
   setCount: 0,
   draggedSetIndex: null
 });
@@ -47,7 +44,7 @@ export const PDFState = $state<{
 export const fetchPdf = async (): Promise<void> => {
   startLoading();
 
-  const mappedSets = setState.addedSets.map(set => set.set);
+  const mappedSets = setState.addedSets.map(set => set.options);
   try {
     const response: Response = await fetch(`${API_URL}/pdf`, {
       method: 'POST',

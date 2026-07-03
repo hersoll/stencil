@@ -1,8 +1,22 @@
+# TODO
+
+- Layout page
+- Fix Typst injections
+- Tooltips
+- Metrics collection and stats webpage
+- Adjust selection algorithm
+- Mobile layout
+
 # Changelog
 
-## [0.7.4] - ADD DATE
+## [0.8.0] - ADD DATE
+### Added
+- Layout view where a rough layout of the stencil can be viewed and edited
+
 ### Changed
 - Padding increased on Move Up/Move Down buttons
+- Fields ´problems´ and ´options´ in the HTTP API have been changed to ´problem_options´ and ´set_options´
+- The descriptions for topics and problems now live in the global state for easier access for multiple components
 
 ### Fixed
 - Label "File name" in PDF View now changes with the language
@@ -50,10 +64,4 @@ I'm also publishing it now, in its unfinished state, to test the GitHub Actions 
 - Favicon is now persistent after build
 - AddSetView now starts at the top when content is too tall
 
-### Roadmap
-To remind future me, here's the summer roadmap: 
-- **0.8.0:** Layout page
-- **0.9.0:** Metrics collection and stats webpage
-- **0.10.0:** Adjust selection algorithm
-- **0.11.0:** Mobile layout
-- **1.0.0:** Release! 😵‍💫 Add as many problems as humanly possible.
+

@@ -18,6 +18,7 @@ const DEFAULT_PAPER_SIZE: PaperSize = PaperSize::A4;
 const DEFAULT_WRITE_SOLUTIONS: WriteSolutions = WriteSolutions::First;
 const DEFAULT_PAR_SPACING: Option<u8> = None;
 const DEFAULT_COLORS: bool = true;
+const DEFAULT_PAGE_BREAK_BEFORE_ANSWERS: bool = true;
 
 /// A set of questions grouped together in the final PDF
 #[derive(Debug, Default)]
@@ -65,6 +66,7 @@ pub struct DocumentOptions {
     pub y_margin: u8,
     pub par_spacing: Option<u8>,
     pub max_prefix_group: u8,
+    pub page_break_before_answers: bool,
 }
 
 impl Default for DocumentOptions {
@@ -81,6 +83,7 @@ impl Default for DocumentOptions {
             par_spacing: DEFAULT_PAR_SPACING,
             answer_columns: DEFAULT_ANSWER_COLUMNS,
             max_prefix_group: DEFAULT_MAX_PREFIX_GROUP,
+            page_break_before_answers: DEFAULT_PAGE_BREAK_BEFORE_ANSWERS,
         }
     }
 }
@@ -235,8 +238,11 @@ impl TypstFileBuilder {
             .i18n_strings
             .get("answer_key")
             .expect("Unable to get answer_key translation from i18n");
-        let answer_preamble = formatting::page_break()
-            + &formatting::reset_enum()
+        let answer_preamble = if self.options.page_break_before_answers {
+            formatting::page_break()
+        } else {
+            String::from("\n")
+        } + &formatting::reset_enum()
             + &formatting::heading(answer_heading);
         let answer_string =
             formatting::answers_to_columns(&self.answer_sets, &self.options.answer_columns)?;

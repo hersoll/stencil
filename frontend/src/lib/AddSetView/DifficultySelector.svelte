@@ -1,18 +1,22 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import type { ProblemOptions } from '$src/types';
-  let { set, type }: { set: ProblemOptions; type: 'starting' | 'ending' } =
-    $props();
+  let {
+    problemOptions,
+    type
+  }: { problemOptions: ProblemOptions; type: 'starting' | 'ending' } = $props();
 
   let difficulty = {
     get value() {
-      return type == 'starting' ? set.startingDifficulty : set.endingDifficulty;
+      return type == 'starting'
+        ? problemOptions.startingDifficulty
+        : problemOptions.endingDifficulty;
     },
     set value(val) {
       if (type == 'starting') {
-        set.startingDifficulty = val;
+        problemOptions.startingDifficulty = val;
       } else {
-        set.endingDifficulty = val;
+        problemOptions.endingDifficulty = val;
       }
     }
   };
@@ -23,7 +27,7 @@
       difficulty_easy: 1,
       difficulty_medium: 2,
       difficulty_hard: 3
-    }[set.startingDifficulty]
+    }[problemOptions.startingDifficulty]
   );
   let endingDifficultyNum = $derived(
     {
@@ -31,7 +35,7 @@
       difficulty_easy: 1,
       difficulty_medium: 2,
       difficulty_hard: 3
-    }[set.endingDifficulty]
+    }[problemOptions.endingDifficulty]
   );
 
   /** 
@@ -40,7 +44,7 @@
   $effect(() => {
     // Only trigger once, otherwise there will be two triggers
     if (type == 'ending' && startingDifficultyNum > endingDifficultyNum) {
-      set.endingDifficulty = set.startingDifficulty;
+      problemOptions.endingDifficulty = problemOptions.startingDifficulty;
     }
   });
 </script>

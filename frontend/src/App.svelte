@@ -10,6 +10,7 @@
   import EditSetView from './lib/EditSetView/EditSetView.svelte';
   import LoadingView from './lib/LoadingView.svelte';
   import StartUpView from './lib/StartUpView.svelte';
+  import LayoutView from './lib/LayoutView/LayoutView.svelte';
 
   let activeCourseName: string = $state(localStorage.getItem('course') || '');
 
@@ -60,7 +61,7 @@
   {:else if view === 'addSet'}
     <AddSetView courseName={activeCourseName} />
   {:else if view === 'layout'}
-    <h2>Layout View</h2>
+    <LayoutView />
   {:else if view === 'pdf'}
     <PDFView />
   {:else if view === 'editSet'}
@@ -84,11 +85,5 @@
     &.nav-closed {
       margin-left: var(--navbar-closed-margin);
     }
-  }
-
-  h2 {
-    font-size: 2rem;
-    margin: 0;
-    margin-bottom: 2rem;
   }
 </style>

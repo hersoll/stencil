@@ -1,7 +1,6 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import { documentOptions } from '$src/globalStates.svelte';
-  import { fly } from 'svelte/transition';
 
   /* VERY ugly to do one handleBlur() for each, but it was the best way I found */
   const FONT_SIZE_MIN = 4;
@@ -90,150 +89,127 @@
   }
 </script>
 
-<div class="options-container" in:fly={{ y: 60, duration: 600 }}>
-  <h2>{i18n.t('options')}</h2>
+<!-- WRITE SOLUTIONS  -->
+<div class="solutions container">
+  <label for="write_solutions">{i18n.t('document_option_solutions')}</label>
+  <select
+    name="write_solutions"
+    id="write_solutions"
+    bind:value={documentOptions.writeSolutions}
+  >
+    <option value="First">{i18n.t('document_option_solutions_first')}</option>
+    <option value="All">{i18n.t('document_option_solutions_all')}</option>
+    <option value="None">{i18n.t('document_option_solutions_none')}</option>
+  </select>
+</div>
 
-  <div class="options">
-    <!-- WRITE SOLUTIONS  -->
-    <div class="solutions container">
-      <label for="write_solutions">{i18n.t('document_option_solutions')}</label>
-      <select
-        name="write_solutions"
-        id="write_solutions"
-        bind:value={documentOptions.writeSolutions}
-      >
-        <option value="First"
-          >{i18n.t('document_option_solutions_first')}</option
-        >
-        <option value="All">{i18n.t('document_option_solutions_all')}</option>
-        <option value="None">{i18n.t('document_option_solutions_none')}</option>
-      </select>
-    </div>
+<!-- ANSWER COLUMNS -->
+<div class="answer-columns container">
+  <label for="answer-columns">{i18n.t('document_option_answer_columns')}</label>
+  <input
+    name="answer-columns"
+    type="number"
+    bind:value={documentOptions.answerColumns}
+    min={ANSWER_COLUMNS_MIN}
+    max={ANSWER_COLUMNS_MAX}
+    onblur={handleAnswerColumnsBlur}
+  />
+</div>
 
-    <!-- ANSWER COLUMNS -->
-    <div class="answer-columns container">
-      <label for="answer-columns"
-        >{i18n.t('document_option_answer_columns')}</label
-      >
-      <input
-        name="answer-columns"
-        type="number"
-        bind:value={documentOptions.answerColumns}
-        min={ANSWER_COLUMNS_MIN}
-        max={ANSWER_COLUMNS_MAX}
-        onblur={handleAnswerColumnsBlur}
-      />
-    </div>
+<!-- PREFIX GROUP -->
+<div class="prefix-group container">
+  <label for="prefix-group">{i18n.t('document_option_prefix_group')}</label>
+  <input
+    name="prefix-group"
+    type="number"
+    bind:value={documentOptions.maxPrefixGroup}
+    min={PREFIX_GROUP_MIN}
+    max={PREFIX_GROUP_MAX}
+    onblur={handlePrefixGroupBlur}
+  />
+</div>
 
-    <!-- PREFIX GROUP -->
-    <div class="prefix-group container">
-      <label for="prefix-group">{i18n.t('document_option_prefix_group')}</label>
-      <input
-        name="prefix-group"
-        type="number"
-        bind:value={documentOptions.maxPrefixGroup}
-        min={PREFIX_GROUP_MIN}
-        max={PREFIX_GROUP_MAX}
-        onblur={handlePrefixGroupBlur}
-      />
-    </div>
+<!-- LANGUAGE -->
+<div class="language container">
+  <label for="language">{i18n.t('document_option_language')}</label>
+  <select name="language" id="language" bind:value={documentOptions.lang}>
+    <option value="Sv">{i18n.t('language_sv')}</option>
+    <option value="En">{i18n.t('language_en')}</option>
+  </select>
+</div>
 
-    <!-- LANGUAGE -->
-    <div class="language container">
-      <label for="language">{i18n.t('document_option_language')}</label>
-      <select name="language" id="language" bind:value={documentOptions.lang}>
-        <option value="Sv">{i18n.t('language_sv')}</option>
-        <option value="En">{i18n.t('language_en')}</option>
-      </select>
-    </div>
+<!-- FONT SIZE -->
+<div class="font-size container">
+  <label for="font-size">{i18n.t('document_option_font_size')}</label>
+  <input
+    name="font-size"
+    type="number"
+    bind:value={documentOptions.fontSize}
+    min={FONT_SIZE_MIN}
+    max={FONT_SIZE_MAX}
+    onblur={handleFontSizeBlur}
+  />
+</div>
 
-    <!-- FONT SIZE -->
-    <div class="font-size container">
-      <label for="font-size">{i18n.t('document_option_font_size')}</label>
-      <input
-        name="font-size"
-        type="number"
-        bind:value={documentOptions.fontSize}
-        min={FONT_SIZE_MIN}
-        max={FONT_SIZE_MAX}
-        onblur={handleFontSizeBlur}
-      />
-    </div>
-    <!-- PAPER SIZE -->
-    <div class="paper-size container">
-      <label for="paper_size">{i18n.t('document_option_paper_size')}</label>
-      <select
-        name="paper_size"
-        id="paper_size"
-        bind:value={documentOptions.paperSize}
-      >
-        <option value="A4">A4</option>
-        <option value="A5">A5</option>
-      </select>
-    </div>
+<!-- PAPER SIZE -->
+<!-- <div class="paper-size container"> -->
+<!--   <label for="paper_size">{i18n.t('document_option_paper_size')}</label> -->
+<!--   <select -->
+<!--     name="paper_size" -->
+<!--     id="paper_size" -->
+<!--     bind:value={documentOptions.paperSize} -->
+<!--   > -->
+<!--     <option value="A4">A4</option> -->
+<!--     <option value="A5">A5</option> -->
+<!--   </select> -->
+<!-- </div> -->
 
-    <!-- MARGINS  -->
-    <div class="margins container">
-      <label for="x-margin">{i18n.t('document_option_margins')}</label>
-      <input
-        name="x-margin"
-        type="number"
-        bind:value={documentOptions.xMargin}
-        min={MARGIN_MIN}
-        max={MARGIN_MAX}
-        onblur={handleXMarginBlur}
-      />
-      <input
-        name="y-margin"
-        type="number"
-        bind:value={documentOptions.yMargin}
-        min={MARGIN_MIN}
-        max={MARGIN_MAX}
-        onblur={handleYMarginBlur}
-      />
-    </div>
+<!-- MARGINS  -->
+<div class="margins container">
+  <label for="x-margin">{i18n.t('document_option_margins')}</label>
+  <input
+    name="x-margin"
+    type="number"
+    bind:value={documentOptions.xMargin}
+    min={MARGIN_MIN}
+    max={MARGIN_MAX}
+    onblur={handleXMarginBlur}
+  />
+  <input
+    name="y-margin"
+    type="number"
+    bind:value={documentOptions.yMargin}
+    min={MARGIN_MIN}
+    max={MARGIN_MAX}
+    onblur={handleYMarginBlur}
+  />
+</div>
 
-    <!-- PAR SPACING -->
-    <div class="par-spacing container">
-      <label for="par-spacing">{i18n.t('document_option_spacing')}</label>
-      <input
-        name="par-spacing-amount"
-        type="number"
-        bind:value={documentOptions.parSpacing}
-        min={PAR_SPACING_MIN}
-        max={PAR_SPACING_MAX}
-        onblur={handleParSpacingBlur}
-      />
-    </div>
+<!-- PAR SPACING -->
+<div class="par-spacing container">
+  <label for="par-spacing">{i18n.t('document_option_spacing')}</label>
+  <input
+    name="par-spacing-amount"
+    type="number"
+    bind:value={documentOptions.parSpacing}
+    min={PAR_SPACING_MIN}
+    max={PAR_SPACING_MAX}
+    onblur={handleParSpacingBlur}
+  />
+</div>
 
-    <!-- COLOR  -->
-    <div class="color container">
-      <label for="color">{i18n.t('document_option_color')}</label>
-      <input
-        name="color"
-        type="checkbox"
-        class="checkbox"
-        bind:checked={documentOptions.color}
-      />
-    </div>
-  </div>
+<!-- COLOR  -->
+<div class="color container">
+  <label for="color">{i18n.t('document_option_color')}</label>
+  <input
+    name="color"
+    type="checkbox"
+    class="checkbox"
+    bind:checked={documentOptions.color}
+  />
 </div>
 
 <style>
-  .options-container {
-    padding: 1rem;
-    border-radius: 2rem;
-    background-color: var(--bg);
-    box-shadow: var(--shadow-elevation-low);
-  }
-
-  .options {
-    margin-top: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
   .container {
     display: flex;
     align-items: center;
@@ -242,10 +218,6 @@
   label {
     font-size: 1.1rem;
     font-weight: 500;
-  }
-  h2 {
-    margin: 0;
-    font-size: 2rem;
   }
   input {
     font-size: 1rem;

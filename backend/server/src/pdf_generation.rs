@@ -18,18 +18,18 @@ use typst_writer::typst_file_builder::{DocumentOptions, QuestionSetOptions, Typs
 /// Should be included in the HTTP request in the form of a Vec<ProblemSetSpec>
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct ProblemSetSpec {
-    pub problems: ProblemOptions,
+    pub problem_options: ProblemOptions,
     /// Typst rendering options
     #[serde(default)]
-    pub options: QuestionSetOptions,
+    pub set_options: QuestionSetOptions,
 }
 
 impl ProblemSetSpec {
     /// Mostly used for the /pdf/example endpoint
     pub fn new() -> ProblemSetSpec {
         ProblemSetSpec {
-            problems: ProblemOptions::default(),
-            options: QuestionSetOptions::default(),
+            problem_options: ProblemOptions::default(),
+            set_options: QuestionSetOptions::default(),
         }
     }
 }
@@ -45,10 +45,10 @@ pub struct PDFRequest {
 /// Generates a proof-of-concept PDF without any attributes
 pub async fn generate_example_pdf() -> Response {
     let mut sets = ProblemSetSpec::new();
-    sets.problems.topics.push(1);
-    sets.problems.topics.push(2);
-    sets.problems.topics.push(3);
-    sets.problems.topics.push(4);
+    sets.problem_options.topics.push(1);
+    sets.problem_options.topics.push(2);
+    sets.problem_options.topics.push(3);
+    sets.problem_options.topics.push(4);
     let options = DocumentOptions::default();
     let req = PDFRequest {
         sets: vec![sets.clone(), sets],
@@ -112,14 +112,16 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     // A vec containing the sets of actual problems (With question, answer, ...)
     let mut problem_sets: Vec<Vec<Problem>> = Vec::with_capacity(sets.len());
     // The typst rendering options for each set
-    let set_options: Vec<QuestionSetOptions> = sets.iter().map(|set| set.options.clone()).collect();
+    let set_options: Vec<QuestionSetOptions> =
+        sets.iter().map(|set| set.set_options.clone()).collect();
 
     // Convert each incoming "set" (http-set) to actual problems
     let start = Instant::now();
     for (i, set) in sets.into_iter().enumerate() {
         debug!(set_index = i, "Processing problem set");
         let problem_set =
-            problems::generator::generate_problem_set(set.problems, document_options.lang).await?;
+            problems::generator::generate_problem_set(set.problem_options, document_options.lang)
+                .await?;
         problem_sets.push(problem_set);
         debug!(set_index = i, "Generated every problem for set");
     }

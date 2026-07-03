@@ -10,9 +10,12 @@
   function handleNumberBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      set.problems.n = Math.max(MIN_PROBLEMS, Math.min(MAX_PROBLEMS, value));
+      set.problem_options.n = Math.max(
+        MIN_PROBLEMS,
+        Math.min(MAX_PROBLEMS, value)
+      );
     } else {
-      set.problems.n = MIN_PROBLEMS;
+      set.problem_options.n = MIN_PROBLEMS;
     }
   }
 
@@ -21,12 +24,12 @@
   function handleColumnsBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      set.options.questionColumns = Math.max(
+      set.set_options.questionColumns = Math.max(
         MIN_COLUMNS,
         Math.min(MAX_COLUMNS, value)
       );
     } else {
-      set.options.questionColumns = MIN_COLUMNS;
+      set.set_options.questionColumns = MIN_COLUMNS;
     }
   }
 
@@ -35,9 +38,12 @@
   function handleSpacingBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      set.options.spacing = Math.max(MIN_SPACING, Math.min(MAX_SPACING, value));
+      set.set_options.spacing = Math.max(
+        MIN_SPACING,
+        Math.min(MAX_SPACING, value)
+      );
     } else {
-      set.options.spacing = null;
+      set.set_options.spacing = null;
     }
   }
 </script>
@@ -52,7 +58,7 @@
           name="n"
           id="number_picker"
           type="number"
-          bind:value={set.problems.n}
+          bind:value={set.problem_options.n}
           min="1"
           max="250"
           onblur={handleNumberBlur}
@@ -62,9 +68,15 @@
         <label for="difficulty">{i18n.t('difficulty')}</label>
         <div class="difficulty-options">
           <p>{i18n.t('from')}</p>
-          <DifficultySelector set={set.problems} type="starting" />
+          <DifficultySelector
+            problemOptions={set.problem_options}
+            type="starting"
+          />
           <p>{i18n.t('to')}</p>
-          <DifficultySelector set={set.problems} type="ending" />
+          <DifficultySelector
+            problemOptions={set.problem_options}
+            type="ending"
+          />
         </div>
       </div>
     </div>
@@ -73,11 +85,11 @@
         <label for="heading">{i18n.t('set_option_heading')}</label>
         <input
           type="text"
-          value={set.options.heading}
+          value={set.set_options.heading}
           id="heading"
           class="text-input"
           placeholder="Lös uppgifterna"
-          onchange={e => (set.options.heading = e.currentTarget.value)}
+          onchange={e => (set.set_options.heading = e.currentTarget.value)}
         />
       </div>
       <div class="label-div">
@@ -85,9 +97,9 @@
         <input
           type="number"
           id="columns"
-          bind:value={set.options.questionColumns}
+          bind:value={set.set_options.questionColumns}
           onchange={e =>
-            (set.options.questionColumns = e.currentTarget.valueAsNumber)}
+            (set.set_options.questionColumns = e.currentTarget.valueAsNumber)}
           onblur={handleColumnsBlur}
         />
       </div>
@@ -96,8 +108,9 @@
         <input
           type="number"
           id="spacing"
-          bind:value={set.options.spacing}
-          onchange={e => (set.options.spacing = e.currentTarget.valueAsNumber)}
+          bind:value={set.set_options.spacing}
+          onchange={e =>
+            (set.set_options.spacing = e.currentTarget.valueAsNumber)}
           onblur={handleSpacingBlur}
         />
       </div>
@@ -106,8 +119,9 @@
         <input
           type="checkbox"
           id="pagebreak"
-          checked={set.options.pagebreakAfter}
-          onchange={e => (set.options.pagebreakAfter = e.currentTarget.checked)}
+          checked={set.set_options.pagebreakAfter}
+          onchange={e =>
+            (set.set_options.pagebreakAfter = e.currentTarget.checked)}
         />
       </div>
     </div>
