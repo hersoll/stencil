@@ -4,7 +4,6 @@
 </script>
 
 <div class="title-container">
-  <label for="title">{i18n.t('document_option_title')}:</label>
   <input
     name="title"
     placeholder={i18n.t('title_placeholder')}
@@ -19,11 +18,6 @@
     flex-direction: column;
     align-items: center;
     gap: 0.25rem;
-
-    label {
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
 
     input {
       font-size: 1.2rem;

@@ -1,6 +1,8 @@
 # TODO
 
-- Layout styling
+- Remove translation caching
+- Add name bar function
+- Add subtitle function
 - Tooltips
 - Metrics collection and stats webpage
 - Adjust selection algorithm

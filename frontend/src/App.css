@@ -17,6 +17,7 @@
   --bg-light: light-dark(oklch(0.95 0 264), oklch(0.34 0 264));
   --text: light-dark(oklch(0.15 0 264), oklch(0.96 0 264));
   --text-muted: light-dark(oklch(0.45 0 264), oklch(0.84 0 264));
+  --text-very-muted: light-dark(oklch(0.65 0 264), oklch(0.72 0 264));
   --text-in-primary: light-dark(oklch(0.15 0 264), oklch(0.2 0 264));
   --primary: oklch(0.76 0.1 326);
   --secondary: oklch(from var(--primary) calc(l - 0.1) c h);

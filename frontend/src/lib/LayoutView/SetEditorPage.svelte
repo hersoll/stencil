@@ -6,8 +6,8 @@
 </script>
 
 <div class="editor-container {isActive ? 'open' : 'closed'}">
-  {#each setState.addedSets as set}
-    <SetEditor {set} />
+  {#each setState.addedSets, i}
+    <SetEditor bind:set={setState.addedSets[i]} />
   {/each}
 </div>
 

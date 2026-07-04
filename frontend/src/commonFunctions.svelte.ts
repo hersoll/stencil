@@ -18,3 +18,21 @@ export async function fetchProblemsForTopics(
   }
   return await res.json();
 }
+
+export function adjustValue(
+  valueMin: number,
+  valueMax: number,
+  value: number | null,
+  targetMin: number,
+  targetMax: number,
+  defaultTarget: number
+) {
+  if (value == null) return defaultTarget;
+  let finalValue = value;
+  if (value < valueMin) finalValue = valueMin;
+  if (value > valueMax) finalValue = valueMax;
+
+  let valueRatio = (finalValue - valueMin) / (valueMax - valueMin);
+
+  return (targetMax - targetMin) * valueRatio + targetMin;
+}

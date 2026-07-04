@@ -17,7 +17,7 @@
     }
   }
   const ANSWER_COLUMNS_MIN = 1;
-  const ANSWER_COLUMNS_MAX = 8;
+  const ANSWER_COLUMNS_MAX = 5;
   function handleAnswerColumnsBlur(
     e: Event & { currentTarget: HTMLInputElement }
   ) {
@@ -72,7 +72,7 @@
     }
   }
 
-  const PREFIX_GROUP_MIN = 0;
+  const PREFIX_GROUP_MIN = 1;
   const PREFIX_GROUP_MAX = 10;
   function handlePrefixGroupBlur(
     e: Event & { currentTarget: HTMLInputElement }
@@ -168,7 +168,7 @@
 <div class="margins container">
   <label for="x-margin">{i18n.t('document_option_margins')}</label>
   <input
-    name="x-margin"
+    id="x-margin"
     type="number"
     bind:value={documentOptions.xMargin}
     min={MARGIN_MIN}
@@ -176,7 +176,7 @@
     onblur={handleXMarginBlur}
   />
   <input
-    name="y-margin"
+    id="y-margin"
     type="number"
     bind:value={documentOptions.yMargin}
     min={MARGIN_MIN}
@@ -189,7 +189,7 @@
 <div class="par-spacing container">
   <label for="par-spacing">{i18n.t('document_option_spacing')}</label>
   <input
-    name="par-spacing-amount"
+    id="par-spacing"
     type="number"
     bind:value={documentOptions.parSpacing}
     min={PAR_SPACING_MIN}
@@ -202,7 +202,7 @@
 <div class="color container">
   <label for="color">{i18n.t('document_option_color')}</label>
   <input
-    name="color"
+    id="color"
     type="checkbox"
     class="checkbox"
     bind:checked={documentOptions.color}
