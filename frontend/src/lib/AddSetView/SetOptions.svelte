@@ -26,19 +26,20 @@
       name="n"
       class="number-picker"
       type="number"
-      bind:value={problemOptions.n}
+      value={problemOptions.n}
       min="1"
       max="250"
       onblur={handleBlur}
+      oninput={e => (problemOptions.n = e.currentTarget.valueAsNumber)}
     />
   </div>
   <div class="difficulty-container">
     <label for="difficulty-row">{i18n.t('difficulty')}:</label>
     <div class="difficulty-row">
       {i18n.t('from')}
-      <DifficultySelector {problemOptions} type="starting" />
+      <DifficultySelector bind:problemOptions type="starting" fontSize={1} />
       {i18n.t('to')}
-      <DifficultySelector {problemOptions} type="ending" />
+      <DifficultySelector bind:problemOptions type="ending" fontSize={1} />
     </div>
   </div>
 </div>

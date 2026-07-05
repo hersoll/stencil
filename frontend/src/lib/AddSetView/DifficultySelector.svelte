@@ -2,9 +2,14 @@
   import i18n from '$src/i18n.svelte';
   import type { ProblemOptions } from '$src/types';
   let {
-    problemOptions,
-    type
-  }: { problemOptions: ProblemOptions; type: 'starting' | 'ending' } = $props();
+    problemOptions = $bindable(),
+    type,
+    fontSize
+  }: {
+    problemOptions: ProblemOptions;
+    type: 'starting' | 'ending';
+    fontSize: number;
+  } = $props();
 
   let difficulty = {
     get value() {
@@ -49,7 +54,12 @@
   });
 </script>
 
-<select name="difficulty" id="difficulty" bind:value={difficulty.value}>
+<select
+  name="difficulty"
+  id="difficulty"
+  bind:value={difficulty.value}
+  style="--font-size: {fontSize}rem;"
+>
   <option
     value="difficulty_intro"
     disabled={type == 'ending' && startingDifficultyNum > 0}
@@ -70,7 +80,7 @@
 
 <style>
   select {
-    font-size: 1rem;
+    font-size: var(--font-size);
     background-color: var(--bg-light);
     border-radius: 0.5rem;
     border: none;
