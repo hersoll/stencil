@@ -39,15 +39,6 @@ class I18n {
   });
 
   async fetchTranslation(lang: string) {
-    const cached = localStorage.getItem(`translations_${lang}`);
-    if (cached) {
-      const { data, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp < 60 * 60 * 1000) {
-        // 60 minutes
-        return data;
-      }
-    }
-
     try {
       this.loading = true;
 
@@ -59,13 +50,7 @@ class I18n {
         );
       }
 
-      const data = await res.json();
-      localStorage.setItem(
-        `translations_${lang}`,
-        JSON.stringify({ data, timestamp: Date.now() })
-      );
-
-      return data;
+      return await res.json();
     } catch (error) {
       console.error(`Error loading ${lang} translations:`, error);
       return {};

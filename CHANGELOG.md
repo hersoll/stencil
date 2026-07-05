@@ -13,6 +13,7 @@
 - Layout view where a rough layout of the stencil can be viewed and edited
 
 ### Changed
+- Removed caching of translations in localStorage, let HTTP caching handle it
 - Padding increased on Move Up/Move Down buttons
 - Fields ´problems´ and ´options´ in the HTTP API have been changed to ´problem_options´ and ´set_options´
 - The descriptions for topics and problems now live in the global state for easier access for multiple components
