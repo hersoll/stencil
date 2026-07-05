@@ -17,8 +17,16 @@
   </div>
 {:else}
   <div class="layout-container">
-    <SkeletonPage isActive={activePage === 'skeleton'} />
-    <SetEditorPage isActive={activePage === 'options'} />
+    <div class="heading-container">
+      <h1 class="heading">{i18n.t('layout_heading')}</h1>
+      <p class="heading-subtitle">
+        {i18n.t('layout_subtitle')}
+      </p>
+    </div>
+    <div class="layout-content">
+      <SkeletonPage isActive={activePage === 'skeleton'} />
+      <SetEditorPage isActive={activePage === 'options'} />
+    </div>
   </div>
   <div class="footer switch-footer">
     <button onclick={() => (activePage = 'skeleton')}>Layout</button>
@@ -32,12 +40,31 @@
 <style>
   .layout-container {
     position: relative;
+    width: 100%;
+    max-width: 90rem;
+    min-height: 0;
     flex: 1;
+    overflow-y: auto;
+  }
+  .heading-container {
+    width: 100%;
+    padding: 2rem;
+    .heading {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+    }
+    .heading-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--strong-border);
+      white-space: pre-wrap;
+    }
+  }
+  .layout-content {
     display: flex;
     width: 100%;
     justify-content: center;
-    min-height: 0;
-    overflow-y: auto;
   }
 
   .footer {

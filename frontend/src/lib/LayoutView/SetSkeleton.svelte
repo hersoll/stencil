@@ -33,7 +33,6 @@
     display: flex;
     flex-direction: column;
     margin-top: var(--section-gap);
-    border-top: 1px solid var(--strong-border);
     transition: margin-top 0.5s;
   }
 

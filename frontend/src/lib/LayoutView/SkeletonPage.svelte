@@ -50,7 +50,10 @@
       </div>
     {/each}
     {#if documentOptions.pageBreakBeforeAnswers}
-      <div class="page">
+      <div
+        class="page"
+        style="--x-margin: {xMargin}rem; --y-margin: {yMargin}rem;"
+      >
         <AnswerSkeleton ownPage={true} />
       </div>
     {/if}

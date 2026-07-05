@@ -1,5 +1,6 @@
 <script lang="ts">
   import { setState } from '$src/globalStates.svelte';
+  import AnswerEditor from './AnswerEditor.svelte';
   import SetEditor from './SetEditor.svelte';
 
   let { isActive }: { isActive: boolean } = $props();
@@ -9,6 +10,7 @@
   {#each setState.addedSets, i}
     <SetEditor bind:set={setState.addedSets[i]} />
   {/each}
+  <AnswerEditor />
 </div>
 
 <style>

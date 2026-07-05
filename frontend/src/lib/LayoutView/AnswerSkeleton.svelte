@@ -4,8 +4,15 @@
   let { ownPage }: { ownPage: boolean } = $props();
 </script>
 
-<h1 class="answer-heading own-page">{i18n.t('answer_key')}</h1>
-<div class="solution-skeleton">
+<h1 class="answer-heading {ownPage ? 'own-page' : ''}">
+  {i18n.t('answer_key')}
+</h1>
+<div
+  class="answer-skeleton"
+  style="anchor-name: --answer-skeleton; --solution-color: {documentOptions.color
+    ? 'lightgoldenrodyellow'
+    : 'var(--highlight)'};"
+>
   <ol class="answer-list" style="--columns: {documentOptions.answerColumns};">
     <li>
       {i18n.t('answer')} A
@@ -81,10 +88,14 @@
     font-size: 1.2rem;
     text-align: center;
     margin-bottom: 2rem;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     color: var(--text-muted);
+
+    &:not(.own-page) {
+      margin-top: 2rem;
+    }
   }
-  .solution-skeleton {
+  .answer-skeleton {
     width: 100%;
     align-self: start;
     margin-bottom: 1rem;
@@ -101,7 +112,7 @@
     width: 80%;
     height: 3rem;
 
-    background-color: lightgoldenrodyellow;
+    background-color: var(--solution-color);
     border-radius: 0.5rem;
 
     text-align: center;

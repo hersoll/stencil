@@ -97,7 +97,7 @@
     <div class="label-div">
       <label for="pagebreak-after">{i18n.t('set_option_pagebreak')}</label>
       <input
-        name="pagebreak-after"
+        id="pagebreak-after"
         type="checkbox"
         checked={set.options.set_options.pagebreakAfter}
         onchange={e =>
@@ -145,15 +145,14 @@
     </div>
   </div>
 </div>
-<div class="connector" style="position-anchor: --set-{set.id}"></div>
 
 <style>
   .set-options {
     position: absolute;
-    background-color: var(--highlight);
-    border-radius: 0.5rem;
-    border: 1px solid var(--strong-border);
+    background: none;
+    border-top: 1px solid var(--strong-border);
     padding: 0.5rem;
+    padding-left: 0.2rem;
     top: anchor(top);
     left: anchor(right);
     width: 32rem;
@@ -164,7 +163,6 @@
     grid-template-columns: 18rem 12rem;
     gap: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--text-muted);
   }
   .options-grid {
     display: grid;
@@ -177,14 +175,12 @@
   .topic-titles {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: start;
   }
   .problem-options {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
-    justify-content: center;
+    justify-content: start;
     align-items: end;
     font-size: 0.9rem;
     .number-picker {
@@ -211,13 +207,5 @@
 
   .spacing-input {
     width: 4rem;
-  }
-
-  .connector {
-    position: absolute;
-    border-top: 1px solid var(--strong-border);
-    top: anchor(top);
-    left: anchor(right);
-    width: 3rem;
   }
 </style>

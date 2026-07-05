@@ -16,21 +16,7 @@
       documentOptions.fontSize = FONT_SIZE_MIN;
     }
   }
-  const ANSWER_COLUMNS_MIN = 1;
-  const ANSWER_COLUMNS_MAX = 5;
-  function handleAnswerColumnsBlur(
-    e: Event & { currentTarget: HTMLInputElement }
-  ) {
-    const value = parseInt(e.currentTarget.value);
-    if (!isNaN(value)) {
-      documentOptions.answerColumns = Math.max(
-        ANSWER_COLUMNS_MIN,
-        Math.min(ANSWER_COLUMNS_MAX, value)
-      );
-    } else {
-      documentOptions.answerColumns = ANSWER_COLUMNS_MIN;
-    }
-  }
+
   const MARGIN_MIN = 0;
   const MARGIN_MAX = 100;
   function handleXMarginBlur(e: Event & { currentTarget: HTMLInputElement }) {
@@ -89,33 +75,6 @@
   }
 </script>
 
-<!-- WRITE SOLUTIONS  -->
-<div class="solutions container">
-  <label for="write_solutions">{i18n.t('document_option_solutions')}</label>
-  <select
-    name="write_solutions"
-    id="write_solutions"
-    bind:value={documentOptions.writeSolutions}
-  >
-    <option value="First">{i18n.t('document_option_solutions_first')}</option>
-    <option value="All">{i18n.t('document_option_solutions_all')}</option>
-    <option value="None">{i18n.t('document_option_solutions_none')}</option>
-  </select>
-</div>
-
-<!-- ANSWER COLUMNS -->
-<div class="answer-columns container">
-  <label for="answer-columns">{i18n.t('document_option_answer_columns')}</label>
-  <input
-    name="answer-columns"
-    type="number"
-    bind:value={documentOptions.answerColumns}
-    min={ANSWER_COLUMNS_MIN}
-    max={ANSWER_COLUMNS_MAX}
-    onblur={handleAnswerColumnsBlur}
-  />
-</div>
-
 <!-- PREFIX GROUP -->
 <div class="prefix-group container">
   <label for="prefix-group">{i18n.t('document_option_prefix_group')}</label>
@@ -126,6 +85,19 @@
     min={PREFIX_GROUP_MIN}
     max={PREFIX_GROUP_MAX}
     onblur={handlePrefixGroupBlur}
+  />
+</div>
+
+<!-- PAR SPACING -->
+<div class="par-spacing container">
+  <label for="par-spacing">{i18n.t('document_option_spacing')}</label>
+  <input
+    id="par-spacing"
+    type="number"
+    bind:value={documentOptions.parSpacing}
+    min={PAR_SPACING_MIN}
+    max={PAR_SPACING_MAX}
+    onblur={handleParSpacingBlur}
   />
 </div>
 
@@ -182,19 +154,6 @@
     min={MARGIN_MIN}
     max={MARGIN_MAX}
     onblur={handleYMarginBlur}
-  />
-</div>
-
-<!-- PAR SPACING -->
-<div class="par-spacing container">
-  <label for="par-spacing">{i18n.t('document_option_spacing')}</label>
-  <input
-    id="par-spacing"
-    type="number"
-    bind:value={documentOptions.parSpacing}
-    min={PAR_SPACING_MIN}
-    max={PAR_SPACING_MAX}
-    onblur={handleParSpacingBlur}
   />
 </div>
 

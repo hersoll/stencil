@@ -1,6 +1,5 @@
 # TODO
 
-- Remove translation caching
 - Add name bar function
 - Add subtitle function
 - Tooltips
@@ -10,7 +9,7 @@
 
 # Changelog
 
-## [0.8.0] - TBD
+## [0.8.0] - 2026-07-05
 ### Added
 - Layout view where a rough layout of the stencil can be viewed and edited
 
