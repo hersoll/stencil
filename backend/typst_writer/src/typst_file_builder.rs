@@ -78,7 +78,7 @@ impl Default for QuestionSetOptions {
 #[serde(rename_all = "camelCase")]
 pub struct DocumentOptions {
     pub font_size: u8,
-    pub title: String,
+    pub title: Option<SanitizedTypstString>,
     pub answer_columns: u8,
     pub lang: Language,
     pub write_solutions: WriteSolutions,
@@ -94,7 +94,7 @@ pub struct DocumentOptions {
 impl Default for DocumentOptions {
     fn default() -> Self {
         DocumentOptions {
-            title: String::new(),
+            title: None,
             lang: DEFAULT_LANG,
             font_size: DEFAULT_FONT_SIZE,
             write_solutions: DEFAULT_WRITE_SOLUTIONS,
@@ -300,7 +300,9 @@ impl TypstFileBuilder {
         parts.push(formatting::font_size(self.options.font_size));
         parts.push(formatting::solution_rules(&self.i18n_strings)?);
         parts.push(String::from(PREAMBLE_STR));
-        parts.push(formatting::heading(&self.options.title));
+        if let Some(title) = &self.options.title {
+            parts.push(formatting::heading(title.as_ref()));
+        }
         Ok(parts.join("\n") + "\n") // join only adds \n between items, not at the end
     }
 }

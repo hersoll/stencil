@@ -25,6 +25,7 @@ While fixing the bug with custom headings and prefixes, some additional architec
 
 ### Fixed
 - Custom headings before problem sets now properly overwrite prefixes
+- Custom titles are now properly sanitized
 
 ## [0.8.0] - 2026-07-05
 ### Added

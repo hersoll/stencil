@@ -22,12 +22,9 @@ pub fn page_size(paper_size: &str, x_margin: u8, y_margin: u8) -> String {
     )
 }
 
+/// Formats a &str into the "`<h1>`" of the page, so to speak
 pub fn heading(heading: &str) -> String {
-    if heading.is_empty() {
-        String::new()
-    } else {
-        format!("#align(center, text(1.5em)[*{}*])", heading)
-    }
+    format!("#align(center, text(1.5em)[*{}*])", heading)
 }
 
 pub fn line_break() -> String {
