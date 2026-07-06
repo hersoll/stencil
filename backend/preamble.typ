@@ -8,7 +8,7 @@
 #let item-counter = counter("item-counter")
 #let bold-alpha = n => [*#numbering("a)", n)*]
 
-#let balanced(column_count, items, start_pos, custom_spacing: 1.33em, title: [], debug: false) = layout(
+#let balanced(column_count, items, start_pos, custom_spacing: 1.33em, debug: false) = layout(
   size => {
     let spacing = custom_spacing.to-absolute()
     // How many pts we start at
@@ -19,7 +19,6 @@
     let gutter = 1em
     let column_width = (size.width - gutter * (column_count - 1)) / column_count
 
-    let title_height = if title == "" { 0pt } else { measure(block(width: size.width, title)).height }
     let heights = items.enumerate().map(
       ((index, item)) => {
         // Make sure we account for two-digit items, otherwise it might allow "too much" horizontal space while measuring
@@ -35,31 +34,12 @@
     // Worst case: Everything in one column
     let max_height = total_height
 
-    // Push the entire set to next page if it's relatively small and we can't fit it on the page
-    // OR if we can't fit at least three rows of a long set
-    let at_page_top = start_height <= 1pt
-    // let pre_spacing = if not at_page_top and (
-    //   (min_height > spare_height and min_height < size.height / 4) or (title_height + calc.max(..heights)) * 3 > spare_height
-    // ) {
-    //   spare_height
-    // } else {
-    //   0pt
-    // }
-    let pre_spacing = 0pt
-
-    // If we push to next page, we have the entire page avaliable to us
-    let effective_spare_height = if pre_spacing > 0pt {
-      size.height
-    } else {
-      spare_height
-    }
-
     // current_height is the height we want our columns to be in the end
     let current_height = min_height
 
     // This loop slowly increases the column height until it finds a height that works.
     while current_height < max_height {
-      let available_height = effective_spare_height
+      let available_height = spare_height
       let current_column_height = current_height
 
       // How much we can fit in this current iteration
@@ -133,11 +113,6 @@
       }
 
       current_height += 4pt
-    }
-
-    v(pre_spacing)
-    if title != [] {
-      title
     }
 
     block(height: current_height)[

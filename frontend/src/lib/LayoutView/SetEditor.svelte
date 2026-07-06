@@ -48,7 +48,7 @@
   }
   function uncheckHeaderBox() {
     setIDsWithHeader.splice(setIDsWithHeader.indexOf(set.id), 1);
-    set.options.set_options.heading = '';
+    set.options.set_options.heading = null;
   }
 </script>
 

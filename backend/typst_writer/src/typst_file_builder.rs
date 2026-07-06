@@ -42,12 +42,6 @@ impl AsRef<str> for SanitizedTypstString {
     }
 }
 
-impl SanitizedTypstString {
-    fn new() -> Self {
-        Self(String::new())
-    }
-}
-
 /// A set of questions grouped together in the final PDF
 #[derive(Debug, Default)]
 pub struct QuestionSet {
@@ -64,7 +58,7 @@ pub struct AnswerSet {
 #[serde(rename_all = "camelCase")]
 pub struct QuestionSetOptions {
     pub question_columns: u8,
-    pub heading: SanitizedTypstString,
+    pub heading: Option<SanitizedTypstString>,
     pub spacing: Option<u16>,
     pub pagebreak_after: bool,
 }
@@ -72,7 +66,7 @@ impl Default for QuestionSetOptions {
     fn default() -> Self {
         QuestionSetOptions {
             question_columns: DEFAULT_QUESTION_COLUMNS,
-            heading: SanitizedTypstString::new(),
+            heading: None,
             spacing: None,
             pagebreak_after: false,
         }

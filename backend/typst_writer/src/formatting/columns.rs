@@ -15,10 +15,6 @@ pub fn questions_to_balanced_columns(
 
     for (i, set) in sets.iter().enumerate() {
         let set_option = set_options.get(i).unwrap_or(&default_options);
-        // Write group prefix (if any)
-        if let Some(prefix) = group_prefixes.get(i).and_then(|p| p.clone()) {
-            writeln!(out, "{prefix}")?;
-        }
 
         writeln!(out, "\n#let problem_set = (")?;
         // Write each list item
@@ -33,21 +29,18 @@ pub fn questions_to_balanced_columns(
             String::new()
         };
 
-        let heading_setting = if let Some(option) = set_options.get(i) {
-            if option.heading.as_ref().is_empty() {
-                String::new()
-            } else {
-                format!(", title: [{}]", reformat_newlines(option.heading.as_ref()))
-            }
-        } else {
-            String::new()
-        };
+        // Custom headings always overwrite prefixes.
+        if let Some(custom_heading) = &set_option.heading {
+            writeln!(out, "{}", reformat_newlines(custom_heading.as_ref()))?;
+        } else if let Some(group_prefix) = group_prefixes.get(i).unwrap_or(&None).as_ref() {
+            writeln!(out, "{group_prefix}")?;
+        }
 
         // Call the balanced function in Typst
         writeln!(
             out,
-            "#context{{balanced({}, problem_set, here().position().y{}{})}}",
-            set_option.question_columns, spacing_setting, heading_setting
+            "#context{{balanced({}, problem_set, here().position().y{})}}",
+            set_option.question_columns, spacing_setting
         )?;
 
         // Add pagebreak, or paragraph spacing between sets (except after last)

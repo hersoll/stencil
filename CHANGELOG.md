@@ -11,11 +11,20 @@
 # Changelog
 
 ## [0.8.1] - TBD
+While fixing the bug with custom headings and prefixes, some additional architectural changes were made regarding headings.
+
 ### Added
 - HTTP endpoint /lang/course is now cached for 10 mins to minimize refetching during active session
 
 ### Changed
 - Images for README now lives on GitHub CDN and not in repo
+- The `heading` field for set options can now be None(rust)/null(js). Default changed to null instead of an empty string.
+
+### Removed
+- Headings are no longer sent to the custom Typst column function for measurement, since the "auto page break" feature is long gone.
+
+### Fixed
+- Custom headings before problem sets now properly overwrite prefixes
 
 ## [0.8.0] - 2026-07-05
 ### Added

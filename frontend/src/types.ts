@@ -31,7 +31,7 @@ export type CourseData = {
 
 export type SetOptions = {
   questionColumns: number;
-  heading: string;
+  heading: string | null;
   spacing: number | null;
   pagebreakAfter: boolean;
 };
@@ -133,7 +133,7 @@ export const defaultProblemOptions: ProblemOptions = {
 };
 export const defaultSetOptions: SetOptions = {
   questionColumns: 2,
-  heading: '',
+  heading: null,
   spacing: null,
   pagebreakAfter: false
 };
