@@ -185,7 +185,15 @@ pub async fn get_chapters_and_topics_for_course(
         })
         .collect::<Result<Vec<ChapterWithTopics>, ApiError>>()?;
 
-    Ok((StatusCode::OK, Json(json!(chapters))))
+    Ok((
+        StatusCode::OK,
+        [
+            // Cache 10 minutes to prevent it from re-fetching during a single session
+            ("Cache-Control", "public, max-age=600"),
+            ("Content-Type", "application/json"),
+        ],
+        Json(json!(chapters)),
+    ))
 }
 
 /// Given a list of topic IDs, returns data about every problem associated with each topic
