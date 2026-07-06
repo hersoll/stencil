@@ -40,6 +40,13 @@
             type="text"
             bind:value={documentOptions.title}
           />
+          <input
+            name="subtitle"
+            class="input subtitle"
+            placeholder={i18n.t('subtitle_placeholder')}
+            type="text"
+            bind:value={documentOptions.subtitle}
+          />
         {/if}
         {#each page as index, j}
           <SetSkeleton bind:set={setState.addedSets[index]} index={j} />
@@ -109,7 +116,11 @@
 
   .title {
     margin-top: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 0.3rem;
     font-size: 1.2rem;
+  }
+  .subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
   }
 </style>

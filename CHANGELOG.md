@@ -1,7 +1,6 @@
 # TODO
 
 - Add name bar function
-- Add subtitle function
 - Frontend refactoring
 - Tooltips
 - Metrics collection and stats webpage
@@ -15,6 +14,7 @@ While fixing the bug with custom headings and prefixes, some additional architec
 
 ### Added
 - HTTP endpoint /lang/course is now cached for 10 mins to minimize refetching during active session
+- Subtitles (as in a subheading) are now supported
 
 ### Changed
 - Images for README now lives on GitHub CDN and not in repo

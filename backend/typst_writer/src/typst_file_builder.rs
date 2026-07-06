@@ -77,8 +77,9 @@ impl Default for QuestionSetOptions {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct DocumentOptions {
-    pub font_size: u8,
     pub title: Option<SanitizedTypstString>,
+    pub subtitle: Option<SanitizedTypstString>,
+    pub font_size: u8,
     pub answer_columns: u8,
     pub lang: Language,
     pub write_solutions: WriteSolutions,
@@ -95,15 +96,16 @@ impl Default for DocumentOptions {
     fn default() -> Self {
         DocumentOptions {
             title: None,
-            lang: DEFAULT_LANG,
+            subtitle: None,
             font_size: DEFAULT_FONT_SIZE,
+            answer_columns: DEFAULT_ANSWER_COLUMNS,
+            lang: DEFAULT_LANG,
             write_solutions: DEFAULT_WRITE_SOLUTIONS,
             color: DEFAULT_COLORS,
             paper_size: DEFAULT_PAPER_SIZE,
             x_margin: DEFAULT_X_MARGIN,
             y_margin: DEFAULT_Y_MARGIN,
             par_spacing: DEFAULT_PAR_SPACING,
-            answer_columns: DEFAULT_ANSWER_COLUMNS,
             max_prefix_group: DEFAULT_MAX_PREFIX_GROUP,
             page_break_before_answers: DEFAULT_PAGE_BREAK_BEFORE_ANSWERS,
         }
@@ -302,6 +304,9 @@ impl TypstFileBuilder {
         parts.push(String::from(PREAMBLE_STR));
         if let Some(title) = &self.options.title {
             parts.push(formatting::heading(title.as_ref()));
+        }
+        if let Some(subtitle) = &self.options.subtitle {
+            parts.push(formatting::subheading(subtitle.as_ref()));
         }
         Ok(parts.join("\n") + "\n") // join only adds \n between items, not at the end
     }

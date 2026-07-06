@@ -26,6 +26,12 @@ pub fn page_size(paper_size: &str, x_margin: u8, y_margin: u8) -> String {
 pub fn heading(heading: &str) -> String {
     format!("#align(center, text(1.5em)[*{}*])", heading)
 }
+/// Formats a &str into the "`<h2>`" of the page, so to speak.
+///
+/// Usually positioned below a [`heading()`].
+pub fn subheading(subheading: &str) -> String {
+    format!("#v(-0.8em)\n#align(center, text(1.1em)[{}])", subheading)
+}
 
 pub fn line_break() -> String {
     String::from("\\")
