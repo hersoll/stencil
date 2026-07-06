@@ -33,15 +33,27 @@
         style="--x-margin: {xMargin}rem; --y-margin: {yMargin}rem;"
       >
         {#if i === 0}
+          <div class="name-container">
+            <input
+              type="checkbox"
+              id="name-field"
+              checked={documentOptions.nameField}
+              onchange={e =>
+                (documentOptions.nameField = e.currentTarget.checked)}
+            />
+            <label
+              for="name-field"
+              class={documentOptions.nameField ? 'checked' : 'unchecked'}
+              >{i18n.t('name_field')}: _____________</label
+            >
+          </div>
           <input
-            name="title"
             class="input title"
             placeholder={i18n.t('title_placeholder')}
             type="text"
             bind:value={documentOptions.title}
           />
           <input
-            name="subtitle"
             class="input subtitle"
             placeholder={i18n.t('subtitle_placeholder')}
             type="text"
@@ -88,6 +100,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
     width: 100%;
     flex-shrink: 1;
     padding: var(--y-margin) var(--x-margin);
@@ -112,6 +125,24 @@
     text-align: center;
     field-sizing: content;
     width: fit-content;
+  }
+
+  .name-container {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    label {
+      &.checked {
+        color: var(--text);
+      }
+      &.unchecked {
+        color: var(--text-very-muted);
+      }
+    }
   }
 
   .title {

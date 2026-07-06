@@ -1,6 +1,6 @@
 # TODO
 
-- Add name bar function
+- Take a look at i18n_pdf retrieval in backend. Currently getting specific strings? Maybe just get all.
 - Frontend refactoring
 - Tooltips
 - Metrics collection and stats webpage
@@ -15,6 +15,7 @@ While fixing the bug with custom headings and prefixes, some additional architec
 ### Added
 - HTTP endpoint /lang/course is now cached for 10 mins to minimize refetching during active session
 - Subtitles (as in a subheading) are now supported
+- A field for writing your name can now be added by the user
 
 ### Changed
 - Images for README now lives on GitHub CDN and not in repo

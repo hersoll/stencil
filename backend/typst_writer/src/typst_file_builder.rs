@@ -79,6 +79,7 @@ impl Default for QuestionSetOptions {
 pub struct DocumentOptions {
     pub title: Option<SanitizedTypstString>,
     pub subtitle: Option<SanitizedTypstString>,
+    pub name_field: bool,
     pub font_size: u8,
     pub answer_columns: u8,
     pub lang: Language,
@@ -97,6 +98,7 @@ impl Default for DocumentOptions {
         DocumentOptions {
             title: None,
             subtitle: None,
+            name_field: false,
             font_size: DEFAULT_FONT_SIZE,
             answer_columns: DEFAULT_ANSWER_COLUMNS,
             lang: DEFAULT_LANG,
@@ -187,7 +189,7 @@ impl TypstFileBuilder {
         set_options: Vec<QuestionSetOptions>,
         options: DocumentOptions,
     ) -> Result<TypstFileBuilder> {
-        let i18n_keys = vec!["solution", "answer_key"];
+        let i18n_keys = vec!["solution", "answer_key", "name"];
         let i18n_strings = db::i18n::get_multiple(i18n_keys, &options.lang).await?;
         Ok(TypstFileBuilder {
             question_sets: Vec::new(),
@@ -261,7 +263,7 @@ impl TypstFileBuilder {
         let answer_heading = self
             .i18n_strings
             .get("answer_key")
-            .expect("Unable to get answer_key translation from i18n");
+            .expect("unable to get answer_key translation from i18n");
         let answer_preamble = if self.options.page_break_before_answers {
             formatting::page_break()
         } else {
@@ -307,6 +309,14 @@ impl TypstFileBuilder {
         }
         if let Some(subtitle) = &self.options.subtitle {
             parts.push(formatting::subheading(subtitle.as_ref()));
+        }
+        if self.options.name_field {
+            let i18n_name = self
+                .i18n_strings
+                .get("name")
+                .expect("unable to get name translation from i18n");
+
+            parts.push(formatting::name_field(i18n_name));
         }
         Ok(parts.join("\n") + "\n") // join only adds \n between items, not at the end
     }

@@ -145,6 +145,7 @@ export type DocumentOptions = {
   fontSize: number;
   title: string | null;
   subtitle: string | null;
+  nameField: boolean;
   answerColumns: number;
   lang: 'Sv' | 'En';
   writeSolutions: 'None' | 'First' | 'All';
@@ -161,6 +162,7 @@ export const defaultDocumentOptions: DocumentOptions = {
   fontSize: 10,
   title: null,
   subtitle: null,
+  nameField: false,
   answerColumns: 3,
   lang: 'Sv',
   writeSolutions: 'First',
