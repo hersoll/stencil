@@ -5,8 +5,8 @@ Served as a website at [stencil.nu](https://www.stencil.nu/).
 ## Example
 
 <p align="center">
-  <img src="examples/questions.png" alt="Questions" width="49%">
-  <img src="examples/answers.png" alt="Answers" width="49%">
+  <img src="https://github.com/user-attachments/assets/83f7221f-5a06-4d5a-b55d-bf610a61d4b1" alt="Questions" width="49%">
+  <img src="https://github.com/user-attachments/assets/edcce84c-d5f5-4643-a625-d11782a0ac31" alt="Answers" width="49%">
 </p>
 
 ## Features

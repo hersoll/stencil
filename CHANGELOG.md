@@ -3,7 +3,6 @@
 - Add name bar function
 - Add subtitle function
 - Frontend refactoring
-- Move example pngs to GH and not in repo
 - Tooltips
 - Metrics collection and stats webpage
 - Adjust selection algorithm
@@ -14,6 +13,9 @@
 ## [0.8.1] - TBD
 ### Added
 - HTTP endpoint /lang/course is now cached for 10 mins to minimize refetching during active session
+
+### Changed
+- Images for README now lives on GitHub CDN and not in repo
 
 ## [0.8.0] - 2026-07-05
 ### Added
