@@ -143,7 +143,7 @@ export const defaultProblemSet: ProblemSetSpec = {
 };
 export type DocumentOptions = {
   fontSize: number;
-  title: string;
+  title: string | null;
   answerColumns: number;
   lang: 'Sv' | 'En';
   writeSolutions: 'None' | 'First' | 'All';
@@ -158,7 +158,7 @@ export type DocumentOptions = {
 
 export const defaultDocumentOptions: DocumentOptions = {
   fontSize: 10,
-  title: '',
+  title: null,
   answerColumns: 3,
   lang: 'Sv',
   writeSolutions: 'First',
