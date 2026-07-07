@@ -266,7 +266,7 @@
     }
   }
 
-  .card:hover {
+  .set-card:hover {
     .icon-container :global(svg) {
       opacity: 1;
     }
