@@ -8,8 +8,7 @@
 
 # Changelog
 
-## [0.8.1] - TBD
-While fixing the bug with custom headings and prefixes, some additional architectural changes were made regarding headings.
+## [0.8.1] - 2026-07-07
 
 ### Added
 - HTTP endpoint /lang/course is now cached for 10 mins to minimize refetching during active session
