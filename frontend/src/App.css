@@ -126,19 +126,45 @@ body {
 .text-muted {
   color: var(--text-muted);
 }
-.bg-dark {
-  background-color: var(--bg-dark);
-}
-.bg {
-  background-color: var(--bg);
-}
-.bg-light {
-  background-color: var(--bg-light);
-}
+
+/* ******************* */
+/* Custom "components" */
+/* ******************* */
 
 h1 {
-  font-size: 3.2em;
+  font-size: 2rem;
   line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+h2 {
+  color: var(--text);
+}
+.description {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+.card {
+  display: flex;
+  background-color: var(--bg);
+  flex-direction: column;
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+  border-top: 1px solid var(--strong-border);
+  break-inside: avoid;
+}
+.card-header {
+  margin-bottom: 0.5rem;
+}
+
+.footer {
+  flex: 0 0 auto;
+  background-color: var(--bg);
+  border-top: 2px solid var(--border);
+  left: var(--navbar-margin);
+
+  width: 100%;
+  padding: 1rem;
 }
 
 button {

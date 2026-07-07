@@ -52,8 +52,12 @@
   }
 </script>
 
-<div class="set-options" style="position-anchor: --set-{set.id}">
-  <div class="heading-grid">
+<div
+  class="card"
+  id="set-editor-card-{set.id}"
+  style="position-anchor: --set-{set.id}"
+>
+  <div class="card-header">
     <div class="topic-titles">
       {#if set.topics.length <= 3}
         {#each set.topics as topic}
@@ -147,23 +151,23 @@
 </div>
 
 <style>
-  .set-options {
+  .card {
     position: absolute;
-    background: none;
-    border-top: 1px solid var(--strong-border);
-    padding: 0.5rem;
-    padding-left: 0.2rem;
     top: anchor(top);
     left: anchor(right);
-    width: 32rem;
+    width: 31rem;
     margin-left: 2rem;
   }
-  .heading-grid {
+  .card-header {
     display: grid;
     grid-template-columns: 18rem 12rem;
     gap: 1rem;
-    padding-bottom: 0.5rem;
   }
+  .topic-titles {
+    display: flex;
+    flex-direction: column;
+  }
+
   .options-grid {
     display: grid;
     grid-template-columns: auto auto;
@@ -171,10 +175,6 @@
     row-gap: 0.25rem;
     padding-top: 0.5rem;
     font-size: 0.9rem;
-  }
-  .topic-titles {
-    display: flex;
-    flex-direction: column;
   }
   .problem-options {
     display: flex;

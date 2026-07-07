@@ -59,8 +59,8 @@
   );
 </script>
 
-<div class="topic-container" id="topic-container">
-  <div class="topic-header">
+<div class="card" id="topic-container-{topic.id}">
+  <div class="card-header">
     <h2>{topic.desc}</h2>
     <button
       class="select-all-btn"
@@ -93,20 +93,14 @@
 </div>
 
 <style>
-  .topic-container {
-    display: flex;
-    flex-direction: column;
+  .card {
     width: var(--topic-card-width);
-    padding-bottom: 1rem;
-    break-inside: avoid;
   }
 
-  .topic-header {
+  .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 0;
-    border-top: 1px solid var(--strong-border);
   }
 
   .problem {

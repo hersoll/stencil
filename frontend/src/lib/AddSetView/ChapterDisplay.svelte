@@ -4,11 +4,13 @@
   let { chapter }: { chapter: ChapterWithTopics } = $props();
 </script>
 
-<div class="chapter-card">
-  <h2>
-    {chapter.desc}
-  </h2>
-  <div>
+<div class="card" id="chapter-card-{chapter.id}">
+  <div class="card-header">
+    <h2>
+      {chapter.desc}
+    </h2>
+  </div>
+  <div class="topic-grid">
     {#each chapter.topics as topic}
       <TopicCheckbox {topic} />
     {/each}
@@ -16,22 +18,13 @@
 </div>
 
 <style>
-  div {
+  .topic-grid {
     display: grid;
   }
-  h2 {
-    color: var(--text);
-    padding: 0.5rem 0;
-    border-top: 1px solid var(--strong-border);
-  }
 
-  .chapter-card {
-    background-color: var(--bg);
-    height: fit-content;
+  .card {
     min-height: 0;
     width: 24rem;
     justify-self: stretch;
-    break-inside: avoid;
-    padding-bottom: 1rem;
   }
 </style>

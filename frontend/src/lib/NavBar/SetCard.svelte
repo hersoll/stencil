@@ -81,10 +81,11 @@
 </script>
 
 <div
-  class="card {view === 'editSet' && setState.currentEditedSetID === setID
+  class="set-card {view === 'editSet' && setState.currentEditedSetID === setID
     ? 'selected'
     : ''} 
   {isDragging ? 'dragging' : ''}"
+  id="set-card-{setID}"
   role="listitem"
   draggable={isDraggable}
   ondragstart={handleDragStart}
@@ -169,7 +170,7 @@
 </div>
 
 <style>
-  .card {
+  .set-card {
     position: relative;
     background-color: var(--bg);
     border-radius: 0.5rem;

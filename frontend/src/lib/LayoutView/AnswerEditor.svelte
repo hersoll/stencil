@@ -19,8 +19,14 @@
   }
 </script>
 
-<div class="answer-editor" style="position-anchor: --answer-skeleton;">
-  <h2>{i18n.t('answer_key')}</h2>
+<div
+  class="card"
+  id="answer-editor"
+  style="position-anchor: --answer-skeleton;"
+>
+  <div class="card-header">
+    <h2>{i18n.t('answer_key')}</h2>
+  </div>
 
   <div class="options-container">
     <!-- WRITE SOLUTIONS  -->
@@ -68,22 +74,18 @@
 </div>
 
 <style>
-  .answer-editor {
+  .card {
     position: absolute;
-    background: none;
-    border-top: 1px solid var(--strong-border);
-    padding: 0.5rem;
-    padding-left: 0.2rem;
     top: anchor(top);
     left: anchor(right);
-    width: 32rem;
+    width: 31rem;
     margin-left: 2rem;
   }
 
   h2 {
     font-size: 1.2rem;
-    margin-bottom: 0.5rem;
   }
+
   .options-container {
     display: flex;
     flex-direction: column;

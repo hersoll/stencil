@@ -17,16 +17,9 @@
 
 <style>
   .footer {
-    flex: 0 0 auto;
-    background-color: var(--bg);
-    border-top: 2px solid var(--border);
-    left: var(--navbar-margin);
-
     display: grid;
     grid-template-columns: 1fr auto auto;
-    width: 100%;
     align-items: end;
-    padding: 1rem;
     column-gap: 2rem;
     row-gap: 1rem;
   }

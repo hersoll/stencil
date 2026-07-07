@@ -1,12 +1,17 @@
 # TODO
 
-- Frontend refactoring
-- Tooltips
 - Metrics collection and stats webpage
+- Color in document
+- Tooltips
 - Adjust selection algorithm
 - Mobile layout
 
 # Changelog
+
+## [0.8.2] - TBD
+
+### Changed 
+- Moved common styling elements to the `App.css` file
 
 ## [0.8.1] - 2026-07-07
 
@@ -56,7 +61,7 @@
 - Removed dangling CSS style
 - Removed svelte router plugin
 - Updated web_editor package-lock.json
-- Dev path for server in web_editor updated (Did it break production? We'll see 🥰)
+- Dev path for server in web_editor updated (Did it break production? We'll see 🥰) [It didn't!]
 
 ## [0.7.2] - 2026-06-27
 ### Added

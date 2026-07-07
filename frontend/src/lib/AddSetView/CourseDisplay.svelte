@@ -41,7 +41,7 @@
   <div class="align-wrapper">
     <div class="heading">
       <h1>{i18n.t('add_sets_heading')}</h1>
-      <p class="subtitle">
+      <p class="description">
         {i18n.t('add_sets_instruction')}
         <strong>{i18n.t('add_set')}</strong>
       </p>
@@ -81,14 +81,6 @@
     margin-bottom: 1.5rem;
     /* Chapter column width + gap*/
     width: calc(3 * var(--chapter-card-width) + 2 * var(--chapter-card-gap));
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 0.25rem;
-    }
-    p {
-      font-size: 1.2rem;
-      color: var(--text-muted);
-    }
     strong {
       color: var(--primary-text);
     }

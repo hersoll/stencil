@@ -16,7 +16,7 @@
 <style>
   .editor-container {
     flex: 0 0 auto;
-    width: 35rem;
+    width: 32.5rem;
   }
 
   @container main (width < 70rem) {

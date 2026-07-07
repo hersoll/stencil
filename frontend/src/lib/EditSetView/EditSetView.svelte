@@ -18,7 +18,7 @@
     >
       <div class="heading">
         <h1>{i18n.t('edit_set')}</h1>
-        <p class="subtitle">
+        <p class="description">
           {i18n.t('click_to_exclude')}
         </p>
       </div>
@@ -63,14 +63,6 @@
       var(--max-column-count) * var(--topic-card-width) +
         (var(--max-column-count) - 1) * var(--topic-card-gap)
     );
-    h1 {
-      font-size: 2rem;
-    }
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 1.2rem;
-      margin-top: 0.3rem;
-    }
   }
   .topics {
     margin-top: 1.2rem;
@@ -80,16 +72,9 @@
   }
 
   .footer {
-    flex: 0 0 auto;
-    background-color: var(--bg);
-    border-top: 2px solid var(--border);
-    left: var(--navbar-margin);
-
     display: grid;
     grid-template-columns: 1fr auto;
-    width: 100%;
     align-items: end;
-    padding: 1rem;
     column-gap: 2rem;
     row-gap: 1rem;
   }

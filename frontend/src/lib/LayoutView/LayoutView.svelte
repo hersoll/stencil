@@ -19,7 +19,7 @@
   <div class="layout-container">
     <div class="heading-container">
       <h1 class="heading">{i18n.t('layout_heading')}</h1>
-      <p class="heading-subtitle">
+      <p class="description">
         {i18n.t('layout_subtitle')}
       </p>
     </div>
@@ -49,13 +49,8 @@
   .heading-container {
     width: 100%;
     padding: 2rem;
-    .heading {
-      font-size: 2rem;
-      margin-bottom: 0.25rem;
-    }
-    .heading-subtitle {
-      font-size: 1.2rem;
-      color: var(--text-muted);
+
+    .description {
       padding-bottom: 1.5rem;
       border-bottom: 1px solid var(--strong-border);
       white-space: pre-wrap;
@@ -68,11 +63,6 @@
   }
 
   .footer {
-    flex: 0 0 auto;
-    width: 100%;
-    padding: 1rem;
-    border-top: 2px solid var(--border);
-
     display: flex;
     align-items: center;
     justify-content: center;
