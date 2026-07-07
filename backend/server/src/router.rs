@@ -8,7 +8,8 @@ use axum::{
     routing::{delete, get, patch, post},
 };
 use std::time::Duration;
-use tower_http::trace::TraceLayer;
+use tower_http::trace::{DefaultOnEos, TraceLayer};
+use tracing::Level;
 
 pub fn create_router() -> Router {
     let auth_limit = AuthLimit::new();
@@ -127,6 +128,7 @@ pub fn create_router() -> Router {
                             "response"
                         );
                     },
-                ),
+                )
+                .on_eos(DefaultOnEos::new().level(Level::TRACE)),
         )
 }
