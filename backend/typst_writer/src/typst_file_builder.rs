@@ -184,13 +184,12 @@ pub struct TypstFileBuilder {
 }
 
 impl TypstFileBuilder {
-    /// Create a new builder. Some i18n keys are fetched up-front.
+    /// Create a new builder and load the translations from the DB
     pub async fn new(
         set_options: Vec<QuestionSetOptions>,
         options: DocumentOptions,
     ) -> Result<TypstFileBuilder> {
-        let i18n_keys = vec!["solution", "answer_key", "name"];
-        let i18n_strings = db::i18n::get_multiple(i18n_keys, &options.lang).await?;
+        let i18n_strings = db::i18n::get_pdf_translations(&options.lang).await?;
         Ok(TypstFileBuilder {
             question_sets: Vec::new(),
             answer_sets: Vec::new(),

@@ -1,6 +1,5 @@
 # TODO
 
-- Take a look at i18n_pdf retrieval in backend. Currently getting specific strings? Maybe just get all.
 - Frontend refactoring
 - Tooltips
 - Metrics collection and stats webpage
@@ -20,6 +19,7 @@ While fixing the bug with custom headings and prefixes, some additional architec
 ### Changed
 - Images for README now lives on GitHub CDN and not in repo
 - The `heading` field for set options and `title` field for document options can now be None(rust)/null(js). Default changed to null instead of an empty string.
+- The backend now fetches every entry in the i18n_pdf table, instead of fetching specific keys. This prevents typing out new entries multiple times.
 
 ### Removed
 - Headings are no longer sent to the custom Typst column function for measurement, since the "auto page break" feature is long gone.
