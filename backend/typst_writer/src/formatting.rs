@@ -33,7 +33,7 @@ pub fn subheading(subheading: &str) -> String {
     format!("#v(-0.8em)\n#align(center, text(1.1em)[{}])", subheading)
 }
 
-pub fn name_field(i18n_name: &String) -> String {
+pub fn name_field(i18n_name: &str) -> String {
     format!(
         "#place(top + right, dx: 30pt, dy: -35pt)[{i18n_name}: #underline[#box(width: 35%, repeat(\" \"))]]"
     )

@@ -21,6 +21,7 @@ const DEFAULT_COLORS: bool = true;
 const DEFAULT_PAGE_BREAK_BEFORE_ANSWERS: bool = true;
 
 const DISALLOWED_CHARS: &str = "[]#\"'";
+const TRANSLATION_NOT_FOUND_MESSAGE: &str = "!!! Translation not found !!!";
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct SanitizedTypstString(pub String);
@@ -259,10 +260,7 @@ impl TypstFileBuilder {
             &self.set_options,
             &self.options.par_spacing,
         )?;
-        let answer_heading = self
-            .i18n_strings
-            .get("answer_key")
-            .expect("unable to get answer_key translation from i18n");
+        let answer_heading = self.get_translation("answer_key");
         let answer_preamble = if self.options.page_break_before_answers {
             formatting::page_break()
         } else {
@@ -301,7 +299,9 @@ impl TypstFileBuilder {
             self.options.y_margin,
         ));
         parts.push(formatting::font_size(self.options.font_size));
-        parts.push(formatting::solution_rules(&self.i18n_strings)?);
+        parts.push(formatting::solution_rules(
+            self.get_translation("solution"),
+        )?);
         parts.push(String::from(PREAMBLE_STR));
         if let Some(title) = &self.options.title {
             parts.push(formatting::heading(title.as_ref()));
@@ -310,13 +310,15 @@ impl TypstFileBuilder {
             parts.push(formatting::subheading(subtitle.as_ref()));
         }
         if self.options.name_field {
-            let i18n_name = self
-                .i18n_strings
-                .get("name")
-                .expect("unable to get name translation from i18n");
-
-            parts.push(formatting::name_field(i18n_name));
+            parts.push(formatting::name_field(self.get_translation("name")));
         }
         Ok(parts.join("\n") + "\n") // join only adds \n between items, not at the end
+    }
+
+    fn get_translation<'s>(&'s self, key: &str) -> &'s str {
+        self.i18n_strings
+            .get(key)
+            .map(|s| s.as_str())
+            .unwrap_or(TRANSLATION_NOT_FOUND_MESSAGE)
     }
 }

@@ -20,6 +20,7 @@ While fixing the bug with custom headings and prefixes, some additional architec
 - Images for README now lives on GitHub CDN and not in repo
 - The `heading` field for set options and `title` field for document options can now be None(rust)/null(js). Default changed to null instead of an empty string.
 - The backend now fetches every entry in the i18n_pdf table, instead of fetching specific keys. This prevents typing out new entries multiple times.
+- When a translation isn't found for the PDF, an error message is printed in the PDF instead of the program crashing with expect().
 
 ### Removed
 - Headings are no longer sent to the custom Typst column function for measurement, since the "auto page break" feature is long gone.

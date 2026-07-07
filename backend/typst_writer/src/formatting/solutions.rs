@@ -1,6 +1,4 @@
-use anyhow::Context;
 use anyhow::Result;
-use std::collections::HashMap;
 use std::fmt::Write;
 /// Background color for the solutions
 static SOLUTION_COLOR: &str = "oklch(95.25%, 0.0285, 73deg, 50%)";
@@ -23,10 +21,7 @@ pub fn build_solution(answer: &str, solution: &str) -> Result<String> {
     Ok(out)
 }
 
-pub fn solution_rules(i18n: &HashMap<String, String>) -> Result<String> {
-    let solution_label = i18n
-        .get("solution")
-        .context("Unable to get key \"solution\" from i18n")?;
+pub fn solution_rules(solution_label: &str) -> Result<String> {
     // String is about 500 bytes
     let mut out = String::with_capacity(512);
     // Two space indentation for Typst legibility
