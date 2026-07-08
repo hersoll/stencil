@@ -9,6 +9,11 @@
 
 ## [0.9.0] - TBD
 
+### Added
+#### Logging
+- Log entries for everything surrounding the PDFs are stored in the DB
+- To track what the user changes between renders, the server returns the id of the logged PDF. The frontend then sends that ID in the request of an eventual new PDF
+
 ### Changed 
 - Moved common styling elements to the `App.css` file
 

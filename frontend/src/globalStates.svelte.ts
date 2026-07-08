@@ -39,7 +39,8 @@ export function stopLoading() {
 export const PDFState = $state<{
   url: string;
   fileName: string;
-}>({ url: '', fileName: 'stencil' });
+  previous_pdf: number | null;
+}>({ url: '', fileName: 'stencil', previous_pdf: null });
 
 export const fetchPdf = async (): Promise<void> => {
   startLoading();
@@ -53,7 +54,8 @@ export const fetchPdf = async (): Promise<void> => {
       },
       body: JSON.stringify({
         sets: mappedSets,
-        document_options: documentOptions
+        document_options: documentOptions,
+        previous_pdf: PDFState.previous_pdf
       })
     });
 
@@ -63,8 +65,9 @@ export const fetchPdf = async (): Promise<void> => {
       return;
     }
 
-    // Get the PDF as a blob (binary data)
+    const id = response.headers.get('X-PDF-ID');
     const blob: Blob = await response.blob();
+    PDFState.previous_pdf = id ? parseInt(id, 10) : null;
     PDFState.url = URL.createObjectURL(blob);
   } catch (e) {
     error.message = e instanceof Error ? e.message : 'An error occurred';

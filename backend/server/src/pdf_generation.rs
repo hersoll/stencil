@@ -2,9 +2,10 @@ use anyhow::{Result, anyhow};
 use axum::{
     Json,
     extract::rejection::JsonRejection,
-    http::{StatusCode, header},
+    http::{HeaderName, StatusCode, header},
     response::{IntoResponse, Response},
 };
+use serde::Serialize;
 use std::time::Instant;
 use tokio::{fs, process::Command};
 use tracing::{debug, info, instrument};
@@ -14,6 +15,13 @@ use types::{
     problems::Problem,
 };
 use typst_writer::typst_file_builder::TypstFileBuilder;
+
+/// Return type of the [`build_pdf()`] function
+#[derive(Debug, Serialize)]
+struct PDFResponse {
+    id: i32,
+    file: Vec<u8>,
+}
 
 /// Generates a proof-of-concept PDF without any attributes
 pub async fn generate_example_pdf() -> Response {
@@ -26,6 +34,7 @@ pub async fn generate_example_pdf() -> Response {
     let req = PDFRequest {
         sets: vec![sets.clone(), sets],
         document_options: options,
+        previous_pdf: None,
     };
 
     let pdf_result = build_pdf(req).await;
@@ -77,7 +86,7 @@ It seems like the request was sent without a JSON.
 /// The function responsible for coordinating problem generation,
 /// typst file writing and compiling
 #[instrument(skip(req), fields(num_sets = req.sets.len()))]
-async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
+async fn build_pdf(req: PDFRequest) -> Result<PDFResponse, ApiError> {
     let start = Instant::now();
 
     let req_for_logging = req.clone();
@@ -162,8 +171,10 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     info!("PDF build complete. Logged the data with ID {pdf_id}");
     let pdf_bytes = fs::read(&pdf_path).await?;
 
-    // TODO: Send back PDF ID and handle that
-    Ok(pdf_bytes)
+    Ok(PDFResponse {
+        id: pdf_id,
+        file: pdf_bytes,
+    })
 }
 
 /// Converts the Result from the build_pdf function to a HTTP response
@@ -171,18 +182,22 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
 /// The reason this isn't simply called at the end of the build_pdf function
 /// is due to easier `?` bubbling in that function. It's more ergonomic to just
 /// return all errors and handle them at a higher level.
-fn pdf_result_to_response(pdf_result: Result<Vec<u8>, ApiError>) -> Response {
+fn pdf_result_to_response(pdf_result: Result<PDFResponse, ApiError>) -> Response {
     match pdf_result {
-        Ok(pdf_bytes) => (
+        Ok(pdf_response) => (
             StatusCode::OK,
             [
-                (header::CONTENT_TYPE, "application/pdf"),
+                (header::CONTENT_TYPE, "application/pdf".to_string()),
                 (
                     header::CONTENT_DISPOSITION,
-                    "inline; filename=\"stencil.pdf\"",
+                    "inline; filename=\"stencil.pdf\"".to_string(),
+                ),
+                (
+                    HeaderName::from_static("x-pdf-id"),
+                    pdf_response.id.to_string(),
                 ),
             ],
-            pdf_bytes,
+            pdf_response.file,
         )
             .into_response(),
         Err(e) => e.into_response(),

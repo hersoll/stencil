@@ -1,4 +1,4 @@
-use axum::http::Method;
+use axum::http::{HeaderName, Method};
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 
@@ -11,4 +11,5 @@ pub fn create_cors_layer() -> CorsLayer {
         .allow_origin(frontend_url.parse::<axum::http::HeaderValue>().unwrap())
         .allow_methods([Method::GET, Method::POST])
         .allow_headers(Any)
+        .expose_headers([HeaderName::from_static("x-pdf-id")])
 }
