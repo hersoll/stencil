@@ -5,42 +5,15 @@ use axum::{
     http::{StatusCode, header},
     response::{IntoResponse, Response},
 };
-use problems::generator::ProblemOptions;
-use serde::{Deserialize, Serialize};
 use std::time::Instant;
 use tokio::{fs, process::Command};
 use tracing::{debug, info, instrument};
-use types::{errors::ApiError, problems::Problem};
-use typst_writer::typst_file_builder::{DocumentOptions, QuestionSetOptions, TypstFileBuilder};
-
-/// Information about what to include in the problem set
-///
-/// Should be included in the HTTP request in the form of a Vec<ProblemSetSpec>
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
-pub struct ProblemSetSpec {
-    pub problem_options: ProblemOptions,
-    /// Typst rendering options
-    #[serde(default)]
-    pub set_options: QuestionSetOptions,
-}
-
-impl ProblemSetSpec {
-    /// Mostly used for the /pdf/example endpoint
-    pub fn new() -> ProblemSetSpec {
-        ProblemSetSpec {
-            problem_options: ProblemOptions::default(),
-            set_options: QuestionSetOptions::default(),
-        }
-    }
-}
-
-/// What the HTTP request is deserialized into
-#[derive(Debug, Deserialize, Serialize)]
-pub struct PDFRequest {
-    sets: Vec<ProblemSetSpec>,
-    #[serde(default)]
-    document_options: DocumentOptions,
-}
+use types::{
+    errors::ApiError,
+    pdf::{DocumentOptions, PDFRequest, ProblemSetSpec, QuestionSetOptions},
+    problems::Problem,
+};
+use typst_writer::typst_file_builder::TypstFileBuilder;
 
 /// Generates a proof-of-concept PDF without any attributes
 pub async fn generate_example_pdf() -> Response {
@@ -105,6 +78,9 @@ It seems like the request was sent without a JSON.
 /// typst file writing and compiling
 #[instrument(skip(req), fields(num_sets = req.sets.len()))]
 async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
+    let start = Instant::now();
+
+    let req_for_logging = req.clone();
     let sets = req.sets;
     let document_options = req.document_options;
     info!("Building PDF with {} problem set(s)", sets.len());
@@ -116,7 +92,6 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
         sets.iter().map(|set| set.set_options.clone()).collect();
 
     // Convert each incoming "set" (http-set) to actual problems
-    let start = Instant::now();
     for (i, set) in sets.into_iter().enumerate() {
         debug!(set_index = i, "Processing problem set");
         let problem_set =
@@ -140,7 +115,7 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     let temp_dir_path = temp_dir.path();
 
     debug!("Writing typst file...");
-    let start = Instant::now();
+    let writing_start = Instant::now();
     let typst_path = temp_dir_path.join("stencil.typ");
     let mut typst_file_builder = TypstFileBuilder::new(set_options, document_options).await?;
     for problem_set in problem_sets {
@@ -148,7 +123,7 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     }
     let typst_as_string = typst_file_builder.build_to_string()?;
     fs::write(&typst_path, typst_as_string).await?;
-    let duration = start.elapsed();
+    let duration = writing_start.elapsed();
     debug!("Wrote typst file in {}ms", duration.as_millis());
 
     // Print typst file (pretty-printed) for debugging
@@ -161,7 +136,7 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
     }
 
     debug!("Compiling PDF...");
-    let start = Instant::now();
+    let render_start = Instant::now();
     let pdf_path = temp_dir_path.join("stencil.pdf");
     let status = Command::new("typst")
         .args([
@@ -178,12 +153,16 @@ async fn build_pdf(req: PDFRequest) -> Result<Vec<u8>, ApiError> {
         return Err(anyhow!("Typst compilation failed").into());
     }
 
-    let duration = start.elapsed();
+    let duration = render_start.elapsed();
     debug!("Compiled PDF in {}ms", duration.as_millis());
 
-    info!("PDF build complete");
+    let pdf_id =
+        logging::log_pdf_and_get_id(req_for_logging, start.elapsed().as_micros() as i64).await?;
+
+    info!("PDF build complete. Logged the data with ID {pdf_id}");
     let pdf_bytes = fs::read(&pdf_path).await?;
 
+    // TODO: Send back PDF ID and handle that
     Ok(pdf_bytes)
 }
 

@@ -1,7 +1,8 @@
 use super::{list_item, reformat_newlines};
-use crate::typst_file_builder::{AnswerSet, QuestionSet, QuestionSetOptions};
+use crate::typst_file_builder::{AnswerSet, QuestionSet};
 use anyhow::Result;
 use std::fmt::Write;
+use types::pdf::QuestionSetOptions;
 
 /// Formats the sets to columns with equal height
 pub fn questions_to_balanced_columns(

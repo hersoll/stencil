@@ -4,6 +4,7 @@ mod courses;
 mod db_types;
 pub mod editing_api;
 pub mod i18n;
+pub mod logging;
 mod newtypes;
 mod prefixes;
 mod problems;

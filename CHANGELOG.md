@@ -1,6 +1,5 @@
 # TODO
 
-- Metrics collection and stats webpage
 - Color in document
 - Tooltips
 - Adjust selection algorithm
@@ -8,7 +7,7 @@
 
 # Changelog
 
-## [0.8.2] - TBD
+## [0.9.0] - TBD
 
 ### Changed 
 - Moved common styling elements to the `App.css` file

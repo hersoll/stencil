@@ -1,10 +1,11 @@
-use crate::typst_file_builder::{AnswerSet, DocumentOptions, QuestionSet};
+use crate::typst_file_builder::{AnswerSet, QuestionSet};
 use anyhow::{Result, anyhow};
 use db::PrefixEntry;
 use registry::{PREFIX_DATA, PROBLEM_DATA, RegistryError};
 use std::collections::HashMap;
 use std::fmt::Write;
 use types::lang::Language;
+use types::pdf::DocumentOptions;
 
 type PrefixRegistry = std::sync::RwLockReadGuard<'static, HashMap<i32, PrefixEntry>>;
 

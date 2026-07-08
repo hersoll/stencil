@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
@@ -11,6 +13,15 @@ impl Language {
         match self {
             Language::Sv => "sv",
             Language::En => "en",
+        }
+    }
+}
+
+impl Display for Language {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Language::Sv => write!(f, "sv"),
+            Language::En => write!(f, "en"),
         }
     }
 }

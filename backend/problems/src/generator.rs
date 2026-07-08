@@ -1,19 +1,15 @@
 use crate::picker;
 use anyhow::{Result, anyhow};
 use math::Number;
-pub use registry::RegistryError;
+use registry::RegistryError;
 use registry::get_problem_data;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
 use tracing::error;
 use types::difficulty::{AbsoluteDifficulty, DifficultyCategory};
-pub use types::problems::Problem;
+use types::pdf::ProblemOptions;
+use types::problems::Problem;
 use types::{errors::ApiError, lang::Language};
-
-const DEFAULT_STARTING_DIFFICULTY: DifficultyCategory = DifficultyCategory::Intro;
-const DEFAULT_ENDING_DIFFICULTY: DifficultyCategory = DifficultyCategory::Hard;
-const DEFAULT_PROBLEM_COUNT: u8 = 20;
 
 pub type ProblemGenerator = fn(i32, Language) -> Result<Problem>;
 
@@ -23,36 +19,6 @@ pub type ProblemGenerator = fn(i32, Language) -> Result<Problem>;
 /// This HashMap is written to in the problem! macro (during startup, before `main`)
 pub static PROBLEM_NAME_TO_FUNCTION_MAP: LazyLock<RwLock<HashMap<String, ProblemGenerator>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
-
-/// Information about what to include in the problem set
-///
-/// Should be included in the HTTP request in the form of a Vec<ProblemSetSpec>
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct ProblemOptions {
-    /// Topics to draw problems from
-    pub topics: Vec<i32>,
-    /// Which problems to exclude from the generator
-    #[serde(default)]
-    pub exclusions: Vec<i32>,
-    pub starting_difficulty: DifficultyCategory,
-    pub ending_difficulty: DifficultyCategory,
-    /// Number of problems
-    pub n: u8,
-}
-
-impl Default for ProblemOptions {
-    /// Mostly used for the /pdf/example endpoint
-    fn default() -> ProblemOptions {
-        ProblemOptions {
-            topics: Vec::new(),
-            exclusions: Vec::new(),
-            starting_difficulty: DEFAULT_STARTING_DIFFICULTY,
-            ending_difficulty: DEFAULT_ENDING_DIFFICULTY,
-            n: DEFAULT_PROBLEM_COUNT,
-        }
-    }
-}
 
 /// Generates problems and distributes them across the desired difficulties.
 ///
