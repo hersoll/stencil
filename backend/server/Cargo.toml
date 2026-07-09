@@ -9,7 +9,6 @@ docker = []
 [dependencies]
 math = { path = "../math"}
 db = { path = "../db"}
-logging = { path = "../logging"}
 problems = { path = "../problems"}
 registry = { path = "../registry"}
 typst_writer = { path = "../typst_writer"}

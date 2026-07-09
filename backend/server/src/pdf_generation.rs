@@ -169,7 +169,8 @@ async fn build_pdf(req: PDFRequest) -> Result<PDFResponse, ApiError> {
     debug!("Compiled PDF in {}ms", duration.as_millis());
 
     let pdf_id =
-        logging::log_pdf_and_get_id(req_for_logging, start.elapsed().as_micros() as i64).await?;
+        db::logging::log_pdf_and_get_id(req_for_logging, start.elapsed().as_micros() as i64)
+            .await?;
 
     info!("PDF build complete. Logged the data with ID {pdf_id}");
     let pdf_bytes = fs::read(&pdf_path).await?;

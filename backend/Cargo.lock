@@ -1028,15 +1028,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
 
 [[package]]
-name = "logging"
-version = "0.8.1"
-dependencies = [
- "anyhow",
- "db",
- "types",
-]
-
-[[package]]
 name = "macros"
 version = "0.8.1"
 dependencies = [
@@ -1989,7 +1980,6 @@ dependencies = [
  "db",
  "dotenvy",
  "governor",
- "logging",
  "math",
  "problems",
  "registry",
