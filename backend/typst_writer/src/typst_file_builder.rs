@@ -4,7 +4,7 @@ use db;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 use tracing::warn;
-use types::pdf::{DocumentOptions, QuestionSetOptions, WriteSolutions};
+use types::pdf::{DocumentOptions, QuestionSetFormattingOptions, WriteSolutions};
 use types::problems::Problem;
 
 const TRANSLATION_NOT_FOUND_MESSAGE: &str = "!!! Translation not found !!!";
@@ -32,14 +32,14 @@ pub struct TypstFileBuilder {
     /// if we have WriteSolutions::First. Not used otherwise.
     seen_problem_ids: HashSet<i32>,
     options: DocumentOptions,
-    set_options: Vec<QuestionSetOptions>,
+    formatting_options: Vec<QuestionSetFormattingOptions>,
     i18n_strings: HashMap<String, String>,
 }
 
 impl TypstFileBuilder {
     /// Create a new builder and load the translations from the DB
     pub async fn new(
-        set_options: Vec<QuestionSetOptions>,
+        formatting_options: Vec<QuestionSetFormattingOptions>,
         options: DocumentOptions,
     ) -> Result<TypstFileBuilder> {
         let i18n_strings = db::i18n::get_pdf_translations(&options.lang).await?;
@@ -49,7 +49,7 @@ impl TypstFileBuilder {
             group_prefixes: Vec::new(),
             seen_problem_ids: HashSet::new(),
             options,
-            set_options,
+            formatting_options,
             i18n_strings,
         })
     }
@@ -109,7 +109,7 @@ impl TypstFileBuilder {
         let question_string = formatting::questions_to_balanced_columns(
             &self.question_sets,
             &self.group_prefixes,
-            &self.set_options,
+            &self.formatting_options,
             &self.options.par_spacing,
         )?;
         let answer_heading = self.get_translation("answer_key");

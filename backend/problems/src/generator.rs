@@ -43,12 +43,8 @@ pub async fn generate_problem_set(
     let problem_ids = picker::select_problems(
         options.n,
         &problems,
-        AbsoluteDifficulty::from_num(DifficultyCategory::to_minimum_difficulty_num(
-            &options.starting_difficulty,
-        )),
-        AbsoluteDifficulty::from_num(DifficultyCategory::to_maximum_difficulty_num(
-            &options.ending_difficulty,
-        )),
+        AbsoluteDifficulty::from_num(options.starting_difficulty.to_minimum_difficulty_num()),
+        AbsoluteDifficulty::from_num(options.ending_difficulty.to_maximum_difficulty_num()),
     )?;
     tracing::debug!("Problem order:\n{problem_ids:?}");
 

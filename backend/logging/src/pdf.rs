@@ -1,5 +1,5 @@
 use anyhow::Result;
-use db::logging::{PDFRow, PgInterval};
+use db::logging::{PDFRow, PgInterval, SetRow};
 use types::pdf::PDFRequest;
 
 type MicroSeconds = i64;
@@ -33,5 +33,29 @@ pub async fn log_pdf_and_get_id(request: PDFRequest, time_taken: MicroSeconds) -
         time_taken: time_taken_interval,
     };
 
-    db::logging::register_pdf(&db_row).await
+    let set_rows: Vec<SetRow> = request
+        .sets
+        .into_iter()
+        .enumerate()
+        .map(|(i, set)| SetRow {
+            topics: set.problem_options.topics,
+            exclusions: set.problem_options.exclusions,
+            columns: set.formatting_options.question_columns as i16,
+            starting_difficulty: set
+                .problem_options
+                .starting_difficulty
+                .to_minimum_difficulty_num() as i16,
+            ending_difficulty: set
+                .problem_options
+                .ending_difficulty
+                .to_maximum_difficulty_num() as i16,
+            problem_count: set.problem_options.n as i16,
+            has_heading: set.formatting_options.heading.is_some(),
+            order_index: i as i32,
+            pagebreak_after: set.formatting_options.pagebreak_after,
+            problem_spacing: set.formatting_options.spacing.map(|spacing| spacing as i16),
+        })
+        .collect();
+
+    db::logging::register_pdf(&db_row, &set_rows).await
 }

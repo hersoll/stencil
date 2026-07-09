@@ -147,15 +147,15 @@ impl Default for ProblemOptions {
 /// Options that dictate how a QuestionSet should be formatted
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct QuestionSetOptions {
+pub struct QuestionSetFormattingOptions {
     pub question_columns: u8,
     pub heading: Option<SanitizedTypstString>,
     pub spacing: Option<u16>,
     pub pagebreak_after: bool,
 }
-impl Default for QuestionSetOptions {
+impl Default for QuestionSetFormattingOptions {
     fn default() -> Self {
-        QuestionSetOptions {
+        QuestionSetFormattingOptions {
             question_columns: DEFAULT_QUESTION_COLUMNS,
             heading: None,
             spacing: None,
@@ -213,7 +213,7 @@ pub struct ProblemSetSpec {
     pub problem_options: ProblemOptions,
     /// Typst rendering options
     #[serde(default)]
-    pub set_options: QuestionSetOptions,
+    pub formatting_options: QuestionSetFormattingOptions,
 }
 
 impl ProblemSetSpec {
@@ -221,7 +221,7 @@ impl ProblemSetSpec {
     pub fn new() -> ProblemSetSpec {
         ProblemSetSpec {
             problem_options: ProblemOptions::default(),
-            set_options: QuestionSetOptions::default(),
+            formatting_options: QuestionSetFormattingOptions::default(),
         }
     }
 }

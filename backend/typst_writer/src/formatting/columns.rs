@@ -2,20 +2,20 @@ use super::{list_item, reformat_newlines};
 use crate::typst_file_builder::{AnswerSet, QuestionSet};
 use anyhow::Result;
 use std::fmt::Write;
-use types::pdf::QuestionSetOptions;
+use types::pdf::QuestionSetFormattingOptions;
 
 /// Formats the sets to columns with equal height
 pub fn questions_to_balanced_columns(
     sets: &[QuestionSet],
     group_prefixes: &[Option<String>],
-    set_options: &[QuestionSetOptions],
+    formatting_options: &[QuestionSetFormattingOptions],
     par_spacing: &Option<u8>,
 ) -> Result<String> {
     let mut out = String::with_capacity(8 * 1024);
-    let default_options = QuestionSetOptions::default();
+    let default_options = QuestionSetFormattingOptions::default();
 
     for (i, set) in sets.iter().enumerate() {
-        let set_option = set_options.get(i).unwrap_or(&default_options);
+        let set_option = formatting_options.get(i).unwrap_or(&default_options);
 
         writeln!(out, "\n#let problem_set = (")?;
         // Write each list item
@@ -24,11 +24,12 @@ pub fn questions_to_balanced_columns(
         }
         writeln!(out, ")")?;
 
-        let spacing_setting = if let Some(spacing) = set_options.get(i).and_then(|o| o.spacing) {
-            format!(", custom_spacing: {spacing}mm")
-        } else {
-            String::new()
-        };
+        let spacing_setting =
+            if let Some(spacing) = formatting_options.get(i).and_then(|o| o.spacing) {
+                format!(", custom_spacing: {spacing}mm")
+            } else {
+                String::new()
+            };
 
         // Custom headings always overwrite prefixes.
         if let Some(custom_heading) = &set_option.heading {

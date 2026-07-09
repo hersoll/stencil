@@ -128,8 +128,8 @@ impl DifficultyCategory {
             .collect()
     }
 
-    pub fn to_minimum_difficulty_num(difficulty_category: &DifficultyCategory) -> u8 {
-        match difficulty_category {
+    pub fn to_minimum_difficulty_num(&self) -> u8 {
+        match self {
             DifficultyCategory::Intro => 1,
             DifficultyCategory::Easy => 4,
             DifficultyCategory::Medium => 6,
@@ -137,8 +137,8 @@ impl DifficultyCategory {
         }
     }
 
-    pub fn to_maximum_difficulty_num(difficulty_category: &DifficultyCategory) -> u8 {
-        match difficulty_category {
+    pub fn to_maximum_difficulty_num(&self) -> u8 {
+        match self {
             DifficultyCategory::Intro => 3,
             DifficultyCategory::Easy => 5,
             DifficultyCategory::Medium => 7,
@@ -150,8 +150,8 @@ impl DifficultyCategory {
         starting_difficulty: &DifficultyCategory,
         ending_difficulty: &DifficultyCategory,
     ) -> Vec<AbsoluteDifficulty> {
-        let minimum_number = Self::to_minimum_difficulty_num(starting_difficulty);
-        let maximum_number = Self::to_maximum_difficulty_num(ending_difficulty);
+        let minimum_number = starting_difficulty.to_minimum_difficulty_num();
+        let maximum_number = ending_difficulty.to_maximum_difficulty_num();
 
         (minimum_number..=maximum_number)
             .map(AbsoluteDifficulty::from_num)

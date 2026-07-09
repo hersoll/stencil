@@ -11,7 +11,7 @@ use tokio::{fs, process::Command};
 use tracing::{debug, info, instrument};
 use types::{
     errors::ApiError,
-    pdf::{DocumentOptions, PDFRequest, ProblemSetSpec, QuestionSetOptions},
+    pdf::{DocumentOptions, PDFRequest, ProblemSetSpec, QuestionSetFormattingOptions},
     problems::Problem,
 };
 use typst_writer::typst_file_builder::TypstFileBuilder;
@@ -97,8 +97,10 @@ async fn build_pdf(req: PDFRequest) -> Result<PDFResponse, ApiError> {
     // A vec containing the sets of actual problems (With question, answer, ...)
     let mut problem_sets: Vec<Vec<Problem>> = Vec::with_capacity(sets.len());
     // The typst rendering options for each set
-    let set_options: Vec<QuestionSetOptions> =
-        sets.iter().map(|set| set.set_options.clone()).collect();
+    let formatting_options: Vec<QuestionSetFormattingOptions> = sets
+        .iter()
+        .map(|set| set.formatting_options.clone())
+        .collect();
 
     // Convert each incoming "set" (http-set) to actual problems
     for (i, set) in sets.into_iter().enumerate() {
@@ -126,7 +128,8 @@ async fn build_pdf(req: PDFRequest) -> Result<PDFResponse, ApiError> {
     debug!("Writing typst file...");
     let writing_start = Instant::now();
     let typst_path = temp_dir_path.join("stencil.typ");
-    let mut typst_file_builder = TypstFileBuilder::new(set_options, document_options).await?;
+    let mut typst_file_builder =
+        TypstFileBuilder::new(formatting_options, document_options).await?;
     for problem_set in problem_sets {
         typst_file_builder.parse_problem_set(problem_set)?;
     }

@@ -4,7 +4,7 @@ pub use sqlx::postgres::types::PgInterval;
 type SmallInt = i16;
 type Integer = i32;
 
-#[derive(Debug, sqlx::FromRow)]
+#[derive(Debug)]
 pub struct PDFRow {
     // Request data
     pub has_title: bool,
@@ -27,7 +27,22 @@ pub struct PDFRow {
     pub time_taken: PgInterval,
 }
 
-pub async fn register_pdf(row: &PDFRow) -> Result<i32> {
+#[derive(Debug)]
+pub struct SetRow {
+    pub topics: Vec<Integer>,
+    pub exclusions: Vec<Integer>,
+    // Represented as min and max within their respective category
+    pub starting_difficulty: SmallInt,
+    pub ending_difficulty: SmallInt,
+    pub problem_count: SmallInt,
+    pub columns: SmallInt,
+    pub has_heading: bool,
+    pub problem_spacing: Option<SmallInt>,
+    pub pagebreak_after: bool,
+    pub order_index: Integer,
+}
+
+pub async fn register_pdf(row: &PDFRow, set_rows: &[SetRow]) -> Result<i32> {
     let pool = crate::get_pool();
     let created = sqlx::query!(
         r#"INSERT INTO stats_pdf (
@@ -68,5 +83,44 @@ pub async fn register_pdf(row: &PDFRow) -> Result<i32> {
     .fetch_one(pool)
     .await?;
 
+    for set in set_rows {
+        register_set(set, created.id).await?;
+    }
+
     Ok(created.id)
+}
+
+async fn register_set(set: &SetRow, pdf_id: i32) -> Result<()> {
+    let pool = crate::get_pool();
+    sqlx::query!(
+        r#"INSERT INTO stats_sets (
+    topics,
+    exclusions,
+    starting_difficulty,
+    ending_difficulty,
+    problem_count,
+    columns,
+    has_heading,
+    problem_spacing,
+    pagebreak_after,
+    order_index,
+    pdf_id
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+               "#,
+        &set.topics,
+        &set.exclusions,
+        set.starting_difficulty,
+        set.ending_difficulty,
+        set.problem_count,
+        set.columns,
+        set.has_heading,
+        set.problem_spacing,
+        set.pagebreak_after,
+        set.order_index,
+        pdf_id
+    )
+    .execute(pool)
+    .await?;
+
+    Ok(())
 }
