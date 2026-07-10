@@ -1,27 +1,27 @@
 use anyhow::{Context, Result};
 
 /// Generic trait for handling methods that update relationships (linking tables).
-pub(crate) trait Relationship {
+pub trait Relationship {
     const TABLE_NAME: &'static str;
     const PARENT_COLUMN: &'static str;
     const CHILD_COLUMN: &'static str;
 }
 
-pub(crate) struct CourseChapters;
+pub struct CourseChapters;
 impl Relationship for CourseChapters {
     const TABLE_NAME: &'static str = "course_chapters";
     const PARENT_COLUMN: &'static str = "course_id";
     const CHILD_COLUMN: &'static str = "chapter_id";
 }
 
-pub(crate) struct ChapterTopics;
+pub struct ChapterTopics;
 impl Relationship for ChapterTopics {
     const TABLE_NAME: &'static str = "chapter_topics";
     const PARENT_COLUMN: &'static str = "chapter_id";
     const CHILD_COLUMN: &'static str = "topic_id";
 }
 
-pub(crate) struct TopicProblems;
+pub struct TopicProblems;
 impl Relationship for TopicProblems {
     const TABLE_NAME: &'static str = "topic_problems";
     const PARENT_COLUMN: &'static str = "topic_id";
@@ -29,7 +29,7 @@ impl Relationship for TopicProblems {
 }
 
 /// Generic helper for updating many-to-many relationships with ordering
-pub(crate) async fn update_children_for_parent<R: Relationship>(
+pub async fn update_children_for_parent<R: Relationship>(
     parent_id: &i32,
     child_ids: &[i32],
 ) -> Result<()> {
@@ -91,7 +91,7 @@ pub(crate) async fn update_children_for_parent<R: Relationship>(
 /// - Removes parents not in `parent_ids`
 /// - Keeps existing order_index values
 /// - Appends the child to new parents at the end
-pub(crate) async fn update_parents_for_child<R: Relationship>(
+pub async fn update_parents_for_child<R: Relationship>(
     child_id: &i32,
     parent_ids: &[i32],
 ) -> Result<()> {

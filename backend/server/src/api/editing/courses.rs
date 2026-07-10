@@ -1,7 +1,7 @@
 use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
-use crate::{
+use db::{
     CourseEntry, chapters, courses,
     relationships::{self, CourseChapters},
 };

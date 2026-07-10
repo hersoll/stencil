@@ -17,6 +17,7 @@
 
 ### Changed 
 - Moved common styling elements to the `App.css` file
+- Moved all api functions to the `server` crate
 
 ## [0.8.1] - 2026-07-07
 

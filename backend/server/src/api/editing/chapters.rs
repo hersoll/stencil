@@ -1,10 +1,11 @@
-use crate::{
+use axum::{Json, http::StatusCode, response::IntoResponse};
+use serde_json::json;
+
+use db::{
     ChapterEntry, chapters, courses,
     relationships::{self, ChapterTopics, CourseChapters},
     topics,
 };
-use axum::{Json, http::StatusCode, response::IntoResponse};
-use serde_json::json;
 use types::errors::ApiError;
 
 /// Returns all the data about every chapter in the DB as a `Vec<ChapterEntry>`.

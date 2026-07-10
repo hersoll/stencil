@@ -1,4 +1,3 @@
-use crate::{self as db, ChapterEntry, CourseEntry, HasDesc, ProblemEntry, TopicEntry, logging};
 use axum::{
     Json,
     extract::{Path, rejection::JsonRejection},
@@ -8,6 +7,9 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::info;
+
+use crate::api::parse_language;
+use db::{self, ChapterEntry, CourseEntry, HasDesc, ProblemEntry, TopicEntry, logging};
 use types::{errors::ApiError, lang::Language};
 
 /// Relevant data which is sent when a user requests a list of courses for the home page
@@ -104,27 +106,6 @@ struct TopicWithProblems {
     id: i32,
     desc: String,
     problems: Vec<HTTPProblemData>,
-}
-
-/// Returns all of text on the web page in the specified language
-///
-/// The data is returned in the form of a [`HashMap`], where the keys are identifiers
-/// for each string and the values are text in the required language
-pub async fn get_translations(
-    Path(lang_code): Path<String>,
-) -> Result<impl IntoResponse, ApiError> {
-    let lang = parse_language(&lang_code)?;
-    logging::log_language(lang).await?;
-    let translations = db::i18n::get_i18n_for_web(&lang).await?;
-
-    Ok((
-        StatusCode::OK,
-        [
-            ("Cache-Control", "public, max-age=3600"), // Cache 1 hour
-            ("Content-Type", "application/json"),
-        ],
-        Json(json!(translations)),
-    ))
 }
 
 /// Returns a `Vec` with data about every course in the database
@@ -240,12 +221,4 @@ async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
     };
 
     Ok(course_entry)
-}
-
-fn parse_language(lang: &str) -> Result<Language, ApiError> {
-    match lang {
-        "sv" => Ok(Language::Sv),
-        "en" => Ok(Language::En),
-        _ => Err(ApiError::BadRequest("Invalid language".to_string())),
-    }
 }

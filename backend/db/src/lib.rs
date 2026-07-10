@@ -1,16 +1,14 @@
-mod chapters;
+pub mod chapters;
 mod common;
-mod courses;
+pub mod courses;
 mod db_types;
-pub mod editing_api;
 pub mod i18n;
 pub mod logging;
 mod newtypes;
-mod prefixes;
-mod problems;
-pub mod public_api;
-mod relationships;
-mod topics;
+pub mod prefixes;
+pub mod problems;
+pub mod relationships;
+pub mod topics;
 pub mod users;
 
 pub use chapters::*;

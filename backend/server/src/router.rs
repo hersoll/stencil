@@ -1,4 +1,5 @@
 use crate::{
+    api,
     middleware::{self, auth::authenticate_with_limit, rate_limiting::AuthLimit},
     pdf_generation,
 };
@@ -15,19 +16,17 @@ pub fn create_router() -> Router {
     let auth_limit = AuthLimit::new();
 
     let user_routes = Router::new()
-        .route(
-            "/translations/{lang}",
-            get(db::public_api::get_translations),
-        )
-        .route("/{lang}/course", get(db::public_api::get_course_list))
+        .route("/translations/{lang}", get(api::public::get_translations))
+        .route("/{lang}/course", get(api::public::get_course_list))
         .route(
             "/{lang}/course/{course}",
-            get(db::public_api::get_chapters_and_topics_for_course),
+            get(api::public::get_chapters_and_topics_for_course),
         )
         .route(
             "/{lang}/problems",
-            post(db::public_api::get_problems_for_topics),
+            post(api::public::get_problems_for_topics),
         )
+        .route("/test/{arg}", get(api::testing::test_api))
         .layer(tower_governor::GovernorLayer::new(
             middleware::rate_limiting::json_limit(),
         ));
@@ -45,57 +44,78 @@ pub fn create_router() -> Router {
         // ========================================
         //      PROBLEMS
         // ========================================
-        .route("/edit/problem", get(db::editing_api::get_problems))
+        .route("/edit/problem", get(api::editing::problems::get_problems))
         .route(
             "/edit/problem/from_topic",
-            post(db::editing_api::get_problems_from_topic_id),
+            post(api::editing::problems::get_problems_from_topic_id),
         )
-        .route("/edit/problem", post(db::editing_api::create_problem))
-        .route("/edit/problem", patch(db::editing_api::update_problem))
-        .route("/edit/problem", delete(db::editing_api::delete_problem))
+        .route(
+            "/edit/problem",
+            post(api::editing::problems::create_problem),
+        )
+        .route(
+            "/edit/problem",
+            patch(api::editing::problems::update_problem),
+        )
+        .route(
+            "/edit/problem",
+            delete(api::editing::problems::delete_problem),
+        )
         // ========================================
         //      TOPICS
         // ========================================
-        .route("/edit/topic", get(db::editing_api::get_topics))
+        .route("/edit/topic", get(api::editing::topics::get_topics))
         .route(
             "/edit/topic/ids",
-            post(db::editing_api::get_topics_from_ids),
+            post(api::editing::topics::get_topics_from_ids),
         )
-        .route("/edit/topic", post(db::editing_api::create_topic))
-        .route("/edit/topic", patch(db::editing_api::update_topic))
-        .route("/edit/topic", delete(db::editing_api::delete_topic))
+        .route("/edit/topic", post(api::editing::topics::create_topic))
+        .route("/edit/topic", patch(api::editing::topics::update_topic))
+        .route("/edit/topic", delete(api::editing::topics::delete_topic))
         // ========================================
         //      CHAPTERS
         // ========================================
-        .route("/edit/chapter", get(db::editing_api::get_chapters))
+        .route("/edit/chapter", get(api::editing::chapters::get_chapters))
         .route(
             "/edit/chapter/ids",
-            post(db::editing_api::get_chapters_from_ids),
+            post(api::editing::chapters::get_chapters_from_ids),
         )
-        .route("/edit/chapter", post(db::editing_api::create_chapter))
-        .route("/edit/chapter", patch(db::editing_api::update_chapter))
-        .route("/edit/chapter", delete(db::editing_api::delete_chapter))
+        .route(
+            "/edit/chapter",
+            post(api::editing::chapters::create_chapter),
+        )
+        .route(
+            "/edit/chapter",
+            patch(api::editing::chapters::update_chapter),
+        )
+        .route(
+            "/edit/chapter",
+            delete(api::editing::chapters::delete_chapter),
+        )
         // ========================================
         //      COURSES
         // ========================================
-        .route("/edit/course", get(db::editing_api::get_courses))
+        .route("/edit/course", get(api::editing::courses::get_courses))
         .route(
             "/edit/course/ids",
-            post(db::editing_api::get_courses_from_ids),
+            post(api::editing::courses::get_courses_from_ids),
         )
-        .route("/edit/course", post(db::editing_api::create_course))
-        .route("/edit/course", patch(db::editing_api::update_course))
-        .route("/edit/course", delete(db::editing_api::delete_course))
+        .route("/edit/course", post(api::editing::courses::create_course))
+        .route("/edit/course", patch(api::editing::courses::update_course))
+        .route("/edit/course", delete(api::editing::courses::delete_course))
         // ========================================
         //      PREFIXES
         // ========================================
-        .route("/edit/prefix", get(db::editing_api::get_prefixes))
-        .route("/edit/prefix", post(db::editing_api::create_prefix))
-        .route("/edit/prefix", patch(db::editing_api::update_prefix))
-        .route("/edit/prefix", delete(db::editing_api::delete_prefix))
+        .route("/edit/prefix", get(api::editing::prefixes::get_prefixes))
+        .route("/edit/prefix", post(api::editing::prefixes::create_prefix))
+        .route("/edit/prefix", patch(api::editing::prefixes::update_prefix))
+        .route(
+            "/edit/prefix",
+            delete(api::editing::prefixes::delete_prefix),
+        )
         .route(
             "/edit/prefix/id/{prefix_id}",
-            get(db::editing_api::get_prefix_from_id),
+            get(api::editing::prefixes::get_prefix_from_id),
         )
         .layer(axum::middleware::from_fn_with_state(
             auth_limit.clone(),
