@@ -1,21 +1,15 @@
 // - PDF count timeline, per hour over 24 hours, week, per day over month, etc.
 
 use anyhow::Result;
-use serde::Serialize;
 use types::lang::Language;
 
-use crate::logging::stats::{AggregationDuration, DailyCount, HourlyCount, WeeklyCount};
+use crate::logging::stats::{AggregationDuration, Count, DailyCount, HourlyCount, WeeklyCount};
 
-#[derive(Serialize)]
-pub struct LanguageCount {
-    pub lang: Language,
-    pub count: i64,
-}
-pub async fn get_language_count(duration: AggregationDuration) -> Result<Vec<LanguageCount>> {
+pub async fn get_language_count(duration: AggregationDuration) -> Result<Vec<Count<Language>>> {
     let pool = crate::get_pool();
     let counts = sqlx::query_as!(
-        LanguageCount,
-        r#"SELECT lang, COUNT(*) as "count!" 
+        Count::<Language>,
+        r#"SELECT lang as value, COUNT(*) as "count!" 
         FROM logs_lang 
         WHERE created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval
         GROUP BY lang;"#,
@@ -27,17 +21,11 @@ pub async fn get_language_count(duration: AggregationDuration) -> Result<Vec<Lan
     Ok(counts)
 }
 
-#[derive(Serialize)]
-pub struct CourseCount {
-    /// Since this is rendered for me only, I only care about the Swedish desc :)
-    pub desc_sv: String,
-    pub count: i64,
-}
-pub async fn get_course_count(duration: AggregationDuration) -> Result<Vec<CourseCount>> {
+pub async fn get_course_count(duration: AggregationDuration) -> Result<Vec<Count<String>>> {
     let pool = crate::get_pool();
     let counts = sqlx::query_as!(
-        CourseCount,
-        r#"SELECT courses.desc_sv, COUNT(*) as "count!" 
+        Count::<String>,
+        r#"SELECT courses.desc_sv as value, COUNT(*) as "count!" 
         FROM logs_course INNER JOIN courses ON logs_course.course_id = courses.id
         WHERE logs_course.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval
         GROUP BY courses.desc_sv;"#,

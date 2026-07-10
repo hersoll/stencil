@@ -35,6 +35,17 @@ impl AggregationDuration {
     }
 }
 
+/// Represents the occurences of a certain value in the DB
+///
+/// Used for queries with `GROUP BY`, where you want counts for multiple variants at the same time, for example how
+/// many PDFs are rendered with a title and how many are rendered without one. In that case, the
+/// `sqlx` query will return a `Vec<Count<bool>>`
+#[derive(Serialize)]
+pub struct Count<T> {
+    pub value: T,
+    pub count: i64,
+}
+
 /// Used for timeline-style stats
 #[derive(Serialize)]
 pub struct HourlyCount {
