@@ -59,16 +59,16 @@ pub async fn log_pdf_and_get_id(request: PDFRequest, time_taken: MicroSeconds) -
         has_title: d_o.title.is_some(),
         has_subtitle: d_o.subtitle.is_some(),
         has_name_field: d_o.name_field,
-        font_size: d_o.font_size as i16,
-        answer_columns: d_o.answer_columns as i16,
+        font_size: d_o.font_size as SmallInt,
+        answer_columns: d_o.answer_columns as SmallInt,
         lang: d_o.lang.to_string(),
         write_solutions: d_o.write_solutions.to_string(),
         color: d_o.color,
         paper_size: d_o.paper_size.to_string(),
-        x_margin: d_o.x_margin as i16,
-        y_margin: d_o.y_margin as i16,
-        par_spacing: d_o.par_spacing.map(|v| v as i16),
-        max_prefix_group: d_o.max_prefix_group as i16,
+        x_margin: d_o.x_margin as SmallInt,
+        y_margin: d_o.y_margin as SmallInt,
+        par_spacing: d_o.par_spacing.map(|v| v as SmallInt),
+        max_prefix_group: d_o.max_prefix_group as SmallInt,
         page_break_before_answers: d_o.page_break_before_answers,
         previous_pdf: request.previous_pdf,
         time_taken: time_taken_interval,
@@ -81,20 +81,23 @@ pub async fn log_pdf_and_get_id(request: PDFRequest, time_taken: MicroSeconds) -
         .map(|(i, set)| SetRow {
             topics: set.problem_options.topics,
             exclusions: set.problem_options.exclusions,
-            columns: set.formatting_options.question_columns as i16,
+            columns: set.formatting_options.question_columns as SmallInt,
             starting_difficulty: set
                 .problem_options
                 .starting_difficulty
-                .to_minimum_difficulty_num() as i16,
+                .to_minimum_difficulty_num() as SmallInt,
             ending_difficulty: set
                 .problem_options
                 .ending_difficulty
-                .to_maximum_difficulty_num() as i16,
-            problem_count: set.problem_options.n as i16,
+                .to_maximum_difficulty_num() as SmallInt,
+            problem_count: set.problem_options.n as SmallInt,
             has_heading: set.formatting_options.heading.is_some(),
-            order_index: i as i32,
+            order_index: i as Integer,
             pagebreak_after: set.formatting_options.pagebreak_after,
-            problem_spacing: set.formatting_options.spacing.map(|spacing| spacing as i16),
+            problem_spacing: set
+                .formatting_options
+                .spacing
+                .map(|spacing| spacing as SmallInt),
         })
         .collect();
 
