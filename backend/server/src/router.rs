@@ -30,6 +30,7 @@ pub fn create_router() -> Router {
         .layer(tower_governor::GovernorLayer::new(
             middleware::rate_limiting::json_limit(),
         ));
+
     let pdf_routes = Router::new()
         .route("/pdf", post(pdf_generation::generate_pdf_from_http))
         .route("/pdf/example", get(pdf_generation::generate_example_pdf))
@@ -37,162 +38,97 @@ pub fn create_router() -> Router {
             middleware::rate_limiting::pdf_limit(),
         ));
 
-    let protected_routes = Router::new()
+    let auth_routes = Router::new()
         .route("/edit", get(middleware::auth::protected))
-        .route("/edit/login", get(middleware::auth::login))
-        //.route("/create/{user}/{pass}", post(middleware::auth::create_user))
-        // ========================================
-        //      PROBLEMS
-        // ========================================
-        .route("/edit/problem", get(api::editing::problems::get_problems))
-        .route(
-            "/edit/problem/from_topic",
-            post(api::editing::problems::get_problems_from_topic_id),
-        )
-        .route(
-            "/edit/problem",
-            post(api::editing::problems::create_problem),
-        )
-        .route(
-            "/edit/problem",
-            patch(api::editing::problems::update_problem),
-        )
-        .route(
-            "/edit/problem",
-            delete(api::editing::problems::delete_problem),
-        )
-        // ========================================
-        //      TOPICS
-        // ========================================
-        .route("/edit/topic", get(api::editing::topics::get_topics))
-        .route(
-            "/edit/topic/ids",
-            post(api::editing::topics::get_topics_from_ids),
-        )
-        .route("/edit/topic", post(api::editing::topics::create_topic))
-        .route("/edit/topic", patch(api::editing::topics::update_topic))
-        .route("/edit/topic", delete(api::editing::topics::delete_topic))
-        // ========================================
-        //      CHAPTERS
-        // ========================================
-        .route("/edit/chapter", get(api::editing::chapters::get_chapters))
-        .route(
-            "/edit/chapter/ids",
-            post(api::editing::chapters::get_chapters_from_ids),
-        )
-        .route(
-            "/edit/chapter",
-            post(api::editing::chapters::create_chapter),
-        )
-        .route(
-            "/edit/chapter",
-            patch(api::editing::chapters::update_chapter),
-        )
-        .route(
-            "/edit/chapter",
-            delete(api::editing::chapters::delete_chapter),
-        )
-        // ========================================
-        //      COURSES
-        // ========================================
-        .route("/edit/course", get(api::editing::courses::get_courses))
-        .route(
-            "/edit/course/ids",
-            post(api::editing::courses::get_courses_from_ids),
-        )
-        .route("/edit/course", post(api::editing::courses::create_course))
-        .route("/edit/course", patch(api::editing::courses::update_course))
-        .route("/edit/course", delete(api::editing::courses::delete_course))
-        // ========================================
-        //      PREFIXES
-        // ========================================
-        .route("/edit/prefix", get(api::editing::prefixes::get_prefixes))
-        .route("/edit/prefix", post(api::editing::prefixes::create_prefix))
-        .route("/edit/prefix", patch(api::editing::prefixes::update_prefix))
-        .route(
-            "/edit/prefix",
-            delete(api::editing::prefixes::delete_prefix),
-        )
-        .route(
-            "/edit/prefix/id/{prefix_id}",
-            get(api::editing::prefixes::get_prefix_from_id),
-        )
-        .layer(axum::middleware::from_fn_with_state(
-            auth_limit.clone(),
-            authenticate_with_limit,
-        ))
-        .with_state(auth_limit.clone());
+        .route("/edit/login", get(middleware::auth::login));
+    //.route("/create/{user}/{pass}", post(middleware::auth::create_user))
 
-    let stats_routes = Router::new()
-        .route("/stats/pdf", get(api::stats::api_counts::pdf_all_time))
+    let edit_problem_routes = Router::new()
+        .route("/", get(api::editing::problems::get_problems))
+        .route("/", post(api::editing::problems::create_problem))
+        .route("/", patch(api::editing::problems::update_problem))
+        .route("/", delete(api::editing::problems::delete_problem))
         .route(
-            "/stats/pdf/day",
-            get(api::stats::api_counts::pdf_hourly_for_day),
-        )
+            "/from_topic",
+            post(api::editing::problems::get_problems_from_topic_id),
+        );
+    let edit_topic_routes = Router::new()
+        .route("/", get(api::editing::topics::get_topics))
+        .route("/", post(api::editing::topics::create_topic))
+        .route("/", patch(api::editing::topics::update_topic))
+        .route("/", delete(api::editing::topics::delete_topic))
+        .route("/ids", post(api::editing::topics::get_topics_from_ids));
+    let edit_chapter_routes = Router::new()
+        .route("/", get(api::editing::chapters::get_chapters))
+        .route("/", post(api::editing::chapters::create_chapter))
+        .route("/", patch(api::editing::chapters::update_chapter))
+        .route("/", delete(api::editing::chapters::delete_chapter))
+        .route("/ids", post(api::editing::chapters::get_chapters_from_ids));
+    let edit_course_routes = Router::new()
+        .route("/", get(api::editing::courses::get_courses))
+        .route("/", post(api::editing::courses::create_course))
+        .route("/", patch(api::editing::courses::update_course))
+        .route("/", delete(api::editing::courses::delete_course))
+        .route("/ids", post(api::editing::courses::get_courses_from_ids));
+    let edit_prefix_routes = Router::new()
+        .route("/", get(api::editing::prefixes::get_prefixes))
+        .route("/", post(api::editing::prefixes::create_prefix))
+        .route("/", patch(api::editing::prefixes::update_prefix))
+        .route("/", delete(api::editing::prefixes::delete_prefix))
         .route(
-            "/stats/pdf/week",
-            get(api::stats::api_counts::pdf_daily_for_week),
-        )
+            "/id/{prefix_id}",
+            get(api::editing::prefixes::get_prefix_from_id),
+        );
+
+    let edit_routes = Router::new()
+        .nest("/edit/problem", edit_problem_routes)
+        .nest("/edit/topic", edit_topic_routes)
+        .nest("/edit/chapter", edit_chapter_routes)
+        .nest("/edit/course", edit_course_routes)
+        .nest("/edit/prefix", edit_prefix_routes);
+
+    let pdf_stats_routes = Router::new()
+        .route("/", get(api::stats::api_counts::pdf_all_time))
+        .route("/day", get(api::stats::api_counts::pdf_hourly_for_day))
+        .route("/week", get(api::stats::api_counts::pdf_daily_for_week))
+        .route("/month", get(api::stats::api_counts::pdf_daily_for_month))
         .route(
-            "/stats/pdf/month",
-            get(api::stats::api_counts::pdf_daily_for_month),
-        )
-        .route(
-            "/stats/pdf/threemonths",
+            "/threemonths",
             get(api::stats::api_counts::pdf_weekly_for_three_months),
         )
+        .route("/year", get(api::stats::api_counts::pdf_weekly_for_year));
+
+    let lang_stats_routes = Router::new()
+        .route("/", get(api::stats::api_counts::language_for_all_time))
+        .route("/day", get(api::stats::api_counts::language_for_day))
+        .route("/week", get(api::stats::api_counts::language_for_week))
+        .route("/month", get(api::stats::api_counts::language_for_month))
         .route(
-            "/stats/pdf/year",
-            get(api::stats::api_counts::pdf_weekly_for_year),
-        )
-        .route(
-            "/stats/lang",
-            get(api::stats::api_counts::language_for_all_time),
-        )
-        .route(
-            "/stats/lang/day",
-            get(api::stats::api_counts::language_for_day),
-        )
-        .route(
-            "/stats/lang/week",
-            get(api::stats::api_counts::language_for_week),
-        )
-        .route(
-            "/stats/lang/month",
-            get(api::stats::api_counts::language_for_month),
-        )
-        .route(
-            "/stats/lang/threemonths",
+            "/threemonths",
             get(api::stats::api_counts::language_for_three_months),
         )
+        .route("/year", get(api::stats::api_counts::language_for_year));
+
+    let course_stats_routes = Router::new()
+        .route("/", get(api::stats::api_counts::courses_for_all_time))
+        .route("/day", get(api::stats::api_counts::courses_for_day))
+        .route("/week", get(api::stats::api_counts::courses_for_week))
+        .route("/month", get(api::stats::api_counts::courses_for_month))
         .route(
-            "/stats/lang/year",
-            get(api::stats::api_counts::language_for_year),
-        )
-        .route(
-            "/stats/course",
-            get(api::stats::api_counts::courses_for_all_time),
-        )
-        .route(
-            "/stats/course/day",
-            get(api::stats::api_counts::courses_for_day),
-        )
-        .route(
-            "/stats/course/week",
-            get(api::stats::api_counts::courses_for_week),
-        )
-        .route(
-            "/stats/course/month",
-            get(api::stats::api_counts::courses_for_month),
-        )
-        .route(
-            "/stats/course/threemonths",
+            "/threemonths",
             get(api::stats::api_counts::courses_for_three_months),
         )
-        .route(
-            "/stats/course/year",
-            get(api::stats::api_counts::courses_for_year),
-        )
+        .route("/year", get(api::stats::api_counts::courses_for_year));
+
+    let stats_routes = Router::new()
+        .nest("/stats/pdf", pdf_stats_routes)
+        .nest("/stats/lang", lang_stats_routes)
+        .nest("/stats/course", course_stats_routes);
+
+    let protected_routes = Router::new()
+        .merge(auth_routes)
+        .merge(edit_routes)
+        .merge(stats_routes)
         .layer(axum::middleware::from_fn_with_state(
             auth_limit.clone(),
             authenticate_with_limit,
@@ -203,7 +139,6 @@ pub fn create_router() -> Router {
         .merge(user_routes)
         .merge(pdf_routes)
         .merge(protected_routes)
-        .merge(stats_routes)
         .layer(middleware::cors::create_cors_layer())
         // Annoying type signature, don't try to extract to its own function...
         .layer(
