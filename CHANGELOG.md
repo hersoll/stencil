@@ -14,6 +14,7 @@
 - Log entries for everything surrounding the PDFs are stored in the DB
 - Also logs language and course API calls for statistics
 - To track what the user changes between renders, the server returns the id of the logged PDF. The frontend then sends that ID in the request of an eventual new PDF
+- A `/stats` API endpoint (protected by auth) which collates logs from the DB
 
 ### Changed 
 - Moved common styling elements to the `App.css` file

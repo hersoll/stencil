@@ -121,12 +121,89 @@ pub fn create_router() -> Router {
             auth_limit.clone(),
             authenticate_with_limit,
         ))
+        .with_state(auth_limit.clone());
+
+    let stats_routes = Router::new()
+        .route("/stats/pdf", get(api::stats::api_counts::pdf_all_time))
+        .route(
+            "/stats/pdf/day",
+            get(api::stats::api_counts::pdf_hourly_for_day),
+        )
+        .route(
+            "/stats/pdf/week",
+            get(api::stats::api_counts::pdf_daily_for_week),
+        )
+        .route(
+            "/stats/pdf/month",
+            get(api::stats::api_counts::pdf_daily_for_month),
+        )
+        .route(
+            "/stats/pdf/threemonths",
+            get(api::stats::api_counts::pdf_weekly_for_three_months),
+        )
+        .route(
+            "/stats/pdf/year",
+            get(api::stats::api_counts::pdf_weekly_for_year),
+        )
+        .route(
+            "/stats/lang",
+            get(api::stats::api_counts::language_for_all_time),
+        )
+        .route(
+            "/stats/lang/day",
+            get(api::stats::api_counts::language_for_day),
+        )
+        .route(
+            "/stats/lang/week",
+            get(api::stats::api_counts::language_for_week),
+        )
+        .route(
+            "/stats/lang/month",
+            get(api::stats::api_counts::language_for_month),
+        )
+        .route(
+            "/stats/lang/threemonths",
+            get(api::stats::api_counts::language_for_three_months),
+        )
+        .route(
+            "/stats/lang/year",
+            get(api::stats::api_counts::language_for_year),
+        )
+        .route(
+            "/stats/course",
+            get(api::stats::api_counts::courses_for_all_time),
+        )
+        .route(
+            "/stats/course/day",
+            get(api::stats::api_counts::courses_for_day),
+        )
+        .route(
+            "/stats/course/week",
+            get(api::stats::api_counts::courses_for_week),
+        )
+        .route(
+            "/stats/course/month",
+            get(api::stats::api_counts::courses_for_month),
+        )
+        .route(
+            "/stats/course/threemonths",
+            get(api::stats::api_counts::courses_for_three_months),
+        )
+        .route(
+            "/stats/course/year",
+            get(api::stats::api_counts::courses_for_year),
+        )
+        .layer(axum::middleware::from_fn_with_state(
+            auth_limit.clone(),
+            authenticate_with_limit,
+        ))
         .with_state(auth_limit);
 
     Router::new()
         .merge(user_routes)
         .merge(pdf_routes)
         .merge(protected_routes)
+        .merge(stats_routes)
         .layer(middleware::cors::create_cors_layer())
         // Annoying type signature, don't try to extract to its own function...
         .layer(

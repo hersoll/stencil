@@ -1,7 +1,6 @@
 mod pdf;
-mod stats;
+pub mod stats;
 mod web;
 
 pub use pdf::*;
-pub use stats::*;
 pub use web::*;
