@@ -107,24 +107,26 @@ pub async fn log_pdf_and_get_id(request: PDFRequest, time_taken: MicroSeconds) -
 async fn log_pdf(row: &PDFRow, set_rows: &[SetRow]) -> Result<i32> {
     let pool = crate::get_pool();
     let created = sqlx::query!(
-        r#"INSERT INTO stats_pdf (
-    has_title,
-    has_subtitle,
-    has_name_field,
-    font_size,
-    answer_columns,
-    lang,
-    write_solutions,
-    color,
-    paper_size,
-    x_margin,
-    y_margin,
-    par_spacing,
-    max_prefix_group,
-    page_break_before_answers,
-    previous_pdf,
-    time_taken) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
-               RETURNING id"#,
+        r#"INSERT INTO logs_pdf (
+            has_title,
+            has_subtitle,
+            has_name_field,
+            font_size,
+            answer_columns,
+            lang,
+            write_solutions,
+            color,
+            paper_size,
+            x_margin,
+            y_margin,
+            par_spacing,
+            max_prefix_group,
+            page_break_before_answers,
+            previous_pdf,
+            time_taken
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
+        RETURNING id
+        "#,
         row.has_title,
         row.has_subtitle,
         row.has_name_field,
@@ -155,20 +157,20 @@ async fn log_pdf(row: &PDFRow, set_rows: &[SetRow]) -> Result<i32> {
 async fn log_set(set: &SetRow, pdf_id: i32) -> Result<()> {
     let pool = crate::get_pool();
     sqlx::query!(
-        r#"INSERT INTO stats_sets (
-    topics,
-    exclusions,
-    starting_difficulty,
-    ending_difficulty,
-    problem_count,
-    columns,
-    has_heading,
-    problem_spacing,
-    pagebreak_after,
-    order_index,
-    pdf_id
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
-               "#,
+        r#"INSERT INTO logs_problem_set (
+            topics,
+            exclusions,
+            starting_difficulty,
+            ending_difficulty,
+            problem_count,
+            columns,
+            has_heading,
+            problem_spacing,
+            pagebreak_after,
+            order_index,
+            pdf_id
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+        "#,
         &set.topics,
         &set.exclusions,
         set.starting_difficulty,

@@ -16,7 +16,7 @@ pub async fn get_language_count(duration: AggregationDuration) -> Result<Vec<Lan
     let counts = sqlx::query_as!(
         LanguageCount,
         r#"SELECT lang, COUNT(*) as "count!" 
-        FROM stats_lang 
+        FROM logs_lang 
         WHERE created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval
         GROUP BY lang;"#,
         duration.to_interval()
@@ -38,8 +38,8 @@ pub async fn get_course_count(duration: AggregationDuration) -> Result<Vec<Cours
     let counts = sqlx::query_as!(
         CourseCount,
         r#"SELECT courses.desc_sv, COUNT(*) as "count!" 
-        FROM stats_courses INNER JOIN courses ON stats_courses.course_id = courses.id
-        WHERE stats_courses.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval
+        FROM logs_course INNER JOIN courses ON logs_course.course_id = courses.id
+        WHERE logs_course.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval
         GROUP BY courses.desc_sv;"#,
         duration.to_interval()
     )
@@ -54,7 +54,7 @@ pub async fn get_pdf_count_all_time() -> Result<i64> {
     let pool = crate::get_pool();
     let record = sqlx::query!(
         r#"SELECT COUNT(*) as "count!" 
-        FROM stats_pdf 
+        FROM logs_pdf 
         "#,
     )
     .fetch_one(pool)
@@ -84,7 +84,7 @@ pub async fn get_pdf_count_hourly_for_day() -> Result<Vec<HourlyCount>> {
             SELECT
                 date_trunc('hour', created_at) AS hour,
                 COUNT(*) AS count
-            FROM stats_pdf
+            FROM logs_pdf
             WHERE created_at >= (now() AT TIME ZONE 'utc') - interval '24 hours'
             GROUP BY 1
         ) c ON h.hour = c.hour
@@ -117,7 +117,7 @@ pub async fn get_pdf_count_daily_for_week() -> Result<Vec<DailyCount>> {
             SELECT
                 date_trunc('day', created_at) AS day,
                 COUNT(*) AS count
-            FROM stats_pdf
+            FROM logs_pdf
             WHERE created_at >= (now() AT TIME ZONE 'utc') - interval '7 days'
             GROUP BY 1
         ) c ON c.day = d.day
@@ -150,7 +150,7 @@ pub async fn get_pdf_count_daily_for_month() -> Result<Vec<DailyCount>> {
             SELECT
                 date_trunc('day', created_at) AS day,
                 COUNT(*) AS count
-            FROM stats_pdf
+            FROM logs_pdf
             WHERE created_at >= (now() AT TIME ZONE 'utc') - interval '30 days'
             GROUP BY 1
         ) c USING (day)
@@ -183,7 +183,7 @@ pub async fn get_pdf_count_weekly_for_three_months() -> Result<Vec<WeeklyCount>>
             SELECT
                 date_trunc('week', created_at) AS week_start,
                 COUNT(*) AS count
-            FROM stats_pdf
+            FROM logs_pdf
             WHERE created_at >= (now() AT TIME ZONE 'utc') - interval '3 months'
             GROUP BY 1
         ) c USING (week_start)
@@ -216,7 +216,7 @@ pub async fn get_pdf_count_weekly_for_year() -> Result<Vec<WeeklyCount>> {
             SELECT
                 date_trunc('week', created_at) AS week_start,
                 COUNT(*) AS count
-            FROM stats_pdf
+            FROM logs_pdf
             WHERE created_at >= (now() AT TIME ZONE 'utc') - interval '1 year'
             GROUP BY 1
         ) c USING (week_start)

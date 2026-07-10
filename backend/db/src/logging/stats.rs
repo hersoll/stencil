@@ -1,8 +1,8 @@
 //! This module is responsible for reading the logging DBs and calculate different stats from that
 //! data.
 mod api_counts;
-
 pub use api_counts::*;
+
 use serde::Serialize;
 use sqlx::postgres::types::PgInterval;
 
@@ -35,18 +35,21 @@ impl AggregationDuration {
     }
 }
 
+/// Used for timeline-style stats
 #[derive(Serialize)]
 pub struct HourlyCount {
     pub hour: chrono::NaiveDateTime,
     pub count: i64,
 }
 
+/// Used for timeline-style stats
 #[derive(Serialize)]
 pub struct DailyCount {
     pub day: chrono::NaiveDateTime,
     pub count: i64,
 }
 
+/// Used for timeline-style stats
 #[derive(Serialize)]
 pub struct WeeklyCount {
     pub week_start: chrono::NaiveDateTime,
