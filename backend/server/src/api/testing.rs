@@ -14,6 +14,7 @@ pub async fn test_api(Path(arg): Path<u16>) -> Result<impl IntoResponse, ApiErro
 }
 
 async fn do_the_test(arg: u16) -> Result<impl IntoResponse, ApiError> {
-    let data = db::logging::stats::get_set_count(AggregationDuration::Days(arg)).await?;
+    let data =
+        db::logging::stats::leaderboards::most_used_topics(AggregationDuration::Days(arg)).await?;
     Ok((StatusCode::OK, Json(json!(data))))
 }

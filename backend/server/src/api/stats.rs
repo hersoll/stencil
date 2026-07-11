@@ -2,6 +2,7 @@ use db::logging::stats::AggregationDuration;
 use serde::Deserialize;
 
 pub mod api_counts;
+pub mod leaderboards;
 pub mod pdf_attributes;
 pub mod problem_set_attributes;
 

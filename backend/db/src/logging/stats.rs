@@ -1,6 +1,7 @@
 //! This module is responsible for reading the logging DBs and calculate different stats from that
 //! data.
 mod api_counts;
+pub mod leaderboards;
 mod pdf_counts;
 mod problem_set_counts;
 pub use api_counts::*;
@@ -117,12 +118,6 @@ pub struct TimeLineCount {
 }
 
 // # What do we want to do?
-// ## Leaderboards:
-// - Most used chapters
-// - Most used topics
-// - Most excluded problems
-// - Best and worst render times
-// - Busiest days
 //
 // ## Averages (with duration):
 // - Render time
