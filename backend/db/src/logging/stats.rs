@@ -1,6 +1,7 @@
 //! This module is responsible for reading the logging DBs and calculate different stats from that
 //! data.
 mod api_counts;
+pub mod box_plots;
 pub mod leaderboards;
 mod pdf_counts;
 mod problem_set_counts;
@@ -116,11 +117,3 @@ pub struct TimeLineCount {
     pub time: chrono::NaiveDateTime,
     pub count: i64,
 }
-
-// # What do we want to do?
-//
-// ## Averages (with duration):
-// - Render time
-// - Topics per set
-// - Problem count per set
-// - Set count per pdf

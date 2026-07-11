@@ -1,7 +1,7 @@
 use crate::{
     api::{
         self,
-        stats::{api_counts, leaderboards, pdf_attributes, problem_set_attributes},
+        stats::{api_counts, box_plots, leaderboards, pdf_attributes, problem_set_attributes},
     },
     middleware::{self, auth::authenticate_with_limit, rate_limiting::AuthLimit},
     pdf_generation,
@@ -97,8 +97,18 @@ pub fn create_router() -> Router {
             get(leaderboards::most_excluded_problems),
         );
 
+    let box_plot_routes = Router::new()
+        .route("/renders/{duration}", get(box_plots::render_times))
+        .route("/topics/{duration}", get(box_plots::topics_per_set))
+        .route("/exclusions/{duration}", get(box_plots::exclusions_per_set))
+        .route(
+            "/problem_count/{duration}",
+            get(box_plots::problem_count_per_set),
+        );
+
     let stats_routes = Router::new()
         .nest("/leaderboard", leaderboard_routes)
+        .nest("/boxplots", box_plot_routes)
         .route("/pdf", get(api_counts::get_pdf_count))
         .route("/pdf/{duration}", get(api_counts::get_pdf_timeline))
         .route(
