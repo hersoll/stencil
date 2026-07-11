@@ -43,6 +43,7 @@ impl AggregationDuration {
 #[serde(untagged)]
 pub enum ReturnData {
     Boolean(bool),
+    BigInt(i64),
     Integer(i32),
     SmallInt(i16),
     CharVar(String),
@@ -85,6 +86,12 @@ impl From<Option<i32>> for ReturnData {
     }
 }
 
+impl From<i64> for ReturnData {
+    fn from(value: i64) -> Self {
+        Self::BigInt(value)
+    }
+}
+
 impl From<bool> for ReturnData {
     fn from(value: bool) -> Self {
         Self::Boolean(value)
@@ -110,8 +117,6 @@ pub struct TimeLineCount {
 }
 
 // # What do we want to do?
-// - Pie chart over topics per set, set count per pdf
-//
 // ## Leaderboards:
 // - Most used chapters
 // - Most used topics
