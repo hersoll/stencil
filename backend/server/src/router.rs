@@ -1,5 +1,8 @@
 use crate::{
-    api,
+    api::{
+        self,
+        stats::{api_counts, pdf_attributes},
+    },
     middleware::{self, auth::authenticate_with_limit, rate_limiting::AuthLimit},
     pdf_generation,
 };
@@ -87,48 +90,20 @@ pub fn create_router() -> Router {
         .nest("/edit/course", edit_course_routes)
         .nest("/edit/prefix", edit_prefix_routes);
 
-    let pdf_stats_routes = Router::new()
-        .route("/", get(api::stats::api_counts::pdf_all_time))
-        .route("/day", get(api::stats::api_counts::pdf_hourly_for_day))
-        .route("/week", get(api::stats::api_counts::pdf_daily_for_week))
-        .route("/month", get(api::stats::api_counts::pdf_daily_for_month))
-        .route(
-            "/threemonths",
-            get(api::stats::api_counts::pdf_weekly_for_three_months),
-        )
-        .route("/year", get(api::stats::api_counts::pdf_weekly_for_year));
-
-    let lang_stats_routes = Router::new()
-        .route("/", get(api::stats::api_counts::language_for_all_time))
-        .route("/day", get(api::stats::api_counts::language_for_day))
-        .route("/week", get(api::stats::api_counts::language_for_week))
-        .route("/month", get(api::stats::api_counts::language_for_month))
-        .route(
-            "/threemonths",
-            get(api::stats::api_counts::language_for_three_months),
-        )
-        .route("/year", get(api::stats::api_counts::language_for_year));
-
-    let course_stats_routes = Router::new()
-        .route("/", get(api::stats::api_counts::courses_for_all_time))
-        .route("/day", get(api::stats::api_counts::courses_for_day))
-        .route("/week", get(api::stats::api_counts::courses_for_week))
-        .route("/month", get(api::stats::api_counts::courses_for_month))
-        .route(
-            "/threemonths",
-            get(api::stats::api_counts::courses_for_three_months),
-        )
-        .route("/year", get(api::stats::api_counts::courses_for_year));
-
     let stats_routes = Router::new()
-        .nest("/stats/pdf", pdf_stats_routes)
-        .nest("/stats/lang", lang_stats_routes)
-        .nest("/stats/course", course_stats_routes);
+        .route("/pdf", get(api_counts::get_pdf_count))
+        .route("/pdf/{duration}", get(api_counts::get_pdf_timeline))
+        .route(
+            "/pdf/{attribute}/{duration}",
+            get(pdf_attributes::get_pdf_attribute),
+        )
+        .route("/lang/{duration}", get(api_counts::get_language_count))
+        .route("/course/{duration}", get(api_counts::get_course_count));
 
     let protected_routes = Router::new()
+        .nest("/stats", stats_routes)
         .merge(auth_routes)
         .merge(edit_routes)
-        .merge(stats_routes)
         .layer(axum::middleware::from_fn_with_state(
             auth_limit.clone(),
             authenticate_with_limit,

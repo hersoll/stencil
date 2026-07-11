@@ -1,14 +1,11 @@
-// - PDF count timeline, per hour over 24 hours, week, per day over month, etc.
-
 use anyhow::Result;
-use types::lang::Language;
 
-use crate::logging::stats::{AggregationDuration, Count, DailyCount, HourlyCount, WeeklyCount};
+use crate::logging::stats::{AggregationDuration, TimeLineCount, ValueCount};
 
-pub async fn get_language_count(duration: AggregationDuration) -> Result<Vec<Count<Language>>> {
+pub async fn get_language_api_count(duration: AggregationDuration) -> Result<Vec<ValueCount>> {
     let pool = crate::get_pool();
     let counts = sqlx::query_as!(
-        Count::<Language>,
+        ValueCount,
         r#"SELECT lang as value, COUNT(*) as "count!" 
         FROM logs_lang 
         WHERE created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval
@@ -21,10 +18,10 @@ pub async fn get_language_count(duration: AggregationDuration) -> Result<Vec<Cou
     Ok(counts)
 }
 
-pub async fn get_course_count(duration: AggregationDuration) -> Result<Vec<Count<String>>> {
+pub async fn get_course_api_count(duration: AggregationDuration) -> Result<Vec<ValueCount>> {
     let pool = crate::get_pool();
     let counts = sqlx::query_as!(
-        Count::<String>,
+        ValueCount,
         r#"SELECT courses.desc_sv as value, COUNT(*) as "count!" 
         FROM logs_course INNER JOIN courses ON logs_course.course_id = courses.id
         WHERE logs_course.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval
@@ -52,10 +49,10 @@ pub async fn get_pdf_count_all_time() -> Result<i64> {
 }
 
 /// Returns the PDF count for every hour in the last 24 hours
-pub async fn get_pdf_count_hourly_for_day() -> Result<Vec<HourlyCount>> {
+pub async fn get_pdf_count_hourly_for_day() -> Result<Vec<TimeLineCount>> {
     let pool = crate::get_pool();
     let rows = sqlx::query_as!(
-        HourlyCount,
+        TimeLineCount,
         r#"
         WITH hours AS (
             SELECT generate_series(
@@ -65,7 +62,7 @@ pub async fn get_pdf_count_hourly_for_day() -> Result<Vec<HourlyCount>> {
             ) AS hour
         )
         SELECT
-            h.hour as "hour!",
+            h.hour as "time!",
             COALESCE(c.count, 0)::bigint as "count!"
         FROM hours h
         LEFT JOIN (
@@ -85,10 +82,10 @@ pub async fn get_pdf_count_hourly_for_day() -> Result<Vec<HourlyCount>> {
     Ok(rows)
 }
 
-pub async fn get_pdf_count_daily_for_week() -> Result<Vec<DailyCount>> {
+pub async fn get_pdf_count_daily_for_week() -> Result<Vec<TimeLineCount>> {
     let pool = crate::get_pool();
     let rows = sqlx::query_as!(
-        DailyCount,
+        TimeLineCount,
         r#"
         WITH days AS (
             SELECT generate_series(
@@ -98,7 +95,7 @@ pub async fn get_pdf_count_daily_for_week() -> Result<Vec<DailyCount>> {
             ) AS day
         )
         SELECT
-            d.day as "day!",
+            d.day as "time!",
             COALESCE(c.count, 0)::bigint AS "count!"
         FROM days d
         LEFT JOIN (
@@ -118,10 +115,10 @@ pub async fn get_pdf_count_daily_for_week() -> Result<Vec<DailyCount>> {
     Ok(rows)
 }
 
-pub async fn get_pdf_count_daily_for_month() -> Result<Vec<DailyCount>> {
+pub async fn get_pdf_count_daily_for_month() -> Result<Vec<TimeLineCount>> {
     let pool = crate::get_pool();
     let rows = sqlx::query_as!(
-        DailyCount,
+        TimeLineCount,
         r#"
         WITH days AS (
             SELECT generate_series(
@@ -131,7 +128,7 @@ pub async fn get_pdf_count_daily_for_month() -> Result<Vec<DailyCount>> {
             ) AS day
         )
         SELECT
-            d.day as "day!",
+            d.day as "time!",
             COALESCE(c.count, 0)::bigint AS "count!"
         FROM days d
         LEFT JOIN (
@@ -151,10 +148,10 @@ pub async fn get_pdf_count_daily_for_month() -> Result<Vec<DailyCount>> {
     Ok(rows)
 }
 
-pub async fn get_pdf_count_weekly_for_three_months() -> Result<Vec<WeeklyCount>> {
+pub async fn get_pdf_count_weekly_for_three_months() -> Result<Vec<TimeLineCount>> {
     let pool = crate::get_pool();
     let rows = sqlx::query_as!(
-        WeeklyCount,
+        TimeLineCount,
         r#"
         WITH weeks AS (
             SELECT generate_series(
@@ -164,7 +161,7 @@ pub async fn get_pdf_count_weekly_for_three_months() -> Result<Vec<WeeklyCount>>
             ) AS week_start
         )
         SELECT
-            w.week_start AS "week_start!",
+            w.week_start AS "time!",
             COALESCE(c.count, 0)::bigint AS "count!"
         FROM weeks w
         LEFT JOIN (
@@ -184,10 +181,10 @@ pub async fn get_pdf_count_weekly_for_three_months() -> Result<Vec<WeeklyCount>>
     Ok(rows)
 }
 
-pub async fn get_pdf_count_weekly_for_year() -> Result<Vec<WeeklyCount>> {
+pub async fn get_pdf_count_weekly_for_year() -> Result<Vec<TimeLineCount>> {
     let pool = crate::get_pool();
     let rows = sqlx::query_as!(
-        WeeklyCount,
+        TimeLineCount,
         r#"
         WITH weeks AS (
             SELECT generate_series(
@@ -197,7 +194,7 @@ pub async fn get_pdf_count_weekly_for_year() -> Result<Vec<WeeklyCount>> {
             ) AS week_start
         )
         SELECT
-            w.week_start AS "week_start!",
+            w.week_start AS "time!",
             COALESCE(c.count, 0)::bigint AS "count!"
         FROM weeks w
         LEFT JOIN (
@@ -209,6 +206,39 @@ pub async fn get_pdf_count_weekly_for_year() -> Result<Vec<WeeklyCount>> {
             GROUP BY 1
         ) c USING (week_start)
         ORDER BY w.week_start;
+        "#
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(rows)
+}
+
+pub async fn get_pdf_count_monthly_for_all_time() -> Result<Vec<TimeLineCount>> {
+    let pool = crate::get_pool();
+    let rows = sqlx::query_as!(
+        TimeLineCount,
+        r#"
+        WITH months AS (
+            SELECT generate_series(
+                '2026-07-01 00:00:00'::timestamp,
+                date_trunc('month', (now() AT TIME ZONE 'utc')),
+                interval '1 month'
+            ) AS month_start
+        )
+        SELECT
+            m.month_start AS "time!",
+            COALESCE(c.count, 0)::bigint AS "count!"
+        FROM months m
+        LEFT JOIN (
+            SELECT
+                date_trunc('month', created_at) AS month_start,
+                COUNT(*) AS count
+            FROM logs_pdf
+            WHERE created_at >= '2026-07-01 00:00:00'::timestamp 
+            GROUP BY 1
+        ) c USING (month_start)
+        ORDER BY m.month_start;
         "#
     )
     .fetch_all(pool)
