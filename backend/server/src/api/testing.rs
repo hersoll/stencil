@@ -3,7 +3,7 @@ use db::logging::stats::AggregationDuration;
 use serde_json::json;
 use types::errors::ApiError;
 
-pub async fn test_api(Path(arg): Path<u8>) -> Result<impl IntoResponse, ApiError> {
+pub async fn test_api(Path(arg): Path<u16>) -> Result<impl IntoResponse, ApiError> {
     cfg_select! {
         feature = "docker" => Ok((
             StatusCode::OK,
@@ -13,7 +13,7 @@ pub async fn test_api(Path(arg): Path<u8>) -> Result<impl IntoResponse, ApiError
     }
 }
 
-async fn do_the_test(_arg: u8) -> Result<impl IntoResponse, ApiError> {
-    let data = db::logging::stats::get_par_spacing_count(AggregationDuration::AllTime).await?;
+async fn do_the_test(arg: u16) -> Result<impl IntoResponse, ApiError> {
+    let data = db::logging::stats::get_set_column_count(AggregationDuration::Days(arg)).await?;
     Ok((StatusCode::OK, Json(json!(data))))
 }

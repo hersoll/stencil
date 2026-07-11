@@ -3,6 +3,7 @@ use serde::Deserialize;
 
 pub mod api_counts;
 pub mod pdf_attributes;
+pub mod problem_set_attributes;
 
 /// Used for dynamic router paths, so serde knows that it can deserialize the durations into
 #[derive(Deserialize)]

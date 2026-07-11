@@ -1,9 +1,11 @@
 //! This module is responsible for reading the logging DBs and calculate different stats from that
 //! data.
 mod api_counts;
-mod pdf_attributes;
+mod pdf_counts;
+mod problem_set_counts;
 pub use api_counts::*;
-pub use pdf_attributes::*;
+pub use pdf_counts::*;
+pub use problem_set_counts::*;
 
 use serde::Serialize;
 use sqlx::postgres::types::PgInterval;
@@ -108,8 +110,6 @@ pub struct TimeLineCount {
 }
 
 // # What do we want to do?
-//
-// - For EVERY column in stats_pdf and stats_sets, show a pie chart (with duration)
 // - Pie chart over topics per set, set count per pdf
 //
 // ## Leaderboards:

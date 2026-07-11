@@ -1,7 +1,7 @@
 use crate::{
     api::{
         self,
-        stats::{api_counts, pdf_attributes},
+        stats::{api_counts, pdf_attributes, problem_set_attributes},
     },
     middleware::{self, auth::authenticate_with_limit, rate_limiting::AuthLimit},
     pdf_generation,
@@ -98,7 +98,11 @@ pub fn create_router() -> Router {
             get(pdf_attributes::get_pdf_attribute),
         )
         .route("/lang/{duration}", get(api_counts::get_language_count))
-        .route("/course/{duration}", get(api_counts::get_course_count));
+        .route("/course/{duration}", get(api_counts::get_course_count))
+        .route(
+            "/set/{attribute}/{duration}",
+            get(problem_set_attributes::get_problem_set_attribute),
+        );
 
     let protected_routes = Router::new()
         .nest("/stats", stats_routes)
