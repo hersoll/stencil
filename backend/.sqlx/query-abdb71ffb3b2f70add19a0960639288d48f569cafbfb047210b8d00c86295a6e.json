@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                EXTRACT(EPOCH FROM MIN(time_taken))::float8 * 1000 AS \"min!\",\n                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.10) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS \"p10!\",\n                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS \"p25!\",\n                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS \"median!\",\n                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS \"p75!\",\n                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS \"p90!\",\n                EXTRACT(EPOCH FROM MAX(time_taken))::float8 * 1000 AS \"max!\",\n                EXTRACT(EPOCH FROM AVG(time_taken))::float8 * 1000 AS \"mean!\"\n            FROM logs_pdf\n            WHERE created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "min!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 1,
+        "name": "p10!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 2,
+        "name": "p25!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 3,
+        "name": "median!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 4,
+        "name": "p75!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 5,
+        "name": "p90!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 6,
+        "name": "max!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 7,
+        "name": "mean!",
+        "type_info": "Float8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Interval"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "abdb71ffb3b2f70add19a0960639288d48f569cafbfb047210b8d00c86295a6e"
+}

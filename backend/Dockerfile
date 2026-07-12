@@ -7,16 +7,15 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 
 # Copy source code
+COPY .sqlx ./.sqlx
+COPY db ./db
+COPY macros ./macros
 COPY math ./math
 COPY problems ./problems
-COPY db ./db
-COPY metrics ./metrics
 COPY registry ./registry
 COPY server ./server
 COPY types ./types
 COPY typst_writer ./typst_writer
-COPY macros ./macros
-COPY .sqlx ./.sqlx
 COPY preamble.typ ./preamble.typ
 
 # Build release binary

@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT y_margin as value, COUNT(*) as \"count!\" \n        FROM logs_pdf \n        WHERE created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval\n        GROUP BY y_margin;",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "value",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 1,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Interval"
+      ]
+    },
+    "nullable": [
+      false,
+      null
+    ]
+  },
+  "hash": "c9fbecc79b3804fdc1e19d11e7797158317f44755e9769989e10169d676e7f8f"
+}

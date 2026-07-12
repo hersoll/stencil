@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT p.desc_sv as \"value!\", COUNT(*) AS \"count!\"\n            FROM (\n                SELECT pdf_id, UNNEST(exclusions) AS problem_id\n                FROM logs_problem_set\n            ) sub\n            JOIN problems p ON p.id = sub.problem_id\n            JOIN logs_pdf ON logs_pdf.id = sub.pdf_id\n            WHERE logs_pdf.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval\n            GROUP BY p.id, p.desc_sv\n            ORDER BY \"count!\" DESC \n            LIMIT 10;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "value!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Interval"
+      ]
+    },
+    "nullable": [
+      false,
+      null
+    ]
+  },
+  "hash": "b19442c075af3bcee2844a0e002ef266f0cd0072f9ef857a2c04034c0d78e680"
+}

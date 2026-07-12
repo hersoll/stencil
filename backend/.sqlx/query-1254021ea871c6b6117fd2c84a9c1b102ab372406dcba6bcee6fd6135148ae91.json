@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        WITH weeks AS (\n            SELECT generate_series(\n                date_trunc('week', (now() AT TIME ZONE 'utc')) - interval '12 weeks',\n                date_trunc('week', (now() AT TIME ZONE 'utc')),\n                interval '1 week'\n            ) AS week_start\n        )\n        SELECT\n            w.week_start AS \"time!\",\n            COALESCE(c.count, 0)::bigint AS \"count!\"\n        FROM weeks w\n        LEFT JOIN (\n            SELECT\n                date_trunc('week', created_at) AS week_start,\n                COUNT(*) AS count\n            FROM logs_pdf\n            WHERE created_at >= (now() AT TIME ZONE 'utc') - interval '3 months'\n            GROUP BY 1\n        ) c USING (week_start)\n        ORDER BY w.week_start;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "time!",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 1,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "1254021ea871c6b6117fd2c84a9c1b102ab372406dcba6bcee6fd6135148ae91"
+}

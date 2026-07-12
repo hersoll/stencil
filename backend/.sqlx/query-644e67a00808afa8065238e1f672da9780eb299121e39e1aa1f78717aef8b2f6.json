@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO logs_problem_set (\n            topics,\n            exclusions,\n            starting_difficulty,\n            ending_difficulty,\n            problem_count,\n            columns,\n            has_heading,\n            problem_spacing,\n            pagebreak_after,\n            order_index,\n            pdf_id\n        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) \n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "Int4Array",
+        "Int2",
+        "Int2",
+        "Int2",
+        "Int2",
+        "Bool",
+        "Int2",
+        "Bool",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "644e67a00808afa8065238e1f672da9780eb299121e39e1aa1f78717aef8b2f6"
+}

@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        WITH hours AS (\n            SELECT generate_series(\n                date_trunc('hour', now() AT TIME ZONE 'utc') - interval '23 hours',\n                date_trunc('hour', now() AT TIME ZONE 'utc'),\n                interval '1 hour'\n            ) AS hour\n        )\n        SELECT\n            h.hour as \"time!\",\n            COALESCE(c.count, 0)::bigint as \"count!\"\n        FROM hours h\n        LEFT JOIN (\n            SELECT\n                date_trunc('hour', created_at) AS hour,\n                COUNT(*) AS count\n            FROM logs_pdf\n            WHERE created_at >= (now() AT TIME ZONE 'utc') - interval '24 hours'\n            GROUP BY 1\n        ) c ON h.hour = c.hour\n        ORDER BY h.hour;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "time!",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 1,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "ae5fcb3ff102cdbe157d149546139f2145b680cdc76cdeb574457ba79f56d260"
+}

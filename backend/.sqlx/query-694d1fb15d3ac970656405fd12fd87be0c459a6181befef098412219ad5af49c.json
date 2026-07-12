@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT t.desc_sv as \"value!\", COUNT(DISTINCT pdf_id) AS \"count!\"\n            FROM (\n                SELECT pdf_id, UNNEST(topics) AS topic_id\n                FROM logs_problem_set\n            ) sub\n            JOIN topics t ON t.id = sub.topic_id\n            JOIN logs_pdf ON logs_pdf.id = sub.pdf_id\n            WHERE logs_pdf.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval\n            GROUP BY t.id, t.desc_sv\n            ORDER BY \"count!\" DESC \n            LIMIT 10;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "value!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Interval"
+      ]
+    },
+    "nullable": [
+      false,
+      null
+    ]
+  },
+  "hash": "694d1fb15d3ac970656405fd12fd87be0c459a6181befef098412219ad5af49c"
+}

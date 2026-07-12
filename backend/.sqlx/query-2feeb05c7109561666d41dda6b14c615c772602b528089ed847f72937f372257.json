@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        WITH days AS (\n            SELECT generate_series(\n                date_trunc('day', (now() AT TIME ZONE 'utc')) - interval '29 days',\n                date_trunc('day', (now() AT TIME ZONE 'utc')),\n                interval '1 day'\n            ) AS day\n        )\n        SELECT\n            d.day as \"time!\",\n            COALESCE(c.count, 0)::bigint AS \"count!\"\n        FROM days d\n        LEFT JOIN (\n            SELECT\n                date_trunc('day', created_at) AS day,\n                COUNT(*) AS count\n            FROM logs_pdf\n            WHERE created_at >= (now() AT TIME ZONE 'utc') - interval '30 days'\n            GROUP BY 1\n        ) c USING (day)\n        ORDER BY d.day;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "time!",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 1,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "2feeb05c7109561666d41dda6b14c615c772602b528089ed847f72937f372257"
+}

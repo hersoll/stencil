@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                MIN(COALESCE(array_length(exclusions, 1), 0)) AS \"min!\",\n                PERCENTILE_CONT(0.10) WITHIN GROUP (ORDER BY COALESCE(array_length(exclusions, 1), 0)) AS \"p10!\",\n                PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY COALESCE(array_length(exclusions, 1), 0)) AS \"p25!\",\n                PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY COALESCE(array_length(exclusions, 1), 0)) AS \"median!\",\n                PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY COALESCE(array_length(exclusions, 1), 0)) AS \"p75!\",\n                PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY COALESCE(array_length(exclusions, 1), 0)) AS \"p90!\",\n                MAX(COALESCE(array_length(exclusions, 1), 0)) AS \"max!\",\n                AVG(COALESCE(array_length(exclusions, 1), 0))::float8 AS \"mean!\"\n            FROM logs_problem_set JOIN logs_pdf ON logs_problem_set.pdf_id = logs_pdf.id\n            WHERE logs_pdf.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "min!",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "p10!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 2,
+        "name": "p25!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 3,
+        "name": "median!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 4,
+        "name": "p75!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 5,
+        "name": "p90!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 6,
+        "name": "max!",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "mean!",
+        "type_info": "Float8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Interval"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "431c80cda6bea596a73e7c2b3c473a3308ebc8f71ff698b493e0b8d6e900b225"
+}

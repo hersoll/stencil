@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT array_length(ps.topics, 1) as value, COUNT(*) as \"count!\" \n        FROM logs_problem_set as ps INNER JOIN logs_pdf ON ps.pdf_id = logs_pdf.id\n        WHERE logs_pdf.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval\n        GROUP BY array_length(ps.topics, 1);",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "value",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Interval"
+      ]
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "fa53ab894bd1e7ab4ff677e454875bda7cf88b2f6e340c97d93986c8a0b00f57"
+}

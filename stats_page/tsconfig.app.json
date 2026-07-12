@@ -1,6 +1,5 @@
 {
   "extends": [
-    "./.router/tsconfig.json",
     "@tsconfig/svelte/tsconfig.json"
   ],
   "compilerOptions": {
@@ -32,20 +31,11 @@
     "checkJs": true,
     "baseUrl": ".",
     "paths": {
-      "sv-router/generated": [
-        "./.router/router.ts"
-      ],
-      "sv-router": [
-        "node_modules/sv-router/src/index.d.ts"
-      ],
       "$src/*": [
         "src/*"
       ],
       "$lib/*": [
         "src/lib/*"
-      ],
-      "$routes/*": [
-        "src/routes/*"
       ]
     }
   },

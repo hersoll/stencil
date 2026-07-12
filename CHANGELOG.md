@@ -1,6 +1,7 @@
 # TODO
 
 - Color in document
+- Metrics for changing PDFs
 - Tooltips
 - Adjust selection algorithm
 - Mobile layout

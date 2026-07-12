@@ -1,0 +1,37 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO logs_pdf (\n            has_title,\n            has_subtitle,\n            has_name_field,\n            font_size,\n            answer_columns,\n            lang,\n            write_solutions,\n            color,\n            paper_size,\n            x_margin,\n            y_margin,\n            par_spacing,\n            max_prefix_group,\n            page_break_before_answers,\n            previous_pdf,\n            time_taken\n        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) \n        RETURNING id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Bool",
+        "Bool",
+        "Bool",
+        "Int2",
+        "Int2",
+        "Varchar",
+        "Varchar",
+        "Bool",
+        "Varchar",
+        "Int2",
+        "Int2",
+        "Int2",
+        "Int2",
+        "Bool",
+        "Int4",
+        "Interval"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "04c2b00060e17aec978ae9177c547ed8ecfd9a2702582a4eacf8379861170292"
+}
