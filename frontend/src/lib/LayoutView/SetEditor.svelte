@@ -20,12 +20,12 @@
   function handleSpacingBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      set.options.set_options.spacing = Math.max(
+      set.options.formatting_options.spacing = Math.max(
         MIN_SPACING,
         Math.min(MAX_SPACING, value)
       );
     } else {
-      set.options.set_options.spacing = null;
+      set.options.formatting_options.spacing = null;
     }
   }
 
@@ -34,12 +34,12 @@
   function handleColumnsBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
     if (!isNaN(value)) {
-      set.options.set_options.questionColumns = Math.max(
+      set.options.formatting_options.questionColumns = Math.max(
         MIN_COLUMNS,
         Math.min(MAX_COLUMNS, value)
       );
     } else {
-      set.options.set_options.questionColumns = MIN_COLUMNS;
+      set.options.formatting_options.questionColumns = MIN_COLUMNS;
     }
   }
 
@@ -48,7 +48,7 @@
   }
   function uncheckHeaderBox() {
     setIDsWithHeader.splice(setIDsWithHeader.indexOf(set.id), 1);
-    set.options.set_options.heading = null;
+    set.options.formatting_options.heading = null;
   }
 </script>
 
@@ -103,9 +103,10 @@
       <input
         id="pagebreak-after"
         type="checkbox"
-        checked={set.options.set_options.pagebreakAfter}
+        checked={set.options.formatting_options.pagebreakAfter}
         onchange={e =>
-          (set.options.set_options.pagebreakAfter = e.currentTarget.checked)}
+          (set.options.formatting_options.pagebreakAfter =
+            e.currentTarget.checked)}
       />
     </div>
     <div class="label-div">
@@ -114,11 +115,11 @@
         type="number"
         class="spacing-input"
         id="spacing"
-        value={set.options.set_options.spacing}
+        value={set.options.formatting_options.spacing}
         min="0"
         max="120"
         oninput={e =>
-          (set.options.set_options.spacing =
+          (set.options.formatting_options.spacing =
             e.currentTarget.value == '' ? null : e.currentTarget.valueAsNumber)}
         onblur={handleSpacingBlur}
       />
@@ -140,9 +141,9 @@
         id="columns"
         min="1"
         max="5"
-        value={set.options.set_options.questionColumns}
+        value={set.options.formatting_options.questionColumns}
         onchange={e =>
-          (set.options.set_options.questionColumns =
+          (set.options.formatting_options.questionColumns =
             e.currentTarget.valueAsNumber)}
         onblur={handleColumnsBlur}
       />

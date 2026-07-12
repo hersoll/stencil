@@ -19,12 +19,13 @@
     <input
       class="header-input"
       type="text"
-      value={set.options.set_options.heading}
+      value={set.options.formatting_options.heading}
       placeholder="Lös ekvationerna (Klicka för att redigera)"
-      oninput={e => (set.options.set_options.heading = e.currentTarget.value)}
+      oninput={e =>
+        (set.options.formatting_options.heading = e.currentTarget.value)}
     />
   {/if}
-  <SkeletonText setOptions={set.options.set_options} />
+  <SkeletonText formattingOptions={set.options.formatting_options} />
 </div>
 
 <style>

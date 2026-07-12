@@ -1,8 +1,9 @@
 <script lang="ts">
   import { adjustValue } from '$src/commonFunctions.svelte';
   import { documentOptions } from '$src/globalStates.svelte';
-  import { type SetOptions } from '$src/types';
-  let { setOptions }: { setOptions: SetOptions } = $props();
+  import { type FormattingOptions } from '$src/types';
+  let { formattingOptions }: { formattingOptions: FormattingOptions } =
+    $props();
 
   const chars = 'ABCDEFGHIJ';
 
@@ -26,10 +27,10 @@
 <div class="question-container">
   <ol
     class="questions"
-    style="--columns: {setOptions.questionColumns}; --question-spacing: {adjustValue(
+    style="--columns: {formattingOptions.questionColumns}; --question-spacing: {adjustValue(
       0,
       120,
-      setOptions.spacing,
+      formattingOptions.spacing,
       0,
       8,
       0.25

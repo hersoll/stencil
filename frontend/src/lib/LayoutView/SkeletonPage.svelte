@@ -11,7 +11,7 @@
     let pages: number[][] = [[]];
     for (let i = 0; i < setState.addedSets.length; i++) {
       pages[pages.length - 1].push(i);
-      if (setState.addedSets[i].options.set_options.pagebreakAfter) {
+      if (setState.addedSets[i].options.formatting_options.pagebreakAfter) {
         pages.push([]);
       }
     }

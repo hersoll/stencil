@@ -1,7 +1,7 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import { setState } from '$src/globalStates.svelte';
-  import { defaultSetOptions } from '$src/types';
+  import { defaultFormattingOptions } from '$src/types';
   import { fetchProblemsForTopics } from '$src/commonFunctions.svelte';
 
   let loadingSet = $state(false);
@@ -12,7 +12,7 @@
       id: setState.setCount,
       options: {
         problem_options: structuredClone($state.snapshot(setState.pendingSet)),
-        set_options: defaultSetOptions
+        formatting_options: defaultFormattingOptions
       },
       topics: await fetchProblemsForTopics(setState.pendingSet.topics)
     });

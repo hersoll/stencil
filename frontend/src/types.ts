@@ -29,7 +29,7 @@ export type CourseData = {
   desc: string;
 };
 
-export type SetOptions = {
+export type FormattingOptions = {
   questionColumns: number;
   heading: string | null;
   spacing: number | null;
@@ -115,7 +115,7 @@ export type ProblemOptions = {
 /// Should match the ProblemSetSpec of the backend
 export type ProblemSetSpec = {
   problem_options: ProblemOptions;
-  set_options: SetOptions;
+  formatting_options: FormattingOptions;
 };
 
 export type SetState = {
@@ -131,7 +131,7 @@ export const defaultProblemOptions: ProblemOptions = {
   endingDifficulty: 'difficulty_hard',
   n: 20
 };
-export const defaultSetOptions: SetOptions = {
+export const defaultFormattingOptions: FormattingOptions = {
   questionColumns: 2,
   heading: null,
   spacing: null,
@@ -139,7 +139,7 @@ export const defaultSetOptions: SetOptions = {
 };
 export const defaultProblemSet: ProblemSetSpec = {
   problem_options: defaultProblemOptions,
-  set_options: defaultSetOptions
+  formatting_options: defaultFormattingOptions
 };
 export type DocumentOptions = {
   fontSize: number;

@@ -8,6 +8,11 @@
 
 # Changelog
 
+## [0.9.1] - TBD
+
+### Fixed
+- Renamed `set_options` in frontend to `formatting_options` to match backend
+
 ## [0.9.0] - 2026-07-12
 
 ### Added
