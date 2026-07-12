@@ -1,0 +1,203 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+  color: var(--text);
+
+  transition:
+    color 0.4s,
+    background-color 0.4s,
+    box-shadow 0.1s;
+}
+:root {
+  --navbar-margin: 18rem;
+  --navbar-closed-margin: 3rem;
+
+  --bg-dark: light-dark(oklch(0.85 0 264), oklch(0.24 0 264));
+  --bg: light-dark(oklch(0.92 0 264), oklch(0.3 0 264));
+  --bg-light: light-dark(oklch(0.95 0 264), oklch(0.34 0 264));
+  --text: light-dark(oklch(0.15 0 264), oklch(0.96 0 264));
+  --text-muted: light-dark(oklch(0.45 0 264), oklch(0.84 0 264));
+  --text-very-muted: light-dark(oklch(0.65 0 264), oklch(0.72 0 264));
+  --text-in-primary: light-dark(oklch(0.15 0 264), oklch(0.2 0 264));
+  --primary: oklch(0.76 0.1 326);
+  --secondary: oklch(from var(--primary) calc(l - 0.1) c h);
+  /* Text in light mode looks brighter, need to compensate with darker color */
+  --primary-text: light-dark(
+    oklch(from var(--primary) calc(l - 0.2) c h),
+    var(--primary)
+  );
+  --secondary-text: oklch(from var(--secondary) calc(l + 0.2) c h);
+  --highlight: light-dark(oklch(0.88 0 264), oklch(0.4 0 264));
+  --border: light-dark(oklch(0.86 0 264), oklch(0.4 0 264));
+  --strong-border: light-dark(oklch(0.7 0 264), oklch(0.6 0 264));
+  --danger: light-dark(oklch(0.76 0.1 25), oklch(0.76 0.1 25));
+
+  --shadow-base: light-dark(oklch(0.75 0 0), oklch(0.15 0 0));
+  --shadow-elevation-low:
+    1.6px 1px 1.1px color-mix(in oklch, var(--shadow-base) 24%, transparent),
+    1.3px 0.8px 1.8px -1px
+      color-mix(in oklch, var(--shadow-base) 27%, transparent),
+    5px 3px 4px -2.1px color-mix(in oklch, var(--shadow-base) 30%, transparent);
+  --shadow-elevation-medium:
+    0.8px 0.5px 1.1px color-mix(in oklch, var(--shadow-base) 25%, transparent),
+    2.6px 1.7px 3.7px -0.7px
+      color-mix(in oklch, var(--shadow-base) 28%, transparent),
+    6.2px 3.9px 8.7px -1.4px
+      color-mix(in oklch, var(--shadow-base) 30%, transparent),
+    14.6px 9.2px 20.4px -2.1px
+      color-mix(in oklch, var(--shadow-base) 33%, transparent);
+  --shadow-elevation-high:
+    0.8px 0.5px 1.1px color-mix(in oklch, var(--shadow-base) 24%, transparent),
+    4.5px 2.8px 6.3px -0.3px
+      color-mix(in oklch, var(--shadow-base) 25%, transparent),
+    8.2px 5.2px 11.5px -0.6px
+      color-mix(in oklch, var(--shadow-base) 26%, transparent),
+    13px 8.2px 18.2px -0.9px
+      color-mix(in oklch, var(--shadow-base) 27%, transparent),
+    20.1px 12.7px 28.2px -1.2px
+      color-mix(in oklch, var(--shadow-base) 28%, transparent),
+    30.6px 19.4px 42.9px -1.5px
+      color-mix(in oklch, var(--shadow-base) 29%, transparent),
+    45.8px 29px 64.2px -1.8px
+      color-mix(in oklch, var(--shadow-base) 30%, transparent),
+    66.7px 42.2px 93.5px -2.1px
+      color-mix(in oklch, var(--shadow-base) 31%, transparent);
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  margin: 0;
+
+  color-scheme: light dark;
+  color: var(--text);
+  background-color: var(--bg);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root:not([data-theme]),
+:root:has(button[id='theme-system'].active_theme) {
+  color-scheme: light dark;
+}
+:root[data-theme='dark'],
+:root:has(button[id='theme-dark'].active_theme) {
+  color-scheme: dark;
+}
+:root[data-theme='light'],
+:root:has(button[id='theme-light'].active_theme) {
+  color-scheme: light;
+}
+
+html,
+body,
+div#app,
+main {
+  height: 100%;
+  margin: 0;
+}
+body {
+  padding: 0;
+  margin: 0;
+  position: relative;
+  background-color: var(--bg);
+
+  &.no-scroll {
+    overflow: hidden;
+  }
+}
+.svg-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  background-color: var(--text);
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+}
+
+.text {
+  color: var(--text);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* ******************* */
+/* Custom "components" */
+/* ******************* */
+
+h1 {
+  font-size: 2rem;
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+h2 {
+  font-size: 2rem;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+.description {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+.card {
+  display: flex;
+  background-color: var(--bg);
+  flex-direction: column;
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+  border-top: 1px solid var(--strong-border);
+  break-inside: avoid;
+}
+.card-header {
+  margin-bottom: 0.5rem;
+}
+
+.footer {
+  flex: 0 0 auto;
+  background-color: var(--bg);
+  border-top: 2px solid var(--border);
+  left: var(--navbar-margin);
+
+  width: 100%;
+  padding: 1rem;
+}
+
+button {
+  border-radius: 0.5rem;
+  border: none;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--bg-light);
+  cursor: pointer;
+  border: 2px solid transparent;
+
+  &.primary {
+    background-color: var(--primary);
+    color: oklch(0.18 0 0);
+
+    &:hover:enabled {
+      background-color: var(--secondary);
+    }
+  }
+
+  &:disabled {
+    border-color: transparent;
+    cursor: not-allowed;
+    background-color: var(--bg-light);
+    color: gray;
+  }
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}

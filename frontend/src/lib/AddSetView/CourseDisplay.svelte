@@ -109,8 +109,5 @@
       /* Chapter column width + gap */
       width: 24rem;
     }
-    .subtitle {
-      width: 24rem;
-    }
   }
 </style>

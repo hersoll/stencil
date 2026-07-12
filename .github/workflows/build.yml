@@ -76,3 +76,27 @@ jobs:
           context: ./web_editor
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/stencil-web-editor:latest
+
+  stats:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Stats
+        uses: docker/build-push-action@v7
+        with:
+          context: ./stats_page
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/stencil-stats:latest

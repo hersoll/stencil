@@ -43,7 +43,7 @@ pub fn create_router() -> Router {
 
     let auth_routes = Router::new()
         .route("/edit", get(middleware::auth::protected))
-        .route("/edit/login", get(middleware::auth::login));
+        .route("/login", get(middleware::auth::login));
     //.route("/create/{user}/{pass}", post(middleware::auth::create_user))
 
     let edit_problem_routes = Router::new()
@@ -115,12 +115,12 @@ pub fn create_router() -> Router {
             "/pdf/{attribute}/{duration}",
             get(pdf_attributes::get_pdf_attribute),
         )
-        .route("/lang/{duration}", get(api_counts::get_language_count))
-        .route("/course/{duration}", get(api_counts::get_course_count))
         .route(
             "/set/{attribute}/{duration}",
             get(problem_set_attributes::get_problem_set_attribute),
-        );
+        )
+        .route("/lang/{duration}", get(api_counts::get_language_count))
+        .route("/course/{duration}", get(api_counts::get_course_count));
 
     let protected_routes = Router::new()
         .nest("/stats", stats_routes)

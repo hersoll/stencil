@@ -7,9 +7,11 @@
 
 # Changelog
 
-## [0.9.0] - TBD
+## [0.9.0] - 2026-07-12
 
 ### Added
+- A stats page where you can see various stats about PDFs and user preferences! This required a lot of work:
+
 #### Logging
 - Log entries for everything surrounding the PDFs are stored in the DB
 - Also logs language and course API calls for statistics

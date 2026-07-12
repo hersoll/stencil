@@ -22,14 +22,14 @@ pub async fn render_times(duration: AggregationDuration) -> Result<BoxPlotData<f
         BoxPlotData,
         r#"
             SELECT
-                EXTRACT(EPOCH FROM MIN(time_taken))::float8 AS "min!",
-                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.10) WITHIN GROUP (ORDER BY time_taken))::float8 AS "p10!",
-                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY time_taken))::float8 AS "p25!",
-                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY time_taken))::float8 AS "median!",
-                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY time_taken))::float8 AS "p75!",
-                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY time_taken))::float8 AS "p90!",
-                EXTRACT(EPOCH FROM MAX(time_taken))::float8 AS "max!",
-                EXTRACT(EPOCH FROM AVG(time_taken))::float8 AS "mean!"
+                EXTRACT(EPOCH FROM MIN(time_taken))::float8 * 1000 AS "min!",
+                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.10) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS "p10!",
+                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS "p25!",
+                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS "median!",
+                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS "p75!",
+                EXTRACT(EPOCH FROM PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY time_taken))::float8 * 1000 AS "p90!",
+                EXTRACT(EPOCH FROM MAX(time_taken))::float8 * 1000 AS "max!",
+                EXTRACT(EPOCH FROM AVG(time_taken))::float8 * 1000 AS "mean!"
             FROM logs_pdf
             WHERE created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval
         "#,
