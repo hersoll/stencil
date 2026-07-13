@@ -200,15 +200,12 @@
 <style>
   main {
     display: flex;
-    height: 100%;
     overflow-y: auto;
     flex-direction: column;
     align-items: center;
 
-    margin-top: 4rem;
     gap: 10rem;
-    padding: 2rem;
-    padding-bottom: 10rem;
+    padding: 6rem 2rem 6rem 2rem;
   }
 
   .header-container {
