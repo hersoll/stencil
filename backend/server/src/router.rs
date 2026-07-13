@@ -142,9 +142,9 @@ pub fn create_router() -> Router {
             TraceLayer::new_for_http()
                 .make_span_with(|request: &Request<_>| {
                     tracing::info_span!(
-                        "http",
-                        method = ?request.method(),
-                        uri = ?request.uri(),
+                        "",
+                        m = %request.method(),
+                        url = %request.uri(),
                     )
                 })
                 .on_response(
@@ -161,3 +161,7 @@ pub fn create_router() -> Router {
                 .on_eos(DefaultOnEos::new().level(Level::TRACE)),
         )
 }
+
+//2026-07-13T15:03:51.542933Z  INFO http{method=POST uri=/pdf}:build_pdf{num_sets=2}: stencil::pdf_generation: PDF build complete.
+//│                             │    │                                                │
+//timestamp (RFC3339, micros)  level span context (nested, with fields)          target       message

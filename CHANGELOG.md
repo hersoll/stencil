@@ -1,7 +1,5 @@
 # TODO
 
-- Fix margin crash
-- Fix padding in leaderboard (also maybe ellipsis, maybe let the width grow)
 - Color in document
 - Metrics for changing PDFs
 - Tooltips
@@ -20,6 +18,7 @@
 
 ### Changed 
 - Increased padding for leaderboard counts and widened leaderboards on the stats page
+- Shortened tracing logs for readability
 
 ## [0.9.0] - 2026-07-12
 
