@@ -13,7 +13,12 @@ pub async fn get_translations(
     Path(lang_code): Path<String>,
 ) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
-    logging::log_language(lang).await?;
+
+    // Only log during production (or specific flag) to not mess up the stats
+    if cfg!(feature = "docker") || std::env::args().any(|x| x == "log") {
+        logging::log_language(lang).await?;
+    }
+
     let translations = db::i18n::get_i18n_for_web(&lang).await?;
 
     Ok((

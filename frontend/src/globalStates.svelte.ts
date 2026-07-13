@@ -67,7 +67,9 @@ export const fetchPdf = async (): Promise<void> => {
 
     const id = response.headers.get('X-PDF-ID');
     const blob: Blob = await response.blob();
-    PDFState.previous_pdf = id ? parseInt(id, 10) : null;
+    let parsed_id = id ? parseInt(id, 10) : null;
+    // If we received -1 from the backend it was an unlogged PDF and should be discarded
+    PDFState.previous_pdf = parsed_id == -1 ? null : parsed_id;
     PDFState.url = URL.createObjectURL(blob);
   } catch (e) {
     error.message = e instanceof Error ? e.message : 'An error occurred';

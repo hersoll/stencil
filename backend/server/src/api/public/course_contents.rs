@@ -143,7 +143,12 @@ pub async fn get_chapters_and_topics_for_course(
 ) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
     let course = parse_course_path(&course_path).await?;
-    logging::log_course(course.id).await?;
+
+    // Only log during production (or specific flag) to not mess up the stats
+    if cfg!(feature = "docker") || std::env::args().any(|x| x == "log") {
+        logging::log_course(course.id).await?;
+    }
+
     let chapters = db::get_course_chapters(&course.id).await?;
     let chapter_ids: Vec<i32> = chapters.iter().map(|c| c.id).collect();
     let topics_by_chapter = db::get_topics_for_chapters(&chapter_ids).await?;

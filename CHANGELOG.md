@@ -10,6 +10,9 @@
 
 ## [0.9.1] - TBD
 
+### Added
+- Conditional logging based on cargo feature flags (Use `cargo run -- log` to opt-in when in dev mode)
+
 ### Fixed
 - Renamed `set_options` in frontend to `formatting_options` to match backend
 - Fixed double scrollbars on stats page by only using padding in `<main>`

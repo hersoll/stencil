@@ -8,7 +8,7 @@ use axum::{
 use serde::Serialize;
 use std::time::Instant;
 use tokio::{fs, process::Command};
-use tracing::{debug, info, instrument};
+use tracing::{debug, info};
 use types::{
     errors::ApiError,
     pdf::{DocumentOptions, PDFRequest, ProblemSetSpec, QuestionSetFormattingOptions},
@@ -85,7 +85,6 @@ It seems like the request was sent without a JSON.
 
 /// The function responsible for coordinating problem generation,
 /// typst file writing and compiling
-#[instrument(skip(req), fields(num_sets = req.sets.len()))]
 async fn build_pdf(req: PDFRequest) -> Result<PDFResponse, ApiError> {
     let start = Instant::now();
 
@@ -168,11 +167,18 @@ async fn build_pdf(req: PDFRequest) -> Result<PDFResponse, ApiError> {
     let duration = render_start.elapsed();
     debug!("Compiled PDF in {}ms", duration.as_millis());
 
-    let pdf_id =
-        db::logging::log_pdf_and_get_id(req_for_logging, start.elapsed().as_micros() as i64)
-            .await?;
+    // Only log during production (or specific flag) to not mess up the stats
+    let pdf_id = if cfg!(feature = "docker") || std::env::args().any(|x| x == "log") {
+        db::logging::log_pdf_and_get_id(req_for_logging, start.elapsed().as_micros() as i64).await?
+    } else {
+        -1
+    };
 
-    info!("PDF build complete. Logged the data with ID {pdf_id}");
+    info!("PDF build complete.");
+    if pdf_id >= 0 {
+        info!("Logged the data with ID {pdf_id}");
+    }
+
     let pdf_bytes = fs::read(&pdf_path).await?;
 
     Ok(PDFResponse {
