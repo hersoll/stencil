@@ -7,12 +7,13 @@
 #show math.equation.where(block: false): box
 #let item-counter = counter("item-counter")
 #let bold-alpha = n => [*#numbering("a)", n)*]
+#let margin-top(margin) = { if type(margin) == dictionary { margin.top.length } else { margin } }
 
 #let balanced(column_count, items, start_pos, custom_spacing: 1.33em, debug: false) = layout(
   size => {
     let spacing = custom_spacing.to-absolute()
     // How many pts we start at
-    let start_height = start_pos - page.margin.length
+    let start_height = start_pos - margin-top(page.margin)
     // How many pts we have available to use on this page
     let spare_height = size.height - start_height
 
