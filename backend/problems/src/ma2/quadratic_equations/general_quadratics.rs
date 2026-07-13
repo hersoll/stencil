@@ -9,6 +9,7 @@ fn quadratics_template(symmetry: Number, distance: Number) -> (String, String, S
     let x_2 = symmetry + distance;
     let p = -2 * symmetry;
     let q = x_1 * x_2;
+
     let question = format!("$x^2{p:+}x{q:+}=0$");
     let answer = format!("$x_1={x_1}, #h(0.4em) x_2={x_2}$");
     let solution = format!(

@@ -15,7 +15,8 @@
 ### Fixed
 - Renamed `set_options` in frontend to `formatting_options` to match backend
 - Fixed double scrollbars on stats page by only using padding in `<main>`
-- Fixed PDF render crash when margins were changed
+- Fixed Typst crash when margins were changed
+- Fixed incorrect parentheses when solving pq-style equations
 
 ### Changed 
 - Increased padding for leaderboard counts and widened leaderboards on the stats page
