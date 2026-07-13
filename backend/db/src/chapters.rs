@@ -71,7 +71,7 @@ pub async fn get_chapters_from_topic(topic_id: &i32) -> Result<Vec<ChapterEntry>
 pub async fn create_chapter_from_entry(chapter: &ChapterEntry) -> Result<i32> {
     let pool = crate::get_pool();
     let created = sqlx::query!(
-        r#"INSERT INTO chapters (name, desc_sv, desc_en) VALUES ($1, $2, $3) 
+        r#"INSERT INTO chapters (name, desc_sv, desc_en) VALUES ($1, $2, $3)
                RETURNING id"#,
         chapter.name,
         chapter.desc.sv,
@@ -87,7 +87,7 @@ pub async fn create_chapter_from_entry(chapter: &ChapterEntry) -> Result<i32> {
 pub async fn update_chapter_from_entry(chapter: &ChapterEntry) -> Result<i32> {
     let pool = crate::get_pool();
     let updated = sqlx::query!(
-        r#"UPDATE chapters SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4 
+        r#"UPDATE chapters SET name = $1, desc_sv = $2, desc_en = $3 WHERE id = $4
                RETURNING id"#,
         chapter.name,
         chapter.desc.sv,

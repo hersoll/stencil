@@ -55,7 +55,7 @@
 
 <style>
   .leaderboard {
-    width: 30rem;
+    width: 32rem;
   }
   h2 {
     padding-bottom: 0.5rem;
@@ -64,6 +64,10 @@
   .leaderboard-row {
     display: flex;
     justify-content: space-between;
+
+    .count {
+      padding-left: 2rem;
+    }
 
     &.first {
       font-size: 1.5rem;
