@@ -1,57 +1,44 @@
-use std::fmt::Display;
-
-pub static GRAPHING_COLORS: [&str; 3] = ["primary", "secondary", "tertiary"];
-
-#[derive(Debug, Clone)]
-struct Color {
-    r: u8,
-    g: u8,
-    b: u8,
-}
-
-impl Color {
-    fn new(r: u8, g: u8, b: u8) -> Color {
-        Color { r, g, b }
-    }
-}
-
-impl Display for Color {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}%, {}%, {}%", self.r, self.g, self.b)
-    }
-}
+static TEXT_HIGHLIGHT_COLORED: &str = "#8A6AA8";
+static TEXT_HIGHLIGHT_BW: &str = "#949494";
+static SOLUTION_FILL_COLORED: &str = "#F7F6E9";
+static SOLUTION_FILL_BW: &str = "#F9F9F9";
+static PRIMARY_COLOR_COLORED: &str = "#B79DCF";
+static PRIMARY_COLOR_BW: &str = "#222222";
+static SECONDARY_COLOR_COLORED: &str = "#B79DCF";
+static SECONDARY_COLOR_BW: &str = "#222222";
+static TERTIARY_COLOR_COLORED: &str = "#B79DCF";
+static TERTIARY_COLOR_BW: &str = "#222222";
 
 pub fn get_color_preamble(has_color: bool) -> String {
-    let colored: Color;
-    let solution_background: Color;
-    // Graphing colors
-    let primary: Color;
-    let secondary: Color;
-    let tertiary: Color;
+    let colored;
+    let solution_background;
+    let primary;
+    let secondary;
+    let tertiary;
     if has_color {
-        colored = Color::new(22, 10, 33); // Purple
-        solution_background = Color::new(98, 96, 92); // Light yellow
-        primary = Color::new(9, 3, 18); // Dark purple
-        secondary = colored.clone();
-        tertiary = Color::new(30, 23, 39); // Light purple
+        colored = TEXT_HIGHLIGHT_COLORED;
+        solution_background = SOLUTION_FILL_COLORED;
+        primary = PRIMARY_COLOR_COLORED;
+        secondary = SECONDARY_COLOR_COLORED;
+        tertiary = TERTIARY_COLOR_COLORED;
     } else {
-        colored = Color::new(10, 10, 10); // Gray
-        solution_background = Color::new(88, 88, 88); // Light gray
-        primary = Color::new(0, 0, 0); // Black
-        secondary = Color::new(8, 8, 8); // Gray?
-        tertiary = Color::new(16, 16, 16); // Grayer?
+        colored = TEXT_HIGHLIGHT_BW;
+        solution_background = SOLUTION_FILL_BW;
+        primary = PRIMARY_COLOR_BW;
+        secondary = SECONDARY_COLOR_BW;
+        tertiary = TERTIARY_COLOR_BW;
     };
 
     format!(
-        "
-#let primary_color = color.linear-rgb({primary})
-#let solution_color = color.linear-rgb({solution_background})
-#let secondary_color = color.linear-rgb({secondary})
-#let tertiary_color = color.linear-rgb({tertiary})
-#let colored(x) = text(fill: color.linear-rgb({colored}), $#x$)
+        r#"
+#let primary_color = rgb("{primary}")
+#let solution_color = rgb("{solution_background}")
+#let secondary_color = rgb("{secondary}")
+#let tertiary_color = rgb("{tertiary}")
+#let colored(x) = text(fill: rgb("{colored}"), $#x$)
 #let primary(x) = text(fill: primary_color, $#x$)
 #let secondary(x) = text(fill: secondary_color, $#x$)
 #let tertiary(x) = text(fill: tertiary_color, $#x$)
-"
+"#
     )
 }

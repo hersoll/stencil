@@ -1,6 +1,5 @@
 # TODO
 
-- Color in document
 - Metrics for changing PDFs
 - Tooltips
 - Adjust selection algorithm
@@ -23,6 +22,7 @@
 ### Changed 
 - Increased padding for leaderboard counts and widened leaderboards on the stats page
 - Shortened tracing logs for readability
+- Colors in Typst are now written with hex code
 
 ## [0.9.0] - 2026-07-12
 
