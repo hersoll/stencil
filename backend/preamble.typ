@@ -1,6 +1,5 @@
 // Used for equation separator
 #let line_color = color.linear-rgb(20%, 20%, 20%)
-#let colored(x) = text(fill: color.linear-rgb(22%, 10%, 33%), $#x$)
 
 #import "@preview/equate:0.3.2": equate, share-align
 #show: equate.with(debug: false)
@@ -136,29 +135,3 @@
   },
 )
 
-//Equation solution template
-#let equation-solution(equations, operations) = {
-  context {
-    let max-eq-width = 0pt
-    let max-op-width = 0pt
-
-    for eq in equations {
-      let size = measure(eq)
-      if size.width > max-eq-width {
-        max-eq-width = size.width
-      }
-    }
-
-    let color-operations = operations.map(op => if op != $$ { colored(op) } else { op })
-
-    share-align({
-      grid(
-        columns: (max-eq-width, auto),
-        inset: (top: 0.2em, rest: 0.5em),
-        align: (left, horizon + left),
-        grid.vline(x: 1, stroke: (paint: line_color, thickness: 0.5pt)),
-        ..equations.zip(color-operations).flatten(),
-      )
-    })
-  }
-}

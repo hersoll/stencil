@@ -1,7 +1,5 @@
 use anyhow::Result;
 use std::fmt::Write;
-/// Background color for the solutions
-static SOLUTION_COLOR: &str = "oklch(95.25%, 0.0285, 73deg, 50%)";
 static SOLUTION_HEADING_SPACE: &str = "0.3em";
 static SOLUTION_RADIUS: &str = "0.5em";
 static SOLUTION_FONT_SIZE: &str = "0.8em";
@@ -31,7 +29,7 @@ pub fn solution_rules(solution_label: &str) -> Result<String> {
         out,
         "  outset: (left: {SOLUTION_OUTSET}, rest: {SOLUTION_BACKGROUND_PADDING}), "
     )?;
-    writeln!(out, "  fill: {SOLUTION_COLOR}, ")?;
+    writeln!(out, "  fill: solution_color, ")?;
     writeln!(out, "  radius: {SOLUTION_RADIUS}")?;
     writeln!(out, ")[")?;
     writeln!(out, "  #set text(size: {SOLUTION_FONT_SIZE})")?;
@@ -45,7 +43,7 @@ pub fn solution_rules(solution_label: &str) -> Result<String> {
         out,
         "  outset: (left: {SOLUTION_NESTED_OUTSET}, rest: {SOLUTION_BACKGROUND_PADDING}), "
     )?;
-    writeln!(out, "  fill: {SOLUTION_COLOR}, ")?;
+    writeln!(out, "  fill: solution_color, ")?;
     writeln!(out, "  radius: {SOLUTION_RADIUS}")?;
     writeln!(out, ")[")?;
     writeln!(out, "  #set text(size: {SOLUTION_FONT_SIZE})")?;

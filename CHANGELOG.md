@@ -18,6 +18,7 @@
 - Fixed double scrollbars on stats page by only using padding in `<main>`
 - Fixed Typst crash when margins were changed
 - Fixed incorrect parentheses when solving pq-style equations
+- Color option now works properly for solutions. Graphs are still always colored.
 
 ### Changed 
 - Increased padding for leaderboard counts and widened leaderboards on the stats page
