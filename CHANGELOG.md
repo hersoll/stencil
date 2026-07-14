@@ -7,7 +7,9 @@
 
 # Changelog
 
-## [0.9.1] - TBD
+## [0.9.2] - TBD
+
+## [0.9.1] - 2026-07-14
 
 ### Added
 - Conditional logging based on cargo feature flags (Use `cargo run -- log` to opt-in when in dev mode)
