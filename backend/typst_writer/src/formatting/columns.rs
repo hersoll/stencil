@@ -2,7 +2,7 @@ use super::{list_item, reformat_newlines};
 use crate::typst_file_builder::{AnswerSet, QuestionSet};
 use anyhow::Result;
 use std::fmt::Write;
-use types::pdf::QuestionSetFormattingOptions;
+use types::pdf::{QuestionSetFormattingOptions, SanitizedTypstString};
 
 /// Formats the sets to columns with equal height
 pub fn questions_to_balanced_columns(
@@ -32,8 +32,8 @@ pub fn questions_to_balanced_columns(
             };
 
         // Custom headings always overwrite prefixes.
-        if let Some(custom_heading) = &set_option.heading {
-            writeln!(out, "{}", reformat_newlines(custom_heading.as_ref()))?;
+        if let Some(SanitizedTypstString(custom_heading)) = &set_option.heading {
+            writeln!(out, "{}", reformat_newlines(custom_heading))?;
         } else if let Some(group_prefix) = group_prefixes.get(i).unwrap_or(&None).as_ref() {
             writeln!(out, "{group_prefix}")?;
         }

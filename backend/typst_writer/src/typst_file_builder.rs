@@ -4,7 +4,9 @@ use db;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 use tracing::warn;
-use types::pdf::{DocumentOptions, QuestionSetFormattingOptions, WriteSolutions};
+use types::pdf::{
+    DocumentOptions, QuestionSetFormattingOptions, SanitizedTypstString, WriteSolutions,
+};
 use types::problems::Problem;
 
 const TRANSLATION_NOT_FOUND_MESSAGE: &str = "!!! Translation not found !!!";
@@ -155,11 +157,11 @@ impl TypstFileBuilder {
             self.get_translation("solution"),
         )?);
         parts.push(String::from(PREAMBLE_STR));
-        if let Some(title) = &self.options.title {
-            parts.push(formatting::heading(title.as_ref()));
+        if let Some(SanitizedTypstString(title)) = &self.options.title {
+            parts.push(formatting::heading(title));
         }
-        if let Some(subtitle) = &self.options.subtitle {
-            parts.push(formatting::subheading(subtitle.as_ref()));
+        if let Some(SanitizedTypstString(subtitle)) = &self.options.subtitle {
+            parts.push(formatting::subheading(subtitle));
         }
         if self.options.name_field {
             parts.push(formatting::name_field(self.get_translation("name")));

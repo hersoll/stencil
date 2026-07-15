@@ -9,6 +9,9 @@
 
 ## [0.9.2] - TBD
 
+### Removed
+- Removed some unused functions in backend (crate `types`)
+
 ## [0.9.1] - 2026-07-14
 
 ### Added

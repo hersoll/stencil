@@ -33,9 +33,6 @@ impl Language {
 
 impl Display for Language {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Language::Sv => write!(f, "sv"),
-            Language::En => write!(f, "en"),
-        }
+        write!(f, "{}", self.to_str())
     }
 }

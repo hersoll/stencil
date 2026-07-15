@@ -2,7 +2,6 @@ use std::fmt::Display;
 
 use crate::{difficulty::DifficultyCategory, lang::Language};
 use serde::{Deserialize, Deserializer, Serialize};
-use tracing::error;
 
 const DEFAULT_QUESTION_COLUMNS: u8 = 2;
 const DEFAULT_ANSWER_COLUMNS: u8 = 3;
@@ -36,12 +35,6 @@ impl<'de> Deserialize<'de> for SanitizedTypstString {
     }
 }
 
-impl AsRef<str> for SanitizedTypstString {
-    fn as_ref(&self) -> &str {
-        &self.0
-    }
-}
-
 /// Which problems should we write out the solutions for?
 ///
 /// All/None - Self-explanatory
@@ -51,20 +44,6 @@ pub enum WriteSolutions {
     All,
     None,
     First,
-}
-
-impl WriteSolutions {
-    pub fn from(s: &str) -> WriteSolutions {
-        match s.to_lowercase().as_str() {
-            "all" => WriteSolutions::All,
-            "none" => WriteSolutions::None,
-            "first" => WriteSolutions::First,
-            _ => {
-                error!("Invalid WriteSolutions: {s}");
-                WriteSolutions::None
-            }
-        }
-    }
 }
 
 impl Display for WriteSolutions {
@@ -87,16 +66,6 @@ pub enum PaperSize {
 }
 
 impl PaperSize {
-    pub fn from(size: &str) -> PaperSize {
-        match size.to_lowercase().as_str() {
-            "a4" => PaperSize::A4,
-            "a5" => PaperSize::A5,
-            _ => {
-                error!("Invalid PaperSize: {size}");
-                PaperSize::A4
-            }
-        }
-    }
     pub fn to_str(&self) -> &str {
         match self {
             PaperSize::A4 => "a4",
