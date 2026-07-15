@@ -281,7 +281,7 @@ fn variable_term_power_and_divide_x_squared(id: i32, _lang: Language) -> Result<
     let exponentiated_coef = coef.pow(exp);
     let final_coef = exponentiated_coef / denom_coef;
     // Used in the final line of the solution to help pretty print coefs of 1
-    let helper_term = final_coef * Term::from_var(variable);
+    let helper_term = final_coef * variable;
     let answer = final_coef * Term::from_var((variable, exp - 2));
     let question = format!("$ ({numerator_term})^{exp} / ({denominator_term}) $");
     let solution = format!(

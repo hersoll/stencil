@@ -87,6 +87,11 @@ impl Term {
             }
         }
     }
+
+    /// Returns whether the term is a constant term or not
+    fn is_constant(&self) -> bool {
+        self.variables.list.is_empty() || self.variables.list.iter().all(|var| var.exponent == 0)
+    }
 }
 impl Display for Term {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -98,13 +103,13 @@ impl Display for Term {
         }
 
         if self.coefficient == 1 {
-            if self.variables.list.is_empty() {
+            if self.is_constant() {
                 write!(f, "1")?;
             } else {
                 write!(f, "{}", self.variables)?;
             }
         } else if self.coefficient == -1 {
-            if self.variables.list.is_empty() {
+            if self.is_constant() {
                 write!(f, "-1")?;
             } else {
                 write!(f, "-{}", self.variables)?;
@@ -407,6 +412,15 @@ mod tests {
         assert_eq!(format!("{t_zero:+}"), "");
         assert_eq!(format!("{t_color}"), " colored(-3x)");
         assert_eq!(format!("{fractional_term}"), "(3x)/5");
+    }
+
+    #[test]
+    fn checks_constants() {
+        let no_vars = Term::from_num(5);
+        assert!(no_vars.is_constant());
+        let exponent_is_0 = Term::from_var((&X, 0));
+        assert!(exponent_is_0.is_constant());
+        assert_eq!(format!("{no_vars}{exponent_is_0:+}"), "5+1");
     }
 
     mod evaluations {

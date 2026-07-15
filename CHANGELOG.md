@@ -9,6 +9,9 @@
 
 ## [0.9.2] - TBD
 
+### Fixed
+- Polynomial terms where all variables have an exponent of 0 and an `|coefficient| == 1` are now rendered correctly
+
 ### Removed
 - Removed some unused functions in backend (crate `types`)
 
