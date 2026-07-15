@@ -1,7 +1,6 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
-  import { setState } from '$src/globalStates.svelte';
-  import { defaultFormattingOptions } from '$src/types';
+  import { setState, defaultFormattingOptions } from '$src/globalStates.svelte';
   import { fetchProblemsForTopics } from '$src/commonFunctions.svelte';
 
   let loadingSet = $state(false);

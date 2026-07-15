@@ -9,6 +9,9 @@
 
 ## [0.9.2] - TBD
 
+### Added
+- New `/defaults` endpoint where the frontend queries the backend about the default values for fields, to have a single source of truth
+
 ### Fixed
 - Polynomial terms where all variables have an exponent of 0 and an `|coefficient| == 1` are now rendered correctly
 

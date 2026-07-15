@@ -29,11 +29,10 @@ export type CourseData = {
   desc: string;
 };
 
-export type FormattingOptions = {
-  questionColumns: number;
-  heading: string | null;
-  spacing: number | null;
-  pagebreakAfter: boolean;
+export type SetState = {
+  id: number;
+  options: ProblemSetSpec;
+  topics: TopicWithProblems[];
 };
 
 export type Difficulty =
@@ -104,6 +103,13 @@ export function difficultyInRange(
   return difficulty >= startingNum && difficulty <= endingNum;
 }
 
+export type FormattingOptions = {
+  questionColumns: number;
+  heading: string | null;
+  spacing: number | null;
+  pagebreakAfter: boolean;
+};
+
 export type ProblemOptions = {
   topics: number[];
   exclusions: number[];
@@ -118,29 +124,6 @@ export type ProblemSetSpec = {
   formatting_options: FormattingOptions;
 };
 
-export type SetState = {
-  id: number;
-  options: ProblemSetSpec;
-  topics: TopicWithProblems[];
-};
-
-export const defaultProblemOptions: ProblemOptions = {
-  topics: [],
-  exclusions: [],
-  startingDifficulty: 'difficulty_intro',
-  endingDifficulty: 'difficulty_hard',
-  n: 20
-};
-export const defaultFormattingOptions: FormattingOptions = {
-  questionColumns: 2,
-  heading: null,
-  spacing: null,
-  pagebreakAfter: false
-};
-export const defaultProblemSet: ProblemSetSpec = {
-  problem_options: defaultProblemOptions,
-  formatting_options: defaultFormattingOptions
-};
 export type DocumentOptions = {
   fontSize: number;
   title: string | null;
@@ -158,7 +141,25 @@ export type DocumentOptions = {
   pageBreakBeforeAnswers: boolean;
 };
 
-export const defaultDocumentOptions: DocumentOptions = {
+// NOTE: Overridden by backend on defaults startup
+export const initialProblemOptions: ProblemOptions = {
+  topics: [],
+  exclusions: [],
+  startingDifficulty: 'difficulty_intro',
+  endingDifficulty: 'difficulty_hard',
+  n: 20
+};
+
+// NOTE: Overridden by backend on defaults startup
+export const initialFormattingOptions: FormattingOptions = {
+  questionColumns: 2,
+  heading: null,
+  spacing: null,
+  pagebreakAfter: false
+};
+
+// NOTE: Overridden by backend defaults on startup
+export const initialDocumentOptions: DocumentOptions = {
   fontSize: 10,
   title: null,
   subtitle: null,

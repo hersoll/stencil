@@ -1,8 +1,10 @@
 import {
-  defaultDocumentOptions,
-  defaultProblemOptions,
+  initialDocumentOptions,
+  initialFormattingOptions,
+  initialProblemOptions,
   type ChapterWithTopics,
   type DocumentOptions,
+  type FormattingOptions,
   type ProblemOptions,
   type SetState
 } from '$src/types';
@@ -21,12 +23,28 @@ export let setState = $state<{
   draggedSetIndex: number | null;
 }>({
   addedSets: [],
-  pendingSet: defaultProblemOptions,
+  pendingSet: initialProblemOptions,
   currentEditedSetID: null,
   setCount: 0,
   draggedSetIndex: null
 });
-export let documentOptions = $state<DocumentOptions>(defaultDocumentOptions);
+export let documentOptions = $state<DocumentOptions>(initialDocumentOptions);
+export let defaultFormattingOptions = $state<FormattingOptions>(
+  initialFormattingOptions
+);
+export let defaultProblemOptions = $state<ProblemOptions>(
+  initialProblemOptions
+);
+export function setDocumentOptions(next: DocumentOptions) {
+  Object.assign(documentOptions, next);
+}
+export function setDefaultFormattingOptions(next: FormattingOptions) {
+  Object.assign(defaultFormattingOptions, next);
+}
+export function setDefaultProblemOptions(next: ProblemOptions) {
+  setState.pendingSet = next;
+  Object.assign(defaultProblemOptions, next);
+}
 
 export const loadingState = $state({ loading: false });
 export function startLoading() {

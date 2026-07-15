@@ -3,7 +3,16 @@ use std::fmt::Display;
 use crate::{difficulty::DifficultyCategory, lang::Language};
 use serde::{Deserialize, Deserializer, Serialize};
 
+// QuestionSetFormattingOptions::default()
 const DEFAULT_QUESTION_COLUMNS: u8 = 2;
+const DEFAULT_HEADING: Option<SanitizedTypstString> = None;
+const DEFAULT_PROBLEM_SPACING: Option<u16> = None;
+const DEFAULT_PAGEBREAK_AFTER: bool = false;
+
+// DocumentOptions::default()
+const DEFAULT_TITLE: Option<SanitizedTypstString> = None;
+const DEFAULT_SUBTITLE: Option<SanitizedTypstString> = None;
+const DEFAULT_NAME_FIELD: bool = false;
 const DEFAULT_ANSWER_COLUMNS: u8 = 3;
 const DEFAULT_FONT_SIZE: u8 = 10;
 const DEFAULT_X_MARGIN: u8 = 20;
@@ -15,10 +24,13 @@ const DEFAULT_WRITE_SOLUTIONS: WriteSolutions = WriteSolutions::First;
 const DEFAULT_PAR_SPACING: Option<u8> = None;
 const DEFAULT_COLORS: bool = true;
 const DEFAULT_PAGE_BREAK_BEFORE_ANSWERS: bool = true;
+
+// ProblemOptions::default()
 const DEFAULT_STARTING_DIFFICULTY: DifficultyCategory = DifficultyCategory::Intro;
 const DEFAULT_ENDING_DIFFICULTY: DifficultyCategory = DifficultyCategory::Hard;
 const DEFAULT_PROBLEM_COUNT: u8 = 20;
 
+/// Denotes which chars are removed from any incoming strings
 const DISALLOWED_CHARS: &str = "[]#\"'";
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
@@ -126,9 +138,9 @@ impl Default for QuestionSetFormattingOptions {
     fn default() -> Self {
         QuestionSetFormattingOptions {
             question_columns: DEFAULT_QUESTION_COLUMNS,
-            heading: None,
-            spacing: None,
-            pagebreak_after: false,
+            heading: DEFAULT_HEADING,
+            spacing: DEFAULT_PROBLEM_SPACING,
+            pagebreak_after: DEFAULT_PAGEBREAK_AFTER,
         }
     }
 }
@@ -156,9 +168,9 @@ pub struct DocumentOptions {
 impl Default for DocumentOptions {
     fn default() -> Self {
         DocumentOptions {
-            title: None,
-            subtitle: None,
-            name_field: false,
+            title: DEFAULT_TITLE,
+            subtitle: DEFAULT_SUBTITLE,
+            name_field: DEFAULT_NAME_FIELD,
             font_size: DEFAULT_FONT_SIZE,
             answer_columns: DEFAULT_ANSWER_COLUMNS,
             lang: DEFAULT_LANG,

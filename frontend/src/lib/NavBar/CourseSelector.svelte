@@ -2,11 +2,12 @@
   import {
     setState,
     startLoading,
-    stopLoading
+    stopLoading,
+    defaultProblemOptions
   } from '$src/globalStates.svelte';
   import { API_URL } from '$src/main';
   import i18n from '$src/i18n.svelte';
-  import { defaultProblemOptions, type CourseData } from '$src/types';
+  import { type CourseData } from '$src/types';
 
   let {
     course = $bindable()

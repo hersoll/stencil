@@ -19,6 +19,7 @@ pub fn create_router() -> Router {
     let auth_limit = AuthLimit::new();
 
     let user_routes = Router::new()
+        .route("/defaults", get(api::public::get_defaults))
         .route("/translations/{lang}", get(api::public::get_translations))
         .route("/{lang}/course", get(api::public::get_course_list))
         .route(

@@ -1,7 +1,13 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import { onDestroy, onMount } from 'svelte';
-  import { loadingState, error } from '$src/globalStates.svelte';
+  import {
+    loadingState,
+    error,
+    setDocumentOptions,
+    setDefaultFormattingOptions,
+    setDefaultProblemOptions
+  } from '$src/globalStates.svelte';
   import NavBar from '$src/lib/NavBar/NavBar.svelte';
   import type { View } from '$src/types';
   import ErrorView from './lib/ErrorView.svelte';
@@ -11,6 +17,7 @@
   import LoadingView from './lib/LoadingView.svelte';
   import StartUpView from './lib/StartUpView.svelte';
   import LayoutView from './lib/LayoutView/LayoutView.svelte';
+  import { API_URL } from './main';
 
   let activeCourseName: string = $state(localStorage.getItem('course') || '');
 
@@ -21,6 +28,22 @@
   let showLoadingMessage = $state(false);
   let loadingTimeout: ReturnType<typeof setTimeout> | null = $state(null);
   const LOADING_DELAY = 600;
+
+  async function fetchDefaults() {
+    const response: Response = await fetch(`${API_URL}/defaults`);
+
+    if (!response.ok) {
+      let text = await response.text();
+      error.message = `Status: ${response.status} \n${text}`;
+      return;
+    }
+
+    const { formatting_options, problem_options, document_options } =
+      await response.json();
+    setDocumentOptions(document_options);
+    setDefaultFormattingOptions(formatting_options);
+    setDefaultProblemOptions(problem_options);
+  }
 
   $effect(() => {
     if (!loadingState.loading) {
@@ -43,6 +66,7 @@
 
   onMount(async () => {
     await i18n.init();
+    await fetchDefaults();
   });
 </script>
 
