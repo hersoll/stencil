@@ -102,7 +102,7 @@
   </div>
   <div class="attachments-grid">
     <TopicsFieldForProblems
-      --height="20.5rem"
+      --height="16rem"
       bind:topic_data={problem.topic_data}
       {serverMessage}
       bind:entry={problem}

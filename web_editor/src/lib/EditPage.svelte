@@ -184,9 +184,10 @@
 
 <style>
   main {
+    width: 100%;
+    height: 100vh;
     position: relative;
     padding: 2rem;
-    border-radius: 2rem;
     background-color: var(--bg);
     box-shadow: var(--shadow-elevation-low);
   }

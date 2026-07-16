@@ -287,7 +287,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 0.25rem;
-    height: calc(100vh - 19rem);
+    height: calc(100vh - 17rem);
     overflow-y: auto;
     width: fit-content;
     padding-right: 1rem;

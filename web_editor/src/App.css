@@ -90,17 +90,8 @@
 }
 
 body {
-  padding: 0 1rem;
+  background-color: var(--bg);
   margin: 0;
-  display: flex;
-  justify-content: center;
-  &.no-scroll {
-    overflow: hidden;
-  }
-}
-
-#app {
-  display: flex;
 }
 
 .no-select {
