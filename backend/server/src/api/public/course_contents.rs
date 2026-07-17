@@ -25,7 +25,7 @@ impl HTTPCourseData {
     fn from_course_entry(course: CourseEntry, lang: Language) -> Self {
         Self {
             id: course.id,
-            desc: course.get_desc(lang),
+            desc: course.get_desc_for_lang(lang),
             name: course.name,
         }
     }
@@ -43,7 +43,7 @@ impl HTTPTopicData {
     fn from_topic_entry(topic: &TopicEntry, lang: Language) -> Self {
         Self {
             id: topic.id,
-            desc: topic.get_desc(lang),
+            desc: topic.get_desc_for_lang(lang),
         }
     }
 }
@@ -63,7 +63,7 @@ impl ChapterWithTopics {
     ) -> Self {
         Self {
             id: chapter.id,
-            desc: chapter.get_desc(lang),
+            desc: chapter.get_desc_for_lang(lang),
             topics: topics.to_vec(),
         }
     }
@@ -89,7 +89,7 @@ impl HTTPProblemData {
                 .expect("During HTTPProblemData::from_problem_and_topic_id, a problem was encountered without the appropriate topic.")
                 .absolute_difficulty
                 .number as i32,
-            desc: problem.get_desc(lang),
+            desc: problem.get_desc_for_lang(lang),
         }
     }
 }
@@ -209,7 +209,7 @@ pub async fn get_problems_for_topics(
             .collect();
         let topic_with_problems = TopicWithProblems {
             id: topic.id,
-            desc: topic.get_desc(lang),
+            desc: topic.get_desc_for_lang(lang),
             problems,
         };
         topics_with_problems.push(topic_with_problems);

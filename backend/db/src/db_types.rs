@@ -16,7 +16,7 @@ pub trait HasDesc {
     fn desc(&self) -> &DescriptionTranslations;
 
     /// Get the description in the specified [`Language`].
-    fn get_desc(&self, lang: Language) -> String {
+    fn get_desc_for_lang(&self, lang: Language) -> String {
         match lang {
             Language::Sv => self.desc().sv.clone(),
             Language::En => self.desc().en.clone(),
