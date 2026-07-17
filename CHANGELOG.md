@@ -1,5 +1,7 @@
 # TODO
 
+- Refactor web editor
+- Better support for text questions, in particular multiple variations of text
 - Metrics for changing PDFs
 - Tooltips
 - Adjust selection algorithm
