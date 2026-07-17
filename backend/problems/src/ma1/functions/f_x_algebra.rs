@@ -1,5 +1,4 @@
 use anyhow::Result;
-use db::HasReplacements;
 use macros::problem;
 use math::{
     Evaluable, Number, Term,
@@ -7,7 +6,7 @@ use math::{
     num_gen,
     symbols::{self, X},
 };
-use types::{lang::Language, problems::Problem};
+use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::formatting::{SolutionWithSteps, equation_solution};
 
 // In this module, problems in the form of f(3) is known as "calculating y"

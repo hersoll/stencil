@@ -1,7 +1,33 @@
-use crate::HasReplacements;
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::Type;
 use std::{fmt::Display, ops::Deref};
+
+/// Trait for structs with a [`String`] that contains `{placeholders}`
+///
+/// Questions, Answers and Solutions might have template strings in them which will be replaced at
+/// runtime. This trait enables you to retrieve the strings and replace the templating.
+pub trait HasReplacements {
+    /// Accesses the templated [`String`] used for replacement.
+    fn get_str(&self) -> &String;
+    /// Takes a template string containing `{key}` patterns and replaces those keys with values.
+    ///
+    /// Used in problems with dynamic text questions, for example:
+    /// `"Use the function {f} to solve..."`
+    fn replace_placeholders(&self, key_value_pairs: &[(&str, impl Display)]) -> String {
+        let mut result = self.get_str().to_owned();
+        for (key, value) in key_value_pairs {
+            let placeholder = format!("{{{}}}", key);
+            result = result.replace(&placeholder, &value.to_string());
+        }
+        result
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+pub enum SplitFormatted<T: HasReplacements> {
+    Single(T),
+    Multiple { index: usize, splits: Vec<T> },
+}
 
 /// Newtype that simply contains a [`String`].
 #[derive(Debug, Clone, Deserialize, Serialize, Type)]

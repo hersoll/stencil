@@ -1,8 +1,7 @@
 use anyhow::Result;
-use db::HasReplacements;
 use macros::problem;
 use math::num_gen;
-use types::{lang::Language, problems::Problem};
+use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::{
     drawing::NumberLine,
     formatting::{add_number, parentheses, subtract_number},

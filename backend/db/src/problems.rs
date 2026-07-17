@@ -1,11 +1,13 @@
 use super::common::{error_context, error_context_by_name};
 use crate::{
-    Answer, DescriptionTranslations, ProblemEntry, ProblemTexts, ProblemTranslations, Question,
-    Solution, TopicSpecificData,
+    DescriptionTranslations, ProblemEntry, ProblemTexts, ProblemTranslations, TopicSpecificData,
 };
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
-use types::difficulty::{AbsoluteDifficulty, RelativeDifficulty};
+use types::{
+    difficulty::{AbsoluteDifficulty, RelativeDifficulty},
+    format_strings::{Answer, Question, Solution},
+};
 
 struct DbProblemRow {
     id: i32,

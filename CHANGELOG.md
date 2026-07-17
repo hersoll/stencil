@@ -17,8 +17,12 @@
 ### Fixed
 - Polynomial terms where all variables have an exponent of 0 and an `|coefficient| == 1` are now rendered correctly
 
+### Changed
+- Moved types `Question`, `Answer` and `Solution` to `types` crate
+
 ### Removed
 - Removed some unused functions in backend (crate `types`)
+
 
 ## [0.9.1] - 2026-07-14
 

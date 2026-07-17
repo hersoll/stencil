@@ -1,8 +1,8 @@
-use crate::{Answer, ProblemIdsAndDifficulties, Question, Solution, common::DbDescRow};
+use crate::{ProblemIdsAndDifficulties, common::DbDescRow};
 use serde::{Deserialize, Serialize};
-use std::fmt::Display;
 use types::{
     difficulty::{AbsoluteDifficulty, RelativeDifficulty},
+    format_strings::{Answer, Question, Solution},
     lang::Language,
 };
 
@@ -21,27 +21,6 @@ pub trait HasDesc {
             Language::Sv => self.desc().sv.clone(),
             Language::En => self.desc().en.clone(),
         }
-    }
-}
-
-/// Trait for structs with a [`String`] that contains `{placeholders}`
-///
-/// Questions, Answers and Solutions might have template strings in them which will be replaced at
-/// runtime. This trait enables you to retrieve the strings and replace the templating.
-pub trait HasReplacements {
-    /// Accesses the templated [`String`] used for replacement.
-    fn get_str(&self) -> &String;
-    /// Takes a template string containing `{key}` patterns and replaces those keys with values.
-    ///
-    /// Used in problems with dynamic text questions, for example:
-    /// `"Use the function {f} to solve..."`
-    fn replace_placeholders(&self, key_value_pairs: &[(&str, impl Display)]) -> String {
-        let mut result = self.get_str().to_owned();
-        for (key, value) in key_value_pairs {
-            let placeholder = format!("{{{}}}", key);
-            result = result.replace(&placeholder, &value.to_string());
-        }
-        result
     }
 }
 

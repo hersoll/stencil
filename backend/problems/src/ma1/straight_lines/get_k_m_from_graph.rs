@@ -1,9 +1,8 @@
 use anyhow::Result;
-use db::HasReplacements;
 use macros::problem;
 use math::{Number, Term, num_gen, symbols::X};
 use registry::get_problem_data;
-use types::{lang::Language, problems::Problem};
+use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::graphing::{Axes, Graph};
 
 /// Find m in graph

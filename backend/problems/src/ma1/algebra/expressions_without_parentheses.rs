@@ -1,10 +1,9 @@
 use anyhow::Result;
-use db::HasReplacements;
 use macros::problem;
 use math::{Evaluable, Number, Polynomial, Term, VariableList, num_gen, symbols};
 use rand::seq::IndexedRandom;
 use registry::get_problem_data;
-use types::{lang::Language, problems::Problem};
+use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 
 /// 3x + 4 + 2x + 1
 /// Absolute difficulty: 1

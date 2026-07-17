@@ -1,8 +1,7 @@
 use anyhow::Result;
-use db::HasReplacements;
 use macros::problem;
 use math::{Number, Term, num_gen, symbols::X};
-use types::{lang::Language, problems::Problem};
+use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::formatting::{equation_solution, parentheses};
 
 /// Calculate k between (1, 3) and (4, 9) [positive integers]

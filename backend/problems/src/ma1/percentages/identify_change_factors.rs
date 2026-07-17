@@ -1,8 +1,7 @@
 use anyhow::Result;
-use db::HasReplacements;
 use macros::problem;
 use math::num_gen;
-use types::{lang::Language, problems::Problem};
+use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 
 /// Which change factor is equivalent to an increase of 10%?
 /// Absolute difficulty: 1
