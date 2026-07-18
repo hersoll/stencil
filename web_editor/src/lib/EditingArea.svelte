@@ -152,8 +152,9 @@
 <style>
   .editing-area {
     min-height: 20rem;
-    width: 53.5rem;
-    padding: 1rem;
+    width: 55.5rem;
+    padding: 2rem;
+    padding-top: 1rem;
     border-radius: 1rem;
     box-shadow: 6px 4px 20px oklch(from var(--bg) calc(l - 0.1) c h) inset;
     height: min-content;

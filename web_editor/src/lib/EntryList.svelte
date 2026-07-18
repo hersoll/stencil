@@ -231,6 +231,9 @@
 
 <style>
   .container {
+    display: flex;
+    flex-direction: column;
+    height: 54.75rem;
     position: relative;
     width: fit-content;
     padding: 1rem;
@@ -283,11 +286,12 @@
   }
 
   .list-grid {
+    flex: 1;
+    min-height: 0;
     background-color: var(--bg);
     display: flex;
     flex-direction: column;
     row-gap: 0.25rem;
-    height: calc(100vh - 17rem);
     overflow-y: auto;
     width: fit-content;
     padding-right: 1rem;

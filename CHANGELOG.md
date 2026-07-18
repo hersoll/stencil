@@ -1,6 +1,6 @@
 # TODO
 
-- Refactor web editor
+- Add i18n to web editor
 - Metrics for changing PDFs
 - Tooltips
 - Adjust selection algorithm
@@ -16,6 +16,7 @@
 
 ### Fixed
 - Polynomial terms where all variables have an exponent of 0 and an `|coefficient| == 1` are now rendered correctly
+- Adressed some height issues in web editor
 
 ### Changed
 - Moved types `Question`, `Answer` and `Solution` to `types` crate
