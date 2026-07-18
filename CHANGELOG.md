@@ -22,7 +22,7 @@
 
 ### Removed
 - Removed some unused functions in backend (crate `types`)
-
+- Dangling vite svg file
 
 ## [0.9.1] - 2026-07-14
 
