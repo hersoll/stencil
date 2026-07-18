@@ -6,7 +6,7 @@
 
 # Changelog
 
-## [0.9.2] - TBD
+## [0.9.2] - 2026-07-18
 
 ### Added
 - Support for multiple variants in problem texts: `The price of [flour || milk || cheese] has gone up.`

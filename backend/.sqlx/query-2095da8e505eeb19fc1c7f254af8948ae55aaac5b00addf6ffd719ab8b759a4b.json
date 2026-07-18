@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            WITH copies AS (\n                SELECT p.id, p.previous_pdf, p.has_title, p.has_subtitle, p.has_name_field, \n                    p.font_size, p.answer_columns, p.lang, p.write_solutions, p.color, p.paper_size, \n                    p.x_margin, p.y_margin, p.par_spacing, p.max_prefix_group, p.page_break_before_answers, \n                    ps.topics, ps.exclusions, ps.problem_count, ps.columns, ps.has_heading, ps.problem_spacing, \n                    ps.pagebreak_after, ps.order_index, ps.starting_difficulty, ps.ending_difficulty \n                FROM logs_pdf p \n                JOIN logs_problem_set ps\n                ON p.id = ps.pdf_id\n\n-- Condition below means it is a copy\n\n                WHERE p.previous_pdf IS NOT null\n                AND p.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval),\n\n            originals AS (\n                SELECT p.id, p.has_title, p.has_subtitle, p.has_name_field, \n                    p.font_size, p.answer_columns, p.lang, p.write_solutions, p.color, p.paper_size, \n                    p.x_margin, p.y_margin, p.par_spacing, p.max_prefix_group, p.page_break_before_answers, \n                    ps.topics, ps.exclusions, ps.problem_count, ps.columns, ps.has_heading, ps.problem_spacing, \n                    ps.pagebreak_after, ps.order_index, ps.starting_difficulty, ps.ending_difficulty \n                FROM logs_pdf p \n                JOIN logs_problem_set ps \n                ON p.id = ps.pdf_id\n\n-- Condition below means it is an original of a copied PDF\n\n                WHERE EXISTS( \n                    SELECT 1 \n                    FROM logs_pdf p2 \n                    WHERE p2.previous_pdf = p.id \n                )\n                AND p.created_at >= (NOW() AT TIME ZONE 'utc') - $1::interval\n                ORDER BY (id, order_index) ASC\n            )\n\n            SELECT t.desc_sv as \"value!\", COUNT(*) AS \"count!\" \n            FROM (\n-- Find every row where the copy and original is identical, and count them by topic\n                SELECT UNNEST(topics) as topic_id FROM(\n                    SELECT o.id, o.topics, \n                    ROW(c.has_title, c.has_subtitle, c.has_name_field, c.font_size, c.answer_columns, c.lang, c.write_solutions,\n                    c.color, c.paper_size, c.x_margin, c.y_margin, c.par_spacing, c.max_prefix_group, c.page_break_before_answers,\n                    c.topics, c.exclusions, c.problem_count, c.columns, c.has_heading, c.problem_spacing, c.pagebreak_after, c.order_index,\n                    c.starting_difficulty, c.ending_difficulty\n                    )\n                    IS NOT DISTINCT FROM \n                    ROW(o.has_title, o.has_subtitle, o.has_name_field, o.font_size, o.answer_columns, o.lang, o.write_solutions,\n                    o.color, o.paper_size, o.x_margin, o.y_margin, o.par_spacing, o.max_prefix_group, o.page_break_before_answers,\n                    o.topics, o.exclusions, o.problem_count, o.columns, o.has_heading, o.problem_spacing, o.pagebreak_after, o.order_index,\n                    o.starting_difficulty, o.ending_difficulty) \n                    AS is_identical\n                    FROM copies c JOIN originals o ON c.previous_pdf = o.id) sub\n                WHERE is_identical\n            ) counts JOIN topics t ON t.id = counts.topic_id\n            GROUP BY topic_id, t.desc_sv \n            ORDER BY \"count!\" DESC\n            LIMIT 10;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "value!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Interval"
+      ]
+    },
+    "nullable": [
+      false,
+      null
+    ]
+  },
+  "hash": "2095da8e505eeb19fc1c7f254af8948ae55aaac5b00addf6ffd719ab8b759a4b"
+}
