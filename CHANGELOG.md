@@ -13,6 +13,7 @@
 ### Added
 - Support for multiple variants in problem texts: `The price of [flour || milk || cheese] has gone up.`
 - New `/defaults` endpoint where the frontend queries the backend about the default values for fields, to have a single source of truth
+- Search bar in web editor can now look at more fields
 
 ### Fixed
 - Polynomial terms where all variables have an exponent of 0 and an `|coefficient| == 1` are now rendered correctly

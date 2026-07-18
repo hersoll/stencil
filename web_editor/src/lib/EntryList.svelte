@@ -29,20 +29,41 @@
   let listElement: HTMLDivElement;
   let defaultEntry: Entry;
 
+  function matchesSearch(entry: Entry, search: string): boolean {
+    search = search.toLowerCase();
+    if (search.startsWith('id: ')) {
+      return entry.id.toString() == search.slice(4);
+    }
+    if (search.startsWith('name: ')) {
+      return entry.name.includes(search.slice(6));
+    }
+    return (
+      entry.name.includes(search) ||
+      ((entry.kind == 'problem' ||
+        entry.kind == 'topic' ||
+        entry.kind == 'chapter' ||
+        entry.kind == 'course') &&
+        (entry.desc.sv.toLowerCase().includes(search) ||
+          entry.desc.en.toLowerCase().includes(search))) ||
+      (entry.kind == 'problem' &&
+        (entry.module.includes(search) ||
+          entry.translations.sv.question.toLowerCase().includes(search) ||
+          entry.translations.sv.answer.toLowerCase().includes(search) ||
+          entry.translations.sv.solution.toLowerCase().includes(search) ||
+          entry.translations.en.question.toLowerCase().includes(search) ||
+          entry.translations.en.answer.toLowerCase().includes(search) ||
+          entry.translations.en.solution.toLowerCase().includes(search))) ||
+      (entry.kind == 'prefix' &&
+        (entry.translations.sv.text.toLowerCase().includes(search) ||
+          entry.translations.en.text.toLowerCase().includes(search)))
+    );
+  }
+
   let foundEntries = $derived.by(() => {
     if (search == '') {
       return entries;
     } else {
-      return entries.filter(
-        entry =>
-          entry.name.toLowerCase().includes(search.toLowerCase()) ||
-          (entry.kind == 'problem' &&
-            entry.module.toLowerCase().includes(search.toLowerCase())) ||
-          (entry.kind == 'prefix' &&
-            entry.translations.sv.text
-              .toLowerCase()
-              .includes(search.toLowerCase()))
-      );
+      return entries.filter(entry => matchesSearch(entry, search));
     }
   });
 
