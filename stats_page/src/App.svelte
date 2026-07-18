@@ -195,6 +195,19 @@
       />
     </div>
   </div>
+
+  <div class="leaderboards">
+    <Leaderboard
+      path="reloads/identical/topics"
+      {duration}
+      title="Most reloaded topics"
+    />
+    <Leaderboard
+      path="reloads/different/fields"
+      {duration}
+      title="Fields changed most often"
+    />
+  </div>
 </main>
 
 <style>
@@ -245,7 +258,7 @@
     gap: 4rem;
 
     .pie {
-      width: 26rem;
+      width: 22rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -255,7 +268,7 @@
       align-self: start;
       background: none;
       border: none;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       margin-bottom: 1.5rem;
     }
 

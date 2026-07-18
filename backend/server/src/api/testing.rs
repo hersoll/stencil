@@ -14,7 +14,8 @@ pub async fn test_api(Path(arg): Path<u16>) -> Result<impl IntoResponse, ApiErro
 }
 
 async fn do_the_test(arg: u16) -> Result<impl IntoResponse, ApiError> {
-    let data = db::logging::stats::box_plots::problem_count_per_set(AggregationDuration::Days(arg))
-        .await?;
+    let data =
+        db::logging::stats::reloaded_pdfs::most_changed_fields(AggregationDuration::Days(arg))
+            .await?;
     Ok((StatusCode::OK, Json(json!(data))))
 }

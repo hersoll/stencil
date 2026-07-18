@@ -1,7 +1,10 @@
 use crate::{
     api::{
         self,
-        stats::{api_counts, box_plots, leaderboards, pdf_attributes, problem_set_attributes},
+        stats::{
+            api_counts, box_plots, leaderboards, pdf_attributes, problem_set_attributes,
+            reloaded_pdfs,
+        },
     },
     middleware::{self, auth::authenticate_with_limit, rate_limiting::AuthLimit},
     pdf_generation,
@@ -96,6 +99,14 @@ pub fn create_router() -> Router {
         .route(
             "/exclusions/{duration}",
             get(leaderboards::most_excluded_problems),
+        )
+        .route(
+            "/reloads/identical/topics/{duration}",
+            get(reloaded_pdfs::most_reloaded_topics),
+        )
+        .route(
+            "/reloads/different/fields/{duration}",
+            get(reloaded_pdfs::most_changed_fields),
         );
 
     let box_plot_routes = Router::new()

@@ -5,6 +5,7 @@ pub mod box_plots;
 pub mod leaderboards;
 mod pdf_counts;
 mod problem_set_counts;
+pub mod reloaded_pdfs;
 pub use api_counts::*;
 pub use pdf_counts::*;
 pub use problem_set_counts::*;

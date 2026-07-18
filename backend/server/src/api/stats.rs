@@ -6,6 +6,7 @@ pub mod box_plots;
 pub mod leaderboards;
 pub mod pdf_attributes;
 pub mod problem_set_attributes;
+pub mod reloaded_pdfs;
 
 /// Used for dynamic router paths, so serde knows that it can deserialize the durations into
 #[derive(Deserialize)]

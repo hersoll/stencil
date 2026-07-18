@@ -131,7 +131,7 @@
                   'Total',
                   chart.getDatasetMeta(0).total
                 ],
-                font: [{ size: 24 }, { size: 30, weight: 'bold' }]
+                font: [{ size: 22 }, { size: 28, weight: 'bold' }]
               }
             }
           }
@@ -143,7 +143,7 @@
 
 <style>
   .background {
-    width: 24rem;
-    height: 24rem;
+    width: 18rem;
+    height: 18rem;
   }
 </style>
