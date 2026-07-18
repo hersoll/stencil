@@ -23,12 +23,6 @@ pub trait HasReplacements {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-pub enum SplitFormatted<T: HasReplacements> {
-    Single(T),
-    Multiple { index: usize, splits: Vec<T> },
-}
-
 /// Newtype that simply contains a [`String`].
 #[derive(Debug, Clone, Deserialize, Serialize, Type)]
 #[sqlx(transparent)]
@@ -81,6 +75,22 @@ impl HasReplacements for Answer {
 impl HasReplacements for Solution {
     fn get_str(&self) -> &String {
         &self.0
+    }
+}
+
+impl From<String> for Question {
+    fn from(value: String) -> Self {
+        Question(value)
+    }
+}
+impl From<String> for Answer {
+    fn from(value: String) -> Self {
+        Answer(value)
+    }
+}
+impl From<String> for Solution {
+    fn from(value: String) -> Self {
+        Solution(value)
     }
 }
 

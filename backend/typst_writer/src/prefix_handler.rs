@@ -1,7 +1,7 @@
 use crate::typst_file_builder::{AnswerSet, QuestionSet};
 use anyhow::{Result, anyhow};
 use db::PrefixEntry;
-use registry::{PREFIX_DATA, PROBLEM_DATA, RegistryError};
+use registry::{PREFIX_DATA, RegistryError, get_problem_data};
 use std::collections::HashMap;
 use std::fmt::Write;
 use types::lang::Language;
@@ -67,17 +67,14 @@ pub fn apply_prefixes(
     }
 }
 
-fn fetch_prefix_ids(problem_names: &[i32]) -> Result<Vec<Option<i32>>> {
-    let reg = PROBLEM_DATA
-        .read()
-        .map_err(|_| RegistryError::RegistryMutexIsPoisoned {
-            registry: "PROBLEM_DATA".to_string(),
-        })?;
-
-    Ok(problem_names
-        .iter()
-        .map(|id| reg.get(id).and_then(|p| p.prefix_id))
-        .collect())
+fn fetch_prefix_ids(problem_ids: &[i32]) -> Result<Vec<Option<i32>>> {
+    let mut out = Vec::new();
+    for id in problem_ids {
+        let problem = get_problem_data(*id)?;
+        let prefix_option = problem.prefix_id;
+        out.push(prefix_option);
+    }
+    Ok(out)
 }
 
 fn get_prefix_registry() -> Result<PrefixRegistry> {

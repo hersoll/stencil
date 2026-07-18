@@ -1,7 +1,6 @@
 # TODO
 
 - Refactor web editor
-- Better support for text questions, in particular multiple variations of text
 - Metrics for changing PDFs
 - Tooltips
 - Adjust selection algorithm
@@ -12,6 +11,7 @@
 ## [0.9.2] - TBD
 
 ### Added
+- Support for multiple variants in problem texts: `The price of [flour || milk || cheese] has gone up.`
 - New `/defaults` endpoint where the frontend queries the backend about the default values for fields, to have a single source of truth
 
 ### Fixed
