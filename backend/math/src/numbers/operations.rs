@@ -548,6 +548,14 @@ impl std::ops::Rem<Number> for Number {
     }
 }
 
+impl std::ops::Rem<i32> for Number {
+    type Output = Self;
+    fn rem(self, rhs: i32) -> Self::Output {
+        let rhs = Number::Integer(rhs);
+        self % rhs
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
