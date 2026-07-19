@@ -1,7 +1,6 @@
 use anyhow::Result;
 use macros::problem;
 use math::num_gen;
-use registry::get_problem_data;
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::{
     drawing::NumberLine,
@@ -20,16 +19,14 @@ fn subtract_larger(id: i32, lang: Language) -> Result<Problem> {
         .build_string()?;
 
     let answer = first - second;
-    let solution = registry::get_problem_data(id)?
-        .get_solution(lang)
-        .replace_placeholders(&[
-            ("number_line", number_line),
-            (
-                "reverse",
-                format!("${second} - {first} = {result}$", result = second - first),
-            ),
-            ("normal", format!("${first} - {second} = {answer}$")),
-        ]);
+    let solution = registry::get_solution(id, lang)?.replace_placeholders(&[
+        ("number_line", number_line),
+        (
+            "reverse",
+            format!("${second} - {first} = {result}$", result = second - first),
+        ),
+        ("normal", format!("${first} - {second} = {answer}$")),
+    ]);
 
     Ok(Problem {
         id,
@@ -55,8 +52,7 @@ fn subtract_larger_with_large_number(id: i32, lang: Language) -> Result<Problem>
 
     let answer = first - second;
     let reverse = second - first; //used as hint in solution
-    let problem_data = registry::get_problem_data(id)?;
-    let solution_str = problem_data.get_solution(lang);
+    let solution_str = registry::get_solution(id, lang)?;
     let solution = format!(
         "{solution_str} ${second} - {first} = {reverse} arrow.r.double {first} - {second} = {answer}$"
     );
@@ -87,8 +83,7 @@ fn subtract_larger_with_large_numbers(id: i32, lang: Language) -> Result<Problem
 
     let answer = first - second;
     let reverse = second - first; //used as hint in solution
-    let problem_data = registry::get_problem_data(id)?;
-    let solution_str = problem_data.get_solution(lang);
+    let solution_str = registry::get_solution(id, lang);
     let solution = format!(
         "{solution_str} ${second} - {first} = {reverse} arrow.r.double {first} - {second} = {answer}$"
     );
@@ -115,15 +110,13 @@ fn start_negative_addition_below_zero(id: i32, lang: Language) -> Result<Problem
     let number_line = NumberLine::from_ends(-10, 0)
         .with_arc(first, answer, add_number(second))
         .build_string()?;
-    let solution = registry::get_problem_data(id)?
-        .get_solution(lang)
-        .replace_placeholders(&[
-            ("number_line", number_line),
-            ("first", first.to_string()),
-            ("second", second.to_string()),
-            ("abs_first", first.abs().to_string()),
-            ("answer", answer.to_string()),
-        ]);
+    let solution = registry::get_solution(id, lang)?.replace_placeholders(&[
+        ("number_line", number_line),
+        ("first", first.to_string()),
+        ("second", second.to_string()),
+        ("abs_first", first.abs().to_string()),
+        ("answer", answer.to_string()),
+    ]);
     Ok(Problem {
         id,
         question: format!("${first}+{second}$"),
@@ -146,15 +139,13 @@ fn start_negative_addition_above_zero(id: i32, lang: Language) -> Result<Problem
     let number_line = NumberLine::from_ends(first, answer)
         .with_arc(first, answer, add_number(second))
         .build_string()?;
-    let solution = registry::get_problem_data(id)?
-        .get_solution(lang)
-        .replace_placeholders(&[
-            ("number_line", number_line),
-            ("first", first.to_string()),
-            ("second", second.to_string()),
-            ("abs_first", first.abs().to_string()),
-            ("answer", answer.to_string()),
-        ]);
+    let solution = registry::get_solution(id, lang)?.replace_placeholders(&[
+        ("number_line", number_line),
+        ("first", first.to_string()),
+        ("second", second.to_string()),
+        ("abs_first", first.abs().to_string()),
+        ("answer", answer.to_string()),
+    ]);
     Ok(Problem {
         id,
         question: format!("${first}+{second}$"),
@@ -177,8 +168,7 @@ fn start_negative_subtraction(id: i32, lang: Language) -> Result<Problem> {
     let number_line = NumberLine::from_ends(answer, 0)
         .with_arc(first, answer, subtract_number(second))
         .build_string()?;
-    let problem_data = registry::get_problem_data(id)?;
-    let solution_str = problem_data.get_solution(lang);
+    let solution_str = registry::get_solution(id, lang)?;
     let solution = format!("{solution_str} {number_line}");
     Ok(Problem {
         id,
@@ -243,8 +233,7 @@ fn positive_times_negative(id: i32, lang: Language) -> Result<Problem> {
     let (second_val, second_range) = num_gen::integer().range(-10, -1).and_random();
     let question = format!("${first_val} dot ({second_val})$");
     let ans = first_val * second_val;
-    let problem_data = registry::get_problem_data(id)?;
-    let solution = problem_data.get_solution(lang).to_string();
+    let solution = registry::get_solution(id, lang)?.to_string();
 
     Ok(Problem {
         id,
@@ -265,8 +254,7 @@ fn negative_times_positive(id: i32, lang: Language) -> Result<Problem> {
     let (second_val, second_range) = num_gen::integer().range(1, 10).and_random();
     let question = format!("$({first_val}) dot {second_val}$");
     let ans = first_val * second_val;
-    let problem_data = registry::get_problem_data(id)?;
-    let solution = problem_data.get_solution(lang).to_string();
+    let solution = registry::get_solution(id, lang)?.to_string();
 
     Ok(Problem {
         id,
@@ -287,8 +275,7 @@ fn negative_times_negative(id: i32, lang: Language) -> Result<Problem> {
     let (second_val, second_range) = num_gen::integer().range(-10, -1).and_random();
     let question = format!("$({first_val}) dot ({second_val})$");
     let ans = first_val * second_val;
-    let problem_data = registry::get_problem_data(id)?;
-    let solution = problem_data.get_solution(lang).to_string();
+    let solution = registry::get_solution(id, lang)?.to_string();
 
     Ok(Problem {
         id,
@@ -407,7 +394,7 @@ fn number_squared_then_negative(id: i32, lang: Language) -> Result<Problem> {
     let question = format!("$-{base}^2$");
     let square = base.pow(2);
     let answer = -square;
-    let solution_text = get_problem_data(id)?.get_solution(lang).to_string();
+    let solution_text = registry::get_solution(id, lang)?;
     let solution = format!(
         "{solution_text} \\
         \\

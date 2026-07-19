@@ -10,6 +10,7 @@
 
 ### Added
 - Additional problems about negative numbers
+- Shortcut functions for the registry: `get_question()`, `get_answer()`, `get_solution()`
 
 ### Changed
 - Renamed `extract_identifiers()` to `convert_identifiers_to_i32s()` for clarity

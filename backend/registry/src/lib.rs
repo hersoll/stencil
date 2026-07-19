@@ -10,6 +10,8 @@ use anyhow::{Context, Result};
 use db::{self, PrefixEntry, ProblemEntry};
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
+use types::format_strings::{Answer, Question, Solution};
+use types::lang::Language;
 
 #[derive(Debug, thiserror::Error)]
 pub enum RegistryError {
@@ -75,7 +77,10 @@ pub fn get_prefix_data(id: i32) -> Result<PrefixEntry> {
     Ok(prefix)
 }
 
-/// Used in problems to retrieve questions, answers, etc.
+/// Read information about a problem from the registry
+///
+/// Has shortcut methods for when you only need a specific field:
+/// [`get_question()`], [`get_answer()`], [`get_solution()`]
 pub fn get_problem_data(id: i32) -> Result<ProblemEntry> {
     match PROBLEM_DATA
         .write()
@@ -97,4 +102,28 @@ pub fn get_problem_data(id: i32) -> Result<ProblemEntry> {
             Ok(new_entry)
         }
     }
+}
+
+/// Returns an owned Question from the registry
+///
+/// The reason we clone and return it owned is that problem functions always return an
+/// owned struct anyway, so this must be cloned somewhere.
+pub fn get_question(id: i32, lang: Language) -> Result<Question> {
+    Ok(get_problem_data(id)?.get_question(lang).clone())
+}
+
+/// Returns an owned Answer from the registry
+///
+/// The reason we clone and return it owned is that problem functions always return an
+/// owned struct anyway, so this must be cloned somewhere.
+pub fn get_answer(id: i32, lang: Language) -> Result<Answer> {
+    Ok(get_problem_data(id)?.get_answer(lang).clone())
+}
+
+/// Returns an owned Solution from the registry
+///
+/// The reason we clone and return it owned is that problem functions always return an
+/// owned struct anyway, so this must be cloned somewhere.
+pub fn get_solution(id: i32, lang: Language) -> Result<Solution> {
+    Ok(get_problem_data(id)?.get_solution(lang).clone())
 }

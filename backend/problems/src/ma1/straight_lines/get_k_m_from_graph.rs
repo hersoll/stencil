@@ -187,9 +187,8 @@ fn draw_own_easy_integers(id: i32, lang: Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let expr = k_term.and(&m_term);
 
-    let question_text = get_problem_data(id)?
-        .get_question(lang)
-        .replace_placeholders(&[("fn", format!("y = {expr}"))]);
+    let question_text =
+        registry::get_question(id, lang)?.replace_placeholders(&[("fn", format!("y = {expr}"))]);
     let question = format!("{question_text}\n{question_graph}");
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
