@@ -8,8 +8,8 @@
 - [x] (-3)^2
 - [x] -3^2
 - [x] (-2)^3
-- [ ] (-1)^19
-- [ ] (-1)^20 - 1^27 Allow both even and odd on both
+- [x] (-1)^19
+- [x] (-1)^20 - 1^27
 
 ## Decimal numbers
 - [ ] 0,3 * 4 and other way (random)

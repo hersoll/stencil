@@ -436,3 +436,29 @@ fn single_high_exponent(id: i32, lang: Language) -> Result<Problem> {
         combinations: exp_range.len(),
     })
 }
+
+/// (-1)^23 - 1^20
+/// Absolute difficulty: 3
+/// Relative difficulty: 12
+#[problem]
+fn double_high_exponent(id: i32, _lang: Language) -> Result<Problem> {
+    let (first_exp, exp_range) = num_gen::integer().range(20, 30).and_random();
+    let second_exp = exp_range.random();
+    let question = format!("$(-1)^{first_exp} - 1^{second_exp}$");
+    let first_power = Number::Integer(-1).pow(first_exp);
+    let answer = first_power - 1; // Second expression is always 1
+    let solution = format!(
+        "$(-1)^{first_exp} = {first_power}\\
+        1^{second_exp} = 1\\
+        (-1)^{first_exp} - 1^{second_exp} = colored({first_power}) - colored(1) = {answer}$"
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: answer.as_math(),
+        solution,
+        identifiers: vec![first_exp],
+        combinations: exp_range.len(),
+    })
+}

@@ -6,7 +6,7 @@
 
 # Changelog
 
-## [0.10.0] - TBD
+## [0.9.3] - 2026-07-19
 
 ### Added
 - Additional problems about negative numbers
