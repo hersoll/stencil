@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{MathDisplay, num_gen};
+use math::{MathDisplay, Number, num_gen};
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::{
     drawing::NumberLine,
@@ -408,5 +408,31 @@ fn number_squared_then_negative(id: i32, lang: Language) -> Result<Problem> {
         solution,
         identifiers: vec![base],
         combinations: base_range.len(),
+    })
+}
+
+/// (-1)^23
+/// Absolute difficulty: 3
+/// Relative difficulty: 11
+#[problem]
+fn single_high_exponent(id: i32, lang: Language) -> Result<Problem> {
+    let base = Number::Integer(-1);
+    let (exp, exp_range) = num_gen::integer().range(16, 99).and_random();
+    let question = format!("$({base})^{exp}$");
+    let answer = if exp % 2 == 0 { 1 } else { -1 };
+    let solution_text = registry::get_solution(id, lang)?;
+    let solution = format!(
+        "{solution_text} \\
+        \\
+        $({base})^{exp} = {answer}$"
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: answer.as_math(),
+        solution,
+        identifiers: vec![exp],
+        combinations: exp_range.len(),
     })
 }
