@@ -6,6 +6,11 @@
 
 # Changelog
 
+## [0.10.0] - TBD
+
+### Changed
+- Renamed `extract_identifiers()` to `convert_identifiers_to_i32s()` for clarity
+
 ## [0.9.2] - 2026-07-18
 
 ### Added

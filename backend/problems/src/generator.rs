@@ -69,9 +69,9 @@ fn generate_problems(problem_ids: &[i32], lang: Language) -> Result<Vec<Problem>
     Ok(problems)
 }
 
-/// Generates a problem with a unique ID (the actual numbers that makes the problem different).
+/// Generates a problem with a unique identifier (the actual numbers that makes the problem different).
 ///
-/// If there are no more possible IDs to generate, reset (which might repeat problems)
+/// If there are no more possible identifiers to generate, reset (which might repeat problems)
 fn get_unique_problem(
     problem_id: i32,
     generated_identifiers: &mut Vec<Vec<i32>>,
@@ -85,7 +85,7 @@ fn get_unique_problem(
         generated_identifiers.clear();
     }
 
-    let mut problem_identifiers_as_i32 = extract_identifiers(&problem.identifiers);
+    let mut problem_identifiers_as_i32 = convert_identifiers_to_i32s(&problem.identifiers);
 
     // If we generate a non-unique problem, retry until we get a unique problem.
     // We should always be able to do this, since the earlier `if` statement makes
@@ -96,7 +96,7 @@ fn get_unique_problem(
     let mut tries = 0u16;
     while generated_identifiers.contains(&problem_identifiers_as_i32) {
         problem = (generator)(problem_id, lang)?;
-        problem_identifiers_as_i32 = extract_identifiers(&problem.identifiers);
+        problem_identifiers_as_i32 = convert_identifiers_to_i32s(&problem.identifiers);
         tries += 1;
 
         // 65_535 tries until we call it a day
@@ -118,7 +118,7 @@ Check the identifiers and combinations in the Problem definition",
 ///
 /// While the identifiers are [`Numbers`](Number), they can't be hashed due to the `f64` variant.
 /// It's easier to store them as `i32`s.
-fn extract_identifiers(identifiers: &[Number]) -> Vec<i32> {
+fn convert_identifiers_to_i32s(identifiers: &[Number]) -> Vec<i32> {
     identifiers
         .iter()
         .map(|num| match num {
