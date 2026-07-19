@@ -3,8 +3,9 @@ use crate::get_decimal_divisor;
 use super::Number;
 
 impl Number {
-    pub fn pow(&self, exponent: Number) -> Number {
+    pub fn pow(&self, exponent: impl Into<Number>) -> Number {
         use Number::*;
+        let exponent = exponent.into();
         match (self, exponent) {
             // Integer ^ Integer
             (Integer(base), Integer(exp)) => {

@@ -1,6 +1,7 @@
 use anyhow::Result;
 use macros::problem;
 use math::num_gen;
+use registry::get_problem_data;
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::{
     drawing::NumberLine,
@@ -350,5 +351,75 @@ fn negative_minus_negative(id: i32, _lang: Language) -> Result<Problem> {
         ),
         identifiers: vec![first, second],
         combinations: first_range.len() * second_range.len(),
+    })
+}
+
+/// (-3)^2
+/// Absolute difficulty: 2
+/// Relative difficulty: 8
+#[problem]
+fn negative_number_squared(id: i32, _lang: Language) -> Result<Problem> {
+    let (base, base_range) = num_gen::integer().range(-10, -1).and_random();
+    let question = format!("$({base})^2$");
+    let answer = base.pow(2);
+    let solution = format!("$({base})^2 = ({base}) dot ({base}) = {answer}$");
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![base],
+        combinations: base_range.len(),
+    })
+}
+
+/// (-2)^3
+/// Absolute difficulty: 2
+/// Relative difficulty: 9
+#[problem]
+fn negative_number_cubed(id: i32, _lang: Language) -> Result<Problem> {
+    let (base, base_range) = num_gen::integer().range(-3, -1).and_random();
+    let question = format!("$({base})^3$");
+    let square = base.pow(2);
+    let answer = base.pow(3);
+    let solution = format!(
+        "$({base})^3 &= ({base}) dot ({base}) dot ({base}) = \\
+        &= colored({square}) dot ({base}) = {answer}$"
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![base],
+        combinations: base_range.len(),
+    })
+}
+
+/// -2^2
+/// Absolute difficulty: 2
+/// Relative difficulty: 10
+#[problem]
+fn number_squared_then_negative(id: i32, lang: Language) -> Result<Problem> {
+    let (base, base_range) = num_gen::integer().range(1, 10).and_random();
+    let question = format!("$-{base}^2$");
+    let square = base.pow(2);
+    let answer = -square;
+    let solution_text = get_problem_data(id)?.get_solution(lang).to_string();
+    let solution = format!(
+        "{solution_text} \\
+        \\
+        $-{base}^2 = -({base}^2) = -({square}) = {answer}$"
+    );
+
+    Ok(Problem {
+        id,
+        question,
+        answer: format!("${answer}$"),
+        solution,
+        identifiers: vec![base],
+        combinations: base_range.len(),
     })
 }

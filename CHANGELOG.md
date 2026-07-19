@@ -8,6 +8,9 @@
 
 ## [0.10.0] - TBD
 
+### Added
+- Additional problems about negative numbers
+
 ### Changed
 - Renamed `extract_identifiers()` to `convert_identifiers_to_i32s()` for clarity
 
