@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, Polynomial, Term, num_gen, symbols};
+use math::{MathDisplay, Number, Polynomial, Term, num_gen, symbols};
 use types::{lang::Language, problems::Problem};
 use typst_writer::{self, formatting::parentheses};
 
@@ -28,7 +28,7 @@ fn positive_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
@@ -60,7 +60,7 @@ fn with_coefficient_on_variable(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
@@ -93,7 +93,7 @@ fn negative_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
@@ -129,7 +129,7 @@ fn const_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![initial_const, constant],
         combinations: i_range.len() * c_range.len(),
@@ -207,7 +207,7 @@ fn add_parentheses(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * const_range.len(),
@@ -252,7 +252,7 @@ fn subtract_parentheses(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * const_range.len(),
@@ -296,7 +296,7 @@ fn multiply_and_add(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * coef_range.len(),
@@ -362,7 +362,7 @@ fn multiply_by_variable(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![constant],
         combinations: c_range.len(),
@@ -407,7 +407,7 @@ fn multiply_first_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * coef_range.len(),
@@ -453,7 +453,7 @@ fn multiply_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * coef_range.len(),
@@ -494,7 +494,7 @@ fn multiply_by_variable_term(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef_1, coef_2],
         combinations: coef_range.len() * coef_range.len(),
@@ -538,7 +538,7 @@ fn one_variable_one_constant(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef_1, factor],
         combinations: coef_range.len().pow(2),
@@ -582,7 +582,7 @@ fn one_constant_one_variable(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef_1, factor],
         combinations: coef_range.len().pow(2),
@@ -624,7 +624,7 @@ fn multiply_both_by_variable_terms(id: i32, _lang: Language) -> Result<Problem> 
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef_1, coef_2],
         combinations: coef_range.len().pow(2),
@@ -670,7 +670,7 @@ fn mixing_variables(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![factor1, factor2],
         combinations: num_range.len(),
@@ -727,7 +727,7 @@ fn mixing_variables_and_exponents(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![factor1, factor2, factor3],
         combinations: num_range.len() * 2,

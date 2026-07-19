@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Evaluable, Number, Polynomial, Term, VariableList, num_gen, symbols};
+use math::{Evaluable, MathDisplay, Number, Polynomial, Term, VariableList, num_gen, symbols};
 use rand::seq::IndexedRandom;
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 
@@ -190,7 +190,7 @@ fn evaluate_simple(id: i32, lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef, value],
         combinations: coef_range.len() * value_range.len(),
@@ -239,7 +239,7 @@ fn evaluate_intermediate(id: i32, lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![coef, coef_2],
         combinations: coef_range.len().pow(2),
@@ -396,7 +396,7 @@ fn evaluate_advanced(id: i32, lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![Number::Integer(0)],
         combinations: 1,

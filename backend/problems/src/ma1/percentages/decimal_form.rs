@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::num_gen;
+use math::{MathDisplay, num_gen};
 use types::{lang::Language, problems::Problem};
 
 /// Write 56% in decimal form
@@ -14,8 +14,8 @@ fn two_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
     let percentage = percentage_range.random();
     let decimal_form = (percentage / 100).to_decimal();
 
-    let question = format!("${percentage}%$");
-    let answer = format!("${decimal_form}$");
+    let question = format!("${percentage}%$").as_math();
+    let answer = decimal_form.as_math();
     let solution = format!("$1% = num(0.01) \\ 10% = num(0.10) \\ {percentage}% = {decimal_form}$");
 
     Ok(Problem {
@@ -40,7 +40,7 @@ fn three_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
     let decimal_form = (percentage / 100).to_decimal();
 
     let question = format!("${percentage}%$");
-    let answer = format!("${decimal_form}$");
+    let answer = decimal_form.as_math();
     let solution = format!("$1% = num(0.01) \\ 10% = num(0.10) \\ {percentage}% = {decimal_form}$");
 
     Ok(Problem {
@@ -62,7 +62,7 @@ fn decimal_to_percent(id: i32, _lang: Language) -> Result<Problem> {
     let percentage = percentage_range.random();
     let decimal_form = (percentage / 100).to_decimal();
 
-    let question = format!("${decimal_form}$");
+    let question = decimal_form.as_math();
     let answer = format!("${percentage}%$");
     let solution = format!("${decimal_form} = {decimal_form:.2} = {percentage}%$");
 

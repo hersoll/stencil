@@ -11,6 +11,7 @@
 ### Added
 - Additional problems about negative numbers
 - Shortcut functions for the registry: `get_question()`, `get_answer()`, `get_solution()`
+- Implemented trait `MathDisplay` for every `Display` type for easier `"${num}$` displays
 
 ### Changed
 - Renamed `extract_identifiers()` to `convert_identifiers_to_i32s()` for clarity

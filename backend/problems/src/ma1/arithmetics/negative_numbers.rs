@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::num_gen;
+use math::{MathDisplay, num_gen};
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::{
     drawing::NumberLine,
@@ -31,7 +31,7 @@ fn subtract_larger(id: i32, lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question: format!("${first} - {second}$"),
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![first],
         combinations: first_range.len(),
@@ -60,7 +60,7 @@ fn subtract_larger_with_large_number(id: i32, lang: Language) -> Result<Problem>
     Ok(Problem {
         id,
         question: format!("${first} - {second}$"),
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![first],
         combinations: first_range.len(),
@@ -83,7 +83,7 @@ fn subtract_larger_with_large_numbers(id: i32, lang: Language) -> Result<Problem
 
     let answer = first - second;
     let reverse = second - first; //used as hint in solution
-    let solution_str = registry::get_solution(id, lang);
+    let solution_str = registry::get_solution(id, lang)?;
     let solution = format!(
         "{solution_str} ${second} - {first} = {reverse} arrow.r.double {first} - {second} = {answer}$"
     );
@@ -91,7 +91,7 @@ fn subtract_larger_with_large_numbers(id: i32, lang: Language) -> Result<Problem
     Ok(Problem {
         id,
         question: format!("${first} - {second}$"),
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![first],
         combinations: first_range.len(),
@@ -120,7 +120,7 @@ fn start_negative_addition_below_zero(id: i32, lang: Language) -> Result<Problem
     Ok(Problem {
         id,
         question: format!("${first}+{second}$"),
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![first],
         combinations: first_range.len(),
@@ -149,7 +149,7 @@ fn start_negative_addition_above_zero(id: i32, lang: Language) -> Result<Problem
     Ok(Problem {
         id,
         question: format!("${first}+{second}$"),
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![first],
         combinations: first_range.len(),
@@ -173,7 +173,7 @@ fn start_negative_subtraction(id: i32, lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question: format!("${first}-{second}$"),
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![first],
         combinations: first_range.len(),
@@ -354,7 +354,7 @@ fn negative_number_squared(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![base],
         combinations: base_range.len(),
@@ -378,7 +378,7 @@ fn negative_number_cubed(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![base],
         combinations: base_range.len(),
@@ -404,7 +404,7 @@ fn number_squared_then_negative(id: i32, lang: Language) -> Result<Problem> {
     Ok(Problem {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer: answer.as_math(),
         solution,
         identifiers: vec![base],
         combinations: base_range.len(),
