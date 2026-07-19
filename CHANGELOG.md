@@ -16,6 +16,9 @@
 ### Changed
 - Renamed `extract_identifiers()` to `convert_identifiers_to_i32s()` for clarity
 
+### Fixed
+- Reorder icon now changes color with the theme
+
 ## [0.9.2] - 2026-07-18
 
 ### Added
