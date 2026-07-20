@@ -1,4 +1,5 @@
 use crate::picker;
+use crate::split_strings::select_variant;
 use anyhow::{Result, anyhow};
 use math::Number;
 use registry::RegistryError;
@@ -56,6 +57,8 @@ fn generate_problems(problem_ids: &[i32], lang: Language) -> Result<Vec<Problem>
     // The actual generated problems
     let mut problems = Vec::new();
     let mut generated_identifiers_per_problem: HashMap<i32, Vec<Vec<i32>>> = HashMap::new();
+    // For problems with multiple text variants, this keeps track of which variant was used last
+    let mut latest_variant_index: HashMap<i32, usize> = HashMap::new();
 
     for problem_id in problem_ids {
         problems.push(get_unique_problem(
@@ -63,6 +66,7 @@ fn generate_problems(problem_ids: &[i32], lang: Language) -> Result<Vec<Problem>
             generated_identifiers_per_problem
                 .entry(*problem_id)
                 .or_default(),
+            &mut latest_variant_index,
             lang,
         )?);
     }
@@ -75,6 +79,7 @@ fn generate_problems(problem_ids: &[i32], lang: Language) -> Result<Vec<Problem>
 fn get_unique_problem(
     problem_id: i32,
     generated_identifiers: &mut Vec<Vec<i32>>,
+    variant_indices: &mut HashMap<i32, usize>,
     lang: Language,
 ) -> Result<Problem> {
     let generator = get_generator_function(problem_id)?;
@@ -111,6 +116,23 @@ Check the identifiers and combinations in the Problem definition",
         }
     }
     generated_identifiers.push(problem_identifiers_as_i32);
+
+    // Is this problem in the split hashmap?
+    if let std::collections::hash_map::Entry::Vacant(e) = variant_indices.entry(problem_id) {
+        // This is not a previously split problem!
+        //
+        // The function call here returns true if a split exists - if so, we need to add it to the HashMap.
+        // If not, ignore and move on
+        if select_variant(&mut problem, &mut 0)? {
+            // Index of 1 since we just did 0
+            // Safety: A problem with a split will have at least two variants (an error will be thrown
+            // inside the string splitting otherwise), so index 1 is always valid
+            e.insert(1);
+        }
+    } else {
+        select_variant(&mut problem, variant_indices.get_mut(&problem_id).unwrap())?;
+    }
+
     Ok(problem)
 }
 
