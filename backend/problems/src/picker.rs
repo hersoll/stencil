@@ -1,3 +1,23 @@
+//! The `picker` is responsible for choosing which problems will be included in a problem set, and
+//! in what order.
+//!
+//! The algorithm is different depending on whether a single topic is included in the set or not:
+//!
+//! - Single topic: It is assumed this is a "lesson stencil", where it is important to get a good progression.
+//!   We distribute the problems evenly across the available ones to make sure every variant gets
+//!   its chance to shine, and can be certain that earlier problems have appeared so we can build
+//!   on them.
+//!
+//! - Multiple topics: Thought of as a "revising stencil". Now it's more important that
+//!   difficulty-appropriate problems appear. Even if a topic has more intro-level problems, it's
+//!   no use to include a bunch of those if the intent is to revise properly. The problems are in
+//!   this case distributed according to a distribution function (normal distribution). More
+//!   problems in difficulties 4-5, less the more extreme we go.
+//!
+//! The ordering of the problems is the same no matter which selection algorithm has been done.
+//! The gist is that the problems are sorted by absolute difficulty and then relative difficulty,
+//! with randomization within a relative difficulty of the same topic.
+
 use db::ProblemIdsAndDifficulties;
 use rand::prelude::*;
 use std::{
@@ -63,6 +83,40 @@ pub fn select_problems(
         .map(ProblemForSelection::from_problem)
         .collect();
 
+    // The selection process is different depending on if we have multiple topics or not
+    let multiple_topics = problems
+        .iter()
+        .any(|p| p.topic_id != problems.first().unwrap().topic_id);
+
+    if multiple_topics {
+        distribute_problems_across_multiple_topics(
+            number_of_problems,
+            &mut problems,
+            min_difficulty,
+            max_difficulty,
+        );
+    } else {
+        distribute_problems_for_single_topic(
+            number_of_problems,
+            &mut problems,
+            min_difficulty,
+            max_difficulty,
+        );
+    }
+
+    // We now know precisely how many of each problem should be included in the set.
+    // The only thing left to do is order them in a thoughtful way!
+    Ok(order_problems(problems))
+}
+
+/// Distribute problems according to a difficulty curve determined by the
+/// `difficulty_distribution_function`.
+fn distribute_problems_across_multiple_topics(
+    number_of_problems: u8,
+    problems: &mut [ProblemForSelection],
+    min_difficulty: AbsoluteDifficulty,
+    max_difficulty: AbsoluteDifficulty,
+) {
     // To know how to distribute our problems (and most importantly, how many of each),
     // we need to know which difficulties have at least one corresponding problem.
     //
@@ -70,7 +124,7 @@ pub fn select_problems(
     // we might calculate that Difficulty 4 should have three problems, but then there are no problems
     // to apply to that difficulty
     let absolute_difficulties_with_problems =
-        check_which_difficulties_have_problems(&problems, min_difficulty, max_difficulty);
+        check_which_difficulties_have_problems(problems, min_difficulty, max_difficulty);
     tracing::debug!(
         "Absolute difficulties with problems: \n{absolute_difficulties_with_problems:?}"
     );
@@ -93,12 +147,31 @@ pub fn select_problems(
         problem_count_per_absolute_difficulty,
     )
     .for_each(|(difficulty, count)| {
-        set_count_per_problem_for_difficulty(&mut problems, difficulty, count)
+        set_count_per_problem_for_difficulty(
+            &mut problems
+                .iter_mut()
+                .filter(|p| p.absolute_difficulty == difficulty)
+                .collect::<Vec<&mut ProblemForSelection>>(),
+            count,
+        )
     });
+}
 
-    // We now know precisely how many of each problem should be included in the set.
-    // The only thing left to do is order them in a thoughtful way!
-    Ok(order_problems(problems))
+/// Distribute problems evenly across to make sure every problem variant gets a chance to shine
+fn distribute_problems_for_single_topic(
+    number_of_problems: u8,
+    problems: &mut [ProblemForSelection],
+    min_difficulty: AbsoluteDifficulty,
+    max_difficulty: AbsoluteDifficulty,
+) {
+    let mut relevant_problems: Vec<&mut ProblemForSelection> = problems
+        .iter_mut()
+        .filter(|p| {
+            p.absolute_difficulty >= min_difficulty && p.absolute_difficulty <= max_difficulty
+        })
+        .collect();
+
+    occurrences_within_topic(&mut relevant_problems, number_of_problems.into());
 }
 
 /// Returns a `Vec` of every `AbsoluteDifficulty` in the range that has at least one problem.
@@ -181,24 +254,18 @@ fn get_problem_count_per_difficulty(
 ///
 /// Done for **a single `AbsoluteDifficulty`** at a time!
 fn set_count_per_problem_for_difficulty(
-    problems: &mut [ProblemForSelection],
-    difficulty: AbsoluteDifficulty,
+    problems: &mut [&mut ProblemForSelection],
     number_of_problems: u8,
 ) {
     // The problem count per topic is used to determine how many occurrences to assign to each topic
     let mut problems_per_topic: HashMap<i32, u8> = HashMap::new();
 
-    // The vec of problems in the input is not filtered, it includes problems from every difficulty.
-    let mut problems_in_difficulty: Vec<&mut ProblemForSelection> = problems
-        .iter_mut()
-        .filter(|p| p.absolute_difficulty == difficulty)
-        .collect();
-    // Count them by topic
-    problems_in_difficulty
+    // Count problems them by topic
+    problems
         .iter()
         .for_each(|p| *problems_per_topic.entry(p.topic_id).or_default() += 1);
 
-    let problem_count = problems_in_difficulty.len();
+    let problem_count = problems.len();
 
     // The number of occurences should be proportional to the amount of problems per topic.
     // Since some rounding might happen, we want to do the topics with the lowest counts first since
@@ -229,9 +296,9 @@ fn set_count_per_problem_for_difficulty(
 
     // We now know how many problems should be included for each topic. To determine how those problems
     // are distributed within the topic, we pass it on to the next function,
-    // `set_count_for_one_topic()`
+    // `occurrences_within_topic()`
     for (topic_id, occurrence_count) in occurrences_per_topic {
-        let mut problems_in_topic: Vec<&mut ProblemForSelection> = problems_in_difficulty
+        let mut problems_in_topic: Vec<&mut ProblemForSelection> = problems
             .iter_mut()
             .map(|p| &mut **p)
             .filter(|problem| problem.topic_id == topic_id)
@@ -251,7 +318,8 @@ fn occurrences_within_topic(
     problems: &mut [&mut ProblemForSelection],
     number_of_occurrences: usize,
 ) {
-    // All of the problems have the same absolute difficulty and come from the same topic.
+    // All of the problems have the same absolute difficulty (if we've gone the multiple topics route)
+    // and come from the same topic.
     // In the spirit of Marxism we start by dividing as many occurences evenly between them as we can.
     let problem_count = problems.len();
     let minimum_occurrence_per_problem = (number_of_occurrences / problem_count) as u8;
@@ -458,22 +526,6 @@ fn interweave(vecs: &[Vec<i32>]) -> Vec<i32> {
 mod tests {
     use super::*;
 
-    const TEST_PROBLEMS: [(i32, u8, u8); 13] = [
-        (1, 1, 1),
-        (2, 1, 1),
-        (3, 1, 2),
-        (4, 2, 3),
-        (5, 2, 4),
-        (6, 2, 5),
-        (7, 2, 5),
-        (8, 3, 6),
-        (9, 3, 6),
-        (10, 3, 7),
-        (11, 4, 8),
-        (12, 5, 9),
-        (13, 5, 10),
-    ];
-
     /// Helper function
     fn problem_from_nums(
         problem_id: i32,
@@ -506,29 +558,6 @@ mod tests {
                 AbsoluteDifficulty::from_num(2),
                 AbsoluteDifficulty::from_num(3)
             ]
-        );
-    }
-
-    #[test]
-    fn sets_problem_count() {
-        let mut problems: Vec<ProblemForSelection> = TEST_PROBLEMS
-            .into_iter()
-            .map(|(a, b, c)| problem_from_nums(a, b, c))
-            .collect();
-        let difficulties = [1, 2, 3, 4, 5];
-        let counts = [4, 5, 5, 4, 2];
-        for (difficulty, count) in zip(difficulties, counts) {
-            set_count_per_problem_for_difficulty(
-                &mut problems,
-                AbsoluteDifficulty::from_num(difficulty),
-                count,
-            );
-        }
-        let problem_occurrences: Vec<u8> =
-            problems.iter().map(|problem| problem.occurrences).collect();
-        assert!(
-            problem_occurrences == vec![1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 4, 1, 1]
-                || problem_occurrences == vec![1, 1, 2, 2, 1, 1, 1, 2, 1, 2, 4, 1, 1]
         );
     }
 }

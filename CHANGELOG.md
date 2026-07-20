@@ -8,6 +8,7 @@
 
 ### Changed 
 - Adjusted `picker` algorithm to no longer mix problems across difficulties
+- `picker` works differently when only one topic is included in the set - it now splits more evenly across problems instead of doing a predetermined difficulty curve
 
 ### Fixed
 - Reformatted comment that was mistaken for a doc-test
