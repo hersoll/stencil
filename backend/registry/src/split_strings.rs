@@ -4,7 +4,7 @@ use db::{ProblemEntry, ProblemTexts, ProblemTranslations};
 /// Some questions, answers and solutions have several text variations. These are stored within the
 /// same row (as one long string) in the DB, formatted like:
 ///
-///         "prefix [s1 || s2 || s3] affix [s4 || s5 || s6] suffix".
+/// "prefix [s1 || s2 || s3] affix [s4 || s5 || s6] suffix".
 ///
 /// This enum is used to store all of these variations in the HashMap with separate strings and keep
 /// track of which string was last used, to ensure a nice distribution across variants. In the above

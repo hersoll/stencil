@@ -1,10 +1,14 @@
 # TODO
 
-- Tooltips
 - Adjust selection algorithm
 - Mobile layout
 
 # Changelog
+
+## [0.10.0] - TBD
+
+### Fixed
+- Reformatted comment that was mistaken for a doc-test
 
 ## [0.9.3] - 2026-07-19
 
