@@ -1,11 +1,13 @@
 # TODO
 
-- Adjust selection algorithm
 - Mobile layout
 
 # Changelog
 
 ## [0.10.0] - TBD
+
+### Changed 
+- Adjusted `picker` algorithm to no longer mix problems across difficulties
 
 ### Fixed
 - Reformatted comment that was mistaken for a doc-test

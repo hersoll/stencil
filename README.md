@@ -12,9 +12,10 @@ Served as a website at [stencil.nu](https://www.stencil.nu/).
 ## Features
 - Generate human-designed solutions for every problem
 - Control the layout of the stencil, including titles, spacing for handwriting, and more!
-- Opinionated selecting and spreading of problems to ensure a smooth difficulty curve with spaced repetition
+- Opinionated selecting and spreading of problems to ensure a smooth difficulty curve
 - Difficulty of problems are tuned to the Swedish grading system
 - B.Y.O.DB: While all problems are written in the source code, they can be arbitrarily divided into courses, chapters and topics with your own Postgres database
 - Custom web editor for easier DB modificiations
+- Web page displaying usage stats
 
 Built using Rust, Svelte and Postgres. PDFs are generated using [Typst](https://github.com/typst/typst).
