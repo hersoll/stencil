@@ -423,6 +423,8 @@ fn order_problems_in_topic(
     //
     // Thus we start by collecting them into categories depending on their relative difficulty, and
     // later split them depending on absolute difficulty
+    //
+    // BTreeMap since we want the difficulties in order
     let mut problems_per_relative_difficulty: BTreeMap<
         RelativeDifficulty,
         Vec<ProblemForSelection>,
