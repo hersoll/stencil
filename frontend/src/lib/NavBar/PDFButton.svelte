@@ -35,7 +35,7 @@
 
 <NavButton
   onclick={navbarOpen ? switchView : generateAndSwitch}
-  class="{view === 'pdf' ? 'selected' : ''} {navbarOpen
+  class="desktop {view === 'pdf' ? 'selected' : ''} {navbarOpen
     ? 'nav-open'
     : 'nav-closed'}"
   disabled={!navbarOpen &&
@@ -47,10 +47,21 @@
     <button
       disabled={loadingState.loading || setState.addedSets.length == 0}
       onclick={generateAndSwitch}
+      class="generate-btn"
     >
       {i18n.t('create_pdf')}
     </button>
   {/if}
+</NavButton>
+<NavButton
+  onclick={setState.addedSets.length == 0 ? switchView : generateAndSwitch}
+  class="mobile nav-open {view === 'pdf' ? 'selected' : ''} {setState.addedSets
+    .length > 0
+    ? 'ready'
+    : ''}"
+>
+  <PDFIcon />
+  <p>PDF</p>
 </NavButton>
 
 <style>
@@ -84,6 +95,16 @@
       &:hover {
         box-shadow: var(--shadow-elevation-medium);
       }
+    }
+  }
+
+  @container body (width < 50rem) {
+    p {
+      font-size: clamp(0.8rem, 0.6226rem + 0.75vw, 1rem);
+    }
+
+    button {
+      display: none;
     }
   }
 </style>

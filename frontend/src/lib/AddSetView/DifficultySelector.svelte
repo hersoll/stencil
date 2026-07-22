@@ -87,4 +87,15 @@
     padding: 0.3rem;
     width: min-content;
   }
+
+  @container body (width < 50rem) {
+    select {
+      font-size: clamp(
+        calc(var(--font-size) - 0.2rem),
+        0.7226rem + 0.75vw,
+        var(--font-size)
+      );
+      padding: 0.1rem;
+    }
+  }
 </style>

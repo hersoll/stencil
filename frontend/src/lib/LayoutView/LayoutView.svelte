@@ -1,10 +1,12 @@
 <script lang="ts">
   import { setState } from '$src/globalStates.svelte';
   import i18n from '$src/i18n.svelte';
+  import type { View } from '$src/types';
   import DocumentOptions from './DocumentOptions.svelte';
   import SetEditorPage from './SetEditorPage.svelte';
   import SkeletonPage from './SkeletonPage.svelte';
 
+  let { view = $bindable() }: { view: View } = $props();
   let activePage = $state<'skeleton' | 'options'>('skeleton');
 </script>
 
@@ -25,12 +27,20 @@
     </div>
     <div class="layout-content">
       <SkeletonPage isActive={activePage === 'skeleton'} />
-      <SetEditorPage isActive={activePage === 'options'} />
+      <SetEditorPage isActive={activePage === 'options'} bind:view />
     </div>
   </div>
   <div class="footer switch-footer">
-    <button onclick={() => (activePage = 'skeleton')}>Layout</button>
-    <button onclick={() => (activePage = 'options')}>Options</button>
+    <button
+      class="view-switcher {activePage == 'skeleton' ? 'selected' : ''}"
+      onclick={() => (activePage = 'skeleton')}
+      >{i18n.t('view_layout_button')}</button
+    >
+    <button
+      class="view-switcher {activePage == 'options' ? 'selected' : ''}"
+      onclick={() => (activePage = 'options')}
+      >{i18n.t('edit_layout_button')}</button
+    >
   </div>
   <div class="footer options-footer">
     <DocumentOptions />
@@ -85,15 +95,40 @@
 
   .text-container {
     display: flex;
+    padding: 1rem;
     height: 100dvh;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-align: center;
   }
 
   @container main (width < 70rem) {
     .switch-footer {
       display: flex;
+    }
+  }
+
+  /* Mobile layout */
+  @container body (width < 50rem) {
+    .heading-container {
+      width: 100%;
+      padding: 1rem;
+      padding-top: 2rem;
+      p {
+        font-size: clamp(0.9rem, 0.7226rem + 0.75vw, 1.1rem);
+      }
+    }
+
+    .options-footer {
+      display: none;
+    }
+
+    .switch-footer {
+      padding: 0.5rem 1rem;
+      .view-switcher {
+        font-size: 0.8rem;
+      }
     }
   }
 </style>

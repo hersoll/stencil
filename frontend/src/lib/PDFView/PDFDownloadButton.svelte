@@ -31,4 +31,10 @@
       color: var(--text);
     }
   }
+
+  @container body (width < 50rem) {
+    .download-btn {
+      font-size: clamp(0.9rem, 0.7226rem + 0.75vw, 1.1rem);
+    }
+  }
 </style>

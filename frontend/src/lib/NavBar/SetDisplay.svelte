@@ -72,4 +72,10 @@
       margin: 0;
     }
   }
+
+  @container body (width < 50rem) {
+    .sets-container {
+      display: none;
+    }
+  }
 </style>

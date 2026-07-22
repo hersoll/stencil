@@ -85,7 +85,7 @@
   {:else if view === 'addSet'}
     <AddSetView courseName={activeCourseName} />
   {:else if view === 'layout'}
-    <LayoutView />
+    <LayoutView bind:view />
   {:else if view === 'pdf'}
     <PDFView />
   {:else if view === 'editSet'}
@@ -108,6 +108,18 @@
     }
     &.nav-closed {
       margin-left: var(--navbar-closed-margin);
+    }
+  }
+
+  @container (width < 50rem) {
+    main {
+      padding-top: 5rem;
+      &.nav-open {
+        margin-left: 0;
+      }
+      &.nav-closed {
+        margin-left: 0;
+      }
     }
   }
 </style>

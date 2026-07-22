@@ -4,7 +4,16 @@
 
 # Changelog
 
-## [0.10.0] - TBD
+## [0.11.0] - 2026-07-22
+
+### Added
+- Mobile layout support
+
+### Fixed
+- `SetEditor` components no longer stack on top of each other in layout view on narrower screens
+- When sets are created, they now copy the set options properly instead of connecting to the state
+
+## [0.10.0] - 2026-07-20
 
 ### Changed 
 - Adjusted `picker` algorithm to no longer mix problems across difficulties

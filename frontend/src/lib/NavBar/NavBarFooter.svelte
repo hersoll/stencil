@@ -9,7 +9,7 @@
 
 <footer class={navbarOpen ? 'open' : 'closed'}>
   {#if navbarOpen}
-    <SettingsMenu />
+    <SettingsMenu name="footer" />
     <ContactMe />
   {/if}
   <button
@@ -47,6 +47,13 @@
     font-size: 0.7rem;
     &:hover {
       border: none;
+    }
+  }
+
+  /* Hide in mobile layout */
+  @container body (width < 50rem) {
+    footer {
+      display: none;
     }
   }
 </style>

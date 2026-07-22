@@ -38,5 +38,26 @@
     &:disabled :global(img) {
       color: inherit;
     }
+
+    &.mobile {
+      display: none;
+    }
+  }
+
+  @container body (width < 50rem) {
+    button {
+      justify-content: center;
+
+      &.desktop {
+        display: none;
+      }
+      &.mobile {
+        display: flex;
+      }
+
+      &.ready {
+        background-color: var(--primary);
+      }
+    }
   }
 </style>

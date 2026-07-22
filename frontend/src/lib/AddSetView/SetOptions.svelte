@@ -103,4 +103,42 @@
       gap: 1rem;
     }
   }
+  /* Too wide for two items */
+  @container main (width < 42.5rem) {
+    .options {
+      flex-direction: row;
+      gap: 1rem;
+    }
+    .difficulty-container,
+    .n-container {
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+  }
+
+  /* Mobile layout*/
+  @container body (width < 50rem) {
+    .options {
+      flex-direction: row;
+      gap: 1rem;
+    }
+    .difficulty-container,
+    .n-container {
+      flex-direction: column;
+      gap: 0.4rem;
+
+      label,
+      .difficulty-row {
+        font-size: clamp(0.9rem, 0.7226rem + 0.75vw, 1.1rem);
+      }
+
+      input {
+        font-size: 1rem;
+      }
+    }
+
+    .n-container {
+      padding: 0.1rem;
+    }
+  }
 </style>

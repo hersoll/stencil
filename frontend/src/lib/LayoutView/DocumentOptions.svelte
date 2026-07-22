@@ -199,4 +199,12 @@
     width: auto;
     box-shadow: none;
   }
+
+  /* Mobile layout */
+  @container body (width < 50rem) {
+    label {
+      font-weight: 400;
+      font-size: 1rem;
+    }
+  }
 </style>

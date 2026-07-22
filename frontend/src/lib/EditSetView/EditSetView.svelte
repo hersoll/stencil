@@ -101,4 +101,20 @@
       column-count: 1;
     }
   }
+
+  /* Mobile layout */
+  @container body (width < 50rem) {
+    .topics-container {
+      padding: 1rem;
+    }
+    .topics {
+      width: 100%;
+    }
+    .heading {
+      width: 100%;
+      p {
+        font-size: clamp(0.9rem, 0.7226rem + 0.75vw, 1.1rem);
+      }
+    }
+  }
 </style>

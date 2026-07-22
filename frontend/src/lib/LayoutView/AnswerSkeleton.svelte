@@ -120,4 +120,11 @@
       color: var(--text-muted);
     }
   }
+
+  /* Mobile layout */
+  @container body (width < 50rem) {
+    .answer-list {
+      font-size: 0.5rem;
+    }
+  }
 </style>

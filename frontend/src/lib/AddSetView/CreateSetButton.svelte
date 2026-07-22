@@ -11,10 +11,13 @@
       id: setState.setCount,
       options: {
         problem_options: structuredClone($state.snapshot(setState.pendingSet)),
-        formatting_options: defaultFormattingOptions
+        formatting_options: structuredClone(
+          $state.snapshot(defaultFormattingOptions)
+        )
       },
       topics: await fetchProblemsForTopics(setState.pendingSet.topics)
     });
+    // Increment the setCount so the next set has a unique ID
     setState.setCount += 1;
     loadingSet = false;
   }
@@ -52,6 +55,14 @@
     .create-btn {
       grid-column: 2 / -1;
       justify-self: start;
+    }
+  }
+
+  /* Mobile layout*/
+  @container body (width < 50rem) {
+    .create-btn {
+      width: 10rem;
+      font-size: clamp(0.9rem, 0.7226rem + 0.75vw, 1.1rem);
     }
   }
 </style>

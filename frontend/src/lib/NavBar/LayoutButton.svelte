@@ -26,4 +26,9 @@
 </NavButton>
 
 <style>
+  @container body (width < 50rem) {
+    p {
+      font-size: clamp(0.8rem, 0.6226rem + 0.75vw, 1rem);
+    }
+  }
 </style>

@@ -104,4 +104,27 @@
     border: none;
     font-size: 0.8rem;
   }
+
+  @container main (width < 70rem) {
+    .card {
+      position: relative;
+      margin-top: 1rem;
+      margin-left: 0;
+      width: 100%;
+      max-width: 30rem;
+    }
+
+    /* Increasing the font size to prevent iOS zoom */
+    label {
+      font-size: 1rem;
+    }
+    input {
+      font-size: 1rem;
+    }
+    .options-container {
+      select {
+        font-size: 1rem;
+      }
+    }
+  }
 </style>

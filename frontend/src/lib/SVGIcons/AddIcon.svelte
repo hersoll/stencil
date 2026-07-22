@@ -14,4 +14,10 @@
     fill: var(--text);
     transition: fill 0.4s;
   }
+  @container body (width < 50rem) {
+    svg {
+      width: clamp(0.7rem, 0.5226rem + 0.75vw, 0.9rem);
+      height: clamp(0.7rem, 0.5226rem + 0.75vw, 0.9rem);
+    }
+  }
 </style>

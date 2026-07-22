@@ -27,4 +27,11 @@
     width: 24rem;
     justify-self: stretch;
   }
+
+  @container body (width < 50rem) {
+    .card {
+      width: 100%;
+      flex: 1 1;
+    }
+  }
 </style>

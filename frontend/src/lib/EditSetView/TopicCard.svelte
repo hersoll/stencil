@@ -168,4 +168,21 @@
       color: var(--primary-text);
     }
   }
+
+  @container body (width < 50rem) {
+    .card {
+      width: 100%;
+    }
+    .problem {
+      height: clamp(1.2rem, 0.75rem + 2vw, 1.75rem);
+    }
+    .problem-descriptor,
+    .difficulty-descriptor {
+      font-size: clamp(0.7rem, 0.45455rem + 1.091vw, 1rem);
+    }
+
+    .select-all-btn {
+      font-size: 0.9rem;
+    }
+  }
 </style>

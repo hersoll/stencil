@@ -131,4 +131,11 @@
     prefix: '';
     suffix: ') ';
   }
+
+  /* Mobile layout */
+  @container body (width < 50rem) {
+    .questions {
+      font-size: 0.5rem;
+    }
+  }
 </style>

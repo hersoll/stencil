@@ -45,4 +45,12 @@
       justify-self: end;
     }
   }
+
+  /* Mobile layout*/
+  @container body (width < 50rem) {
+    button {
+      width: 6rem;
+      font-size: clamp(0.9rem, 0.7226rem + 0.75vw, 1.1rem);
+    }
+  }
 </style>

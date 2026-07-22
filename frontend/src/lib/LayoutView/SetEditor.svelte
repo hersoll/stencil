@@ -1,10 +1,13 @@
 <script lang="ts">
   import i18n from '$src/i18n.svelte';
   import { setIDsWithHeader } from './layoutStates.svelte';
-  import { type SetState } from '$src/types';
+  import { type SetState, type View } from '$src/types';
   import DifficultySelector from '../AddSetView/DifficultySelector.svelte';
+  import { setState } from '$src/globalStates.svelte';
+  import EditIcon from '../SVGIcons/EditIcon.svelte';
 
-  let { set = $bindable() }: { set: SetState } = $props();
+  let { set = $bindable(), view = $bindable() }: { set: SetState; view: View } =
+    $props();
 
   function handleNBlur(e: Event & { currentTarget: HTMLInputElement }) {
     const value = parseInt(e.currentTarget.value);
@@ -57,6 +60,15 @@
   id="set-editor-card-{set.id}"
   style="position-anchor: --set-{set.id}"
 >
+  <button
+    class="mobile edit-set-btn"
+    onclick={() => {
+      setState.currentEditedSetID = set.id;
+      view = 'editSet';
+    }}
+  >
+    <EditIcon />
+  </button>
   <div class="card-header">
     <div class="topic-titles">
       {#if set.topics.length <= 3}
@@ -69,9 +81,9 @@
     </div>
     <div class="problem-options">
       <div class="label-div">
-        <label for="n">Uppgifter:</label>
+        <label for="n-{set.id}">Uppgifter:</label>
         <input
-          id="n"
+          id="n-{set.id}"
           class="number-picker"
           type="number"
           value={set.options.problem_options.n}
@@ -135,10 +147,10 @@
       />
     </div>
     <div class="label-div">
-      <label for="columns"> {i18n.t('set_option_columns')}</label>
+      <label for="columns-{set.id}"> {i18n.t('set_option_columns')}</label>
       <input
         type="number"
-        id="columns"
+        id="columns-{set.id}"
         min="1"
         max="5"
         value={set.options.formatting_options.questionColumns}
@@ -208,5 +220,61 @@
 
   .spacing-input {
     width: 4rem;
+  }
+
+  .edit-set-btn {
+    display: none;
+  }
+
+  @container main (width < 70rem) {
+    .card {
+      position: relative;
+      margin-left: 0;
+    }
+  }
+  @container body (width < 50rem) {
+    .card {
+      position: relative;
+      width: 100%;
+      max-width: 30rem;
+
+      /* Increasing the font size to prevent iOS zoom */
+      label {
+        font-size: 1rem;
+      }
+      input {
+        font-size: 1rem;
+      }
+    }
+    .card-header {
+      display: grid;
+      grid-template-columns: auto;
+      gap: 1rem;
+      margin-bottom: 0;
+
+      .problem-options {
+        align-items: start;
+        row-gap: 0.4rem;
+        input {
+          font-size: 1rem;
+        }
+      }
+    }
+    .options-grid {
+      padding-top: 0.4rem;
+      grid-template-columns: auto;
+    }
+
+    .edit-set-btn {
+      display: block;
+      position: absolute;
+      background: none;
+      width: 1.5rem;
+      height: 1.5rem;
+      top: 0.5rem;
+      right: 0rem;
+      padding: 0;
+      border: none;
+    }
   }
 </style>

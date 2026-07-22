@@ -38,4 +38,14 @@
       justify-content: center;
     }
   }
+
+  /* Mobile layout*/
+  @container body (width < 50rem) {
+    .footer {
+      flex: 1 1;
+      position: relative;
+      left: 0;
+      padding: 0.5rem;
+    }
+  }
 </style>

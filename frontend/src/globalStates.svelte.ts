@@ -23,17 +23,19 @@ export let setState = $state<{
   draggedSetIndex: number | null;
 }>({
   addedSets: [],
-  pendingSet: initialProblemOptions,
+  pendingSet: $state.snapshot(initialProblemOptions),
   currentEditedSetID: null,
   setCount: 0,
   draggedSetIndex: null
 });
-export let documentOptions = $state<DocumentOptions>(initialDocumentOptions);
+export let documentOptions = $state<DocumentOptions>(
+  $state.snapshot(initialDocumentOptions)
+);
 export let defaultFormattingOptions = $state<FormattingOptions>(
-  initialFormattingOptions
+  $state.snapshot(initialFormattingOptions)
 );
 export let defaultProblemOptions = $state<ProblemOptions>(
-  initialProblemOptions
+  $state.snapshot(initialProblemOptions)
 );
 export function setDocumentOptions(next: DocumentOptions) {
   Object.assign(documentOptions, next);

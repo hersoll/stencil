@@ -154,4 +154,16 @@
     font-size: 0.9rem;
     margin-bottom: 1.5rem;
   }
+
+  /* Mobile layout */
+  @container body (width < 50rem) {
+    .title {
+      margin-top: 2rem;
+      margin-bottom: 0;
+    }
+    .subtitle {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
 </style>

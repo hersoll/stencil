@@ -12,8 +12,8 @@
 
 <style>
   svg {
-    width: 0.9rem;
-    height: 0.9rem;
+    width: 1.3rem;
+    height: 1.3rem;
     stroke: var(--text-muted);
     transition: stroke 0.4s;
   }
