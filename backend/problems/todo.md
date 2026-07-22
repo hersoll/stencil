@@ -36,7 +36,7 @@
 - [ ] 0,02^2
 
 ## Evaluate expressions
-- [ ] Separate from simplyfing expressions
+- [x] Separate from simplyfing expressions
 
 ## Equations with multiple x
 - [ ] 3(x + 1) = 2x

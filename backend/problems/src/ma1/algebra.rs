@@ -1,2 +1,3 @@
-mod expressions_without_parentheses;
-mod expressions_with_parentheses;
+mod evaluate_expressions_without_parentheses;
+mod simplify_expressions_with_parentheses;
+mod simplify_expressions_without_parentheses;

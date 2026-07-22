@@ -2,6 +2,9 @@
 
 ## [0.11.1] - TBD
 
+### Changed
+- Moved evaluating of expresssions into its own module, and simplifying into its own.
+
 ### Fixed
 - The statistic `most_changed_fields` mistakenly compared every set against each other in two PDFs, leading to misleading stats
 
