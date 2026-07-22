@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.11.1] - TBD
+
+### Fixed
+- The statistic `most_changed_fields` mistakenly compared every set against each other in two PDFs, leading to misleading stats
+
 ## [0.11.0] - 2026-07-22
 
 ### Added

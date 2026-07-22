@@ -147,7 +147,7 @@ pub async fn most_changed_fields(duration: AggregationDuration) -> Result<Vec<Va
                     COUNT(CASE WHEN c.ending_difficulty IS DISTINCT FROM o.ending_difficulty THEN 1 END) AS "Ending difficulty!" 
                 FROM copies c 
                 JOIN originals o 
-                ON c.previous_pdf = o.id
+                ON c.previous_pdf = o.id AND c.order_index = o.order_index
             )
 
             SELECT rtrim(key, '!') AS "value!", value::int AS "count!"
