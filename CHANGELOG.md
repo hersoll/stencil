@@ -1,7 +1,3 @@
-# TODO
-
-- Mobile layout + Clean up layout on narrow screen
-
 # Changelog
 
 ## [0.11.0] - 2026-07-22
