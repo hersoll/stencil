@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.11.1] - TBD
+## [0.11.1] - 2026-07-23
 
 ### Added
 - All parts of the course structure now has `public` flag in the DB
