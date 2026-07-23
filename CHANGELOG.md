@@ -2,9 +2,13 @@
 
 ## [0.11.1] - TBD
 
+### Added
+- All parts of the course structure now has `public` flag in the DB
+- When in production mode, we only fetch `public` data. This allows for dev work on the same database without affecting the website
+
 ### Changed
-- Moved evaluating of expresssions into its own module, and simplifying into its own.
-- Changed `log` flag to `prod` since future changes will make the flag behave like the prod build in more ways than logging
+- Moved evaluating of expressions into its own module, and simplifying into its own.
+- Changed `log` flag to `prod` since the changes above will make the flag behave like the prod build in more ways than just logging
 
 ### Fixed
 - The statistic `most_changed_fields` mistakenly compared every set against each other in two PDFs, leading to misleading stats

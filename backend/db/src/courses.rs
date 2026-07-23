@@ -5,18 +5,25 @@ use anyhow::{Context, Result};
 /// Returns every course that is marked as public in the DB.
 ///
 /// Used by the user-facing API.
-/// Some other functions concerning "public" data might not have a respective
-/// `get_all_...` like this function does. The reason is that we use this both for
-/// the user and the editor. The editor needs unfettered access, always. The user needs
+/// The reason for two variants of this function (along with `get_all_...) is that we use
+/// this both for the user and the editor. The editor needs unfettered access, always. The user needs
 /// a varied approach depending on if we are in dev mode or prod mode.
+///
+/// We could combine them and add some kind of bool flag in the signature, but that looks weird when
+/// calling.
 pub async fn get_public_course_data() -> Result<Vec<CourseEntry>> {
+    // In prod we only want the public rows,
+    // in dev we want all
+    let production_mode = cfg!(feature = "docker") || std::env::args().any(|x| x == "prod");
+
     let pool = crate::get_pool();
     let courses = sqlx::query_as!(
         DbDescRow,
         r#"SELECT id, name, desc_sv, desc_en
             FROM courses 
-            WHERE public
+            WHERE (NOT $1::bool OR public)
             ORDER BY name"#,
+        production_mode
     )
     .fetch_all(pool)
     .await?;

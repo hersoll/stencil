@@ -149,7 +149,7 @@ pub async fn get_chapters_and_topics_for_course(
         logging::log_course(course.id).await?;
     }
 
-    let chapters = db::get_course_chapters(&course.id).await?;
+    let chapters = db::get_public_course_chapters(&course.id).await?;
     let chapter_ids: Vec<i32> = chapters.iter().map(|c| c.id).collect();
     let topics_by_chapter = db::get_topics_for_chapters(&chapter_ids).await?;
 
@@ -202,7 +202,7 @@ pub async fn get_problems_for_topics(
     let topics = db::get_topics_from_ids(&topic_ids).await?;
     let mut topics_with_problems = Vec::new();
     for topic in topics {
-        let problems = db::get_topic_problems(&topic.id)
+        let problems = db::get_public_problems_for_topic(&topic.id)
             .await?
             .into_iter()
             .map(|problem| HTTPProblemData::from_problem_and_topic_id(&problem, topic.id, lang))

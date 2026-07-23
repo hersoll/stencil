@@ -35,6 +35,8 @@ pub async fn get_topics_from_ids(topic_ids: &[i32]) -> Result<Vec<TopicEntry>> {
 }
 
 /// Ordered by chapter order_index
+///
+/// Editor version of [`get_topics_for_chapters()`].
 pub async fn get_chapter_topics(chapter_id: &i32) -> Result<Vec<TopicEntry>> {
     let pool = crate::get_pool();
     let topics = sqlx::query_as!(
@@ -78,7 +80,13 @@ impl From<SpecialTopicRow> for TopicEntry {
 /// If we have multiple chapters (say, from a course)
 /// we want to get all topics at the same time,
 /// instead of hitting the DB for each chapter
+///
+/// User-facing version of [`get_chapter_topics()`].
 pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32, Vec<TopicEntry>>> {
+    // In prod we only want the public rows,
+    // in dev we want all
+    let production_mode = cfg!(feature = "docker") || std::env::args().any(|x| x == "prod");
+
     let pool = crate::get_pool();
     let topics = sqlx::query_as!(
         SpecialTopicRow,
@@ -86,8 +94,10 @@ pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32,
         FROM topics t
         JOIN chapter_topics ct ON t.id = ct.topic_id
         WHERE ct.chapter_id = ANY($1)
+        AND (NOT $2::bool OR t.public)
         ORDER BY ct.chapter_id, ct.order_index, t.name"#,
-        chapter_ids
+        chapter_ids,
+        production_mode
     )
     .fetch_all(pool)
     .await?;
