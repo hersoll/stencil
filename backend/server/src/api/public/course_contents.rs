@@ -117,7 +117,7 @@ struct TopicWithProblems {
 /// and let the frontend handle the structuring in the UI.
 pub async fn get_course_list(Path(lang_code): Path<String>) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
-    let courses: Vec<HTTPCourseData> = db::get_all_course_data()
+    let courses: Vec<HTTPCourseData> = db::get_public_course_data()
         .await?
         .into_iter()
         .map(|course| HTTPCourseData::from_course_entry(course, lang))
@@ -144,8 +144,8 @@ pub async fn get_chapters_and_topics_for_course(
     let lang = parse_language(&lang_code)?;
     let course = parse_course_path(&course_path).await?;
 
-    // Only log during production (or specific flag) to not mess up the stats
-    if cfg!(feature = "docker") || std::env::args().any(|x| x == "log") {
+    // Only log during production (or prod flag) to not mess up the stats
+    if cfg!(feature = "docker") || std::env::args().any(|x| x == "prod") {
         logging::log_course(course.id).await?;
     }
 

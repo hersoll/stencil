@@ -2,6 +2,28 @@ use super::common::{DbDescRow, error_context, error_context_by_name};
 use crate::CourseEntry;
 use anyhow::{Context, Result};
 
+/// Returns every course that is marked as public in the DB.
+///
+/// Used by the user-facing API.
+/// Some other functions concerning "public" data might not have a respective
+/// `get_all_...` like this function does. The reason is that we use this both for
+/// the user and the editor. The editor needs unfettered access, always. The user needs
+/// a varied approach depending on if we are in dev mode or prod mode.
+pub async fn get_public_course_data() -> Result<Vec<CourseEntry>> {
+    let pool = crate::get_pool();
+    let courses = sqlx::query_as!(
+        DbDescRow,
+        r#"SELECT id, name, desc_sv, desc_en
+            FROM courses 
+            WHERE public
+            ORDER BY name"#,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(courses.into_iter().map(CourseEntry::from).collect())
+}
+
 pub async fn get_all_course_data() -> Result<Vec<CourseEntry>> {
     let pool = crate::get_pool();
     let courses = sqlx::query_as!(

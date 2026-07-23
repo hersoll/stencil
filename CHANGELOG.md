@@ -4,6 +4,7 @@
 
 ### Changed
 - Moved evaluating of expresssions into its own module, and simplifying into its own.
+- Changed `log` flag to `prod` since future changes will make the flag behave like the prod build in more ways than logging
 
 ### Fixed
 - The statistic `most_changed_fields` mistakenly compared every set against each other in two PDFs, leading to misleading stats

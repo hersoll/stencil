@@ -167,8 +167,8 @@ async fn build_pdf(req: PDFRequest) -> Result<PDFResponse, ApiError> {
     let duration = render_start.elapsed();
     debug!("Compiled PDF in {}ms", duration.as_millis());
 
-    // Only log during production (or specific flag) to not mess up the stats
-    let pdf_id = if cfg!(feature = "docker") || std::env::args().any(|x| x == "log") {
+    // Only log during production (or prod flag) to not mess up the logging stats
+    let pdf_id = if cfg!(feature = "docker") || std::env::args().any(|x| x == "prod") {
         db::logging::log_pdf_and_get_id(req_for_logging, start.elapsed().as_micros() as i64).await?
     } else {
         -1
