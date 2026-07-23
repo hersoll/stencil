@@ -82,6 +82,8 @@ impl From<SpecialTopicRow> for TopicEntry {
 /// instead of hitting the DB for each chapter
 ///
 /// User-facing version of [`get_chapter_topics()`].
+/// NOTE: Other functions with the production_mode bool also has a
+/// `ForceReadPrivateData` parameter since it can be accessed by the editor. This function cannot.
 pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32, Vec<TopicEntry>>> {
     // In prod we only want the public rows,
     // in dev we want all

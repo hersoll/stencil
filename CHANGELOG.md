@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.11.2] - TBD
+
+### Changed
+- Instead of splitting DB functions depending on if they want public data or all data, now a parameter of type `ForceReadPrivateData` makes us able to combine them into one function
+
 ## [0.11.1] - 2026-07-23
 
 ### Added

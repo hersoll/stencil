@@ -1,6 +1,7 @@
 use super::common::{error_context, error_context_by_name};
 use crate::{
-    DescriptionTranslations, ProblemEntry, ProblemTexts, ProblemTranslations, TopicSpecificData,
+    DescriptionTranslations, ForceReadPrivateData, ProblemEntry, ProblemTexts, ProblemTranslations,
+    TopicSpecificData,
 };
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
@@ -125,34 +126,16 @@ pub async fn get_all_problem_data() -> Result<Vec<ProblemEntry>> {
 ///
 /// Used for:
 /// - Finding all the problems to list with a topic when editing topics
-pub async fn get_topic_problems(topic_id: &i32) -> Result<Vec<ProblemEntry>> {
-    let pool = crate::get_pool();
-    let problems = sqlx::query_as!(
-            DbProblemRowWithTopicDifficulties,
-            r#"SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module, 
-            p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,
-            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty
-        FROM problems p
-        JOIN topic_problems tp ON p.id = tp.problem_id
-        WHERE tp.topic_id = $1
-        ORDER BY tp.order_index, p.name"#,
-            topic_id
-        )
-        .fetch_all(pool)
-        .await
-        .with_context(|| format!("Failed to get problems for topic {}", topic_id))?;
-
-    Ok(problems.into_iter().map(ProblemEntry::from).collect())
-}
-
-/// Get all *public* problems (with difficulties for that topic) that are included in a certain topic.
-///
-/// Used for:
 /// - Listing all the problems for the selected topics when editing sets in the frontend
-pub async fn get_public_problems_for_topic(topic_id: &i32) -> Result<Vec<ProblemEntry>> {
+pub async fn get_topic_problems(
+    topic_id: &i32,
+    force_read_private_data: ForceReadPrivateData,
+) -> Result<Vec<ProblemEntry>> {
+    let ForceReadPrivateData(dev_mode) = force_read_private_data;
     // In prod we only want the public rows,
     // in dev we want all
-    let production_mode = cfg!(feature = "docker") || std::env::args().any(|x| x == "prod");
+    let production_mode =
+        !dev_mode && (cfg!(feature = "docker") || std::env::args().any(|x| x == "prod"));
 
     let pool = crate::get_pool();
     let problems = sqlx::query_as!(

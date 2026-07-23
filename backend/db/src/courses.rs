@@ -1,20 +1,19 @@
 use super::common::{DbDescRow, error_context, error_context_by_name};
-use crate::CourseEntry;
+use crate::{CourseEntry, ForceReadPrivateData};
 use anyhow::{Context, Result};
 
 /// Returns every course that is marked as public in the DB.
 ///
-/// Used by the user-facing API.
-/// The reason for two variants of this function (along with `get_all_...) is that we use
-/// this both for the user and the editor. The editor needs unfettered access, always. The user needs
-/// a varied approach depending on if we are in dev mode or prod mode.
-///
-/// We could combine them and add some kind of bool flag in the signature, but that looks weird when
-/// calling.
-pub async fn get_public_course_data() -> Result<Vec<CourseEntry>> {
+/// Used by the user-facing API (force_private: false) and
+/// the editor for listing the courses (force_private: true)
+pub async fn get_all_course_data(
+    force_read_private_data: ForceReadPrivateData,
+) -> Result<Vec<CourseEntry>> {
+    let ForceReadPrivateData(dev_mode) = force_read_private_data;
     // In prod we only want the public rows,
     // in dev we want all
-    let production_mode = cfg!(feature = "docker") || std::env::args().any(|x| x == "prod");
+    let production_mode =
+        !dev_mode && (cfg!(feature = "docker") || std::env::args().any(|x| x == "prod"));
 
     let pool = crate::get_pool();
     let courses = sqlx::query_as!(
@@ -31,18 +30,18 @@ pub async fn get_public_course_data() -> Result<Vec<CourseEntry>> {
     Ok(courses.into_iter().map(CourseEntry::from).collect())
 }
 
-pub async fn get_all_course_data() -> Result<Vec<CourseEntry>> {
-    let pool = crate::get_pool();
-    let courses = sqlx::query_as!(
-        DbDescRow,
-        r#"SELECT id, name, desc_sv, desc_en
-            FROM courses ORDER BY name"#,
-    )
-    .fetch_all(pool)
-    .await?;
-
-    Ok(courses.into_iter().map(CourseEntry::from).collect())
-}
+// pub async fn get_all_course_data() -> Result<Vec<CourseEntry>> {
+//     let pool = crate::get_pool();
+//     let courses = sqlx::query_as!(
+//         DbDescRow,
+//         r#"SELECT id, name, desc_sv, desc_en
+//             FROM courses ORDER BY name"#,
+//     )
+//     .fetch_all(pool)
+//     .await?;
+//
+//     Ok(courses.into_iter().map(CourseEntry::from).collect())
+// }
 
 pub async fn get_course_by_id(id: i32) -> Result<CourseEntry> {
     let pool = crate::get_pool();

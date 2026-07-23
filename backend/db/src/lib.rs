@@ -21,6 +21,13 @@ use anyhow::{Context, Result, anyhow};
 use once_cell::sync::OnceCell;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 
+/// Used in functions that access data that can be public or private (field in the db)
+///
+/// Normally, the program reads the feature flags to automatically determine whether to read
+/// private data. However, in the editor we always want private data as well, so we want to tell
+/// the program to ignore feature flags and just read all of the data.
+pub struct ForceReadPrivateData(pub bool);
+
 static DB_POOL: OnceCell<PgPool> = OnceCell::new();
 
 pub async fn init_database() -> Result<()> {

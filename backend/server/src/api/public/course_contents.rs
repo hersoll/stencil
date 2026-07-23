@@ -9,7 +9,10 @@ use serde_json::json;
 use tracing::info;
 
 use crate::api::parse_language;
-use db::{self, ChapterEntry, CourseEntry, HasDesc, ProblemEntry, TopicEntry, logging};
+use db::{
+    self, ChapterEntry, CourseEntry, ForceReadPrivateData, HasDesc, ProblemEntry, TopicEntry,
+    logging,
+};
 use types::{errors::ApiError, lang::Language};
 
 /// Relevant data which is sent when a user requests a list of courses for the home page
@@ -117,7 +120,7 @@ struct TopicWithProblems {
 /// and let the frontend handle the structuring in the UI.
 pub async fn get_course_list(Path(lang_code): Path<String>) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
-    let courses: Vec<HTTPCourseData> = db::get_public_course_data()
+    let courses: Vec<HTTPCourseData> = db::get_all_course_data(ForceReadPrivateData(false))
         .await?
         .into_iter()
         .map(|course| HTTPCourseData::from_course_entry(course, lang))
@@ -149,7 +152,7 @@ pub async fn get_chapters_and_topics_for_course(
         logging::log_course(course.id).await?;
     }
 
-    let chapters = db::get_public_course_chapters(&course.id).await?;
+    let chapters = db::get_course_chapters(&course.id, ForceReadPrivateData(false)).await?;
     let chapter_ids: Vec<i32> = chapters.iter().map(|c| c.id).collect();
     let topics_by_chapter = db::get_topics_for_chapters(&chapter_ids).await?;
 
@@ -202,7 +205,7 @@ pub async fn get_problems_for_topics(
     let topics = db::get_topics_from_ids(&topic_ids).await?;
     let mut topics_with_problems = Vec::new();
     for topic in topics {
-        let problems = db::get_public_problems_for_topic(&topic.id)
+        let problems = db::get_topic_problems(&topic.id, ForceReadPrivateData(false))
             .await?
             .into_iter()
             .map(|problem| HTTPProblemData::from_problem_and_topic_id(&problem, topic.id, lang))

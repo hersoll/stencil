@@ -2,7 +2,7 @@ use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
 use db::{
-    CourseEntry, chapters, courses,
+    CourseEntry, ForceReadPrivateData, chapters, courses,
     relationships::{self, CourseChapters},
 };
 use types::errors::ApiError;
@@ -13,12 +13,14 @@ use types::errors::ApiError;
 /// Used when listing every course in the editing list - since every entry will need data attached
 /// to it when dragging into the editing area
 pub async fn get_courses() -> Result<impl IntoResponse, ApiError> {
-    match courses::get_all_course_data().await {
+    // We want all the data, both public and private
+    match courses::get_all_course_data(ForceReadPrivateData(true)).await {
         Ok(mut courses) => {
             for course in courses.iter_mut() {
-                let chapters = chapters::get_course_chapters(&course.id)
-                    .await
-                    .map_err(|e| ApiError::Database(e.to_string()))?;
+                let chapters =
+                    chapters::get_course_chapters(&course.id, ForceReadPrivateData(true))
+                        .await
+                        .map_err(|e| ApiError::Database(e.to_string()))?;
                 course.chapter_ids = chapters.iter().map(|c| c.id).collect();
             }
             Ok((StatusCode::OK, Json(json!(courses))))

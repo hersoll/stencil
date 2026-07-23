@@ -1,5 +1,5 @@
 use super::common::{DbDescRow, error_context, error_context_by_name};
-use crate::ChapterEntry;
+use crate::{ChapterEntry, ForceReadPrivateData};
 use anyhow::{Context, Result};
 
 pub async fn get_all_chapter_data() -> Result<Vec<ChapterEntry>> {
@@ -32,37 +32,19 @@ pub async fn get_chapters_from_ids(chapter_ids: &[i32]) -> Result<Vec<ChapterEnt
     Ok(chapters.into_iter().map(ChapterEntry::from).collect())
 }
 
-pub async fn get_course_chapters(course_id: &i32) -> Result<Vec<ChapterEntry>> {
-    let pool = crate::get_pool();
-    let chapters = sqlx::query_as!(
-        DbDescRow,
-        r#"SELECT ch.id, ch.name, ch.desc_sv, ch.desc_en
-        FROM chapters ch
-        JOIN course_chapters cc ON ch.id = cc.chapter_id
-        WHERE cc.course_id = $1
-        ORDER BY cc.order_index, ch.name"#,
-        course_id
-    )
-    .fetch_all(pool)
-    .await
-    .with_context(|| format!("Failed to get chapters for course {}", course_id))?;
-
-    Ok(chapters.into_iter().map(ChapterEntry::from).collect())
-}
-
 /// Gets every chapter marked as `public` related to the course.
 ///
-/// Used by the user-facing API.
-/// The reason for two variants of this function (along with `get_course_...) is that we use
-/// this both for the user and the editor. The editor needs unfettered access, always. The user needs
-/// a varied approach depending on if we are in dev mode or prod mode.
-///
-/// We could combine them and add some kind of bool flag in the signature, but that looks weird when
-/// calling.
-pub async fn get_public_course_chapters(course_id: &i32) -> Result<Vec<ChapterEntry>> {
+/// Used by the user-facing API (`force_read_private_data = false`) and
+/// the web editor (`force_read_private_data = true`)
+pub async fn get_course_chapters(
+    course_id: &i32,
+    force_read_private_data: ForceReadPrivateData,
+) -> Result<Vec<ChapterEntry>> {
+    let ForceReadPrivateData(dev_mode) = force_read_private_data;
     // In prod we only want the public rows,
     // in dev we want all
-    let production_mode = cfg!(feature = "docker") || std::env::args().any(|x| x == "prod");
+    let production_mode =
+        !dev_mode && (cfg!(feature = "docker") || std::env::args().any(|x| x == "prod"));
 
     let pool = crate::get_pool();
     let chapters = sqlx::query_as!(

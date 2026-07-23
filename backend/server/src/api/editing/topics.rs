@@ -2,7 +2,7 @@ use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
 use db::{
-    ProblemIdsAndDifficulties, TopicEntry, chapters, problems,
+    ForceReadPrivateData, ProblemIdsAndDifficulties, TopicEntry, chapters, problems,
     relationships::{self, ChapterTopics, TopicProblems},
     topics,
 };
@@ -17,7 +17,7 @@ pub async fn get_topics() -> Result<impl IntoResponse, ApiError> {
     match topics::get_all_topic_data().await {
         Ok(mut topics) => {
             for topic in topics.iter_mut() {
-                let problems = problems::get_topic_problems(&topic.id)
+                let problems = problems::get_topic_problems(&topic.id, ForceReadPrivateData(true))
                     .await
                     .map_err(|e| ApiError::Database(e.to_string()))?;
                 topic.problems = problems
