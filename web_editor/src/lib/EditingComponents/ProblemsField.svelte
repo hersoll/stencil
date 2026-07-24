@@ -115,13 +115,7 @@
   }
 
   async function fetchProblems() {
-    let res = await fetch(`${API_URL}/edit/problem/from_topic`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(topic.id)
-    });
+    let res = await fetch(`${API_URL}/edit/problem/from_topic/${topic.id}`);
 
     if (res.ok) {
       problems_to_show = await res.json();

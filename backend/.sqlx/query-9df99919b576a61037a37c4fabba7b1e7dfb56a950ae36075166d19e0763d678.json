@@ -1,0 +1,94 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, name, desc_sv, desc_en, question_sv, question_en,\n            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public\n            FROM problems \n            WHERE (NOT $1::bool OR public)\n            ORDER BY module, name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "desc_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "desc_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "question_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "question_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "answer_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "answer_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "solution_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "solution_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "prefix_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "module",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 12,
+        "name": "public",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "9df99919b576a61037a37c4fabba7b1e7dfb56a950ae36075166d19e0763d678"
+}

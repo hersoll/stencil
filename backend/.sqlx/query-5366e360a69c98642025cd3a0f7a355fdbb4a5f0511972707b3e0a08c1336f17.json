@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT topic_id, absolute_difficulty, relative_difficulty\n        FROM topic_problems\n        WHERE problem_id = $1\n        ORDER BY problem_id, topic_id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "topic_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "absolute_difficulty",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "relative_difficulty",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5366e360a69c98642025cd3a0f7a355fdbb4a5f0511972707b3e0a08c1336f17"
+}

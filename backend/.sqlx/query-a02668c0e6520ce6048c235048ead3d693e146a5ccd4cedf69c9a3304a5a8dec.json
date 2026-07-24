@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE problems SET name = $2, desc_sv = $3, desc_en = $4, module = $5,\n            question_sv = $6, question_en = $7, answer_sv = $8, answer_en = $9, solution_sv = $10, \n            solution_en = $11, prefix_id = $12, public = $13\n            WHERE id = $1\n            RETURNING name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Int4",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "a02668c0e6520ce6048c235048ead3d693e146a5ccd4cedf69c9a3304a5a8dec"
+}

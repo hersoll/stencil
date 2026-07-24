@@ -106,13 +106,9 @@
     draggedIndex = -1;
   }
   async function fetchCourse() {
-    let res = await fetch(`${API_URL}/edit/course/ids`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(course_ids)
-    });
+    let res = await fetch(
+      `${API_URL}/edit/course/from_${entry.kind}/${entry.id}`
+    );
     if (res.ok) {
       courses = await res.json();
     } else {

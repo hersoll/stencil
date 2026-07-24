@@ -1,0 +1,33 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO problems (name, desc_sv, desc_en, module,\n            question_sv, question_en, answer_sv, answer_en, solution_sv, solution_en, prefix_id, public) \n            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) \n            RETURNING id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Int4",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "b7ba79baaa9e759071a77d2151bd7d3cd8ae236379718371706ea6059bc89476"
+}

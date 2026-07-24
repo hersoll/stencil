@@ -120,13 +120,9 @@
   }
 
   async function fetchTopics() {
-    let res = await fetch(`${API_URL}/edit/topic/ids`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(topic_data.map(topic => topic.topic_id))
-    });
+    let res = await fetch(
+      `${API_URL}/edit/topic/from_${entry.kind}/${entry.id}`
+    );
     if (res.ok) {
       topics = await res.json();
     } else {

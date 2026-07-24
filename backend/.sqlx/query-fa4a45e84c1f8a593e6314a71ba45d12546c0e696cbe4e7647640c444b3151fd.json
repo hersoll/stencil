@@ -1,0 +1,43 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT p.id AS problem_id, tp.relative_difficulty, tp.absolute_difficulty, tp.topic_id \n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = ANY($1)\n          AND NOT p.id = ANY($2)\n          AND tp.absolute_difficulty = ANY($3)\n          AND (NOT $4::bool OR p.public)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "problem_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "relative_difficulty",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "absolute_difficulty",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "topic_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "Int4Array",
+        "Int4Array",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "fa4a45e84c1f8a593e6314a71ba45d12546c0e696cbe4e7647640c444b3151fd"
+}

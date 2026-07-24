@@ -3,8 +3,12 @@
 ## [0.11.2] - TBD
 
 ### Changed
-- Refactored `db` types by putting them with their respective functions for reduced cognitive load and easier expanding in the future
-- Instead of splitting DB functions depending on if they want public data or all data, now a parameter of type `ForceReadPrivateData` makes us able to combine them into one function
+- BIG rewrite of `db`:
+  - Refactored `db` types by putting them with their respective functions for reduced cognitive load and easier expanding in the future
+  - Made functions for the editor return the `public` field, while user functions don't
+  - Program scans for `production_mode` just once and then stores it in a `Lazy`
+  - `get_X_from_ids` have been replaced with `get_X_from_Y_id` to reduce data sending back and forth
+  - Optimized every load of the entry list in the editor by just hitting the DB twice in total, instead of once (or twice!) for every entry
 
 ## [0.11.1] - 2026-07-23
 

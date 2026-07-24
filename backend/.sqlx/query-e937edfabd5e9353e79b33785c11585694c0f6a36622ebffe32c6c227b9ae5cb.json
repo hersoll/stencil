@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE prefixes SET name = $2, text_sv = $3, text_en = $4, group_text_sv = $5,\n            group_text_en = $6, public = $7\n            WHERE id = $1\n            RETURNING name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "e937edfabd5e9353e79b33785c11585694c0f6a36622ebffe32c6c227b9ae5cb"
+}

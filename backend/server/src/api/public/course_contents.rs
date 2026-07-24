@@ -10,11 +10,11 @@ use tracing::info;
 
 use crate::api::parse_language;
 use db::{
-    self, ForceReadPrivateData, HasDesc,
-    chapters::{ChapterEntry, get_course_chapters},
-    courses::{CourseEntry, get_all_course_data, get_course_by_id, get_course_by_name},
+    self, HasDesc,
+    chapters::{ChapterEntry, get_public_chapters_from_course},
+    courses::{CourseEntry, get_course_by_name, get_public_courses},
     logging,
-    problems::{ProblemEntry, get_topic_problems},
+    problems::{ProblemEntry, get_public_topic_problems_with_difficulties},
     topics::{TopicEntry, get_topics_for_chapters, get_topics_from_ids},
 };
 use types::{errors::ApiError, lang::Language};
@@ -124,7 +124,7 @@ struct TopicWithProblems {
 /// and let the frontend handle the structuring in the UI.
 pub async fn get_course_list(Path(lang_code): Path<String>) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
-    let courses: Vec<HTTPCourseData> = get_all_course_data(ForceReadPrivateData(false))
+    let courses: Vec<HTTPCourseData> = get_public_courses()
         .await?
         .into_iter()
         .map(|course| HTTPCourseData::from_course_entry(course, lang))
@@ -146,17 +146,17 @@ pub async fn get_course_list(Path(lang_code): Path<String>) -> Result<impl IntoR
 /// The returned data is nested, so that each chapter contains the relevant topic data within them
 /// ([`ChapterWithTopics`]).
 pub async fn get_chapters_and_topics_for_course(
-    Path((lang_code, course_path)): Path<(String, String)>,
+    Path((lang_code, course_name)): Path<(String, String)>,
 ) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
-    let course = parse_course_path(&course_path).await?;
+    let course = get_course_by_name(&course_name).await?;
 
     // Only log during production (or prod flag) to not mess up the stats
     if cfg!(feature = "docker") || std::env::args().any(|x| x == "prod") {
         logging::log_course(course.id).await?;
     }
 
-    let chapters = get_course_chapters(&course.id, ForceReadPrivateData(false)).await?;
+    let chapters = get_public_chapters_from_course(&course.id).await?;
     let chapter_ids: Vec<i32> = chapters.iter().map(|c| c.id).collect();
     let topics_by_chapter = get_topics_for_chapters(&chapter_ids).await?;
 
@@ -209,7 +209,7 @@ pub async fn get_problems_for_topics(
     let topics = get_topics_from_ids(&topic_ids).await?;
     let mut topics_with_problems = Vec::new();
     for topic in topics {
-        let problems = get_topic_problems(&topic.id, ForceReadPrivateData(false))
+        let problems = get_public_topic_problems_with_difficulties(&topic.id)
             .await?
             .into_iter()
             .map(|problem| HTTPProblemData::from_problem_and_topic_id(&problem, topic.id, lang))
@@ -223,14 +223,4 @@ pub async fn get_problems_for_topics(
     }
 
     Ok((StatusCode::OK, Json(json!(topics_with_problems))))
-}
-
-/// Tries to parse either a course ID or a course name from a `&str` and finds that [`CourseEntry`].
-async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
-    let course_entry = match course_path.parse::<i32>() {
-        Ok(id) => get_course_by_id(id).await?,
-        Err(_) => get_course_by_name(course_path).await?,
-    };
-
-    Ok(course_entry)
 }

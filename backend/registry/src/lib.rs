@@ -5,8 +5,8 @@
 //! would cause AT LEAST 100 DB hits).
 
 use anyhow::{Context, Result};
-use db::prefixes::{PrefixEntry, get_all_prefix_data};
-use db::problems::{ProblemEntry, get_all_problem_data};
+use db::prefixes::{PrefixEntry, get_public_prefix_data};
+use db::problems::{ProblemEntry, get_public_problem_data};
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
 use types::format_strings::{Answer, Question, Solution};
@@ -37,7 +37,7 @@ pub static PREFIX_DATA: LazyLock<RwLock<HashMap<i32, PrefixEntry>>> =
 ///
 /// Accessed during startup
 pub async fn load_problem_data() -> Result<()> {
-    let problems = get_all_problem_data().await?;
+    let problems = get_public_problem_data().await?;
     for problem in problems {
         PROBLEM_DATA
             .write()
@@ -52,7 +52,7 @@ pub async fn load_problem_data() -> Result<()> {
 ///
 /// Accessed during startup
 pub async fn load_prefix_data() -> Result<()> {
-    let prefixes = get_all_prefix_data().await?;
+    let prefixes = get_public_prefix_data().await?;
     for prefix in prefixes {
         PREFIX_DATA
             .write()

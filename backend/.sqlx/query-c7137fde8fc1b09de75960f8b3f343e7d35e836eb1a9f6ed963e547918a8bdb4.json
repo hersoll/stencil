@@ -1,0 +1,47 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT ch.id, ch.name, ch.desc_sv, ch.desc_en, ch.public\n        FROM chapters ch\n        JOIN course_chapters cc ON ch.id = cc.chapter_id\n        WHERE cc.course_id = $1\n        AND (NOT $2::bool OR ch.public)\n        ORDER BY cc.order_index, ch.name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "desc_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "desc_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "public",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c7137fde8fc1b09de75960f8b3f343e7d35e836eb1a9f6ed963e547918a8bdb4"
+}

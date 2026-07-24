@@ -58,6 +58,7 @@ export type CourseEntryRaw = {
   name: string;
   desc: DescriptionTranslations;
   chapter_ids: number[];
+  public: boolean;
 };
 
 export type ChapterEntryRaw = {
@@ -66,6 +67,7 @@ export type ChapterEntryRaw = {
   desc: DescriptionTranslations;
   course_ids: number[];
   topic_ids: number[];
+  public: boolean;
 };
 
 export type ProblemIdsAndDifficulties = {
@@ -81,6 +83,7 @@ export type TopicEntryRaw = {
   desc: DescriptionTranslations;
   chapter_ids: number[];
   problems: ProblemIdsAndDifficulties[];
+  public: boolean;
 };
 
 export type TopicDifficultyData = {
@@ -97,12 +100,14 @@ export type ProblemEntryRaw = {
   prefix_id: number | null;
   translations: ProblemTranslations;
   topic_data: TopicDifficultyData[];
+  public: boolean;
 };
 
 export type PrefixEntryRaw = {
   id: number;
   name: string;
   translations: PrefixTranslations;
+  public: boolean;
 };
 
 //==========================================
@@ -164,7 +169,8 @@ export const defaultCourseEntry = {
   id: -1,
   name: '',
   desc: { ...defaultDescriptionTranslations },
-  chapter_ids: []
+  chapter_ids: [],
+  public: false
 } satisfies CourseEntry;
 
 export const defaultChapterEntry = {
@@ -173,7 +179,8 @@ export const defaultChapterEntry = {
   name: '',
   desc: { ...defaultDescriptionTranslations },
   course_ids: [],
-  topic_ids: []
+  topic_ids: [],
+  public: false
 } satisfies ChapterEntry;
 
 export const defaultTopicEntry = {
@@ -182,7 +189,8 @@ export const defaultTopicEntry = {
   name: '',
   desc: { ...defaultDescriptionTranslations },
   chapter_ids: [],
-  problems: []
+  problems: [],
+  public: false
 } satisfies TopicEntry;
 
 export const defaultProblemEntry = {
@@ -196,7 +204,8 @@ export const defaultProblemEntry = {
     sv: { ...defaultTranslatedProblem },
     en: { ...defaultTranslatedProblem }
   },
-  topic_data: []
+  topic_data: [],
+  public: false
 } satisfies ProblemEntry;
 
 export const defaultPrefixEntry = {
@@ -206,5 +215,6 @@ export const defaultPrefixEntry = {
   translations: {
     sv: { ...defaultTranslatedPrefix },
     en: { ...defaultTranslatedPrefix }
-  }
+  },
+  public: false
 } satisfies PrefixEntry;

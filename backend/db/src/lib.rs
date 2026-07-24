@@ -9,18 +9,47 @@ pub mod topics;
 pub mod users;
 
 use anyhow::{Context, Result, anyhow};
-use once_cell::sync::OnceCell;
+use once_cell::sync::{Lazy, OnceCell};
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, postgres::PgPoolOptions};
 
 use types::lang::Language;
 
-/// Used in functions that access data that can be public or private (field in the db)
+pub type ID = i32;
+pub type Name = String;
+pub type Description = String;
+pub type PublicFlag = bool;
+
+/// Several functions are interested in whether the program is running in production mode or not.
 ///
-/// Normally, the program reads the feature flags to automatically determine whether to read
-/// private data. However, in the editor we always want private data as well, so we want to tell
-/// the program to ignore feature flags and just read all of the data.
-pub struct ForceReadPrivateData(pub bool);
+/// In production mode, we only retrieve data with the column public = true. In dev mode we retrieve
+/// all data. This makes it possible to work on new problems while the website keeps running as
+/// usual.
+pub static PRODUCTION_MODE: Lazy<bool> =
+    Lazy::new(|| cfg!(feature = "docker") || std::env::args().any(|x| x == "prod"));
+pub fn production_mode() -> bool {
+    *PRODUCTION_MODE
+}
+
+/// A collection of fields shared by courses, chapters and topics. Problems also include them all
+/// but has several extra fields, so [`problems`] has its own Row struct.
+pub struct DatabaseRow {
+    id: ID,
+    name: Name,
+    desc_sv: Description,
+    desc_en: Description,
+    public: PublicFlag,
+}
+
+impl DatabaseRow {
+    /// Combine the Descriptions into a DescriptionTranslations struct
+    pub fn as_desc_translations(&self) -> DescriptionTranslations {
+        DescriptionTranslations {
+            sv: self.desc_sv.clone(),
+            en: self.desc_en.clone(),
+        }
+    }
+}
 
 /// Contains a description for every [`Language`]
 ///
@@ -30,28 +59,6 @@ pub struct ForceReadPrivateData(pub bool);
 pub struct DescriptionTranslations {
     pub sv: String,
     pub en: String,
-}
-
-/// Generic database row for entities with id, name, and descriptions
-pub(crate) struct DbDescRow {
-    pub id: i32,
-    pub name: String,
-    pub desc_sv: String,
-    pub desc_en: String,
-}
-
-impl DbDescRow {
-    /// Convert to DescriptionTranslations
-    pub fn into_desc_translations(self) -> (i32, String, DescriptionTranslations) {
-        (
-            self.id,
-            self.name,
-            DescriptionTranslations {
-                sv: self.desc_sv,
-                en: self.desc_en,
-            },
-        )
-    }
 }
 
 /// Trait for all structs with a [`DescriptionTranslations`] field.
@@ -74,6 +81,7 @@ pub trait HasDesc {
 
 static DB_POOL: OnceCell<PgPool> = OnceCell::new();
 
+/// Start the database and test the connection
 pub async fn init_database() -> Result<()> {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = PgPoolOptions::new()

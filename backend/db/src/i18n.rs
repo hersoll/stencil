@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
 use anyhow::{Context, Result};
+use std::collections::HashMap;
 use types::lang::Language;
 
 pub async fn get_i18n_for_web(lang: &Language) -> Result<HashMap<String, String>> {

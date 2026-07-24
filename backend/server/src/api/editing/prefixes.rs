@@ -1,7 +1,7 @@
 use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
-use db::prefixes::{self, PrefixEntry};
+use db::prefixes::{self, PrefixEntryForEditor};
 use types::errors::ApiError;
 
 /// Returns all the data about every prefix in the DB as a `Vec<PrefixEntry>`.
@@ -25,7 +25,7 @@ pub async fn get_prefix_from_id(Path(prefix_id): Path<i32>) -> Result<impl IntoR
 
 /// Create a topic in the DB
 pub async fn create_prefix(
-    Json(payload): Json<PrefixEntry>,
+    Json(payload): Json<PrefixEntryForEditor>,
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {payload:#?}");
     match prefixes::create_prefix_from_entry(payload).await {
@@ -39,7 +39,7 @@ pub async fn create_prefix(
 
 /// Update a prefix in the DB
 pub async fn update_prefix(
-    Json(payload): Json<PrefixEntry>,
+    Json(payload): Json<PrefixEntryForEditor>,
 ) -> Result<impl IntoResponse, ApiError> {
     tracing::debug!("Recieved: {payload:#?}");
     match prefixes::update_prefix_from_entry(payload).await {
@@ -52,9 +52,9 @@ pub async fn update_prefix(
 /// Accepts an entire PrefixEntry to keep ergonomics the same
 /// If optimization is needed, can be made to only need an ID
 pub async fn delete_prefix(
-    Json(payload): Json<PrefixEntry>,
+    Json(payload): Json<PrefixEntryForEditor>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let id = payload.id;
+    let id = payload.entry.id;
     match prefixes::delete_prefix_with_id(id).await {
         Ok(name) => Ok((StatusCode::OK, format!("Successfully deleted {name}"))),
         Err(e) => Err(ApiError::Database(e.to_string())),

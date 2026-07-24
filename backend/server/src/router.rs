@@ -56,27 +56,44 @@ pub fn create_router() -> Router {
         .route("/", patch(api::editing::problems::update_problem))
         .route("/", delete(api::editing::problems::delete_problem))
         .route(
-            "/from_topic",
-            post(api::editing::problems::get_problems_from_topic_id),
+            "/from_topic/{topic_id}",
+            get(api::editing::problems::get_problems_from_topic),
         );
     let edit_topic_routes = Router::new()
         .route("/", get(api::editing::topics::get_topics))
         .route("/", post(api::editing::topics::create_topic))
         .route("/", patch(api::editing::topics::update_topic))
         .route("/", delete(api::editing::topics::delete_topic))
-        .route("/ids", post(api::editing::topics::get_topics_from_ids));
+        .route(
+            "/from_chapter/{chapter_id}",
+            get(api::editing::topics::get_topics_from_chapter),
+        )
+        .route(
+            "/from_problem/{problem_id}",
+            get(api::editing::topics::get_topics_from_problem),
+        );
     let edit_chapter_routes = Router::new()
         .route("/", get(api::editing::chapters::get_chapters))
         .route("/", post(api::editing::chapters::create_chapter))
         .route("/", patch(api::editing::chapters::update_chapter))
         .route("/", delete(api::editing::chapters::delete_chapter))
-        .route("/ids", post(api::editing::chapters::get_chapters_from_ids));
+        .route(
+            "/from_course/{course_id}",
+            get(api::editing::chapters::get_chapters_from_course),
+        )
+        .route(
+            "/from_topic/{topic_id}",
+            get(api::editing::chapters::get_chapters_from_topic),
+        );
     let edit_course_routes = Router::new()
         .route("/", get(api::editing::courses::get_courses))
         .route("/", post(api::editing::courses::create_course))
         .route("/", patch(api::editing::courses::update_course))
         .route("/", delete(api::editing::courses::delete_course))
-        .route("/ids", post(api::editing::courses::get_courses_from_ids));
+        .route(
+            "/from_chapter/{id}",
+            get(api::editing::courses::get_courses_from_chapter),
+        );
     let edit_prefix_routes = Router::new()
         .route("/", get(api::editing::prefixes::get_prefixes))
         .route("/", post(api::editing::prefixes::create_prefix))

@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT ch.id, cc.course_id\n        FROM chapters ch\n        JOIN course_chapters cc ON ch.id = cc.chapter_id\n        WHERE cc.course_id = ANY($1)\n        ORDER BY cc.course_id, cc.order_index, ch.name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "course_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "823e55ca4758e7860135ee4708cfb73939542c531ebacb66e9584f0629a019cf"
+}

@@ -106,13 +106,9 @@
     draggedIndex = -1;
   }
   async function fetchChapter() {
-    let res = await fetch(`${API_URL}/edit/chapter/ids`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(chapter_ids)
-    });
+    let res = await fetch(
+      `${API_URL}/edit/chapter/from_${entry.kind}/${entry.id}`
+    );
     if (res.ok) {
       chapters = await res.json();
     } else {
