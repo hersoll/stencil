@@ -1,8 +1,39 @@
 use std::collections::HashMap;
 
-use super::common::{DbDescRow, error_context, error_context_by_name};
-use crate::{DescriptionTranslations, TopicEntry, TopicSpecificData};
+use super::{DbDescRow, error_context, error_context_by_name};
+use crate::{
+    DescriptionTranslations, HasDesc,
+    problems::{ProblemIdsAndDifficulties, TopicSpecificData},
+};
 use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
+
+/// Representation of data about a topic from the DB
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct TopicEntry {
+    pub id: i32,
+    pub name: String,
+    pub desc: DescriptionTranslations,
+    pub chapter_ids: Vec<i32>,
+    pub problems: Vec<ProblemIdsAndDifficulties>,
+}
+impl HasDesc for TopicEntry {
+    fn desc(&self) -> &DescriptionTranslations {
+        &self.desc
+    }
+}
+impl From<DbDescRow> for TopicEntry {
+    fn from(row: DbDescRow) -> Self {
+        let (id, name, desc) = row.into_desc_translations();
+        TopicEntry {
+            id,
+            name,
+            desc,
+            chapter_ids: Vec::new(),
+            problems: Vec::new(),
+        }
+    }
+}
 
 pub async fn get_all_topic_data() -> Result<Vec<TopicEntry>> {
     let pool = crate::get_pool();

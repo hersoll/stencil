@@ -2,7 +2,8 @@ use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
 use db::{
-    ChapterEntry, chapters, courses,
+    chapters::{self, ChapterEntry},
+    courses,
     relationships::{self, ChapterTopics, CourseChapters},
     topics,
 };

@@ -2,7 +2,8 @@ use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
 use db::{
-    CourseEntry, ForceReadPrivateData, chapters, courses,
+    ForceReadPrivateData, chapters,
+    courses::{self, CourseEntry},
     relationships::{self, CourseChapters},
 };
 use types::errors::ApiError;

@@ -1,7 +1,7 @@
 use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
-use db::{PrefixEntry, prefixes};
+use db::prefixes::{self, PrefixEntry};
 use types::errors::ApiError;
 
 /// Returns all the data about every prefix in the DB as a `Vec<PrefixEntry>`.

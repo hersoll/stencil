@@ -1,6 +1,6 @@
 use crate::typst_file_builder::{AnswerSet, QuestionSet};
 use anyhow::{Result, anyhow};
-use db::PrefixEntry;
+use db::prefixes::PrefixEntry;
 use registry::{PREFIX_DATA, RegistryError, get_problem_data};
 use std::collections::HashMap;
 use std::fmt::Write;

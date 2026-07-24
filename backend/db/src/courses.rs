@@ -1,6 +1,32 @@
-use super::common::{DbDescRow, error_context, error_context_by_name};
-use crate::{CourseEntry, ForceReadPrivateData};
+use super::{DbDescRow, error_context, error_context_by_name};
+use crate::{DescriptionTranslations, ForceReadPrivateData, HasDesc};
 use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
+
+/// Representation of data about a course from the DB
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CourseEntry {
+    pub id: i32,
+    pub name: String,
+    pub desc: DescriptionTranslations,
+    pub chapter_ids: Vec<i32>,
+}
+impl HasDesc for CourseEntry {
+    fn desc(&self) -> &DescriptionTranslations {
+        &self.desc
+    }
+}
+impl From<DbDescRow> for CourseEntry {
+    fn from(row: DbDescRow) -> Self {
+        let (id, name, desc) = row.into_desc_translations();
+        CourseEntry {
+            id,
+            name,
+            desc,
+            chapter_ids: Vec::new(),
+        }
+    }
+}
 
 /// Returns every course that is marked as public in the DB.
 ///

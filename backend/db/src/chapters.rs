@@ -1,6 +1,34 @@
-use super::common::{DbDescRow, error_context, error_context_by_name};
-use crate::{ChapterEntry, ForceReadPrivateData};
+use super::{DbDescRow, error_context, error_context_by_name};
+use crate::{DescriptionTranslations, ForceReadPrivateData, HasDesc};
 use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
+
+/// Representation of data about a chapter from the DB
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ChapterEntry {
+    pub id: i32,
+    pub name: String,
+    pub desc: DescriptionTranslations,
+    pub course_ids: Vec<i32>,
+    pub topic_ids: Vec<i32>,
+}
+impl HasDesc for ChapterEntry {
+    fn desc(&self) -> &DescriptionTranslations {
+        &self.desc
+    }
+}
+impl From<DbDescRow> for ChapterEntry {
+    fn from(row: DbDescRow) -> Self {
+        let (id, name, desc) = row.into_desc_translations();
+        ChapterEntry {
+            id,
+            name,
+            desc,
+            course_ids: Vec::new(),
+            topic_ids: Vec::new(),
+        }
+    }
+}
 
 pub async fn get_all_chapter_data() -> Result<Vec<ChapterEntry>> {
     let pool = crate::get_pool();

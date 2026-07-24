@@ -1,13 +1,11 @@
-use super::common::{error_context, error_context_by_name};
-use crate::{
-    DescriptionTranslations, ForceReadPrivateData, ProblemEntry, ProblemTexts, ProblemTranslations,
-    TopicSpecificData,
-};
+use super::{error_context, error_context_by_name};
+use crate::{DescriptionTranslations, ForceReadPrivateData, HasDesc};
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use types::{
     difficulty::{AbsoluteDifficulty, RelativeDifficulty},
     format_strings::{Answer, Question, Solution},
+    lang::Language,
 };
 
 struct DbProblemRow {
@@ -103,6 +101,96 @@ impl From<DbProblemRowWithTopicDifficulties> for ProblemEntry {
     }
 }
 
+/// Used in problems, which contain both the related topics and the associated difficulties
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct TopicSpecificData {
+    pub topic_id: i32,
+    pub absolute_difficulty: AbsoluteDifficulty,
+    pub relative_difficulty: RelativeDifficulty,
+}
+
+/// The texts associated with a specific problem in a certain [`Language`]
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ProblemTexts {
+    pub question: Question,
+    pub answer: Answer,
+    pub solution: Solution,
+}
+
+/// Contains [`ProblemTexts`] for every [`Language`]
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ProblemTranslations {
+    pub sv: ProblemTexts,
+    pub en: ProblemTexts,
+}
+
+/// Representation of data about a problem from the DB
+///
+/// A common pattern is to read this data during problem generation to get question/answer/solution text
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ProblemEntry {
+    pub id: i32,
+    pub name: String,
+    pub desc: DescriptionTranslations,
+    pub module: String,
+    pub prefix_id: Option<i32>,
+    pub translations: ProblemTranslations,
+    pub topic_data: Vec<TopicSpecificData>,
+}
+impl HasDesc for ProblemEntry {
+    fn desc(&self) -> &DescriptionTranslations {
+        &self.desc
+    }
+}
+impl ProblemEntry {
+    pub fn get_question(&self, lang: Language) -> &Question {
+        match lang {
+            Language::Sv => &self.translations.sv.question,
+            Language::En => &self.translations.en.question,
+        }
+    }
+    pub fn get_answer(&self, lang: Language) -> &Answer {
+        match lang {
+            Language::Sv => &self.translations.sv.answer,
+            Language::En => &self.translations.en.answer,
+        }
+    }
+    pub fn get_solution(&self, lang: Language) -> &Solution {
+        match lang {
+            Language::Sv => &self.translations.sv.solution,
+            Language::En => &self.translations.en.solution,
+        }
+    }
+}
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ProblemIdsAndDifficulties {
+    pub problem_id: i32,
+    pub topic_id: i32,
+    pub absolute_difficulty: AbsoluteDifficulty,
+    pub relative_difficulty: RelativeDifficulty,
+}
+impl ProblemIdsAndDifficulties {
+    pub fn from_entry_and_topic_id(entry: &ProblemEntry, topic_id: i32) -> Self {
+        let (absolute_difficulty, relative_difficulty) = match entry
+            .topic_data
+            .iter()
+            .find(|topic| topic.topic_id == topic_id)
+        {
+            Some(topic) => (topic.absolute_difficulty, topic.relative_difficulty),
+            None => (
+                AbsoluteDifficulty::from_num(4),
+                RelativeDifficulty::from_num(4),
+            ),
+        };
+        Self {
+            problem_id: entry.id,
+            topic_id,
+            absolute_difficulty,
+            relative_difficulty,
+        }
+    }
+}
+
 /// Gets all of the info about every problem
 ///
 /// Used for:
@@ -155,35 +243,6 @@ pub async fn get_topic_problems(
         .with_context(|| format!("Failed to get problems for topic {}", topic_id))?;
 
     Ok(problems.into_iter().map(ProblemEntry::from).collect())
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct ProblemIdsAndDifficulties {
-    pub problem_id: i32,
-    pub topic_id: i32,
-    pub absolute_difficulty: AbsoluteDifficulty,
-    pub relative_difficulty: RelativeDifficulty,
-}
-impl ProblemIdsAndDifficulties {
-    pub fn from_entry_and_topic_id(entry: &ProblemEntry, topic_id: i32) -> Self {
-        let (absolute_difficulty, relative_difficulty) = match entry
-            .topic_data
-            .iter()
-            .find(|topic| topic.topic_id == topic_id)
-        {
-            Some(topic) => (topic.absolute_difficulty, topic.relative_difficulty),
-            None => (
-                AbsoluteDifficulty::from_num(4),
-                RelativeDifficulty::from_num(4),
-            ),
-        };
-        Self {
-            problem_id: entry.id,
-            topic_id,
-            absolute_difficulty,
-            relative_difficulty,
-        }
-    }
 }
 
 /// Get problems from topics for PDF generation.

@@ -18,7 +18,7 @@
 //! The gist is that the problems are sorted by absolute difficulty and then relative difficulty,
 //! with randomization within a relative difficulty of the same topic.
 
-use db::ProblemIdsAndDifficulties;
+use db::problems::ProblemIdsAndDifficulties;
 use rand::prelude::*;
 use std::{
     collections::{BTreeMap, HashMap},

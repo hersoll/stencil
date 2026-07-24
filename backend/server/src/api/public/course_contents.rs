@@ -10,8 +10,12 @@ use tracing::info;
 
 use crate::api::parse_language;
 use db::{
-    self, ChapterEntry, CourseEntry, ForceReadPrivateData, HasDesc, ProblemEntry, TopicEntry,
+    self, ForceReadPrivateData, HasDesc,
+    chapters::{ChapterEntry, get_course_chapters},
+    courses::{CourseEntry, get_all_course_data, get_course_by_id, get_course_by_name},
     logging,
+    problems::{ProblemEntry, get_topic_problems},
+    topics::{TopicEntry, get_topics_for_chapters, get_topics_from_ids},
 };
 use types::{errors::ApiError, lang::Language};
 
@@ -120,7 +124,7 @@ struct TopicWithProblems {
 /// and let the frontend handle the structuring in the UI.
 pub async fn get_course_list(Path(lang_code): Path<String>) -> Result<impl IntoResponse, ApiError> {
     let lang = parse_language(&lang_code)?;
-    let courses: Vec<HTTPCourseData> = db::get_all_course_data(ForceReadPrivateData(false))
+    let courses: Vec<HTTPCourseData> = get_all_course_data(ForceReadPrivateData(false))
         .await?
         .into_iter()
         .map(|course| HTTPCourseData::from_course_entry(course, lang))
@@ -152,9 +156,9 @@ pub async fn get_chapters_and_topics_for_course(
         logging::log_course(course.id).await?;
     }
 
-    let chapters = db::get_course_chapters(&course.id, ForceReadPrivateData(false)).await?;
+    let chapters = get_course_chapters(&course.id, ForceReadPrivateData(false)).await?;
     let chapter_ids: Vec<i32> = chapters.iter().map(|c| c.id).collect();
-    let topics_by_chapter = db::get_topics_for_chapters(&chapter_ids).await?;
+    let topics_by_chapter = get_topics_for_chapters(&chapter_ids).await?;
 
     let chapters: Vec<ChapterWithTopics> = chapters
         .into_iter()
@@ -202,10 +206,10 @@ pub async fn get_problems_for_topics(
         }
     };
     let lang = parse_language(&lang_code)?;
-    let topics = db::get_topics_from_ids(&topic_ids).await?;
+    let topics = get_topics_from_ids(&topic_ids).await?;
     let mut topics_with_problems = Vec::new();
     for topic in topics {
-        let problems = db::get_topic_problems(&topic.id, ForceReadPrivateData(false))
+        let problems = get_topic_problems(&topic.id, ForceReadPrivateData(false))
             .await?
             .into_iter()
             .map(|problem| HTTPProblemData::from_problem_and_topic_id(&problem, topic.id, lang))
@@ -224,8 +228,8 @@ pub async fn get_problems_for_topics(
 /// Tries to parse either a course ID or a course name from a `&str` and finds that [`CourseEntry`].
 async fn parse_course_path(course_path: &str) -> Result<CourseEntry, ApiError> {
     let course_entry = match course_path.parse::<i32>() {
-        Ok(id) => db::get_course_by_id(id).await?,
-        Err(_) => db::get_course_by_name(course_path).await?,
+        Ok(id) => get_course_by_id(id).await?,
+        Err(_) => get_course_by_name(course_path).await?,
     };
 
     Ok(course_entry)

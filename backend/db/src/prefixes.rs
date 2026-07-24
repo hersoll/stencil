@@ -1,6 +1,7 @@
-use super::common::{error_context, error_context_by_name};
-use crate::{PrefixEntry, PrefixTexts, PrefixTranslations};
+use super::{error_context, error_context_by_name};
 use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
+use types::lang::Language;
 
 struct DbPrefixRow {
     id: i32,
@@ -9,6 +10,45 @@ struct DbPrefixRow {
     text_en: String,
     group_text_sv: String,
     group_text_en: String,
+}
+
+/// The texts associated with a specific prefix in a certain [`Language`]
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct PrefixTexts {
+    pub text: String,
+    pub group_text: String,
+}
+
+/// Contains [`PrefixTexts`] for every [`Language`]
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct PrefixTranslations {
+    pub sv: PrefixTexts,
+    pub en: PrefixTexts,
+}
+
+/// Representation of prefix data in the DB
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct PrefixEntry {
+    pub id: i32,
+    pub name: String,
+    pub translations: PrefixTranslations,
+}
+impl PrefixEntry {
+    /// Get the text in a specific [`Language`] for a prefix in its singular form.
+    pub fn get_text(&self, lang: Language) -> &str {
+        match lang {
+            Language::Sv => &self.translations.sv.text,
+            Language::En => &self.translations.en.text,
+        }
+    }
+
+    /// Get the text in a specific [`Language`] for a prefix in its group form.
+    pub fn get_group_text(&self, lang: Language) -> &str {
+        match lang {
+            Language::Sv => &self.translations.sv.group_text,
+            Language::En => &self.translations.en.group_text,
+        }
+    }
 }
 
 impl From<DbPrefixRow> for PrefixEntry {

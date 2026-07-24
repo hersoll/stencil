@@ -2,9 +2,10 @@ use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde_json::json;
 
 use db::{
-    ForceReadPrivateData, ProblemIdsAndDifficulties, TopicEntry, chapters, problems,
+    ForceReadPrivateData, chapters,
+    problems::{self, ProblemIdsAndDifficulties},
     relationships::{self, ChapterTopics, TopicProblems},
-    topics,
+    topics::{self, TopicEntry},
 };
 use types::errors::ApiError;
 

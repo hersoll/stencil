@@ -31,7 +31,7 @@ pub async fn generate_problem_set(
     lang: Language,
 ) -> Result<Vec<Problem>, ApiError> {
     // Is of type {id: i32, absolute_difficulty, relative_difficulty}
-    let problems = db::get_valid_problems_from_pdf_request(
+    let problems = db::problems::get_valid_problems_from_pdf_request(
         options.topics,
         options.exclusions,
         DifficultyCategory::categories_to_absolute_difficulties(
