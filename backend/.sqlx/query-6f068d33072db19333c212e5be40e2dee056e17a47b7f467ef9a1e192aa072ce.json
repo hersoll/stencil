@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE prefixes \n        SET public = true\n        WHERE public = false",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "6f068d33072db19333c212e5be40e2dee056e17a47b7f467ef9a1e192aa072ce"
+}

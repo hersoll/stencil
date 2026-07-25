@@ -99,3 +99,14 @@ pub async fn delete_topic(
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }
+
+pub async fn publish_topics() -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved publish topic request");
+    match topics::publish_all_topics().await {
+        Ok(published_count) => Ok((
+            StatusCode::OK,
+            format!("Published {published_count} topics"),
+        )),
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}

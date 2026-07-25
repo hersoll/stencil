@@ -247,3 +247,17 @@ pub async fn delete_chapter_with_id(id: i32) -> Result<String> {
 
     Ok(result.name)
 }
+/// Makes every chapter public
+pub async fn publish_all_chapters() -> Result<u64> {
+    let pool = crate::get_pool();
+    let updated = sqlx::query!(
+        r#"UPDATE chapters 
+        SET public = true
+        WHERE public = false"#,
+    )
+    .execute(pool)
+    .await
+    .with_context(|| "Failed to publish chapters")?;
+
+    Ok(updated.rows_affected())
+}

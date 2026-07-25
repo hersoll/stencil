@@ -1,10 +1,11 @@
 # Changelog
 
-## [0.12.0] - TBD
+## [0.12.0] - 2026-07-25
 
 ### Added
 - The `public` field is editable in the editor, and private entries are highlighted in the list
 - Made the entry list in the web editor adapt to narrower screens
+- Added API and editor button for making every entry public
 
 ### Changed
 - Extensive refactor of `db`:

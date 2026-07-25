@@ -104,12 +104,20 @@ pub fn create_router() -> Router {
             get(api::editing::prefixes::get_prefix_from_id),
         );
 
+    let publish_routes = Router::new()
+        .route("/course", get(api::editing::courses::publish_courses))
+        .route("/chapter", get(api::editing::chapters::publish_chapters))
+        .route("/topic", get(api::editing::topics::publish_topics))
+        .route("/problem", get(api::editing::problems::publish_problems))
+        .route("/prefix", get(api::editing::prefixes::publish_prefixes));
+
     let edit_routes = Router::new()
         .nest("/edit/problem", edit_problem_routes)
         .nest("/edit/topic", edit_topic_routes)
         .nest("/edit/chapter", edit_chapter_routes)
         .nest("/edit/course", edit_course_routes)
-        .nest("/edit/prefix", edit_prefix_routes);
+        .nest("/edit/prefix", edit_prefix_routes)
+        .nest("/edit/publish", publish_routes);
 
     let leaderboard_routes = Router::new()
         .route("/topics/{duration}", get(leaderboards::most_used_topics))

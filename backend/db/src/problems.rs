@@ -512,3 +512,18 @@ pub async fn update_difficulties_for_problems(
 
     Ok(())
 }
+
+/// Makes every problem public
+pub async fn publish_all_problems() -> Result<u64> {
+    let pool = crate::get_pool();
+    let updated = sqlx::query!(
+        r#"UPDATE problems 
+        SET public = true
+        WHERE public = false"#,
+    )
+    .execute(pool)
+    .await
+    .with_context(|| "Failed to publish problems")?;
+
+    Ok(updated.rows_affected())
+}

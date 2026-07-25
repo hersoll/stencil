@@ -83,6 +83,11 @@
     }
   }
 
+  async function publishEntries() {
+    const response = await fetch(`${API_URL}/edit/publish/${kind}`);
+    serverMessage.show(response);
+  }
+
   function handleEntryDrag(entry: Entry) {
     clickedEntry = entry;
   }
@@ -137,6 +142,10 @@
       {editDialog}
     />
   </div>
+
+  <button class="publish-all-btn" onclick={publishEntries}>
+    Publish every {kind}
+  </button>
   <button
     class="clear-btn"
     onclick={() => {
@@ -144,8 +153,10 @@
       else {
         activeEntry = null;
       }
-    }}>Clear</button
+    }}
   >
+    Clear
+  </button>
 </main>
 
 <ContextMenu
@@ -223,6 +234,14 @@
     position: absolute;
     top: 2rem;
     right: 2rem;
+    box-shadow: var(--shadow-elevation-low);
+  }
+
+  .publish-all-btn {
+    position: absolute;
+    top: 2rem;
+    right: 8rem;
+    background-color: lavender;
     box-shadow: var(--shadow-elevation-low);
   }
 </style>

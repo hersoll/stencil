@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE chapters \n        SET public = true\n        WHERE public = false",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "ee6dc1540d638a5fd175514b234cf37030197f6039b2c78c5447fefccfe5519b"
+}

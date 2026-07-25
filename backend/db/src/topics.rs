@@ -294,3 +294,18 @@ pub async fn delete_topic_with_id(id: i32) -> Result<String> {
 
     Ok(result.name)
 }
+
+/// Makes every topic public
+pub async fn publish_all_topics() -> Result<u64> {
+    let pool = crate::get_pool();
+    let updated = sqlx::query!(
+        r#"UPDATE topics 
+        SET public = true
+        WHERE public = false"#,
+    )
+    .execute(pool)
+    .await
+    .with_context(|| "Failed to publish topics")?;
+
+    Ok(updated.rows_affected())
+}

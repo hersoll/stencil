@@ -116,3 +116,14 @@ pub async fn delete_chapter(
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }
+
+pub async fn publish_chapters() -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved publish chapter request");
+    match chapters::publish_all_chapters().await {
+        Ok(published_count) => Ok((
+            StatusCode::OK,
+            format!("Published {published_count} chapters"),
+        )),
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}

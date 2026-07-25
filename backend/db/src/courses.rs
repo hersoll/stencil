@@ -207,3 +207,18 @@ pub async fn delete_course_with_id(id: i32) -> Result<String> {
 
     Ok(result.name)
 }
+
+/// Makes every course public
+pub async fn publish_all_courses() -> Result<u64> {
+    let pool = crate::get_pool();
+    let updated = sqlx::query!(
+        r#"UPDATE courses 
+        SET public = true
+        WHERE public = false"#,
+    )
+    .execute(pool)
+    .await
+    .with_context(|| "Failed to publish courses")?;
+
+    Ok(updated.rows_affected())
+}

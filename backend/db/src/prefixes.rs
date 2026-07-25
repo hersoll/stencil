@@ -203,3 +203,18 @@ pub async fn delete_prefix_with_id(id: i32) -> Result<String> {
 
     Ok(result.name)
 }
+
+/// Makes every prefix public
+pub async fn publish_all_prefixes() -> Result<u64> {
+    let pool = crate::get_pool();
+    let updated = sqlx::query!(
+        r#"UPDATE prefixes 
+        SET public = true
+        WHERE public = false"#,
+    )
+    .execute(pool)
+    .await
+    .with_context(|| "Failed to publish prefixes")?;
+
+    Ok(updated.rows_affected())
+}

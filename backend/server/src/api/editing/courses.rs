@@ -85,3 +85,14 @@ pub async fn delete_course(
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }
+
+pub async fn publish_courses() -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved publish course request");
+    match courses::publish_all_courses().await {
+        Ok(published_count) => Ok((
+            StatusCode::OK,
+            format!("Published {published_count} courses"),
+        )),
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}

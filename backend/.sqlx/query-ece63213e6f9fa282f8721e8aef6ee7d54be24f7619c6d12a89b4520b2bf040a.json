@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE topics \n        SET public = true\n        WHERE public = false",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "ece63213e6f9fa282f8721e8aef6ee7d54be24f7619c6d12a89b4520b2bf040a"
+}

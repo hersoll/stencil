@@ -60,3 +60,14 @@ pub async fn delete_prefix(
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }
+
+pub async fn publish_prefixes() -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved publish prefix request");
+    match prefixes::publish_all_prefixes().await {
+        Ok(published_count) => Ok((
+            StatusCode::OK,
+            format!("Published {published_count} prefixes"),
+        )),
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}

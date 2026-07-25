@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE problems \n        SET public = true\n        WHERE public = false",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "349d144ef45e867f162d73d418fac475241b7395c6033f4e25791c1df92de8b2"
+}

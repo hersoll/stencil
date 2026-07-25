@@ -97,3 +97,14 @@ pub async fn delete_problem(
         Err(e) => Err(ApiError::Database(e.to_string())),
     }
 }
+
+pub async fn publish_problems() -> Result<impl IntoResponse, ApiError> {
+    tracing::debug!("Recieved publish problem request");
+    match problems::publish_all_problems().await {
+        Ok(published_count) => Ok((
+            StatusCode::OK,
+            format!("Published {published_count} problems"),
+        )),
+        Err(e) => Err(ApiError::Database(e.to_string())),
+    }
+}
