@@ -282,15 +282,19 @@
   .list-header {
     display: grid;
     column-gap: 0.5rem;
-    grid-template-columns: 15rem 20rem;
+    grid-template-columns:
+      clamp(10rem, calc(45vw - 30.45rem), 15rem)
+      clamp(14rem, calc(60vw - 40rem), 20rem);
     padding-left: 0.5rem;
   }
   .list-header {
     margin-bottom: 0.5rem;
   }
   .new-entry {
-    grid-template-columns: 35.5rem;
     justify-items: center;
+    .list-text {
+      grid-column: 1 / 3;
+    }
   }
 
   .reset-btn {
