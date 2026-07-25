@@ -1,12 +1,12 @@
 [package]
 name = "types"
-version = "0.11.1"
+version = "0.12.0"
 edition = "2024"
 
 [dependencies]
 anyhow = { version = "1.0.100", features = ["backtrace"] }
 axum = {version = "0.8.7", features = ["macros"]}
-math = { version = "0.11.0", path = "../math" }
+math = { version = "0.12.0", path = "../math" }
 serde = { version = "1.0.219", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["postgres"]}
 thiserror = "2.0.17"
