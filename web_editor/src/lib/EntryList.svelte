@@ -29,7 +29,13 @@
   let listElement: HTMLDivElement;
   let defaultEntry: Entry;
 
+  const MINIMUM_SEARCH_CHARS = 3;
   function matchesSearch(entry: Entry, search: string): boolean {
+    // Only start searching after minimum
+    if (search.length < MINIMUM_SEARCH_CHARS) {
+      return true;
+    }
+
     search = search.toLowerCase();
     if (search.startsWith('id: ')) {
       return entry.id.toString() == search.slice(4);
@@ -37,6 +43,13 @@
     if (search.startsWith('name: ')) {
       return entry.name.includes(search.slice(6));
     }
+    if ('public'.startsWith(search)) {
+      return entry.public;
+    }
+    if ('private'.startsWith(search)) {
+      return !entry.public;
+    }
+
     return (
       entry.name.includes(search) ||
       ((entry.kind == 'problem' ||

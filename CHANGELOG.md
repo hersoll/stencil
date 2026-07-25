@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12.1] - TBD
+
+### Added
+- You can now search for `public` or `private` in the web editor
+
 ## [0.12.0] - 2026-07-25
 
 ### Added
