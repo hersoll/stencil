@@ -2,6 +2,10 @@
 
 ## [0.12.0] - TBD
 
+### Added
+- The `public` field is editable in the editor, and private entries are highlighted in the list
+- Made the entry list in the web editor adapt to narrower screens
+
 ### Changed
 - Extensive refactor of `db`:
   - Refactored `db` types by putting them with their respective functions for reduced cognitive load and easier expanding in the future
@@ -9,7 +13,6 @@
   - Program scans for `production_mode` just once and then stores it in a `Lazy`
   - `get_X_from_ids` have been replaced with `get_X_from_Y_id` to reduce data sending back and forth
   - Optimized every load of the entry list in the editor by just hitting the DB twice in total, instead of once (or twice!) for every entry
-- Made the entry list in the web editor adapt to narrower screens
 
 ## [0.11.1] - 2026-07-23
 

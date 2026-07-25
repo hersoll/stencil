@@ -56,7 +56,10 @@
     <span></span>
     <label for="name" class="name-label">Name</label>
 
-    <span></span>
+    <div style="display: flex; align-items: center;">
+      <label for="public" style="margin-right: 0.4rem;">Public?</label>
+      <input name="public" type="checkbox" bind:checked={prefix.public} />
+    </div>
     <input
       name="name"
       type="text"

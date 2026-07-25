@@ -214,7 +214,9 @@
     </button>
     {#each foundEntries as entry, i}
       <button
-        class="list-entry no-select {false ? 'dragging' : ''}"
+        class="list-entry no-select {false ? 'dragging' : ''} {entry.public
+          ? ''
+          : 'private'}"
         onclick={e => handleEntryClick(e, entry)}
         draggable="true"
         in:fly={{ y: 40, duration: 400, delay: 20 * i }}
@@ -313,7 +315,7 @@
   .list-grid {
     flex: 1;
     min-height: 0;
-    background-color: var(--bg);
+    background: none;
     display: flex;
     flex-direction: column;
     row-gap: 0.25rem;
@@ -338,6 +340,13 @@
     padding: 0.5rem;
     border-radius: 0.5rem;
     cursor: pointer;
+
+    &.private {
+      background-color: lavender;
+      .list-text {
+        color: var(--primary-text);
+      }
+    }
   }
 
   .list-text {

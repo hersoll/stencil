@@ -82,7 +82,10 @@
     <label for="module">Module</label>
     <label for="name">Name</label>
 
-    <div></div>
+    <div style="display: flex; align-items: center;">
+      <label for="public" style="margin-right: 0.4rem;">Public?</label>
+      <input name="public" type="checkbox" bind:checked={problem.public} />
+    </div>
     <input
       name="module"
       type="text"
