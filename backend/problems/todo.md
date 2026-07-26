@@ -1,6 +1,8 @@
 ## Order of operations
-- [ ] 3 + 4 * 7
-- [ ] 10 - 4 * 2 (Positive answers only)
+- [x] 3 + 4 * 7
+- [x] 10 - 4 * 2 (Positive answers only)
+- [x] 5 * 2 + 4 * 3
+- [ ] 6 * 3 - 4 * 2
 - [ ] 2 * 3^2
 - [ ] 13 - 3^2
 
