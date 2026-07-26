@@ -16,6 +16,7 @@
     draggedOver,
     originalEntry = $bindable(),
     activeEntry = $bindable(),
+    entryIsCopy,
     dropPriority = $bindable()
   }: {
     topic: TopicEntry;
@@ -23,6 +24,7 @@
     draggedEntry: Entry | null;
     originalEntry: string;
     activeEntry: Entry | null;
+    entryIsCopy: boolean;
     dropPriority: boolean;
   } = $props();
 
@@ -55,7 +57,7 @@
   class:dragged-over={draggedOver}
   in:fly={{ y: -15, duration: 600 }}
 >
-  <NewOrEditingLabel entry={topic} />
+  <NewOrEditingLabel entry={topic} {entryIsCopy} />
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">

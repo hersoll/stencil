@@ -7,6 +7,9 @@
 - The "publish every X" button only shows when there is something to publish
 - Added four `order_of_operations` problems
 
+### Fixed
+- Copies in editor now load their related entries properly
+
 ## [0.12.0] - 2026-07-25
 
 ### Added

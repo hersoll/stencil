@@ -16,6 +16,7 @@
     draggedEntry,
     originalEntry = $bindable(),
     activeEntry = $bindable(),
+    entryIsCopy,
     draggedOver,
     dropPriority = $bindable()
   }: {
@@ -23,6 +24,7 @@
     draggedOver: boolean;
     originalEntry: string;
     activeEntry: Entry | null;
+    entryIsCopy: boolean;
     draggedEntry: Entry | null;
     dropPriority: boolean;
   } = $props();
@@ -31,12 +33,11 @@
   let currentPrefix: PrefixEntryRaw | null = $state(null);
 
   async function handleSubmit() {
-    const method =
-      problem.id < 0
-        ? // New problem
-          'POST'
-        : // Existing problem
-          'PATCH';
+    const method = entryIsCopy
+      ? // New problem
+        'POST'
+      : // Existing problem
+        'PATCH';
     const response = await fetch(`${API_URL}/edit/problem`, {
       method,
       headers: {
@@ -74,7 +75,7 @@
   class:dragged-over={draggedOver}
   in:fly={{ y: -15, duration: 600 }}
 >
-  <NewOrEditingLabel entry={problem} />
+  <NewOrEditingLabel entry={problem} {entryIsCopy} />
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">

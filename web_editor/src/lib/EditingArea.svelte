@@ -13,12 +13,14 @@
     activeEntry = $bindable(),
     clickedEntry,
     entryHasBeenEdited,
+    entryIsCopy,
     editDialog
   }: {
     originalEntry: string;
     activeEntry: Entry | null;
     clickedEntry: Entry | null;
     entryHasBeenEdited: boolean;
+    entryIsCopy: boolean;
     editDialog: ConfirmDialog;
   } = $props();
 
@@ -109,6 +111,7 @@
       {draggedOver}
       bind:originalEntry
       bind:activeEntry
+      {entryIsCopy}
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
     />
@@ -117,6 +120,7 @@
       bind:prefix={activeEntry}
       {draggedOver}
       bind:activeEntry
+      {entryIsCopy}
       bind:originalEntry
     />
   {:else if activeEntry?.kind == 'topic'}
@@ -126,6 +130,7 @@
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
       bind:activeEntry
+      {entryIsCopy}
       bind:originalEntry
     />
   {:else if activeEntry?.kind == 'chapter'}
@@ -135,6 +140,7 @@
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
       bind:activeEntry
+      {entryIsCopy}
       bind:originalEntry
     />
   {:else if activeEntry?.kind == 'course'}
@@ -144,6 +150,7 @@
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
       bind:activeEntry
+      {entryIsCopy}
       bind:originalEntry
     />
   {/if}

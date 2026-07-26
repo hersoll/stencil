@@ -12,11 +12,13 @@
     prefix = $bindable(),
     originalEntry = $bindable(),
     activeEntry = $bindable(),
+    entryIsCopy,
     draggedOver
   }: {
     prefix: PrefixEntry;
     originalEntry: string;
     activeEntry: Entry | null;
+    entryIsCopy: boolean;
     draggedOver: boolean;
   } = $props();
 
@@ -49,7 +51,7 @@
   class:dragged-over={draggedOver}
   in:fly={{ y: -15, duration: 600 }}
 >
-  <NewOrEditingLabel entry={prefix} />
+  <NewOrEditingLabel entry={prefix} {entryIsCopy} />
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">

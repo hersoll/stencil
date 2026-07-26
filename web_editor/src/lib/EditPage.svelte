@@ -12,6 +12,7 @@
   let activeEntry = $state<Entry | null>(null);
   let originalEntry = $state('');
   let entryHasBeenEdited = $state(false);
+  let entryIsCopy = $state(false);
 
   let privateEntryCount = $state(0);
 
@@ -51,6 +52,7 @@
     if (clickedEntry) {
       activeEntry = { ...clickedEntry };
       originalEntry = JSON.stringify(activeEntry);
+      entryIsCopy = false;
     }
     clickedEntry = null;
   }
@@ -65,8 +67,9 @@
 
   function commitCopy() {
     if (clickedEntry) {
-      activeEntry = { ...clickedEntry, id: -1 };
+      activeEntry = { ...clickedEntry };
       originalEntry = JSON.stringify(activeEntry);
+      entryIsCopy = true;
     }
     clickedEntry = null;
   }
@@ -142,6 +145,7 @@
       bind:activeEntry
       bind:originalEntry
       {entryHasBeenEdited}
+      {entryIsCopy}
       {editDialog}
     />
   </div>

@@ -16,6 +16,7 @@
     draggedOver,
     originalEntry = $bindable(),
     activeEntry = $bindable(),
+    entryIsCopy,
     dropPriority = $bindable()
   }: {
     chapter: ChapterEntry;
@@ -23,18 +24,18 @@
     draggedEntry: Entry | null;
     originalEntry: string;
     activeEntry: Entry | null;
+    entryIsCopy: boolean;
     dropPriority: boolean;
   } = $props();
 
   let serverMessage: ServerMessage;
 
   async function handleSubmit() {
-    const method =
-      chapter.id < 0
-        ? // New topic
-          'POST'
-        : // Existing topic
-          'PATCH';
+    const method = entryIsCopy
+      ? // New topic
+        'POST'
+      : // Existing topic
+        'PATCH';
     const response = await fetch(`${API_URL}/edit/chapter`, {
       method,
       headers: {
@@ -55,7 +56,7 @@
   class:dragged-over={draggedOver}
   in:fly={{ y: -15, duration: 600 }}
 >
-  <NewOrEditingLabel entry={chapter} />
+  <NewOrEditingLabel entry={chapter} {entryIsCopy} />
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">
