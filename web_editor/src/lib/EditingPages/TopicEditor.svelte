@@ -17,7 +17,8 @@
     originalEntry = $bindable(),
     activeEntry = $bindable(),
     entryIsCopy,
-    dropPriority = $bindable()
+    dropPriority = $bindable(),
+    resetList
   }: {
     topic: TopicEntry;
     draggedOver: boolean;
@@ -26,17 +27,17 @@
     activeEntry: Entry | null;
     entryIsCopy: boolean;
     dropPriority: boolean;
+    resetList: Function;
   } = $props();
 
   let serverMessage: ServerMessage;
 
   async function handleSubmit() {
-    const method =
-      topic.id < 0
-        ? // New problem
-          'POST'
-        : // Existing problem
-          'PATCH';
+    const method = entryIsCopy
+      ? // New problem
+        'POST'
+      : // Existing problem
+        'PATCH';
     const response = await fetch(`${API_URL}/edit/topic`, {
       method,
       headers: {
@@ -47,6 +48,7 @@
 
     originalEntry = JSON.stringify(activeEntry);
     serverMessage.show(response);
+    resetList();
   }
 </script>
 

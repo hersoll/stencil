@@ -14,6 +14,7 @@
     clickedEntry,
     entryHasBeenEdited,
     entryIsCopy,
+    resetList,
     editDialog
   }: {
     originalEntry: string;
@@ -21,6 +22,7 @@
     clickedEntry: Entry | null;
     entryHasBeenEdited: boolean;
     entryIsCopy: boolean;
+    resetList: Function;
     editDialog: ConfirmDialog;
   } = $props();
 
@@ -114,6 +116,7 @@
       {entryIsCopy}
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
+      {resetList}
     />
   {:else if activeEntry?.kind == 'prefix'}
     <PrefixEditor
@@ -122,6 +125,7 @@
       bind:activeEntry
       {entryIsCopy}
       bind:originalEntry
+      {resetList}
     />
   {:else if activeEntry?.kind == 'topic'}
     <TopicEditor
@@ -132,6 +136,7 @@
       bind:activeEntry
       {entryIsCopy}
       bind:originalEntry
+      {resetList}
     />
   {:else if activeEntry?.kind == 'chapter'}
     <ChapterEditor
@@ -142,6 +147,7 @@
       bind:activeEntry
       {entryIsCopy}
       bind:originalEntry
+      {resetList}
     />
   {:else if activeEntry?.kind == 'course'}
     <CourseEditor
@@ -152,6 +158,7 @@
       bind:activeEntry
       {entryIsCopy}
       bind:originalEntry
+      {resetList}
     />
   {/if}
 </div>

@@ -13,24 +13,25 @@
     originalEntry = $bindable(),
     activeEntry = $bindable(),
     entryIsCopy,
-    draggedOver
+    draggedOver,
+    resetList
   }: {
     prefix: PrefixEntry;
     originalEntry: string;
     activeEntry: Entry | null;
     entryIsCopy: boolean;
     draggedOver: boolean;
+    resetList: Function;
   } = $props();
 
   let serverMessage: ServerMessage;
 
   async function handleSubmit() {
-    const method =
-      prefix.id < 0
-        ? // New problem
-          'POST'
-        : // Existing problem
-          'PATCH';
+    const method = entryIsCopy
+      ? // New problem
+        'POST'
+      : // Existing problem
+        'PATCH';
     const response = await fetch(`${API_URL}/edit/prefix`, {
       method,
       headers: {
@@ -41,6 +42,7 @@
 
     originalEntry = JSON.stringify(activeEntry);
     serverMessage.show(response);
+    resetList();
   }
 </script>
 

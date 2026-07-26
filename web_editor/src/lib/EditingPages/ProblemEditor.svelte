@@ -18,7 +18,8 @@
     activeEntry = $bindable(),
     entryIsCopy,
     draggedOver,
-    dropPriority = $bindable()
+    dropPriority = $bindable(),
+    resetList
   }: {
     problem: ProblemEntry;
     draggedOver: boolean;
@@ -27,6 +28,7 @@
     entryIsCopy: boolean;
     draggedEntry: Entry | null;
     dropPriority: boolean;
+    resetList: Function;
   } = $props();
 
   let serverMessage: ServerMessage;
@@ -48,6 +50,7 @@
 
     serverMessage.show(response);
     originalEntry = JSON.stringify(activeEntry);
+    resetList();
   }
 
   async function loadPrefixData() {

@@ -15,6 +15,8 @@
   let entryIsCopy = $state(false);
 
   let privateEntryCount = $state(0);
+  // Will contain the reset function from the EntryList, so it can be called inside this component
+  let resetList = $state(() => {});
 
   type Kind = 'problem' | 'topic' | 'chapter' | 'course' | 'prefix';
   let kind = $state<Kind>('problem');
@@ -85,6 +87,7 @@
       });
 
       serverMessage.show(response);
+      resetList();
     }
   }
 
@@ -138,6 +141,7 @@
       {handleEntryDrag}
       {handleEntryDrop}
       {onClickOutsideList}
+      bind:resetList
       getPrivateCount={(count: number) => (privateEntryCount = count)}
     />
     <EditingArea
@@ -147,6 +151,7 @@
       {entryHasBeenEdited}
       {entryIsCopy}
       {editDialog}
+      {resetList}
     />
   </div>
 

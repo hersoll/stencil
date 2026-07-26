@@ -23,7 +23,8 @@
     handleEntryDrag,
     handleEntryDrop,
     onClickOutsideList,
-    getPrivateCount
+    getPrivateCount,
+    resetList = $bindable()
   } = $props();
   let search = $state('');
   let entries = $state<Entry[]>([]);
@@ -156,7 +157,7 @@
     return () => document.removeEventListener('click', handleOutsideClick);
   });
 
-  async function resetList() {
+  resetList = async function resetList() {
     entries = [];
     switch (kind) {
       case 'problem':
@@ -175,7 +176,7 @@
         await getPrefixes();
         break;
     }
-  }
+  };
 
   $effect(() => {
     switch (kind) {

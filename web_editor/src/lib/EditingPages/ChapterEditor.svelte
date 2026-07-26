@@ -17,7 +17,8 @@
     originalEntry = $bindable(),
     activeEntry = $bindable(),
     entryIsCopy,
-    dropPriority = $bindable()
+    dropPriority = $bindable(),
+    resetList
   }: {
     chapter: ChapterEntry;
     draggedOver: boolean;
@@ -26,6 +27,7 @@
     activeEntry: Entry | null;
     entryIsCopy: boolean;
     dropPriority: boolean;
+    resetList: Function;
   } = $props();
 
   let serverMessage: ServerMessage;
@@ -46,6 +48,7 @@
 
     originalEntry = JSON.stringify(activeEntry);
     serverMessage.show(response);
+    resetList();
   }
 </script>
 
