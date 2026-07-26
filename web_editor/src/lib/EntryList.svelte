@@ -22,12 +22,19 @@
     handleEntryClick,
     handleEntryDrag,
     handleEntryDrop,
-    onClickOutsideList
+    onClickOutsideList,
+    getPrivateCount
   } = $props();
   let search = $state('');
   let entries = $state<Entry[]>([]);
   let listElement: HTMLDivElement;
   let defaultEntry: Entry;
+
+  // Count the number of private entries
+  let privateCount = $derived(entries.filter(e => !e.public).length);
+  $effect(() => {
+    getPrivateCount(privateCount);
+  });
 
   const MINIMUM_SEARCH_CHARS = 3;
   function matchesSearch(entry: Entry, search: string): boolean {

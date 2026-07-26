@@ -4,6 +4,7 @@
 
 ### Added
 - You can now search for `public` or `private` in the web editor
+- The "publish every X" button only shows when there is something to publish
 
 ## [0.12.0] - 2026-07-25
 

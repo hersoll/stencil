@@ -13,6 +13,8 @@
   let originalEntry = $state('');
   let entryHasBeenEdited = $state(false);
 
+  let privateEntryCount = $state(0);
+
   type Kind = 'problem' | 'topic' | 'chapter' | 'course' | 'prefix';
   let kind = $state<Kind>('problem');
   let kinds = [
@@ -133,6 +135,7 @@
       {handleEntryDrag}
       {handleEntryDrop}
       {onClickOutsideList}
+      getPrivateCount={(count: number) => (privateEntryCount = count)}
     />
     <EditingArea
       {clickedEntry}
@@ -143,9 +146,11 @@
     />
   </div>
 
-  <button class="publish-all-btn" onclick={publishEntries}>
-    Publish every {kind}
-  </button>
+  {#if privateEntryCount > 0}
+    <button class="publish-all-btn" onclick={publishEntries}>
+      Publish every {kind} ({privateEntryCount})
+    </button>
+  {/if}
   <button
     class="clear-btn"
     onclick={() => {
