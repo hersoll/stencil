@@ -13,6 +13,7 @@ use once_cell::sync::{Lazy, OnceCell};
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, postgres::PgPoolOptions};
 
+use tracing::info;
 use types::lang::Language;
 
 pub type ID = i32;
@@ -102,6 +103,12 @@ pub async fn init_database() -> Result<()> {
         .execute(pool)
         .await
         .context("Test connection to db failed")?;
+
+    if production_mode() {
+        info!("Running in production mode!")
+    } else {
+        info!("Running in dev mode!")
+    }
 
     Ok(())
 }
