@@ -5,7 +5,7 @@
 ### Added
 - You can now search for `public` or `private` in the web editor
 - The "publish every X" button only shows when there is something to publish
-- Added four `order_of_operations` problems
+- Added five `order_of_operations` problems
 - Web editor list auto-refreshes when an entry is changed
 
 ### Fixed
