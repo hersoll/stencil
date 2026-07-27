@@ -9,9 +9,13 @@
 - Web editor list auto-refreshes when an entry is changed
 - Backend prints whether it's in dev or prod mode during startup
 
+### Changed
+- Renamed `web_editor` to `editor` and `stats_page` to `dashboard`
+
 ### Fixed
 - Copies in editor now load their related entries properly
 - Fixed reordering bug in editor lists - as a bonus the editor no longer queries the backend on every reorder
+
 
 ## [0.12.0] - 2026-07-25
 

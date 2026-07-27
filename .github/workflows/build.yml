@@ -53,7 +53,7 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/stencil-frontend:latest
 
-  web_editor:
+  editor:
     runs-on: ubuntu-latest
 
     permissions:
@@ -70,14 +70,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Web Editor
+      - name: Build and Push Editor
         uses: docker/build-push-action@v7
         with:
-          context: ./web_editor
+          context: ./editor
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/stencil-web-editor:latest
+          tags: ghcr.io/${{ github.repository_owner }}/stencil-editor:latest
 
-  stats:
+  dashboard:
     runs-on: ubuntu-latest
 
     permissions:
@@ -94,9 +94,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Stats
+      - name: Build and Push Dashboard
         uses: docker/build-push-action@v7
         with:
-          context: ./stats_page
+          context: ./dashboard
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/stencil-stats:latest
+          tags: ghcr.io/${{ github.repository_owner }}/stencil-dashboard:latest
