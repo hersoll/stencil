@@ -5,7 +5,7 @@
 ### Added
 - You can now search for `public` or `private` in the web editor
 - The "publish every X" button only shows when there is something to publish
-- Added five `order_of_operations` problems
+- Added `order_of_operations` problems
 - Web editor list auto-refreshes when an entry is changed
 - Backend prints whether it's in dev or prod mode during startup
 

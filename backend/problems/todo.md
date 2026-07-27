@@ -3,13 +3,17 @@
 - [x] 10 - 4 * 2 (Positive answers only)
 - [x] 5 * 2 + 4 * 3
 - [x] 6 * 3 - 4 * 2
-- [ ] 10 + (2 + 1) * 3
-- [ ] 20 - (2 + 1) * 3
-- [ ] 2 * 3^2
-- [ ] (2 * 3)^2
-- [ ] 13 - 3^2
-- [ ] 4 * 3^2 + 10
-- [ ] 4 * 3^2 - 10
+- [x] 10 + (2 + 1) * 3
+- [x] 20 - (2 + 1) * 3
+- [x] 2 * 3^2
+- [x] (2 * 3)^2
+- [x] (2 + 3)^2
+- [x] (12 - 3)^2
+- [x] 13 - 3^2
+- [x] 4 * 3^2 + 10
+- [x] 4 * 3^2 - 10
+- [ ] Which parentheses can be removed? A/B/C Addition, multiplication, power
+- [ ] Which needs to be done from left to right?
 
 ## Negative numbers
 - [x] (-3)^2
