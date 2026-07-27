@@ -11,6 +11,7 @@
 
 ### Fixed
 - Copies in editor now load their related entries properly
+- Fixed reordering bug in editor lists - as a bonus the editor no longer queries the backend on every reorder
 
 ## [0.12.0] - 2026-07-25
 

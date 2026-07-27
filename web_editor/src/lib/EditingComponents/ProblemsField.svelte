@@ -125,7 +125,7 @@
   }
 
   $effect(() => {
-    if (topic.problems || problems_to_show.length == 0) fetchProblems();
+    if (topic.id >= 0) fetchProblems();
   });
 </script>
 

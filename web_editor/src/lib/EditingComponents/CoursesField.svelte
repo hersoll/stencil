@@ -105,7 +105,7 @@
     draggedCourse = null;
     draggedIndex = -1;
   }
-  async function fetchCourse() {
+  async function fetchCourses() {
     let res = await fetch(
       `${API_URL}/edit/course/from_${entry.kind}/${entry.id}`
     );
@@ -117,7 +117,7 @@
   }
 
   $effect(() => {
-    if (course_ids || courses.length == 0) fetchCourse();
+    if (entry.id >= 0) fetchCourses();
   });
 </script>
 

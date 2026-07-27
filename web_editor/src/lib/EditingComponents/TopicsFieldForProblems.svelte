@@ -131,7 +131,7 @@
   }
 
   $effect(() => {
-    if (topic_data || topics.length == 0) fetchTopics();
+    if (entry.id >= 0) fetchTopics();
   });
 </script>
 

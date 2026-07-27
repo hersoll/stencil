@@ -105,7 +105,7 @@
     draggedChapter = null;
     draggedIndex = -1;
   }
-  async function fetchChapter() {
+  async function fetchChapters() {
     let res = await fetch(
       `${API_URL}/edit/chapter/from_${entry.kind}/${entry.id}`
     );
@@ -117,7 +117,7 @@
   }
 
   $effect(() => {
-    if (chapter_ids || chapters.length == 0) fetchChapter();
+    if (entry.id >= 0) fetchChapters();
   });
 </script>
 

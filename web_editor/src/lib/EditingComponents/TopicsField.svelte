@@ -83,6 +83,7 @@
     const [removed_entry] = newOrder_topics.splice(draggedIndex, 1);
     newOrder_topics.splice(targetIndex, 0, removed_entry);
     topics = newOrder_topics;
+    console.log($state.snapshot(topics[0]));
     topic_ids = topics.map(t => t.id);
 
     draggedIndex = targetIndex;
@@ -118,7 +119,7 @@
   }
 
   $effect(() => {
-    if (topic_ids || topics.length == 0) fetchTopics();
+    if (entry.id >= 0) fetchTopics();
   });
 </script>
 
