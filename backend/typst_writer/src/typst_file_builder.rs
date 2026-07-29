@@ -153,8 +153,9 @@ impl TypstFileBuilder {
             self.options.y_margin,
         ));
         parts.push(formatting::font_size(self.options.font_size));
-        parts.push(formatting::solution_rules(
+        parts.push(formatting::solution_preamble(
             self.get_translation("solution"),
+            &self.options.solution_decoration,
         )?);
         parts.push(String::from(PREAMBLE_STR));
         if let Some(SanitizedTypstString(title)) = &self.options.title {

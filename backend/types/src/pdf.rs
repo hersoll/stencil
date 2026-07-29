@@ -95,6 +95,25 @@ impl Display for PaperSize {
     }
 }
 
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, Default)]
+pub enum SolutionDecoration {
+    #[default]
+    Fill,
+    Border,
+    None,
+}
+
+impl SolutionDecoration {
+    pub fn to_typst(&self) -> &str {
+        use SolutionDecoration::*;
+        match self {
+            Fill => "fill: solution_color,",
+            Border => "stroke: solution_color,",
+            None => "",
+        }
+    }
+}
+
 /// Information about what to include in the problem set
 ///
 /// Should be included in the HTTP request in the form of a Vec<ProblemSetSpec>
@@ -163,6 +182,7 @@ pub struct DocumentOptions {
     pub par_spacing: Option<u8>,
     pub max_prefix_group: u8,
     pub page_break_before_answers: bool,
+    pub solution_decoration: SolutionDecoration,
 }
 
 impl Default for DocumentOptions {
@@ -182,6 +202,7 @@ impl Default for DocumentOptions {
             par_spacing: DEFAULT_PAR_SPACING,
             max_prefix_group: DEFAULT_MAX_PREFIX_GROUP,
             page_break_before_answers: DEFAULT_PAGE_BREAK_BEFORE_ANSWERS,
+            solution_decoration: SolutionDecoration::default(),
         }
     }
 }

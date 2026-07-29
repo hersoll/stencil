@@ -70,6 +70,27 @@
           (documentOptions.pageBreakBeforeAnswers = e.currentTarget.checked)}
       />
     </div>
+
+    <div class="label-div">
+      <label for="solution-decoration"
+        >{i18n.t('document_option_solution_decoration')}</label
+      >
+      <select
+        id="solution-decoration"
+        class="solution-decoration"
+        bind:value={documentOptions.solutionDecoration}
+      >
+        <option value="Fill"
+          >{i18n.t('document_option_solution_decoration_fill')}</option
+        >
+        <option value="Border"
+          >{i18n.t('document_option_solution_decoration_border')}</option
+        >
+        <option value="None"
+          >{i18n.t('document_option_solution_decoration_none')}</option
+        >
+      </select>
+    </div>
   </div>
 </div>
 
@@ -100,7 +121,8 @@
     color: var(--text-muted);
   }
 
-  .write-solutions {
+  .write-solutions,
+  .solution-decoration {
     border: none;
     font-size: 0.8rem;
   }

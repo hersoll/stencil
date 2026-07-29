@@ -2,6 +2,9 @@
   import { documentOptions } from '$src/globalStates.svelte';
   import i18n from '$src/i18n.svelte';
   let { ownPage }: { ownPage: boolean } = $props();
+  let solutionClass = $derived(
+    documentOptions.solutionDecoration.toLowerCase()
+  );
 </script>
 
 <h1 class="answer-heading {ownPage ? 'own-page' : ''}">
@@ -17,67 +20,67 @@
     <li>
       {i18n.t('answer')} A
       {#if documentOptions.writeSolutions != 'None'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} A
       {#if documentOptions.writeSolutions === 'All'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} A
       {#if documentOptions.writeSolutions === 'All'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} A
       {#if documentOptions.writeSolutions === 'All'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} A
       {#if documentOptions.writeSolutions === 'All'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} B
       {#if documentOptions.writeSolutions != 'None'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} A
       {#if documentOptions.writeSolutions === 'All'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} C
       {#if documentOptions.writeSolutions != 'None'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} B
       {#if documentOptions.writeSolutions === 'All'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} B
       {#if documentOptions.writeSolutions === 'All'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
     <li>
       {i18n.t('answer')} C
       {#if documentOptions.writeSolutions === 'All'}
-        <div class="solution"><p>{i18n.t('solution')}</p></div>
+        <div class="solution {solutionClass}"><p>{i18n.t('solution')}</p></div>
       {/if}
     </li>
   </ol>
@@ -112,12 +115,23 @@
     width: 80%;
     height: 3rem;
 
-    background-color: var(--solution-color);
     border-radius: 0.5rem;
 
     text-align: center;
     p {
       color: var(--text-muted);
+    }
+
+    &.fill {
+      background-color: var(--solution-color);
+      border: 2px solid var(--solution-color);
+    }
+    &.border {
+      border: 2px solid var(--solution-color);
+    }
+    &.none {
+      background: none;
+      border: 2px solid transparent;
     }
   }
 

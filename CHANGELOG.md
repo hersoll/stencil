@@ -3,9 +3,10 @@
 ## [0.12.1] - TBD
 
 ### Added
+- Added `order_of_operations` problems
+- Added support for `fill`/`border`/`none` for solution background
 - You can now search for `public` or `private` in the web editor
 - The "publish every X" button only shows when there is something to publish
-- Added `order_of_operations` problems
 - Web editor list auto-refreshes when an entry is changed
 - Backend prints whether it's in dev or prod mode during startup
 
@@ -15,7 +16,6 @@
 ### Fixed
 - Copies in editor now load their related entries properly
 - Fixed reordering bug in editor lists - as a bonus the editor no longer queries the backend on every reorder
-
 
 ## [0.12.0] - 2026-07-25
 

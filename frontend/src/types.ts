@@ -139,6 +139,7 @@ export type DocumentOptions = {
   parSpacing: number | null;
   maxPrefixGroup: number;
   pageBreakBeforeAnswers: boolean;
+  solutionDecoration: 'Fill' | 'Border' | 'None';
 };
 
 // NOTE: Overridden by backend on defaults startup
@@ -173,5 +174,6 @@ export const initialDocumentOptions: DocumentOptions = {
   yMargin: 20,
   parSpacing: null,
   maxPrefixGroup: 3,
-  pageBreakBeforeAnswers: true
+  pageBreakBeforeAnswers: true,
+  solutionDecoration: 'Fill'
 };

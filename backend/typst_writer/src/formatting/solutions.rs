@@ -1,5 +1,6 @@
 use anyhow::Result;
 use std::fmt::Write;
+use types::pdf::SolutionDecoration;
 static SOLUTION_HEADING_SPACE: &str = "0.3em";
 static SOLUTION_RADIUS: &str = "0.5em";
 static SOLUTION_FONT_SIZE: &str = "0.8em";
@@ -19,7 +20,13 @@ pub fn build_solution(answer: &str, solution: &str) -> Result<String> {
     Ok(out)
 }
 
-pub fn solution_rules(solution_label: &str) -> Result<String> {
+/// Writes out the preamble that formats solutions
+///
+/// `solution_label` is the language-specific string that denotes a solution
+pub fn solution_preamble(
+    solution_label: &str,
+    solution_decoration: &SolutionDecoration,
+) -> Result<String> {
     // String is about 500 bytes
     let mut out = String::with_capacity(512);
     // Two space indentation for Typst legibility
@@ -29,7 +36,7 @@ pub fn solution_rules(solution_label: &str) -> Result<String> {
         out,
         "  outset: (left: {SOLUTION_OUTSET}, rest: {SOLUTION_BACKGROUND_PADDING}), "
     )?;
-    writeln!(out, "  fill: solution_color, ")?;
+    writeln!(out, "  {}", solution_decoration.to_typst())?;
     writeln!(out, "  radius: {SOLUTION_RADIUS}")?;
     writeln!(out, ")[")?;
     writeln!(out, "  #set text(size: {SOLUTION_FONT_SIZE})")?;
