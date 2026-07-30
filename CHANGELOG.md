@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.2] - TBD
+
+### Added
+- Implemented `sqrt()` and `root(n)` on `Numbers`
+- Added non-integer exponent problems
+
 ## [0.12.1] - 2026-07-30
 
 ### Added
