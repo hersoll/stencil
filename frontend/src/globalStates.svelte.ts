@@ -42,6 +42,8 @@ export let defaultProblemOptions = $state<ProblemOptions>(
 );
 export function setDocumentOptions(next: DocumentOptions) {
   Object.assign(documentOptions, next);
+}
+export function setDefaultDocumentOptions(next: DocumentOptions) {
   Object.assign(defaultDocumentOptions, next);
 }
 export function setDefaultFormattingOptions(next: FormattingOptions) {
@@ -50,6 +52,13 @@ export function setDefaultFormattingOptions(next: FormattingOptions) {
 export function setDefaultProblemOptions(next: ProblemOptions) {
   setState.pendingSet = next;
   Object.assign(defaultProblemOptions, next);
+}
+
+export function saveDocumentOptions() {
+  localStorage.setItem(
+    'document_options',
+    JSON.stringify($state.snapshot(documentOptions))
+  );
 }
 
 export const loadingState = $state({ loading: false });

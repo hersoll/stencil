@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.12.1] - TBD
+## [0.12.1] - 2026-07-30
 
 ### Added
 - Added `order_of_operations` problems
@@ -10,7 +10,7 @@
 - The "publish every X" button only shows when there is something to publish
 - Web editor list auto-refreshes when an entry is changed
 - Backend prints whether it's in dev or prod mode during startup
-
+- User preferences with regards to document options are now saved
 
 ### Changed
 - Renamed `web_editor` to `editor` and `stats_page` to `dashboard`

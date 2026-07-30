@@ -6,10 +6,12 @@
     error,
     setDocumentOptions,
     setDefaultFormattingOptions,
-    setDefaultProblemOptions
+    setDefaultProblemOptions,
+    documentOptions,
+    setDefaultDocumentOptions
   } from '$src/globalStates.svelte';
   import NavBar from '$src/lib/NavBar/NavBar.svelte';
-  import type { View } from '$src/types';
+  import type { View, DocumentOptions } from '$src/types';
   import ErrorView from './lib/ErrorView.svelte';
   import AddSetView from './lib/AddSetView/AddSetView.svelte';
   import PDFView from './lib/PDFView/PDFView.svelte';
@@ -40,9 +42,20 @@
 
     const { formatting_options, problem_options, document_options } =
       await response.json();
+    setDefaultDocumentOptions(document_options);
     setDocumentOptions(document_options);
     setDefaultFormattingOptions(formatting_options);
     setDefaultProblemOptions(problem_options);
+  }
+
+  function loadLocalStorage() {
+    let localDocumentOptionsString = localStorage.getItem('document_options');
+    if (localDocumentOptionsString) {
+      let localDocumentOptions: DocumentOptions = JSON.parse(
+        localDocumentOptionsString
+      );
+      setDocumentOptions(localDocumentOptions);
+    }
   }
 
   $effect(() => {
@@ -67,6 +80,7 @@
   onMount(async () => {
     await i18n.init();
     await fetchDefaults();
+    loadLocalStorage();
   });
 </script>
 

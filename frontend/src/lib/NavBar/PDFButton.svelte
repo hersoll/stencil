@@ -3,6 +3,7 @@
     fetchPdf,
     loadingState,
     PDFState,
+    saveDocumentOptions,
     setState
   } from '$src/globalStates.svelte';
   import type { View } from '$src/types';
@@ -28,6 +29,7 @@
     if (view != 'pdf') {
       PDFState.url = '';
     }
+    saveDocumentOptions();
     fetchPdf();
     view = 'pdf';
   }
