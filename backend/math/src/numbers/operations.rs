@@ -48,6 +48,11 @@ impl Number {
             (l_val, r_val) => Number::from(l_val.value().powf(r_val.value())),
         }
     }
+
+    /// Returns the square root, generally as a decimal number
+    pub fn sqrt(&self) -> Number {
+        Number::from(self.value().sqrt())
+    }
 }
 
 impl std::ops::Neg for Number {
@@ -643,5 +648,22 @@ mod tests {
         assert_eq!((decimal / fraction).to_string(), "num(\"1.6\")");
         assert_eq!((fraction / decimal).to_string(), "num(\"0.625\")");
         assert_eq!((PI / integer).to_string(), "num(\"1.047\")");
+    }
+
+    #[test]
+    fn roots_are_calculated() {
+        let integer = Number::Integer(3);
+        let decimal = Number::decimal_from_f64(1.2, 1);
+        let fraction = Number::from((3, 4));
+
+        assert_eq!(integer.sqrt().to_string(), "num(\"1.732\")");
+        assert_eq!(decimal.sqrt().to_string(), "num(\"1.095\")");
+        assert_eq!(fraction.sqrt().to_string(), "num(\"0.866\")");
+    }
+
+    #[test]
+    fn integer_roots_are_displayed_as_integers() {
+        let square = Number::Integer(16);
+        assert_eq!(square.sqrt().to_string(), "4");
     }
 }
