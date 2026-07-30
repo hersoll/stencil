@@ -6,6 +6,9 @@
 - Implemented `sqrt()` and `root(n)` on `Numbers`
 - Added non-integer exponent problems
 
+### Changed
+- Updated `README`
+
 ### Fixed
 - Creating a new entry in the editor works properly again
 - When a new topic is created, the linked problems get their difficulties set properly
