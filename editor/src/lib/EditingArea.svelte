@@ -13,16 +13,18 @@
     activeEntry = $bindable(),
     clickedEntry,
     entryHasBeenEdited,
-    entryIsCopy,
+    entryIsNew,
     resetList,
+    editEntry,
     editDialog
   }: {
     originalEntry: string;
     activeEntry: Entry | null;
     clickedEntry: Entry | null;
     entryHasBeenEdited: boolean;
-    entryIsCopy: boolean;
+    entryIsNew: boolean;
     resetList: Function;
+    editEntry: Function;
     editDialog: ConfirmDialog;
   } = $props();
 
@@ -84,12 +86,7 @@
     e.preventDefault();
     // Drop is on parent area and not child area
     if (!childHasDropPriority && clickedEntry) {
-      if (entryHasBeenEdited) {
-        editDialog.show();
-      } else {
-        activeEntry = { ...clickedEntry };
-        originalEntry = JSON.stringify(activeEntry);
-      }
+      editEntry();
     }
     draggedOver = false;
     temp_storage = null;
@@ -113,7 +110,7 @@
       {draggedOver}
       bind:originalEntry
       bind:activeEntry
-      {entryIsCopy}
+      {entryIsNew}
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
       {resetList}
@@ -123,7 +120,7 @@
       bind:prefix={activeEntry}
       {draggedOver}
       bind:activeEntry
-      {entryIsCopy}
+      {entryIsNew}
       bind:originalEntry
       {resetList}
     />
@@ -134,7 +131,7 @@
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
       bind:activeEntry
-      {entryIsCopy}
+      {entryIsNew}
       bind:originalEntry
       {resetList}
     />
@@ -145,7 +142,7 @@
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
       bind:activeEntry
-      {entryIsCopy}
+      {entryIsNew}
       bind:originalEntry
       {resetList}
     />
@@ -156,7 +153,7 @@
       draggedEntry={clickedEntry}
       bind:dropPriority={childHasDropPriority}
       bind:activeEntry
-      {entryIsCopy}
+      {entryIsNew}
       bind:originalEntry
       {resetList}
     />

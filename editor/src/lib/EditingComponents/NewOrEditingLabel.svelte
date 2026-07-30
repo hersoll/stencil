@@ -1,8 +1,8 @@
 <script lang="ts">
-  let { entry, entryIsCopy } = $props();
+  let { entry, entryIsNew } = $props();
 </script>
 
-{#if entryIsCopy}
+{#if entryIsNew}
   <h3 class="heading new">New {entry.kind}</h3>
 {:else}
   <h3 class="heading existing">Editing {entry.kind}</h3>

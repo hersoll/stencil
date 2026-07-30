@@ -12,14 +12,14 @@
     prefix = $bindable(),
     originalEntry = $bindable(),
     activeEntry = $bindable(),
-    entryIsCopy,
+    entryIsNew,
     draggedOver,
     resetList
   }: {
     prefix: PrefixEntry;
     originalEntry: string;
     activeEntry: Entry | null;
-    entryIsCopy: boolean;
+    entryIsNew: boolean;
     draggedOver: boolean;
     resetList: Function;
   } = $props();
@@ -27,7 +27,7 @@
   let serverMessage: ServerMessage;
 
   async function handleSubmit() {
-    const method = entryIsCopy
+    const method = entryIsNew
       ? // New problem
         'POST'
       : // Existing problem
@@ -53,7 +53,7 @@
   class:dragged-over={draggedOver}
   in:fly={{ y: -15, duration: 600 }}
 >
-  <NewOrEditingLabel entry={prefix} {entryIsCopy} />
+  <NewOrEditingLabel entry={prefix} {entryIsNew} />
 
   <!-- TRANSLATIONS -->
   <div class="translation-grid">

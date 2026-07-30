@@ -12,7 +12,7 @@
   let activeEntry = $state<Entry | null>(null);
   let originalEntry = $state('');
   let entryHasBeenEdited = $state(false);
-  let entryIsCopy = $state(false);
+  let entryIsNew = $state(false);
 
   let privateEntryCount = $state(0);
   // Will contain the reset function from the EntryList, so it can be called inside this component
@@ -54,7 +54,11 @@
     if (clickedEntry) {
       activeEntry = { ...clickedEntry };
       originalEntry = JSON.stringify(activeEntry);
-      entryIsCopy = false;
+      if (clickedEntry.id == -1) {
+        entryIsNew = true;
+      } else {
+        entryIsNew = false;
+      }
     }
     clickedEntry = null;
   }
@@ -71,7 +75,7 @@
     if (clickedEntry) {
       activeEntry = { ...clickedEntry };
       originalEntry = JSON.stringify(activeEntry);
-      entryIsCopy = true;
+      entryIsNew = true;
     }
     clickedEntry = null;
   }
@@ -149,8 +153,9 @@
       bind:activeEntry
       bind:originalEntry
       {entryHasBeenEdited}
-      {entryIsCopy}
+      {entryIsNew}
       {editDialog}
+      {editEntry}
       {resetList}
     />
   </div>

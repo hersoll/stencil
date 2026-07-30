@@ -6,6 +6,9 @@
 - Implemented `sqrt()` and `root(n)` on `Numbers`
 - Added non-integer exponent problems
 
+### Fixed
+- Creating a new entry in the editor works properly again
+
 ## [0.12.1] - 2026-07-30
 
 ### Added
