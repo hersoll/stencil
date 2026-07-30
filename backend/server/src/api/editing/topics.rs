@@ -59,7 +59,7 @@ pub async fn create_topic(
     relationships::update_children_for_parent::<TopicProblems>(&topic_id, &problem_ids).await?;
     relationships::update_parents_for_child::<ChapterTopics>(&topic_id, &topic.entry.chapter_ids)
         .await?;
-    problems::update_difficulties_for_problems(&topic.entry.problems).await?;
+    problems::update_difficulties_for_problems(&topic_id, &topic.entry.problems).await?;
 
     Ok((
         StatusCode::CREATED,
@@ -80,7 +80,7 @@ pub async fn update_topic(
         &topic.entry.chapter_ids,
     )
     .await?;
-    problems::update_difficulties_for_problems(&topic.entry.problems).await?;
+    problems::update_difficulties_for_problems(&topic.entry.id, &topic.entry.problems).await?;
     let topic_name = topics::update_topic_from_entry(topic).await?;
 
     Ok((StatusCode::OK, format!("Successfully updated {topic_name}")))

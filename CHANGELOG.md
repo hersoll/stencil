@@ -8,6 +8,7 @@
 
 ### Fixed
 - Creating a new entry in the editor works properly again
+- When a new topic is created, the linked problems get their difficulties set properly
 
 ## [0.12.1] - 2026-07-30
 

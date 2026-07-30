@@ -492,7 +492,10 @@ pub async fn update_difficulties_for_problem_with_id(
     Ok(())
 }
 
+/// The reason this accepts a `topic_id` even though [`ProblemIdsAndDifficulties`] contains a topic_id
+/// is that when a topic is created, a new ID is generated which isn't contained in the problems
 pub async fn update_difficulties_for_problems(
+    topic_id: &ID,
     problems: &[ProblemIdsAndDifficulties],
 ) -> Result<()> {
     let pool = crate::get_pool();
@@ -501,7 +504,7 @@ pub async fn update_difficulties_for_problems(
             r#"UPDATE topic_problems SET absolute_difficulty = $3, relative_difficulty = $4
             WHERE problem_id = $1 AND topic_id = $2"#,
             problem.problem_id,
-            problem.topic_id,
+            topic_id,
             problem.absolute_difficulty.number as i32,
             problem.relative_difficulty.number as i32
         )
