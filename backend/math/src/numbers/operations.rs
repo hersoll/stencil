@@ -49,9 +49,22 @@ impl Number {
         }
     }
 
-    /// Returns the square root, generally as a decimal number
+    /// Returns the square root, generally as a decimal number.
     pub fn sqrt(&self) -> Number {
         Number::from(self.value().sqrt())
+    }
+
+    /// Returns the root of the specified degree.
+    ///
+    /// If the degree is non-integer, acts as if the degree is 1 and logs an error.
+    pub fn root(&self, degree: impl Into<Number>) -> Number {
+        let degree = degree.into();
+        if let Number::Integer(i) = degree {
+            self.pow((1, i))
+        } else {
+            tracing::error!("Tried to call root() with a non-integer degree");
+            *self
+        }
     }
 }
 
@@ -651,6 +664,14 @@ mod tests {
     }
 
     #[test]
+    fn powers_as_roots_on_integers() {
+        let square = Number::Integer(25);
+        let cube = Number::Integer(27);
+        assert_eq!(square.pow(0.5), 5);
+        assert_eq!(cube.pow((1, 3)), 3);
+    }
+
+    #[test]
     fn roots_are_calculated() {
         let integer = Number::Integer(3);
         let decimal = Number::decimal_from_f64(1.2, 1);
@@ -659,11 +680,16 @@ mod tests {
         assert_eq!(integer.sqrt().to_string(), "num(\"1.732\")");
         assert_eq!(decimal.sqrt().to_string(), "num(\"1.095\")");
         assert_eq!(fraction.sqrt().to_string(), "num(\"0.866\")");
+
+        assert_eq!(integer.root(3).to_string(), "num(\"1.442\")");
+        assert_eq!(integer.root(4).to_string(), "num(\"1.316\")");
     }
 
     #[test]
     fn integer_roots_are_displayed_as_integers() {
         let square = Number::Integer(16);
+        let cube = Number::Integer(27);
         assert_eq!(square.sqrt().to_string(), "4");
+        assert_eq!(cube.root(3).to_string(), "3");
     }
 }
