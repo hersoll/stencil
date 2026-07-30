@@ -1,6 +1,10 @@
 <script lang="ts">
-  import { documentOptions } from '$src/globalStates.svelte';
+  import {
+    defaultDocumentOptions,
+    documentOptions
+  } from '$src/globalStates.svelte';
   import i18n from '$src/i18n.svelte';
+  import ResetIcon from '../SVGIcons/ResetIcon.svelte';
 
   const ANSWER_COLUMNS_MIN = 1;
   const ANSWER_COLUMNS_MAX = 5;
@@ -58,18 +62,6 @@
         onblur={handleAnswerColumnsBlur}
       />
     </div>
-    <div class="label-div">
-      <label for="pagebreak-before"
-        >{i18n.t('document_option_answer_break')}</label
-      >
-      <input
-        id="pagebreak-before"
-        type="checkbox"
-        checked={documentOptions.pageBreakBeforeAnswers}
-        onchange={e =>
-          (documentOptions.pageBreakBeforeAnswers = e.currentTarget.checked)}
-      />
-    </div>
 
     <div class="label-div">
       <label for="solution-decoration"
@@ -91,6 +83,87 @@
         >
       </select>
     </div>
+
+    {#if documentOptions.color}
+      <div class="label-div">
+        <label for="solution-text-color"
+          >{i18n.t('document_option_solution_text_color')}</label
+        >
+        <input
+          id="solution-text-color"
+          type="color"
+          class="solution-text-color"
+          bind:value={documentOptions.solutionTextColor}
+        />
+        <button
+          class="reset-btn"
+          onclick={() => {
+            documentOptions.solutionTextColor =
+              defaultDocumentOptions.solutionTextColor;
+          }}
+        >
+          <ResetIcon />
+        </button>
+      </div>
+      {#if documentOptions.solutionDecoration == 'Fill'}
+        <div class="label-div">
+          <label for="solution-fill-color"
+            >{i18n.t('document_option_solution_fill_color')}</label
+          >
+          <input
+            id="solution-fill-color"
+            type="color"
+            class="solution-decoration-color"
+            bind:value={documentOptions.solutionFillColor}
+          />
+          <button
+            class="reset-btn"
+            onclick={() => {
+              documentOptions.solutionFillColor =
+                defaultDocumentOptions.solutionFillColor;
+            }}
+          >
+            <ResetIcon />
+          </button>
+        </div>
+      {:else if documentOptions.solutionDecoration == 'Border'}
+        <div class="label-div">
+          <label for="solution-border-color"
+            >{i18n.t('document_option_solution_border_color')}</label
+          >
+          <input
+            id="solution-border-color"
+            type="color"
+            class="solution-decoration-color"
+            bind:value={documentOptions.solutionBorderColor}
+          />
+          <button
+            class="reset-btn"
+            onclick={() => {
+              documentOptions.solutionBorderColor =
+                defaultDocumentOptions.solutionBorderColor;
+            }}
+          >
+            <ResetIcon />
+          </button>
+        </div>
+      {:else}
+        <div></div>
+      {/if}
+    {/if}
+
+    <div class="label-div">
+      <label for="pagebreak-before"
+        >{i18n.t('document_option_answer_break')}</label
+      >
+      <input
+        id="pagebreak-before"
+        type="checkbox"
+        checked={documentOptions.pageBreakBeforeAnswers}
+        onchange={e =>
+          (documentOptions.pageBreakBeforeAnswers = e.currentTarget.checked)}
+      />
+    </div>
   </div>
 </div>
 
@@ -108,8 +181,8 @@
   }
 
   .options-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.3rem;
     font-size: 0.9rem;
   }
@@ -125,6 +198,14 @@
   .solution-decoration {
     border: none;
     font-size: 0.8rem;
+  }
+
+  .reset-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
   }
 
   @container main (width < 70rem) {

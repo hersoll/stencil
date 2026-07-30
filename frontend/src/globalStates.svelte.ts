@@ -31,6 +31,9 @@ export let setState = $state<{
 export let documentOptions = $state<DocumentOptions>(
   $state.snapshot(initialDocumentOptions)
 );
+export let defaultDocumentOptions = $state<DocumentOptions>(
+  $state.snapshot(initialDocumentOptions)
+);
 export let defaultFormattingOptions = $state<FormattingOptions>(
   $state.snapshot(initialFormattingOptions)
 );
@@ -39,6 +42,7 @@ export let defaultProblemOptions = $state<ProblemOptions>(
 );
 export function setDocumentOptions(next: DocumentOptions) {
   Object.assign(documentOptions, next);
+  Object.assign(defaultDocumentOptions, next);
 }
 export function setDefaultFormattingOptions(next: FormattingOptions) {
   Object.assign(defaultFormattingOptions, next);

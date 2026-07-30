@@ -131,7 +131,7 @@ export type DocumentOptions = {
   nameField: boolean;
   answerColumns: number;
   lang: 'Sv' | 'En';
-  writeSolutions: 'None' | 'First' | 'All';
+  showSolutions: 'None' | 'First' | 'All';
   color: boolean;
   paperSize: 'A4' | 'A5';
   xMargin: number;
@@ -139,7 +139,10 @@ export type DocumentOptions = {
   parSpacing: number | null;
   maxPrefixGroup: number;
   pageBreakBeforeAnswers: boolean;
+  solutionTextColor: string;
   solutionDecoration: 'Fill' | 'Border' | 'None';
+  solutionFillColor: string;
+  solutionBorderColor: string;
 };
 
 // NOTE: Overridden by backend on defaults startup
@@ -167,7 +170,7 @@ export const initialDocumentOptions: DocumentOptions = {
   nameField: false,
   answerColumns: 3,
   lang: 'Sv',
-  writeSolutions: 'First',
+  showSolutions: 'First',
   color: true,
   paperSize: 'A4',
   xMargin: 20,
@@ -175,5 +178,8 @@ export const initialDocumentOptions: DocumentOptions = {
   parSpacing: null,
   maxPrefixGroup: 3,
   pageBreakBeforeAnswers: true,
-  solutionDecoration: 'Fill'
+  solutionTextColor: '',
+  solutionDecoration: 'Fill',
+  solutionFillColor: '',
+  solutionBorderColor: ''
 };

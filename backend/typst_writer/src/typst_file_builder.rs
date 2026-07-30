@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 use tracing::warn;
 use types::pdf::{
-    DocumentOptions, QuestionSetFormattingOptions, SanitizedTypstString, WriteSolutions,
+    DocumentOptions, QuestionSetFormattingOptions, SanitizedTypstString, ShowSolutions,
 };
 use types::problems::Problem;
 
@@ -134,10 +134,10 @@ impl TypstFileBuilder {
     /// Decides if a particular problem should have its solution included
     fn should_include_solution(&mut self, problem_id: i32) -> bool {
         match self.options.write_solutions {
-            WriteSolutions::All => true,
-            WriteSolutions::None => false,
+            ShowSolutions::All => true,
+            ShowSolutions::None => false,
             // Returns true if it was inserted (and thus is the first occurence)
-            WriteSolutions::First => self.seen_problem_ids.insert(problem_id),
+            ShowSolutions::First => self.seen_problem_ids.insert(problem_id),
         }
     }
 
@@ -146,7 +146,7 @@ impl TypstFileBuilder {
     /// Some things are the same no matter the user's options. These are included in preamble.typ.
     fn build_preamble(&self) -> Result<String> {
         let mut parts = Vec::with_capacity(7);
-        parts.push(colors::get_color_preamble(self.options.color));
+        parts.push(colors::get_color_preamble(&self.options));
         parts.push(formatting::page_size(
             self.options.paper_size.to_str(),
             self.options.x_margin,

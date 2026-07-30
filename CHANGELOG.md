@@ -5,10 +5,12 @@
 ### Added
 - Added `order_of_operations` problems
 - Added support for `fill`/`border`/`none` for solution background
+- Added support for changing solution colors
 - You can now search for `public` or `private` in the web editor
 - The "publish every X" button only shows when there is something to publish
 - Web editor list auto-refreshes when an entry is changed
 - Backend prints whether it's in dev or prod mode during startup
+
 
 ### Changed
 - Renamed `web_editor` to `editor` and `stats_page` to `dashboard`

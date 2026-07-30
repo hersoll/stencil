@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::{difficulty::DifficultyCategory, lang::Language};
+use crate::{colors::HexColor, difficulty::DifficultyCategory, lang::Language};
 use serde::{Deserialize, Deserializer, Serialize};
 
 // QuestionSetFormattingOptions::default()
@@ -20,7 +20,7 @@ const DEFAULT_Y_MARGIN: u8 = 20;
 const DEFAULT_LANG: Language = Language::Sv;
 const DEFAULT_MAX_PREFIX_GROUP: u8 = 3;
 const DEFAULT_PAPER_SIZE: PaperSize = PaperSize::A4;
-const DEFAULT_WRITE_SOLUTIONS: WriteSolutions = WriteSolutions::First;
+const DEFAULT_WRITE_SOLUTIONS: ShowSolutions = ShowSolutions::First;
 const DEFAULT_PAR_SPACING: Option<u8> = None;
 const DEFAULT_COLORS: bool = true;
 const DEFAULT_PAGE_BREAK_BEFORE_ANSWERS: bool = true;
@@ -52,18 +52,18 @@ impl<'de> Deserialize<'de> for SanitizedTypstString {
 /// All/None - Self-explanatory
 /// First - Only the first problem of each problem kind
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub enum WriteSolutions {
+pub enum ShowSolutions {
     All,
     None,
     First,
 }
 
-impl Display for WriteSolutions {
+impl Display for ShowSolutions {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            WriteSolutions::All => write!(f, "always"),
-            WriteSolutions::None => write!(f, "never"),
-            WriteSolutions::First => write!(f, "first"),
+            ShowSolutions::All => write!(f, "always"),
+            ShowSolutions::None => write!(f, "never"),
+            ShowSolutions::First => write!(f, "first"),
         }
     }
 }
@@ -174,7 +174,7 @@ pub struct DocumentOptions {
     pub font_size: u8,
     pub answer_columns: u8,
     pub lang: Language,
-    pub write_solutions: WriteSolutions,
+    pub write_solutions: ShowSolutions,
     pub color: bool,
     pub paper_size: PaperSize,
     pub x_margin: u8,
@@ -183,6 +183,9 @@ pub struct DocumentOptions {
     pub max_prefix_group: u8,
     pub page_break_before_answers: bool,
     pub solution_decoration: SolutionDecoration,
+    pub solution_fill_color: HexColor,
+    pub solution_border_color: HexColor,
+    pub solution_text_color: HexColor,
 }
 
 impl Default for DocumentOptions {
@@ -203,6 +206,9 @@ impl Default for DocumentOptions {
             max_prefix_group: DEFAULT_MAX_PREFIX_GROUP,
             page_break_before_answers: DEFAULT_PAGE_BREAK_BEFORE_ANSWERS,
             solution_decoration: SolutionDecoration::default(),
+            solution_fill_color: HexColor::default_solution_fill(DEFAULT_COLORS),
+            solution_border_color: HexColor::default_solution_border(DEFAULT_COLORS),
+            solution_text_color: HexColor::default_solution_text(DEFAULT_COLORS),
         }
     }
 }

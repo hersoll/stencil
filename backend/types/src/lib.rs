@@ -1,3 +1,4 @@
+pub mod colors;
 pub mod difficulty;
 pub mod errors;
 pub mod format_strings;
