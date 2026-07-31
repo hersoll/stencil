@@ -72,12 +72,37 @@
 - [ ] Write as a fraction: 2x^-3
 
 ## Non-integer exponents
-- [ ] Calculate 4^1/2
-- [ ] Calculate 8^1/3
-- [ ] Simplify (7^2)^1/2
-- [ ] Simplify (7^8)^1/2
-- [ ] Simplify (7^1/4)^12
+### 5 / 1
+- [x] Calculate 4^1/2
+### 5 / 2
+- [x] Calculate 8^1/3
+### 5 / 3
+- [x] Simplify 7^(1/2) * 7^(1/2)
+### 5 / 4
+- [x] Simplify 7^(1/3) * 7^(1/3) * 7^(1/3)
+- [x] Simplify x^(1/2) * x^(1/2), x^(1/5) * x^(4/5)
+- [x] Simplify (7^2)^1/2
+- [x] Simplify (7^(1/2))^2
+- [x] Simplify (7^8)^1/2
+- [x] Simplify (7^1/4)^12
+### 6 / 5
+- [ ] Simplify x^(1/2) * sqrt(x)
+- [ ] Simplify 2x^(1/2) * x^(1/2)
+- [ ] Simplify 3x^(1/2) * 2x^(1/2)
+### 7 / 6
+- [ ] Write as a power: x^n / sqrt(x)
+- [ ] Simplify x^(1/2) * x^(1/3)
+### 7 / 7
+- [ ] Write as a power: sqrt(x) / x^n
+- [ ] Simplify 2x^(1/2) * x^(1/3)
+- [ ] Simplify 3x^(1/5) * 2x^(1/2)
+### 8 / 8
+- [ ] Write as a power: sqrt(x^n) / x
+- [ ] Calculate 4^-1/2
+- [ ] Calculate 8^-1/3
+### 9 / 9
 - [ ] Calculate 8^2/3
+- [ ] Calculate 4^3/2
 
 ## f(x) algebraically
 - [ ] Text question: What does f(3) calculate?
