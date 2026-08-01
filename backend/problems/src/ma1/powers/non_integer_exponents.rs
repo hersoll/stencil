@@ -381,6 +381,8 @@ fn variable_fraction_times_fraction(id: i32, _lang: Language) -> Result<Problem>
         .random();
     let frac_1 = 1 / denom_1;
     let frac_2 = 1 / denom_2;
+    let extend_1 = frac_1.extend(denom_2);
+    let extend_2 = frac_2.extend(denom_1);
     let total_frac = frac_1 + frac_2;
 
     let var = symbols::get_unknown()?;
@@ -391,7 +393,7 @@ fn variable_fraction_times_fraction(id: i32, _lang: Language) -> Result<Problem>
         answer: format!("${var}^({total_frac})$"),
         solution: format!(
             "${var}^({frac_1}) dot {var}^({frac_2}) = {var}^({frac_1} + {frac_2}) = 
-            {var}^({total_frac})$"
+            {var}^({extend_1} + {extend_2}) = {var}^({total_frac})$"
         ),
         identifiers: vec![denom_1],
         combinations: denom_range.len(),

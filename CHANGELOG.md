@@ -4,6 +4,7 @@
 
 ### Added
 - Implemented `sqrt()` and `root(n)` on `Numbers`
+- Implemented `extend(n)` on `Numbers`
 - Added non-integer exponent problems
 
 ### Changed

@@ -213,6 +213,39 @@ impl Number {
         }
     }
 
+    /// Extend a fraction or integer by the specified factor.
+    ///
+    /// Does nothing if the Number isn't an integer or fraction.
+    /// Returns 0 if the specified factor isn't an integer.
+    ///
+    /// ## Examples
+    /// ```rust
+    /// use math::Number;
+    /// let integer = Number::Integer(4);
+    /// assert_eq!(integer.extend(3).to_string(), "12/3");
+    /// let fraction = Number::from((3, 5));
+    /// assert_eq!(fraction.extend(3).to_string(), "9/15");
+    /// let decimal = Number::decimal_from_f64(4.3, 1);
+    /// assert_eq!(decimal.extend(3).to_string(), decimal.to_string());
+    /// ```
+    pub fn extend(&self, factor: impl Into<Number>) -> Number {
+        let factor = factor.into().as_i32();
+        match self {
+            Number::Integer(i) => Number::Fraction {
+                numerator: i * factor,
+                denominator: factor,
+            },
+            Number::Fraction {
+                numerator,
+                denominator,
+            } => Number::Fraction {
+                numerator: numerator * factor,
+                denominator: denominator * factor,
+            },
+            _ => *self,
+        }
+    }
+
     /// Deconstructs an `Integer` into the i32 contained within.
     /// Used when `if let ...` is too unergonomic.
     ///
