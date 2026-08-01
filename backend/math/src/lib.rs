@@ -27,6 +27,10 @@ pub trait MathDisplay: Display {
     fn as_math(&self) -> String {
         format!("${self}$")
     }
+
+    fn as_block_math(&self) -> String {
+        format!("#block($ {self} $)")
+    }
 }
 
 impl<T: Display> MathDisplay for T {}

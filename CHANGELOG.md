@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.12.2] - TBD
+## [0.12.2] - 2026-08-02
 
 ### Added
 - Implemented `sqrt()` and `root(n)` on `Numbers`
@@ -8,6 +8,7 @@
 - Implemented `can_be_simplified()` on `Numbers`
 - Added non-integer exponent problems
 - Added `Solution::inline()` and `Solution::block()` solution builders
+- Added `as_block_math()` to `MathDisplay`
 
 ### Changed
 - Updated `README`

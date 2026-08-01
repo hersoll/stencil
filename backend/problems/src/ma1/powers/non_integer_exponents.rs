@@ -502,7 +502,7 @@ fn sqrt_power(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("{var}^({final_exp})"));
     Ok(Problem {
         id,
-        question: format!("$ sqrt({var}^{exp})/{var} $"),
+        question: format!("$sqrt({var}^{exp})/{var}$"),
         answer: format!("${var}^({final_exp})$"),
         solution: solution.to_string(),
         identifiers: vec![exp],
@@ -519,17 +519,18 @@ fn negative_half_power(id: i32, _lang: Language) -> Result<Problem> {
         .numbers(&[4, 9, 16, 25, 36, 49, 64, 81, 100])
         .and_random();
     let root = square.sqrt();
+    let answer_str = format!("1/{root}");
     let mut solution = Solution::block();
     solution
         .write(format!("{square}^(-1/2)"))
         .equals(format!("1/{square}^(1/2)"))
         .equals(format!("1/sqrt({square})"))
-        .equals(format!("1/{root}"));
+        .equals(&answer_str);
 
     Ok(Problem {
         id,
         question: format!("${square}^(-1/2)$"),
-        answer: format!("#block($ 1/{root} $)"),
+        answer: answer_str.as_block_math(),
         solution: solution.to_string(),
         identifiers: vec![square],
         combinations: sq_range.len(),
@@ -543,16 +544,17 @@ fn negative_half_power(id: i32, _lang: Language) -> Result<Problem> {
 fn negative_third_power(id: i32, _lang: Language) -> Result<Problem> {
     let (cube, cube_range) = num_gen::integer().numbers(&[8, 27, 1000]).and_random();
     let root = cube.root(3);
+    let answer_str = format!("1/{root}");
     let mut solution = Solution::block();
     solution
         .write(format!("{cube}^(-1/3)"))
         .equals(format!("1/{cube}^(1/3)"))
         .equals(format!("1/root(3, {cube})"))
-        .equals(format!("1/{root}"));
+        .equals(&answer_str);
     Ok(Problem {
         id,
         question: format!("${cube}^(-1/3)$"),
-        answer: format!("#block($ 1/{root} $)"),
+        answer: answer_str.as_block_math(),
         solution: solution.to_string(),
         identifiers: vec![cube],
         combinations: cube_range.len(),
@@ -621,6 +623,7 @@ fn exponent_negative_three_halves(id: i32, _lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().numbers(&[4, 9, 25, 100]).and_random();
     let sqrt = base.sqrt();
     let total = sqrt.pow(3);
+    let answer_str = format!("1/{total}");
     let mut solution = Solution::block();
     solution
         .write(format!("{base}^(-3/2)"))
@@ -630,11 +633,11 @@ fn exponent_negative_three_halves(id: i32, _lang: Language) -> Result<Problem> {
         .linebreak()
         .equals(format!("1/(sqrt({base}))^3"))
         .equals(format!("1/{sqrt}^3"))
-        .equals(format!("1/{total}"));
+        .equals(&answer_str);
     Ok(Problem {
         id,
         question: format!("${base}^(-3/2)$"),
-        answer: format!("#block($ 1/{total} $)"),
+        answer: answer_str.as_block_math(),
         solution: solution.to_string(),
         identifiers: vec![base],
         combinations: base_range.len(),
@@ -649,6 +652,7 @@ fn exponent_negative_two_thirds(id: i32, _lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().numbers(&[8, 27, 1000]).and_random();
     let root = base.root(3);
     let total = root.pow(2);
+    let answer_str = format!("1/{total}");
     let mut solution = Solution::block();
     solution
         .write(format!("{base}^(-2/3)"))
@@ -658,11 +662,11 @@ fn exponent_negative_two_thirds(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("1/({base}^(1/3))^2"))
         .equals(format!("1/(root(3, {base}))^2"))
         .equals(format!("1/{root}^2"))
-        .equals(format!("1/{total}"));
+        .equals(&answer_str);
     Ok(Problem {
         id,
         question: format!("${base}^(-2/3)$"),
-        answer: format!("#block($ 1/{total} $)"),
+        answer: answer_str.as_block_math(),
         solution: solution.to_string(),
         identifiers: vec![base],
         combinations: base_range.len(),
