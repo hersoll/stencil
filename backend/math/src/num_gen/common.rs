@@ -1,5 +1,6 @@
 use rand::seq::IteratorRandom;
 
+#[derive(Debug, Clone)]
 pub enum NumberKind {
     NotDefined,
     Single(i32),

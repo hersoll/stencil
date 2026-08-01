@@ -61,6 +61,18 @@
 - [ ] 2/x = 5
 - [ ] 2/x = 3/7
 
+## Integer exponents
+- [ ] 2x * x
+- [ ] x * 2x
+- [ ] 2x * 3x
+- [ ] 2x * x^2
+- [ ] 2x^2 * x
+- [ ] 2x^2 * 3x
+- [ ] 2x^4 * 3x^3
+- [ ] ab^2 * a^3b^5
+- [ ] 3ab^2 * 4a^3b^5
+- [ ] 3ab^2 * 4a^3b^5 * 2a^3
+
 ## Negative exponents
 - [ ] 3^2 * 3^-3
 - [ ] 3^2 / 3^-3
@@ -86,12 +98,14 @@
 - [x] Simplify (7^8)^1/2
 - [x] Simplify (7^1/4)^12
 ### 6 / 5
-- [ ] Simplify x^(1/2) * sqrt(x)
-- [ ] Simplify 2x^(1/2) * x^(1/2)
-- [ ] Simplify 3x^(1/2) * 2x^(1/2)
+- [x] Simplify x^(1/2) * sqrt(x)
+- [x] Simplify sqrt(x) * x^(1/2)
+- [x] Simplify 2x^(1/2) * x^(1/2)
+- [x] Simplify x^(1/2) * 2x^(1/2)
+- [x] Simplify 3x^(1/2) * 2x^(1/2)
 ### 7 / 6
-- [ ] Write as a power: x^n / sqrt(x)
-- [ ] Simplify x^(1/2) * x^(1/3)
+- [x] Write as a power: Nx^n / sqrt(x)
+- [x] Simplify x^(1/2) * x^(1/3)
 ### 7 / 7
 - [ ] Write as a power: sqrt(x) / x^n
 - [ ] Simplify 2x^(1/2) * x^(1/3)

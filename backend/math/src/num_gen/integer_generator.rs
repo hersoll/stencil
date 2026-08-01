@@ -2,6 +2,7 @@ use crate::Number;
 
 use super::common::{NumberKind, generate_value};
 
+#[derive(Debug, Clone)]
 pub struct IntegerGenerator {
     pub numbers: NumberKind,
     pub exclusions: Vec<i32>,

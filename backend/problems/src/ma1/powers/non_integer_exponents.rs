@@ -1,6 +1,7 @@
 use anyhow::Result;
 use macros::problem;
-use math::{MathDisplay, PolynomialVariable, num_gen, symbols};
+use math::{MathDisplay, PolynomialVariable, Term, num_gen, symbols};
+use registry::get_solution;
 use types::{lang::Language, problems::Problem};
 
 /// Calculate 9^(1/2)
@@ -31,7 +32,7 @@ fn square_root(id: i32, _lang: Language) -> Result<Problem> {
 /// Relative difficulty: 2
 #[problem]
 fn cubic_root(id: i32, _lang: Language) -> Result<Problem> {
-    let (base, base_range) = num_gen::integer().numbers(&[1, 8, 27]).and_random();
+    let (base, base_range) = num_gen::integer().numbers(&[1, 8, 27, 1000]).and_random();
 
     let question = format!("${base}^(1/3)$");
     let answer = base.root(3);
@@ -265,5 +266,134 @@ fn multiply_sqrt_and_half(id: i32, _lang: Language) -> Result<Problem> {
         ),
         identifiers: vec![numerator],
         combinations: num_range.len(),
+    })
+}
+
+/// Simplify 3x^(1/2) * x^(5/2)
+/// Absolute difficulty: 6
+/// Relative difficulty: 5
+#[problem]
+fn multiply_variables_first_coefficient(id: i32, _lang: Language) -> Result<Problem> {
+    let (coef, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let (first_exp, exp_range) = num_gen::integer().numbers(&[1, 3, 5, 7, 9]).and_random();
+    let second_exp = exp_range.random();
+    let var = symbols::get_unknown()?;
+
+    let total_numerator = first_exp + second_exp;
+    let final_exp = total_numerator / 2;
+    let answer = coef * Term::from_var((var, final_exp));
+    Ok(Problem {
+        id,
+        question: format!("${coef}{var}^({first_exp}/2) dot {var}^({second_exp}/2)$"),
+        answer: answer.as_math(),
+        solution: format!("${coef}{var}^({first_exp}/2) dot {var}^({second_exp}/2) = 
+            {coef}{var}^({first_exp}/2 + {second_exp}/2) = {coef}{var}^({total_numerator}/2) = {answer}$"),
+        identifiers: vec![coef, first_exp, second_exp],
+        combinations: coef_range.len() * exp_range.len().pow(2),
+    })
+}
+
+/// Simplify x^(1/2) * 3x^(5/2)
+/// Absolute difficulty: 6
+/// Relative difficulty: 5
+#[problem]
+fn multiply_variables_second_coefficient(id: i32, _lang: Language) -> Result<Problem> {
+    let (coef, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let (first_exp, exp_range) = num_gen::integer().numbers(&[1, 3, 5, 7, 9]).and_random();
+    let second_exp = exp_range.random();
+    let var = symbols::get_unknown()?;
+
+    let total_numerator = first_exp + second_exp;
+    let final_exp = total_numerator / 2;
+    let answer = coef * Term::from_var((var, final_exp));
+    Ok(Problem {
+        id,
+        question: format!("${var}^({first_exp}/2) dot {coef}{var}^({second_exp}/2)$"),
+        answer: answer.as_math(),
+        solution: format!("${var}^({first_exp}/2) dot {coef}{var}^({second_exp}/2) = 
+            {coef}{var}^({first_exp}/2 + {second_exp}/2) = {coef}{var}^({total_numerator}/2) = {answer}$"),
+        identifiers: vec![coef, first_exp, second_exp],
+        combinations: coef_range.len() * exp_range.len().pow(2),
+    })
+}
+
+/// Simplify 2x^(1/2) * 3x^(5/2)
+/// Absolute difficulty: 6
+/// Relative difficulty: 5
+#[problem]
+fn multiply_variables_both_coefficients(id: i32, lang: Language) -> Result<Problem> {
+    let (first_coef, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let second_coef = coef_range.random();
+    let (first_exp, exp_range) = num_gen::integer().numbers(&[1, 3, 5, 7, 9]).and_random();
+    let second_exp = exp_range.random();
+    let var = symbols::get_unknown()?;
+
+    let total_coef = first_coef * second_coef;
+    let total_numerator = first_exp + second_exp;
+    let final_exp = total_numerator / 2;
+    let answer = total_coef * Term::from_var((var, final_exp));
+    let solution_text = get_solution(id, lang)?;
+    Ok(Problem {
+        id,
+        question: format!("${first_coef}{var}^({first_exp}/2) dot {second_coef}{var}^({second_exp}/2)$"),
+        answer: answer.as_math(),
+        solution: format!("{solution_text} \\ $ {first_coef}{var}^({first_exp}/2) dot {second_coef}{var}^({second_exp}/2) = 
+            {total_coef}{var}^({first_exp}/2 + {second_exp}/2) = {total_coef}{var}^({total_numerator}/2) = {answer} $"),
+        identifiers: vec![first_coef, second_coef, first_exp, second_exp],
+        combinations: coef_range.len().pow(2) * exp_range.len().pow(2),
+    })
+}
+
+/// Simplify: Nx^n / sqrt(n)
+/// Absolute difficulty: 7
+/// Relative difficulty: 6
+#[problem]
+fn power_divided_by_sqrt(id: i32, _lang: Language) -> Result<Problem> {
+    let coef = num_gen::integer().range(2, 9).random();
+    let (exp, exp_range) = num_gen::integer().range(2, 5).and_random();
+    let var = symbols::get_unknown()?;
+
+    let double_exp = 2 * exp;
+    let answer_exp = (double_exp - 1) / 2;
+
+    Ok(Problem {
+        id,
+        question: format!("$ ({coef}{var}^{exp})/sqrt({var}) $"),
+        answer: format!("${coef}{var}^({answer_exp})$"),
+        solution: format!("$({coef}{var}^{exp})/sqrt({var}) = ({coef}{var}^{exp})/{var}^(1/2) = 
+            {coef}{var}^({exp} - 1/2) = {coef}{var}^({double_exp}/2 - 1/2) = {coef}{var}^({answer_exp})$"),
+        identifiers: vec![exp],
+        combinations: exp_range.len()
+    })
+}
+
+/// x^(1/2) * x^(1/3)
+/// Absolute difficulty: 7
+/// Relative difficulty: 6
+#[problem]
+fn variable_fraction_times_fraction(id: i32, _lang: Language) -> Result<Problem> {
+    let (denom_1, denom_range) = num_gen::integer().range(2, 6).and_random();
+    // Excluding the double as well to guarantee the sum can't be simplified
+    let denom_2 = denom_range
+        .clone()
+        .exclude(denom_1)
+        .exclude(denom_1 * 2)
+        .random();
+    let frac_1 = 1 / denom_1;
+    let frac_2 = 1 / denom_2;
+    let total_frac = frac_1 + frac_2;
+
+    let var = symbols::get_unknown()?;
+
+    Ok(Problem {
+        id,
+        question: format!("${var}^({frac_1}) dot {var}^({frac_2})$"),
+        answer: format!("${var}^({total_frac})$"),
+        solution: format!(
+            "${var}^({frac_1}) dot {var}^({frac_2}) = {var}^({frac_1} + {frac_2}) = 
+            {var}^({total_frac})$"
+        ),
+        identifiers: vec![denom_1],
+        combinations: denom_range.len(),
     })
 }
