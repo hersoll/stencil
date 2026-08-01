@@ -4,7 +4,7 @@ use crate::{
 };
 use types::{
     difficulty::{AbsoluteDifficulty, RelativeDifficulty},
-    format_strings::{Answer, Question, Solution},
+    format_strings::{AnswerString, QuestionString, SolutionString},
     lang::Language,
 };
 
@@ -19,12 +19,12 @@ struct DBProblemRow {
     desc_en: Description,
     module: Name,
     prefix_id: Option<ID>,
-    question_sv: Question,
-    question_en: Question,
-    answer_sv: Answer,
-    answer_en: Answer,
-    solution_sv: Solution,
-    solution_en: Solution,
+    question_sv: QuestionString,
+    question_en: QuestionString,
+    answer_sv: AnswerString,
+    answer_en: AnswerString,
+    solution_sv: SolutionString,
+    solution_en: SolutionString,
     public: PublicFlag,
 }
 
@@ -35,12 +35,12 @@ struct DBProblemRowWithTopicDifficulties {
     desc_en: Description,
     module: Name,
     prefix_id: Option<ID>,
-    question_sv: Question,
-    question_en: Question,
-    answer_sv: Answer,
-    answer_en: Answer,
-    solution_sv: Solution,
-    solution_en: Solution,
+    question_sv: QuestionString,
+    question_en: QuestionString,
+    answer_sv: AnswerString,
+    answer_en: AnswerString,
+    solution_sv: SolutionString,
+    solution_en: SolutionString,
     topic_id: ID,
     absolute_difficulty: AbsoluteDifficulty,
     relative_difficulty: RelativeDifficulty,
@@ -136,9 +136,9 @@ pub struct TopicSpecificData {
 /// The texts associated with a specific problem in a certain [`Language`]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ProblemTexts {
-    pub question: Question,
-    pub answer: Answer,
-    pub solution: Solution,
+    pub question: QuestionString,
+    pub answer: AnswerString,
+    pub solution: SolutionString,
 }
 
 /// Contains [`ProblemTexts`] for every [`Language`]
@@ -177,19 +177,19 @@ impl HasDesc for ProblemEntry {
     }
 }
 impl ProblemEntry {
-    pub fn get_question(&self, lang: Language) -> &Question {
+    pub fn get_question(&self, lang: Language) -> &QuestionString {
         match lang {
             Language::Sv => &self.translations.sv.question,
             Language::En => &self.translations.en.question,
         }
     }
-    pub fn get_answer(&self, lang: Language) -> &Answer {
+    pub fn get_answer(&self, lang: Language) -> &AnswerString {
         match lang {
             Language::Sv => &self.translations.sv.answer,
             Language::En => &self.translations.en.answer,
         }
     }
-    pub fn get_solution(&self, lang: Language) -> &Solution {
+    pub fn get_solution(&self, lang: Language) -> &SolutionString {
         match lang {
             Language::Sv => &self.translations.sv.solution,
             Language::En => &self.translations.en.solution,

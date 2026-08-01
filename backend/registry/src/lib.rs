@@ -9,7 +9,7 @@ use db::prefixes::{PrefixEntry, get_public_prefix_data};
 use db::problems::{ProblemEntry, get_public_problem_data};
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
-use types::format_strings::{Answer, Question, Solution};
+use types::format_strings::{AnswerString, QuestionString, SolutionString};
 use types::lang::Language;
 
 #[derive(Debug, thiserror::Error)]
@@ -96,7 +96,7 @@ pub fn get_problem_data(id: i32) -> Result<ProblemEntry> {
 ///
 /// The reason we clone and return it owned is that problem functions always return an
 /// owned struct anyway, so this must be cloned somewhere.
-pub fn get_question(id: i32, lang: Language) -> Result<Question> {
+pub fn get_question(id: i32, lang: Language) -> Result<QuestionString> {
     Ok(get_problem_data(id)?.get_question(lang).clone())
 }
 
@@ -104,7 +104,7 @@ pub fn get_question(id: i32, lang: Language) -> Result<Question> {
 ///
 /// The reason we clone and return it owned is that problem functions always return an
 /// owned struct anyway, so this must be cloned somewhere.
-pub fn get_answer(id: i32, lang: Language) -> Result<Answer> {
+pub fn get_answer(id: i32, lang: Language) -> Result<AnswerString> {
     Ok(get_problem_data(id)?.get_answer(lang).clone())
 }
 
@@ -112,6 +112,6 @@ pub fn get_answer(id: i32, lang: Language) -> Result<Answer> {
 ///
 /// The reason we clone and return it owned is that problem functions always return an
 /// owned struct anyway, so this must be cloned somewhere.
-pub fn get_solution(id: i32, lang: Language) -> Result<Solution> {
+pub fn get_solution(id: i32, lang: Language) -> Result<SolutionString> {
     Ok(get_problem_data(id)?.get_solution(lang).clone())
 }

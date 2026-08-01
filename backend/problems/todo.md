@@ -65,6 +65,11 @@
 - [ ] 2x * x
 - [ ] x * 2x
 - [ ] 2x * 3x
+- [ ] 5^x * 5^3 = 5^12
+- [ ] 5^x / 5^3 = 5^12
+- [ ] 5^2x * 5^3 = 5^12
+- [ ] 5^2x / 5^3 = 5^12
+- [ ] (5^x)^2 * 5^3 = 5^x / 5^4
 - [ ] 2x * x^2
 - [ ] 2x^2 * x
 - [ ] 2x^2 * 3x
@@ -107,9 +112,9 @@
 - [x] Write as a power: Nx^n / sqrt(x)
 - [x] Simplify x^(1/2) * x^(1/3)
 ### 7 / 7
-- [ ] Write as a power: sqrt(x) / x^n
-- [ ] Simplify 2x^(1/2) * x^(1/3)
-- [ ] Simplify 3x^(1/5) * 2x^(1/2)
+- [x] Write as a power: sqrt(x) / x^n
+- [x] Simplify 2x^(1/2) * x^(1/3)
+- [x] Simplify 3x^(1/5) * 2x^(1/2)
 ### 8 / 8
 - [ ] Write as a power: sqrt(x^n) / x
 - [ ] Calculate 4^-1/2

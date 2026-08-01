@@ -26,19 +26,19 @@ pub trait HasReplacements {
 /// Newtype that simply contains a [`String`].
 #[derive(Debug, Clone, Deserialize, Serialize, Type)]
 #[sqlx(transparent)]
-pub struct Question(String);
+pub struct QuestionString(String);
 
 /// Newtype that simply contains a [`String`].
 #[derive(Debug, Clone, Deserialize, Serialize, Type)]
 #[sqlx(transparent)]
-pub struct Answer(String);
+pub struct AnswerString(String);
 
 /// Newtype that simply contains a [`String`].
 #[derive(Debug, Clone, Deserialize, Serialize, Type)]
 #[sqlx(transparent)]
-pub struct Solution(String);
+pub struct SolutionString(String);
 
-impl Deref for Question {
+impl Deref for QuestionString {
     type Target = String;
 
     fn deref(&self) -> &Self::Target {
@@ -46,7 +46,7 @@ impl Deref for Question {
     }
 }
 
-impl Deref for Answer {
+impl Deref for AnswerString {
     type Target = String;
 
     fn deref(&self) -> &Self::Target {
@@ -54,7 +54,7 @@ impl Deref for Answer {
     }
 }
 
-impl Deref for Solution {
+impl Deref for SolutionString {
     type Target = String;
 
     fn deref(&self) -> &Self::Target {
@@ -62,78 +62,78 @@ impl Deref for Solution {
     }
 }
 
-impl HasReplacements for Question {
+impl HasReplacements for QuestionString {
     fn get_str(&self) -> &String {
         &self.0
     }
 }
-impl HasReplacements for Answer {
+impl HasReplacements for AnswerString {
     fn get_str(&self) -> &String {
         &self.0
     }
 }
-impl HasReplacements for Solution {
+impl HasReplacements for SolutionString {
     fn get_str(&self) -> &String {
         &self.0
     }
 }
 
-impl From<String> for Question {
+impl From<String> for QuestionString {
     fn from(value: String) -> Self {
-        Question(value)
+        QuestionString(value)
     }
 }
-impl From<String> for Answer {
+impl From<String> for AnswerString {
     fn from(value: String) -> Self {
-        Answer(value)
+        AnswerString(value)
     }
 }
-impl From<String> for Solution {
+impl From<String> for SolutionString {
     fn from(value: String) -> Self {
-        Solution(value)
+        SolutionString(value)
     }
 }
 
-impl From<Option<String>> for Question {
+impl From<Option<String>> for QuestionString {
     fn from(value: Option<String>) -> Self {
         match value {
-            Some(s) => Question(s),
-            None => Question(String::new()),
+            Some(s) => QuestionString(s),
+            None => QuestionString(String::new()),
         }
     }
 }
 
-impl From<Option<String>> for Answer {
+impl From<Option<String>> for AnswerString {
     fn from(value: Option<String>) -> Self {
         match value {
-            Some(s) => Answer(s),
-            None => Answer(String::new()),
+            Some(s) => AnswerString(s),
+            None => AnswerString(String::new()),
         }
     }
 }
 
-impl From<Option<String>> for Solution {
+impl From<Option<String>> for SolutionString {
     fn from(value: Option<String>) -> Self {
         match value {
-            Some(s) => Solution(s),
-            None => Solution(String::new()),
+            Some(s) => SolutionString(s),
+            None => SolutionString(String::new()),
         }
     }
 }
 
-impl Display for Question {
+impl Display for QuestionString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl Display for Answer {
+impl Display for AnswerString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl Display for Solution {
+impl Display for SolutionString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
