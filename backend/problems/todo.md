@@ -111,17 +111,22 @@
 ### 7 / 6
 - [x] Write as a power: Nx^n / sqrt(x)
 - [x] Simplify x^(1/2) * x^(1/3)
+- [ ] Solve 5^2x = sqrt(5)
+- [ ] Solve 5^2x * sqrt(5) = 5^7
 ### 7 / 7
 - [x] Write as a power: sqrt(x) / x^n
 - [x] Simplify 2x^(1/2) * x^(1/3)
 - [x] Simplify 3x^(1/5) * 2x^(1/2)
 ### 8 / 8
-- [ ] Write as a power: sqrt(x^n) / x
-- [ ] Calculate 4^-1/2
-- [ ] Calculate 8^-1/3
+- [x] Write as a power: sqrt(x^n) / x
+- [x] Calculate 4^-1/2
+- [x] Calculate 8^-1/3
 ### 9 / 9
-- [ ] Calculate 8^2/3
-- [ ] Calculate 4^3/2
+- [x] Calculate 8^2/3
+- [x] Calculate 4^3/2
+### 10 / 10
+- [x] Calculate 8^-2/3
+- [x] Calculate 4^-3/2
 
 ## f(x) algebraically
 - [ ] Text question: What does f(3) calculate?

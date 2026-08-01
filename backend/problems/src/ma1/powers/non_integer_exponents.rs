@@ -482,3 +482,189 @@ fn variable_fraction_times_fraction_two_coefs(id: i32, _lang: Language) -> Resul
         combinations: denom_1_range.len() * denom_2_range.len(),
     })
 }
+
+/// Write as a power: sqrt(x^n) / x
+/// Absolute difficulty: 8
+/// Relative difficulty: 8
+#[problem]
+fn sqrt_power(id: i32, _lang: Language) -> Result<Problem> {
+    let (exp, exp_range) = num_gen::integer().range(3, 9).exclude(4).and_random();
+    let var = symbols::get_unknown()?;
+    let sqrt_exp = exp / 2;
+    let final_exp = sqrt_exp - 1;
+    let mut solution = Solution::block();
+    solution
+        .write(format!("sqrt({var}^{exp})/{var}"))
+        .equals(format!("({var}^{exp})^(1/2)/{var}"))
+        .equals(format!("{var}^({exp} dot 1/2)/{var}"))
+        .equals(format!("{var}^({sqrt_exp})/{var}"))
+        .equals(format!("{var}^({sqrt_exp} - 1)"))
+        .equals(format!("{var}^({final_exp})"));
+    Ok(Problem {
+        id,
+        question: format!("$ sqrt({var}^{exp})/{var} $"),
+        answer: format!("${var}^({final_exp})$"),
+        solution: solution.to_string(),
+        identifiers: vec![exp],
+        combinations: exp_range.len(),
+    })
+}
+
+/// Calculate 4^-1/2
+/// Absolute difficulty: 8
+/// Relative difficulty: 8
+#[problem]
+fn negative_half_power(id: i32, _lang: Language) -> Result<Problem> {
+    let (square, sq_range) = num_gen::integer()
+        .numbers(&[4, 9, 16, 25, 36, 49, 64, 81, 100])
+        .and_random();
+    let root = square.sqrt();
+    let mut solution = Solution::block();
+    solution
+        .write(format!("{square}^(-1/2)"))
+        .equals(format!("1/{square}^(1/2)"))
+        .equals(format!("1/sqrt({square})"))
+        .equals(format!("1/{root}"));
+
+    Ok(Problem {
+        id,
+        question: format!("${square}^(-1/2)$"),
+        answer: format!("#block($ 1/{root} $)"),
+        solution: solution.to_string(),
+        identifiers: vec![square],
+        combinations: sq_range.len(),
+    })
+}
+
+/// Calculate 4^-1/3
+/// Absolute difficulty: 8
+/// Relative difficulty: 8
+#[problem]
+fn negative_third_power(id: i32, _lang: Language) -> Result<Problem> {
+    let (cube, cube_range) = num_gen::integer().numbers(&[8, 27, 1000]).and_random();
+    let root = cube.root(3);
+    let mut solution = Solution::block();
+    solution
+        .write(format!("{cube}^(-1/3)"))
+        .equals(format!("1/{cube}^(1/3)"))
+        .equals(format!("1/root(3, {cube})"))
+        .equals(format!("1/{root}"));
+    Ok(Problem {
+        id,
+        question: format!("${cube}^(-1/3)$"),
+        answer: format!("#block($ 1/{root} $)"),
+        solution: solution.to_string(),
+        identifiers: vec![cube],
+        combinations: cube_range.len(),
+    })
+}
+
+/// Calculate 4^(3/2)
+/// Absolute difficulty: 9
+/// Relative difficulty: 9
+#[problem]
+fn exponent_three_halves(id: i32, _lang: Language) -> Result<Problem> {
+    let (base, base_range) = num_gen::integer().numbers(&[4, 9, 25, 100]).and_random();
+    let sqrt = base.sqrt();
+    let answer = sqrt.pow(3);
+    let mut solution = Solution::inline();
+    solution
+        .write(format!("{base}^(3/2)"))
+        .equals(format!("{base}^(1/2 dot 3)"))
+        .equals(format!("({base}^(1/2))^3"))
+        .linebreak()
+        .equals(format!("(sqrt({base}))^3"))
+        .equals(format!("{sqrt}^3"))
+        .equals(format!("{answer}"));
+    Ok(Problem {
+        id,
+        question: format!("${base}^(3/2)$"),
+        answer: answer.as_math(),
+        solution: solution.to_string(),
+        identifiers: vec![base],
+        combinations: base_range.len(),
+    })
+}
+
+/// Calculate 8^(2/3)
+/// Absolute difficulty: 9
+/// Relative difficulty: 9
+#[problem]
+fn exponent_two_thirds(id: i32, _lang: Language) -> Result<Problem> {
+    let (base, base_range) = num_gen::integer().numbers(&[8, 27, 1000]).and_random();
+    let root = base.root(3);
+    let answer = root.pow(2);
+    let mut solution = Solution::inline();
+    solution
+        .write(format!("{base}^(2/3)"))
+        .equals(format!("{base}^(1/3 dot 2)"))
+        .equals(format!("({base}^(1/3))^2"))
+        .linebreak()
+        .equals(format!("(root(3, {base}))^2"))
+        .equals(format!("{root}^2"))
+        .equals(format!("{answer}"));
+    Ok(Problem {
+        id,
+        question: format!("${base}^(2/3)$"),
+        answer: answer.as_math(),
+        solution: solution.to_string(),
+        identifiers: vec![base],
+        combinations: base_range.len(),
+    })
+}
+
+/// Calculate 4^(-3/2)
+/// Absolute difficulty: 10
+/// Relative difficulty: 10
+#[problem]
+fn exponent_negative_three_halves(id: i32, _lang: Language) -> Result<Problem> {
+    let (base, base_range) = num_gen::integer().numbers(&[4, 9, 25, 100]).and_random();
+    let sqrt = base.sqrt();
+    let total = sqrt.pow(3);
+    let mut solution = Solution::block();
+    solution
+        .write(format!("{base}^(-3/2)"))
+        .equals(format!("1/{base}^(3/2)"))
+        .equals(format!("1/{base}^(1/2 dot 3)"))
+        .equals(format!("1/({base}^(1/2))^3"))
+        .linebreak()
+        .equals(format!("1/(sqrt({base}))^3"))
+        .equals(format!("1/{sqrt}^3"))
+        .equals(format!("1/{total}"));
+    Ok(Problem {
+        id,
+        question: format!("${base}^(-3/2)$"),
+        answer: format!("#block($ 1/{total} $)"),
+        solution: solution.to_string(),
+        identifiers: vec![base],
+        combinations: base_range.len(),
+    })
+}
+
+/// Calculate 8^(-2/3)
+/// Absolute difficulty: 10
+/// Relative difficulty: 10
+#[problem]
+fn exponent_negative_two_thirds(id: i32, _lang: Language) -> Result<Problem> {
+    let (base, base_range) = num_gen::integer().numbers(&[8, 27, 1000]).and_random();
+    let root = base.root(3);
+    let total = root.pow(2);
+    let mut solution = Solution::block();
+    solution
+        .write(format!("{base}^(-2/3)"))
+        .equals(format!("1/{base}^(2/3)"))
+        .equals(format!("1/{base}^(1/3 dot 2)"))
+        .linebreak()
+        .equals(format!("1/({base}^(1/3))^2"))
+        .equals(format!("1/(root(3, {base}))^2"))
+        .equals(format!("1/{root}^2"))
+        .equals(format!("1/{total}"));
+    Ok(Problem {
+        id,
+        question: format!("${base}^(-2/3)$"),
+        answer: format!("#block($ 1/{total} $)"),
+        solution: solution.to_string(),
+        identifiers: vec![base],
+        combinations: base_range.len(),
+    })
+}

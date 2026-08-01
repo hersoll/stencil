@@ -1,6 +1,6 @@
-mod continous;
+mod continuous;
 mod with_steps;
-use continous::*;
+use continuous::*;
 use with_steps::*;
 
 use anyhow::Result;
@@ -28,12 +28,12 @@ impl Solution {
         SolutionWithSteps::default()
     }
 
-    pub fn inline() -> ContinousSolution {
-        ContinousSolution::inline()
+    pub fn inline() -> ContinuousSolution {
+        ContinuousSolution::inline()
     }
 
-    pub fn block() -> ContinousSolution {
-        ContinousSolution::block()
+    pub fn block() -> ContinuousSolution {
+        ContinuousSolution::block()
     }
 }
 

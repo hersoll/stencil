@@ -1,12 +1,12 @@
 use std::fmt::Display;
 
-pub struct ContinousSolution {
+pub struct ContinuousSolution {
     content: String,
     /// Denotes whether the math be printed `$inline$` or `$ block $`
     inline: bool,
 }
 
-impl ContinousSolution {
+impl ContinuousSolution {
     pub(crate) fn inline() -> Self {
         Self {
             content: String::new(),
@@ -44,11 +44,18 @@ impl ContinousSolution {
     }
 }
 
-impl Display for ContinousSolution {
+impl Display for ContinuousSolution {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.inline {
             true => write!(f, "${}$", self.content),
-            false => write!(f, "$ {} $", self.content),
+            false => write!(
+                f,
+                "#context {{ let eq = $ {} $ 
+                let w = measure(eq).width 
+                box(width: w, eq) 
+                }} ",
+                self.content
+            ),
         }
     }
 }
