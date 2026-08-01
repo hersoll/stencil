@@ -1,10 +1,12 @@
 mod continous;
 mod with_steps;
+use continous::*;
 use with_steps::*;
 
 use anyhow::Result;
 use std::fmt::Write;
 use types::pdf::SolutionDecoration;
+
 static SOLUTION_HEADING_SPACE: &str = "0.3em";
 static SOLUTION_RADIUS: &str = "0.5em";
 static SOLUTION_FONT_SIZE: &str = "0.8em";
@@ -24,6 +26,14 @@ pub struct Solution;
 impl Solution {
     pub fn with_steps() -> SolutionWithSteps {
         SolutionWithSteps::default()
+    }
+
+    pub fn inline() -> ContinousSolution {
+        ContinousSolution::inline()
+    }
+
+    pub fn block() -> ContinousSolution {
+        ContinousSolution::block()
     }
 }
 

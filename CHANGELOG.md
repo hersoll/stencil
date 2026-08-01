@@ -7,6 +7,7 @@
 - Implemented `extend(n)` on `Numbers`
 - Implemented `can_be_simplified()` on `Numbers`
 - Added non-integer exponent problems
+- Added `Solution::inline()` and `Solution::block()` solution builders
 
 ### Changed
 - Updated `README`

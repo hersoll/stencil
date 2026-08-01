@@ -3,6 +3,7 @@ use macros::problem;
 use math::{MathDisplay, PolynomialVariable, Term, num_gen, symbols};
 use registry::get_solution;
 use types::{lang::Language, problems::Problem};
+use typst_writer::formatting::Solution;
 
 /// Calculate 9^(1/2)
 /// Absolute difficulty: 5
@@ -463,14 +464,20 @@ fn variable_fraction_times_fraction_two_coefs(id: i32, _lang: Language) -> Resul
     let total_coef = coef_1 * coef_2;
     let var = symbols::get_unknown()?;
 
+    let mut solution = Solution::inline();
+    solution
+        .write(format!(
+            "{coef_1}{var}^({frac_1}) dot {coef_2}{var}^({frac_2})"
+        ))
+        .equals(format!("{total_coef}{var}^({frac_1} + {frac_2})"))
+        .equals(format!("{total_coef}{var}^({extend_1} + {extend_2})"))
+        .equals(format!("{total_coef}{var}^({total_frac})"));
+
     Ok(Problem {
         id,
         question: format!("${coef_1}{var}^({frac_1}) dot {coef_2}{var}^({frac_2})$"),
         answer: format!("${total_coef}{var}^({total_frac})$"),
-        solution: format!(
-            "${coef_1}{var}^({frac_1}) dot {coef_2}{var}^({frac_2}) = {total_coef}{var}^({frac_1} + {frac_2}) = 
-            {total_coef}{var}^({extend_1} + {extend_2}) = {total_coef}{var}^({total_frac})$"
-        ),
+        solution: solution.to_string(),
         identifiers: vec![denom_1, denom_2],
         combinations: denom_1_range.len() * denom_2_range.len(),
     })
