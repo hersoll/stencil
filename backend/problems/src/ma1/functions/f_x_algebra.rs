@@ -7,7 +7,7 @@ use math::{
     symbols::{self, X},
 };
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
-use typst_writer::formatting::{SolutionWithSteps, equation_solution};
+use typst_writer::formatting::{Solution, equation_solution};
 
 // In this module, problems in the form of f(3) is known as "calculating y"
 // and problems like f(x) = 3 are known as "calculating x"
@@ -29,7 +29,7 @@ fn without_notation_y(id: i32, lang: Language) -> Result<Problem> {
     ]);
 
     expression = expression.aligned();
-    let mut solution = SolutionWithSteps::new();
+    let mut solution = Solution::with_steps();
     solution
         .add_line(&expression)
         .with_step(format!("x = {x_value}"));

@@ -1,3 +1,7 @@
+mod continous;
+mod with_steps;
+use with_steps::*;
+
 use anyhow::Result;
 use std::fmt::Write;
 use types::pdf::SolutionDecoration;
@@ -9,6 +13,19 @@ static SOLUTION_NESTED_INSET: &str = "2.5em";
 static SOLUTION_OUTSET: &str = "1.7em";
 static SOLUTION_NESTED_OUTSET: &str = "3em";
 static SOLUTION_BACKGROUND_PADDING: &str = "0.5em";
+
+/// A mathematical solution that is formatted to Typst
+///
+/// Helper struct that acts as a springboard for SolutionWithSteps and ContinousSolution
+/// This is simply so the API becomes Solution::with_steps() instead of writing out
+/// SolutionWithSteps::new()
+pub struct Solution;
+
+impl Solution {
+    pub fn with_steps() -> SolutionWithSteps {
+        SolutionWithSteps::default()
+    }
+}
 
 /// Formats the answer and solution strings to show up as a proper solution in the Typst file
 pub fn build_solution(answer: &str, solution: &str) -> Result<String> {

@@ -10,6 +10,8 @@
 
 ### Changed
 - Updated `README`
+- Renamed `Question` to `QuestionString` and so on
+- Changed `SolutionWithSteps::new()` API to `Solution::with_steps()` to accomodate for other type of solution structs
 
 ### Fixed
 - Creating a new entry in the editor works properly again

@@ -32,10 +32,6 @@ pub struct SolutionWithSteps {
 }
 
 impl SolutionWithSteps {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     /// Adds a step instruction to the latest line
     ///
     /// Overrides any previously set step for the same line!

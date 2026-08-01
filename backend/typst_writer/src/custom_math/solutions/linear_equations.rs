@@ -1,4 +1,4 @@
-use crate::formatting::{SolutionWithSteps, divide_number, subtract_number};
+use crate::formatting::{Solution, divide_number, subtract_number};
 use math::{self, Number, symbols::Symbol, utils::gcd};
 
 /// Equations of the form 3x + 5 = 14. Zeroes for coefficient or constant is not allowed.
@@ -7,7 +7,7 @@ pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answ
         panic!("coefficient or constant is 0");
     }
 
-    let mut sol = SolutionWithSteps::new();
+    let mut sol = Solution::with_steps();
     sol.add_aligned(
         format!("{coefficient}{unknown}{constant:+}"),
         coefficient * final_answer + constant,
@@ -60,7 +60,7 @@ pub fn positive_rational_answer(
         String::new()
     };
 
-    let mut sol = SolutionWithSteps::new();
+    let mut sol = Solution::with_steps();
     sol.add_aligned(
         format!("{coefficient}{unknown}{constant:+}"),
         numerator + constant,

@@ -7,7 +7,7 @@ use math::{
 use types::{lang::Language, problems::Problem};
 use typst_writer::{
     custom_math::solutions,
-    formatting::{SolutionWithSteps, divide_number, subtract_number},
+    formatting::{Solution, divide_number, subtract_number},
 };
 
 /// x + 3 = 12
@@ -19,7 +19,7 @@ fn only_addition_or_subtraction(id: i32, _lang: Language) -> Result<Problem> {
     let (constant, constant_range) = num_gen::integer().range(-answer, 9).exclude(0).and_random();
     let unknown = symbols::get_unknown()?;
 
-    let solution = SolutionWithSteps::new()
+    let solution = Solution::with_steps()
         .add_aligned(format!("{unknown}{constant:+}"), answer + constant) // x + 3 = 12
         .with_step(subtract_number(constant))
         .add_aligned(unknown, answer)
@@ -44,7 +44,7 @@ fn only_multiplication(id: i32, _lang: Language) -> Result<Problem> {
     let (coefficient, coefficient_range) = num_gen::integer().range(3, 9).and_random();
     let unknown = symbols::get_unknown()?;
 
-    let solution = SolutionWithSteps::new()
+    let solution = Solution::with_steps()
         .add_aligned(format!("{coefficient}{unknown}"), coefficient * answer) // 3x = 12
         .with_step(divide_number(coefficient))
         .add_aligned(unknown, answer) // x = 4
@@ -74,7 +74,7 @@ fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
         .and_random();
     let term = Term::from_num_and_vars(coefficient, unknown);
 
-    let solution = SolutionWithSteps::new()
+    let solution = Solution::with_steps()
         .add_aligned(
             format!("{term}{constant:+}"),
             coefficient * answer + constant,
@@ -113,7 +113,7 @@ fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
 
     let term = Term::from_num_and_vars(coefficient, unknown);
 
-    let solution = SolutionWithSteps::new()
+    let solution = Solution::with_steps()
         .add_aligned(
             format!("{term}{constant:+}"),
             coefficient * answer + constant,
