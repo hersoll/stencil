@@ -358,7 +358,7 @@ fn power_divided_by_sqrt(id: i32, _lang: Language) -> Result<Problem> {
 
     Ok(Problem {
         id,
-        question: format!("$ ({coef}{var}^{exp})/sqrt({var}) $"),
+        question: format!("#block($ ({coef}{var}^{exp})/sqrt({var}) $)"),
         answer: format!("${coef}{var}^({answer_exp})$"),
         solution: format!("$({coef}{var}^{exp})/sqrt({var}) = ({coef}{var}^{exp})/{var}^(1/2) = 
             {coef}{var}^({exp} - 1/2) = {coef}{var}^({double_exp}/2 - 1/2) = {coef}{var}^({answer_exp})$"),
