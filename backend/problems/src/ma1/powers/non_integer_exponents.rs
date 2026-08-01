@@ -372,19 +372,13 @@ fn power_divided_by_sqrt(id: i32, _lang: Language) -> Result<Problem> {
 /// Relative difficulty: 6
 #[problem]
 fn variable_fraction_times_fraction(id: i32, _lang: Language) -> Result<Problem> {
-    let (denom_1, denom_range) = num_gen::integer().range(2, 6).and_random();
-    // Excluding the double as well to guarantee the sum can't be simplified
-    let denom_2 = denom_range
-        .clone()
-        .exclude(denom_1)
-        .exclude(denom_1 * 2)
-        .random();
+    let (denom_1, denom_1_range) = num_gen::integer().numbers(&[2, 4, 8]).and_random();
+    let (denom_2, denom_2_range) = num_gen::integer().numbers(&[3, 5, 7]).and_random();
     let frac_1 = 1 / denom_1;
     let frac_2 = 1 / denom_2;
     let extend_1 = frac_1.extend(denom_2);
     let extend_2 = frac_2.extend(denom_1);
     let total_frac = frac_1 + frac_2;
-
     let var = symbols::get_unknown()?;
 
     Ok(Problem {
@@ -395,7 +389,7 @@ fn variable_fraction_times_fraction(id: i32, _lang: Language) -> Result<Problem>
             "${var}^({frac_1}) dot {var}^({frac_2}) = {var}^({frac_1} + {frac_2}) = 
             {var}^({extend_1} + {extend_2}) = {var}^({total_frac})$"
         ),
-        identifiers: vec![denom_1],
-        combinations: denom_range.len(),
+        identifiers: vec![denom_1, denom_2],
+        combinations: denom_1_range.len() * denom_2_range.len(),
     })
 }

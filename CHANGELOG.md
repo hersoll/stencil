@@ -5,6 +5,7 @@
 ### Added
 - Implemented `sqrt()` and `root(n)` on `Numbers`
 - Implemented `extend(n)` on `Numbers`
+- Implemented `can_be_simplified()` on `Numbers`
 - Added non-integer exponent problems
 
 ### Changed

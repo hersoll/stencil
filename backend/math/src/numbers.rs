@@ -8,7 +8,7 @@
 //! otherwise you're better of just treating pi as a `Symbol` in the problem.
 mod implementations;
 mod operations;
-use crate::utils::simplified_fraction;
+use crate::utils::{gcd, simplified_fraction};
 
 pub const PI: Number = Number::Irrational {
     value: std::f64::consts::PI,
@@ -166,6 +166,20 @@ impl Number {
                 }
             }
             n => n,
+        }
+    }
+
+    /// Returns true if the `Number` is a fraction and can be simplified
+    pub fn can_be_simplified(&self) -> bool {
+        if let Number::Fraction {
+            numerator,
+            denominator,
+        } = self
+            && gcd(*numerator, *denominator) > 1
+        {
+            true
+        } else {
+            false
         }
     }
 
