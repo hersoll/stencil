@@ -1,6 +1,10 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Evaluable, MathDisplay, Number, Polynomial, Term, VariableList, num_gen, symbols};
+use math::{
+    Evaluable, MathDisplay, Number, Polynomial, Term, VariableList,
+    num_gen::{self, NumberGenerator},
+    symbols,
+};
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 
 /// Evaluate 3x - 1 when x = -3

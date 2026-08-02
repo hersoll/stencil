@@ -1,5 +1,8 @@
 use super::common::{NumberKind, generate_value};
-use crate::{Number, num_gen::IntegerGenerator};
+use crate::{
+    Number,
+    num_gen::{IntegerGenerator, NumberGenerator},
+};
 use rand::seq::IteratorRandom;
 
 /// The builder type returned by the fraction() function
@@ -18,6 +21,7 @@ pub struct FractionGenerator {
 /// # Examples
 ///
 /// ```
+/// use math::num_gen::NumberGenerator;
 /// let frac = math::num_gen::fraction().denom(7).random();
 /// assert!(frac.numerator() >= 1 && frac.numerator() <= 6); // Generates a fraction between 1/7 and 6/7
 /// assert!(frac.denominator() == 7);
@@ -26,24 +30,20 @@ pub struct FractionGenerator {
 /// Fractions are irreducible by default - if a certain denominator is given the generator is sure
 /// not to accidentally generate a fraction which can be reduced to another denominator:
 /// ```
+/// use math::num_gen::NumberGenerator;
 /// let frac = math::num_gen::fraction().denom(6).random();
 /// assert!(frac.numerator() == 1 || frac.numerator() == 5); // Only 1/6 and 5/6 are irreducible
 /// assert!(frac.denominator() == 6);
-/// ```
 ///
-/// ```
 /// let frac = math::num_gen::fraction().denom(6).min(2).max(4).random();
 /// assert!(frac.numerator() == 13 || frac.numerator() == 17 || frac.numerator() == 19 ||
 /// frac.numerator() == 23);
 /// assert!(frac.denominator() == 6);
-/// ```
 ///
-/// ```
 /// let frac = math::num_gen::fraction().reducible().denom(6).random();
 /// assert!(frac.numerator() >= 0 && frac.numerator() <= 6); // All numerators are allowed now, even 0
 /// assert!(frac.denominator() == 6);
-/// ```
-/// ```
+///
 /// let frac = math::num_gen::fraction().reducible().denom(6).max(2).random();
 /// assert!(frac.numerator() >= 0 && frac.numerator() <= 12);
 /// assert!(frac.denominator() == 6);
@@ -51,6 +51,7 @@ pub struct FractionGenerator {
 ///
 /// The numerator can of course be set independently:
 /// ```
+/// use math::num_gen::NumberGenerator;
 /// let frac = math::num_gen::fraction().num(5).denom(6).random();
 /// assert_eq!(frac.numerator(), 5);
 /// assert_eq!(frac.denominator(), 6);
@@ -59,6 +60,7 @@ pub struct FractionGenerator {
 /// As shown above, if the numerator isn't set it will be auto adjusted depending on the
 /// denominator. The denominator is always expected to be set though. If it isn't, the method will emit a tracing::error and set the denominator to 0:
 /// ```
+/// use math::num_gen::NumberGenerator;
 /// let frac = math::num_gen::fraction().num(5).random();
 /// assert_eq!(frac.numerator(), 5);
 /// assert_eq!(frac.denominator(), 0);
@@ -145,23 +147,32 @@ impl FractionGenerator {
         self.denom = self.denom.exclude_multiple(denoms);
         self
     }
+}
 
-    /// Generate a random fraction from the FractionGenerator with the parameters given
-    ///
-    /// Non-consuming method, so the generator can be used again
-    pub fn random(&mut self) -> Number {
+impl NumberGenerator for FractionGenerator {
+    fn random(&self) -> Number {
         let denom = generate_value(
             &self.denom.numbers,
             &self.denom.exclusions,
             &[] as &[fn(&i32) -> bool],
         );
-        self.auto_set_num(denom);
+
+        // If the numerator hasn't been set manually, set it to make sure
+        // the fraction is between min_value and max_value
+        let numerator_numbers = if let NumberKind::NotDefined = self.num.numbers {
+            &NumberKind::Range(
+                self.min_value * denom.abs() + 1,
+                self.max_value * denom.abs() - 1,
+            )
+        } else {
+            &self.num.numbers
+        };
 
         // If the fraction is irreducible, we can't just get any old numerator
         let num = match self.reducible {
-            false => generate_irreducible_numerator(&self.num.numbers, denom, &self.num.exclusions),
+            false => generate_irreducible_numerator(numerator_numbers, denom, &self.num.exclusions),
             true => generate_value(
-                &self.num.numbers,
+                numerator_numbers,
                 &self.num.exclusions,
                 &[] as &[fn(&i32) -> bool],
             ),
@@ -173,24 +184,13 @@ impl FractionGenerator {
         }
     }
 
-    pub fn and_random(mut self) -> (Number, Self) {
+    fn and_random(self) -> (Number, Self) {
         let num = self.random();
         (num, self)
     }
 
-    #[allow(clippy::len_without_is_empty)]
-    pub fn len(&self) -> usize {
+    fn len(&self) -> usize {
         self.num.len() * self.denom.len()
-    }
-
-    /// With a given denominator, sets the numerator to make sure the fraction is between min_value and max_value
-    fn auto_set_num(&mut self, denom: i32) {
-        if let NumberKind::NotDefined = self.num.numbers {
-            self.num.numbers = NumberKind::Range(
-                self.min_value * denom.abs() + 1,
-                self.max_value * denom.abs() - 1,
-            );
-        }
     }
 }
 
@@ -231,7 +231,7 @@ mod tests {
 
     #[test]
     fn simple_generate() {
-        let mut frac = fraction().denom(5);
+        let frac = fraction().denom(5);
         for _ in 0..10 {
             let num = frac.random();
             let denom = num.denominator();
@@ -243,7 +243,7 @@ mod tests {
 
     #[test]
     fn defaults_to_irreducible() {
-        let mut frac = fraction().denom(6);
+        let frac = fraction().denom(6);
         for _ in 0..10 {
             let num = frac.random();
             let denom = num.denominator();
@@ -256,7 +256,7 @@ mod tests {
     #[test]
     fn reducible_works() {
         let mut found_two = false;
-        let mut frac = fraction().denom(4).reducible();
+        let frac = fraction().denom(4).reducible();
         for _ in 0..100 {
             let num = frac.random().numerator();
             if num == 2 {
@@ -269,7 +269,7 @@ mod tests {
 
     #[test]
     fn exclude_num() {
-        let mut frac = fraction().denom(3).exclude_num(2);
+        let frac = fraction().denom(3).exclude_num(2);
         for _ in 0..10 {
             let num = frac.random().numerator();
             assert_eq!(num, 1);
@@ -278,7 +278,7 @@ mod tests {
 
     #[test]
     fn exclude_nums() {
-        let mut frac = fraction().denom(4).exclude_nums(&[2, 3]);
+        let frac = fraction().denom(4).exclude_nums(&[2, 3]);
         for _ in 0..10 {
             let num = frac.random().numerator();
             assert_eq!(num, 1);
@@ -287,7 +287,7 @@ mod tests {
 
     #[test]
     fn exclude_denom() {
-        let mut frac = fraction().denom_range(3, 5).exclude_denom(4);
+        let frac = fraction().denom_range(3, 5).exclude_denom(4);
         for _ in 0..10 {
             let denom = frac.random().denominator();
             assert!(denom == 3 || denom == 5);
@@ -296,7 +296,7 @@ mod tests {
 
     #[test]
     fn exclude_denoms() {
-        let mut frac = fraction().denom_range(5, 7).exclude_denoms(&[5, 6]);
+        let frac = fraction().denom_range(5, 7).exclude_denoms(&[5, 6]);
         for _ in 0..10 {
             let denom = frac.random().denominator();
             assert_eq!(denom, 7);
@@ -315,7 +315,7 @@ mod tests {
     #[allow(clippy::manual_range_contains)]
     #[test]
     fn min_max_works() {
-        let mut frac = fraction().denom(7).min(2).max(5);
+        let frac = fraction().denom(7).min(2).max(5);
         for _ in 0..100 {
             let num = frac.random();
             let denom = num.denominator();
@@ -324,7 +324,7 @@ mod tests {
             assert_eq!(denom, 7);
         }
 
-        let mut frac = fraction().denom(3).min(-2).max(-1);
+        let frac = fraction().denom(3).min(-2).max(-1);
         for _ in 0..10 {
             let num = frac.random();
             let denom = num.denominator();

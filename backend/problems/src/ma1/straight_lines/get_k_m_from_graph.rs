@@ -1,6 +1,10 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, Term, num_gen, symbols::X};
+use math::{
+    Number, Term,
+    num_gen::{self, NumberGenerator},
+    symbols::X,
+};
 use registry::get_problem_data;
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::graphing::{Axes, Graph};

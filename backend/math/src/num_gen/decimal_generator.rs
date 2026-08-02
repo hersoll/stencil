@@ -1,6 +1,9 @@
-use crate::{Number, float_to_int};
+use crate::{
+    Number, float_to_int,
+    num_gen::{common::NumberGenerator, generate_value},
+};
 
-use super::common::{NumberKind, generate_value};
+use super::common::NumberKind;
 
 pub struct DecimalGenerator {
     /// Which numbers can the generator choose from?
@@ -36,6 +39,7 @@ impl Default for DecimalGenerator {
 ///
 /// ```
 /// use math::num_gen;
+/// use math::num_gen::NumberGenerator;
 /// // Default is three decimal places
 /// let num = num_gen::decimal().range(1.234, 1.236).random();
 /// assert!(num == 1.234 || num == 1.235 || num == 1.236); // Range is inclusive
@@ -139,11 +143,6 @@ impl FinishedDecimalGenerator {
         self
     }
 
-    /// Generate a random number from the previously configured parameters.
-    pub fn random(&self) -> Number {
-        self.generate_decimal_with_filters(&[])
-    }
-
     /// Generate a positive value (0 inclusive).
     pub fn positive(&self) -> Number {
         self.generate_decimal_with_filters(&[|n| *n >= 0])
@@ -152,11 +151,6 @@ impl FinishedDecimalGenerator {
     /// Generate a negative value (0 inclusive)
     pub fn negative(&self) -> Number {
         self.generate_decimal_with_filters(&[|n| *n <= 0])
-    }
-
-    /// Generate a random value, and also pass on the `FinishedDecimalGenerator` object.
-    pub fn and_random(self) -> (Number, Self) {
-        (self.random(), self)
     }
 
     /// Helper function, used in `.random()` and its derivatives
@@ -170,11 +164,18 @@ impl FinishedDecimalGenerator {
             decimals: self.decimal_places,
         }
     }
+}
 
-    /// Returns the number of choices the generator has to choose from.
-    #[allow(clippy::len_without_is_empty)]
+impl NumberGenerator for FinishedDecimalGenerator {
+    fn random(&self) -> Number {
+        self.generate_decimal_with_filters(&[])
+    }
+    fn and_random(self) -> (Number, Self) {
+        (self.random(), self)
+    }
+
     #[allow(clippy::cast_sign_loss)]
-    pub fn len(&self) -> usize {
+    fn len(&self) -> usize {
         match &self.numbers {
             NumberKind::NotDefined => 0,
             NumberKind::Single(_) => 1,

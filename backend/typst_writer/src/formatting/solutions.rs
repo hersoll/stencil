@@ -35,6 +35,10 @@ impl Solution {
     pub fn block() -> ContinuousSolution {
         ContinuousSolution::block()
     }
+
+    pub fn block_with_text() -> ContinuousSolution {
+        ContinuousSolution::block_with_text()
+    }
 }
 
 /// Formats the answer and solution strings to show up as a proper solution in the Typst file

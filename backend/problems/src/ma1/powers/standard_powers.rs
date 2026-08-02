@@ -1,6 +1,10 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Term, num_gen, symbols};
+use math::{
+    Term,
+    num_gen::{self, NumberGenerator},
+    symbols,
+};
 use types::{lang::Language, problems::Problem};
 
 /// 5^4 * 5^2

@@ -3,7 +3,7 @@ use macros::problem;
 use math::{
     Evaluable, Number, Term,
     functions::Function,
-    num_gen,
+    num_gen::{self, NumberGenerator},
     symbols::{self, X},
 };
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};

@@ -1,6 +1,9 @@
 use anyhow::Result;
 use macros::problem;
-use math::{MathDisplay, num_gen};
+use math::{
+    MathDisplay,
+    num_gen::{self, NumberGenerator},
+};
 use types::{lang::Language, problems::Problem};
 
 /// Write 56% in decimal form

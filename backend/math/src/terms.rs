@@ -1,5 +1,6 @@
 mod operations;
 
+use crate::num_gen::NumberGenerator;
 use crate::symbols::Symbol;
 use crate::utils::parenthesize;
 use crate::{Evaluable, Polynomial, Replacement, Replacements};

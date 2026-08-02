@@ -1,6 +1,10 @@
 use anyhow::Result;
 use macros::problem;
-use math::{MathDisplay, Number, Polynomial, Term, num_gen, symbols};
+use math::{
+    MathDisplay, Number, Polynomial, Term,
+    num_gen::{self, NumberGenerator},
+    symbols,
+};
 use types::{lang::Language, problems::Problem};
 use typst_writer::{self, formatting::parentheses};
 

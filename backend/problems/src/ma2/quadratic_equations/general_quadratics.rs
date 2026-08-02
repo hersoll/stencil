@@ -1,6 +1,9 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, num_gen};
+use math::{
+    Number,
+    num_gen::{self, NumberGenerator},
+};
 use types::{lang::Language, problems::Problem};
 use typst_writer::custom_math::solutions;
 

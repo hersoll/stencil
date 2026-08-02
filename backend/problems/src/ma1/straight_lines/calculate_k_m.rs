@@ -1,6 +1,10 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, Term, num_gen, symbols::X};
+use math::{
+    Number, Term,
+    num_gen::{self, NumberGenerator},
+    symbols::X,
+};
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 use typst_writer::formatting::{equation_solution, parentheses};
 

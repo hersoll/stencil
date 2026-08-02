@@ -1,6 +1,6 @@
 use anyhow::Result;
 use macros::problem;
-use math::num_gen;
+use math::num_gen::{self, NumberGenerator};
 use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
 
 /// Which change factor is equivalent to an increase of 10%?

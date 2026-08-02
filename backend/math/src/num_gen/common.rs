@@ -1,11 +1,27 @@
 use rand::seq::IteratorRandom;
 
+use crate::Number;
+
 #[derive(Debug, Clone)]
 pub enum NumberKind {
     NotDefined,
     Single(i32),
     Multiple(Vec<i32>),
     Range(i32, i32),
+}
+
+pub trait NumberGenerator {
+    /// Generate a random number from the previously configured parameters.
+    fn random(&self) -> Number;
+    /// Generate a random value, and also pass on the `NumberGenerator` object.
+    fn and_random(self) -> (Number, Self);
+
+    /// Returns the number of choices the generator has to choose from.
+    fn len(&self) -> usize;
+
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 pub fn generate_value<F>(kind: &NumberKind, exclusions: &[i32], filters: &[F]) -> i32

@@ -6,9 +6,11 @@
 - Implemented `sqrt()` and `root(n)` on `Numbers`
 - Implemented `extend(n)` on `Numbers`
 - Implemented `can_be_simplified()` on `Numbers`
+- Implemented `as_integer()` on `Numbers`
 - Added non-integer exponent problems
-- Added `Solution::inline()` and `Solution::block()` solution builders
+- Added `Solution::inline()`, `Solution::block()` and `Solution::block_with_text()` solution builders
 - Added `as_block_math()` to `MathDisplay`
+- Made a common `NumberGenerator` trait
 
 ### Changed
 - Updated `README`

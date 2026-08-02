@@ -11,7 +11,7 @@ mod operations;
 use tracing::error;
 
 use crate::{
-    Number::{Decimal, Fraction, Integer},
+    Number::{Decimal, Integer},
     utils::{gcd, simplified_fraction},
 };
 

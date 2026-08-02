@@ -1,6 +1,10 @@
 use anyhow::Result;
 use macros::problem;
-use math::{Number, Polynomial, Term, VariableList, num_gen, symbols};
+use math::{
+    Number, Polynomial, Term, VariableList,
+    num_gen::{self, NumberGenerator},
+    symbols,
+};
 use rand::seq::IndexedRandom;
 use types::{lang::Language, problems::Problem};
 

@@ -1,23 +1,38 @@
 use std::fmt::Display;
 
+enum DisplayType {
+    Inline,
+    /// Block alone with no text above it. Will take up as little space as possible to look good.
+    Block,
+    /// Block that has normal explaining text before or after. Will span the entire width.
+    BlockWithText,
+}
+
 pub struct ContinuousSolution {
     content: String,
     /// Denotes whether the math be printed `$inline$` or `$ block $`
-    inline: bool,
+    display: DisplayType,
 }
 
 impl ContinuousSolution {
     pub(crate) fn inline() -> Self {
         Self {
             content: String::new(),
-            inline: true,
+            display: DisplayType::Inline,
         }
     }
 
     pub(crate) fn block() -> Self {
         Self {
             content: String::new(),
-            inline: false,
+            display: DisplayType::Block,
+        }
+    }
+
+    pub(crate) fn block_with_text() -> Self {
+        Self {
+            content: String::new(),
+            display: DisplayType::BlockWithText,
         }
     }
 
@@ -46,9 +61,10 @@ impl ContinuousSolution {
 
 impl Display for ContinuousSolution {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self.inline {
-            true => write!(f, "${}$", self.content),
-            false => write!(
+        use DisplayType::*;
+        match self.display {
+            Inline => write!(f, "${}$", self.content),
+            Block => write!(
                 f,
                 "#context {{ let eq = $ {} $ 
                 let w = measure(eq).width 
@@ -56,6 +72,7 @@ impl Display for ContinuousSolution {
                 }} ",
                 self.content
             ),
+            BlockWithText => write!(f, "$ {} $", self.content),
         }
     }
 }

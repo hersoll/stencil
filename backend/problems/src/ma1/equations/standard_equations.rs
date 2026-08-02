@@ -1,7 +1,8 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    self, Number, Term, num_gen,
+    self, Number, Term,
+    num_gen::{self, NumberGenerator},
     symbols::{self, X},
 };
 use types::{lang::Language, problems::Problem};

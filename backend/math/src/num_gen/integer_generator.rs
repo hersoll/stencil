@@ -1,4 +1,4 @@
-use crate::Number;
+use crate::{Number, num_gen::common::NumberGenerator};
 
 use super::common::{NumberKind, generate_value};
 
@@ -13,16 +13,15 @@ pub struct IntegerGenerator {
 /// # Examples
 ///
 /// ```
+/// use math::num_gen::NumberGenerator;
 /// let num = math::num_gen::integer().range(4, 9).random();
 /// assert!(num >= 4 && num <= 9); // Range is inclusive
-/// ```
-/// ```
+///
 /// let nums = math::num_gen::integer().numbers(&[3, 5, 7]);
 /// let num_one = nums.random();
 /// let num_two = nums.random(); // random() can be called multiple times on the same range
 /// assert!(num_one == 3 || num_one == 5 || num_one == 7);
-/// ```
-/// ```
+///
 /// let nums = math::num_gen::integer().range(-3, 2).exclude_multiple(&[-2, -1, 0, 1]);
 /// let num = nums.random();
 /// let num_positive = nums.positive();
@@ -87,15 +86,6 @@ impl IntegerGenerator {
         self
     }
 
-    pub fn random(&self) -> Number {
-        let int32 = generate_value(&self.numbers, &self.exclusions, &[] as &[fn(&i32) -> bool]);
-        Number::Integer(int32)
-    }
-
-    pub fn and_random(self) -> (Number, Self) {
-        (self.random(), self)
-    }
-
     pub fn positive(&self) -> Number {
         let int32 = generate_value(&self.numbers, &self.exclusions, &[|n: &i32| *n >= 0]);
         Number::Integer(int32)
@@ -105,10 +95,20 @@ impl IntegerGenerator {
         let int32 = generate_value(&self.numbers, &self.exclusions, &[|n: &i32| *n <= 0]);
         Number::Integer(int32)
     }
+}
 
-    #[allow(clippy::len_without_is_empty)]
+impl NumberGenerator for IntegerGenerator {
+    fn random(&self) -> Number {
+        let int32 = generate_value(&self.numbers, &self.exclusions, &[] as &[fn(&i32) -> bool]);
+        Number::Integer(int32)
+    }
+
+    fn and_random(self) -> (Number, Self) {
+        (self.random(), self)
+    }
+
     #[allow(clippy::cast_sign_loss)]
-    pub fn len(&self) -> usize {
+    fn len(&self) -> usize {
         match &self.numbers {
             NumberKind::NotDefined => 0,
             NumberKind::Single(_) => 1,

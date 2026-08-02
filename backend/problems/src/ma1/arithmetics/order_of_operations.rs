@@ -1,6 +1,9 @@
 use anyhow::Result;
 use macros::problem;
-use math::{MathDisplay, num_gen};
+use math::{
+    MathDisplay,
+    num_gen::{self, NumberGenerator},
+};
 use registry::get_solution;
 use types::{lang::Language, problems::Problem};
 
