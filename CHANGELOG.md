@@ -7,6 +7,7 @@
 - Implemented `decimals()` on `Numbers`
 - Added `Solution::block_with_text()` solution builder
 - Made a common `NumberGenerator` trait
+- Added decimal multiplication problems
 
 ### Fixed
 - Fixed bug where specifying the number of decimals printed would not work if the number was an integer

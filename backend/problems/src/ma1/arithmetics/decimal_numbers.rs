@@ -164,6 +164,57 @@ fn multiply_three_decimals_integer(id: i32, lang: Language) -> Result<Problem> {
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
 
+/// 0,03 * 40
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn multiply_two_decimals_ten(id: i32, lang: Language) -> Result<Problem> {
+    let range_1 = num_gen::decimal().with_decimals(2).range(0.01, 0.09);
+    let range_2 = num_gen::integer().numbers(&[10, 20, 30, 40, 50, 60, 70, 80, 90]);
+    generate_multiplication_problem(id, lang, &range_1, &range_2)
+}
+
+/// 0,03 * 400
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn multiply_two_decimals_hundred(id: i32, lang: Language) -> Result<Problem> {
+    let range_1 = num_gen::decimal().with_decimals(2).range(0.01, 0.09);
+    let range_2 = num_gen::integer().numbers(&[100, 200, 300, 400, 500, 600, 700, 800, 900]);
+    generate_multiplication_problem(id, lang, &range_1, &range_2)
+}
+
+/// 0,003 * 40
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn multiply_three_decimals_ten(id: i32, lang: Language) -> Result<Problem> {
+    let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
+    let range_2 = num_gen::integer().numbers(&[10, 20, 30, 40, 50, 60, 70, 80, 90]);
+    generate_multiplication_problem(id, lang, &range_1, &range_2)
+}
+
+/// 0,003 * 400
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn multiply_three_decimals_hundred(id: i32, lang: Language) -> Result<Problem> {
+    let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
+    let range_2 = num_gen::integer().numbers(&[100, 200, 300, 400, 500, 600, 700, 800, 900]);
+    generate_multiplication_problem(id, lang, &range_1, &range_2)
+}
+
+/// 0,003 * 4000
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn multiply_three_decimals_thousand(id: i32, lang: Language) -> Result<Problem> {
+    let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
+    let range_2 =
+        num_gen::integer().numbers(&[1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]);
+    generate_multiplication_problem(id, lang, &range_1, &range_2)
+}
+
 /// 0,1 - 0,04
 /// Absolute difficulty: 2
 /// Relative difficulty: 3
