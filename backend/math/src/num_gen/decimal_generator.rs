@@ -110,7 +110,7 @@ impl DecimalGenerator {
             },
         ) = (min, max)
         {
-            self.numbers = NumberKind::Range(min_num, max_num);
+            self.numbers = NumberKind::Range(min_num, max_num, 1);
         } else {
             tracing::error!(
                 "Somehow, the num_gen::decimal().range() failed to convert both min and max to Decimals!"
@@ -180,7 +180,9 @@ impl NumberGenerator for FinishedDecimalGenerator {
             NumberKind::NotDefined => 0,
             NumberKind::Single(_) => 1,
             NumberKind::Multiple(vec) => vec.len() - self.exclusions.len(),
-            NumberKind::Range(min, max) => (1 + max - min) as usize - self.exclusions.len(),
+            NumberKind::Range(min, max, step) => {
+                (*min..=*max).step_by(*step).count() - self.exclusions.len()
+            }
         }
     }
 }

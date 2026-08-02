@@ -46,24 +46,39 @@ impl IntegerGenerator {
         self
     }
 
+    /// Alias for range_step(min, max, 1)
+    pub fn range(self, min: impl Into<Number>, max: impl Into<Number>) -> Self {
+        self.range_step(min, max, 1)
+    }
+
     // The reason this accepts impl Into<Number> while actually just passing on an i32, is that we
     // will sometimes call this method with a Number that depends on a previous Number, like:
     // `range(k, 10)`
     // We need to accomodate for this.
-    pub fn range(mut self, min: impl Into<Number>, max: impl Into<Number>) -> Self {
+    pub fn range_step(
+        mut self,
+        min: impl Into<Number>,
+        max: impl Into<Number>,
+        step: impl Into<Number>,
+    ) -> Self {
         let min = min.into();
         let max = max.into();
+        let step = step.into();
         if min > max {
             tracing::error!("Called num_gen::integer().range() with min and max swapped!");
         }
-        if let (Number::Integer(min_number), Number::Integer(max_number)) = (min, max) {
-            self.numbers = NumberKind::Range(min_number, max_number);
-            // tracing::debug!("Created range with min = {min_number} and max = {max_number}");
+        if let (
+            Number::Integer(min_number),
+            Number::Integer(max_number),
+            Number::Integer(step_num),
+        ) = (min, max, step)
+        {
+            self.numbers = NumberKind::Range(min_number, max_number, step_num as usize);
         } else {
             tracing::error!(
                 "Don't call num_gen::integer().range() with non-integers, ya dum dum! Min: {min}, Max: {max}"
             );
-            self.numbers = NumberKind::Range(1, 1);
+            self.numbers = NumberKind::Range(1, 1, 1);
         }
         self
     }
@@ -113,7 +128,9 @@ impl NumberGenerator for IntegerGenerator {
             NumberKind::NotDefined => 0,
             NumberKind::Single(_) => 1,
             NumberKind::Multiple(vec) => vec.len() - self.exclusions.len(),
-            NumberKind::Range(min, max) => (1 + max - min) as usize - self.exclusions.len(),
+            NumberKind::Range(min, max, step) => {
+                (*min..=*max).step_by(*step).count() - self.exclusions.len()
+            }
         }
     }
 }

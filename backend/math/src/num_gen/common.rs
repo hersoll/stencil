@@ -2,12 +2,16 @@ use rand::seq::IteratorRandom;
 
 use crate::Number;
 
+type Min = i32;
+type Max = i32;
+type Step = usize;
+
 #[derive(Debug, Clone)]
 pub enum NumberKind {
     NotDefined,
     Single(i32),
     Multiple(Vec<i32>),
-    Range(i32, i32),
+    Range(Min, Max, Step),
 }
 
 pub trait NumberGenerator {
@@ -45,7 +49,8 @@ where
             .filter(|&&n| apply_filters(&n))
             .choose(&mut rng)
             .unwrap(),
-        NumberKind::Range(min, max) => (*min..=*max)
+        NumberKind::Range(min, max, step) => (*min..=*max)
+            .step_by(*step)
             .filter(apply_filters)
             .choose(&mut rng)
             .unwrap(),

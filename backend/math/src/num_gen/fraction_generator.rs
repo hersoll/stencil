@@ -163,6 +163,7 @@ impl NumberGenerator for FractionGenerator {
             &NumberKind::Range(
                 self.min_value * denom.abs() + 1,
                 self.max_value * denom.abs() - 1,
+                1,
             )
         } else {
             &self.num.numbers
@@ -218,7 +219,7 @@ fn generate_irreducible_numerator(num: &NumberKind, denom: i32, exclusions: &[i3
             .filter(|&n| is_irreducible(n) && !is_integer(n) && !exclusions.contains(&n))
             .choose(&mut rng)
             .unwrap(),
-        NumberKind::Range(min, max) => (*min..=*max)
+        NumberKind::Range(min, max, ..) => (*min..=*max)
             .filter(|&n| is_irreducible(n) && !is_integer(n) && !exclusions.contains(&n))
             .choose(&mut rng)
             .unwrap(),
