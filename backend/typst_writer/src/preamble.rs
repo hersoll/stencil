@@ -1,7 +1,7 @@
 pub static PREAMBLE_STR: &str = r##"
 #import "/preamble.typ": *
 #import "@preview/equate:0.3.2": equate, share-align
-#import "@preview/zero:0.5.0": num, set-num
+#import "@preview/zero:0.5.0": num, set-num, set-group
 #import "@preview/cetz:0.4.2"
 #import "@preview/cetz-plot:0.1.3": plot
 #show: equate.with(debug: false)
@@ -12,6 +12,7 @@ pub static PREAMBLE_STR: &str = r##"
   context box(width: 1.35em, text(weight: "bold")[#item-counter.display())])
 })
 #set-num(decimal-separator: ",")
+#set-group(size: 3, threshold: (integer: 4, fractional: 6))
 #let item(content) = block(breakable: false, content)
 #let equation-solution(equations, operations) = {
   context {

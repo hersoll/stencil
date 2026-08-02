@@ -8,6 +8,7 @@
 - Added `Solution::block_with_text()` solution builder
 - Made a common `NumberGenerator` trait
 - Added decimal multiplication problems
+- Large integers are now displayed with a thousand separating space: `12 345`
 
 ### Fixed
 - Fixed bug where specifying the number of decimals printed would not work if the number was an integer

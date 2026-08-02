@@ -11,7 +11,9 @@ impl Display for Number {
         match self {
             Number::Integer(int) => {
                 if let Some(decimals) = f.precision() {
-                    write!(f, "num(\"{:.*}\")", decimals, self.value())
+                    write!(f, "num(\"{int:.*}\")", decimals)
+                } else if *int >= 1000 {
+                    write!(f, "num(\"{int}\")")
                 } else {
                     write!(f, "{int}")
                 }
