@@ -170,7 +170,7 @@ fn multiply_three_decimals_integer(id: i32, lang: Language) -> Result<Problem> {
 #[problem]
 fn multiply_two_decimals_ten(id: i32, lang: Language) -> Result<Problem> {
     let range_1 = num_gen::decimal().with_decimals(2).range(0.01, 0.09);
-    let range_2 = num_gen::integer().numbers(&[10, 20, 30, 40, 50, 60, 70, 80, 90]);
+    let range_2 = num_gen::integer().numbers(&[20, 30, 40, 50, 60, 70, 80, 90]);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
 
@@ -190,7 +190,7 @@ fn multiply_two_decimals_hundred(id: i32, lang: Language) -> Result<Problem> {
 #[problem]
 fn multiply_three_decimals_ten(id: i32, lang: Language) -> Result<Problem> {
     let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
-    let range_2 = num_gen::integer().numbers(&[10, 20, 30, 40, 50, 60, 70, 80, 90]);
+    let range_2 = num_gen::integer().numbers(&[20, 30, 40, 50, 60, 70, 80, 90]);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
 
@@ -212,6 +212,46 @@ fn multiply_three_decimals_thousand(id: i32, lang: Language) -> Result<Problem> 
     let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
     let range_2 =
         num_gen::integer().numbers(&[1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]);
+    generate_multiplication_problem(id, lang, &range_1, &range_2)
+}
+
+/// 0,03 * 0,7
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn multiply_two_decimals_one_decimal(id: i32, lang: Language) -> Result<Problem> {
+    let range_1 = num_gen::decimal().with_decimals(2).range(0.01, 0.09);
+    let range_2 = num_gen::decimal().with_decimals(1).range(0.1, 0.9);
+    generate_multiplication_problem(id, lang, &range_1, &range_2)
+}
+
+/// 0,03 * 0,07
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn multiply_two_decimals_two_decimals(id: i32, lang: Language) -> Result<Problem> {
+    let range_1 = num_gen::decimal().with_decimals(2).range(0.02, 0.09);
+    let range_2 = num_gen::decimal().with_decimals(2).range(0.02, 0.09);
+    generate_multiplication_problem(id, lang, &range_1, &range_2)
+}
+
+/// 0,003 * 0,7
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn multiply_three_decimals_one_decimal(id: i32, lang: Language) -> Result<Problem> {
+    let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
+    let range_2 = num_gen::decimal().with_decimals(1).range(0.1, 0.9);
+    generate_multiplication_problem(id, lang, &range_1, &range_2)
+}
+
+/// 0,003 * 0,07
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn multiply_three_decimals_two_decimals(id: i32, lang: Language) -> Result<Problem> {
+    let range_1 = num_gen::decimal().with_decimals(3).range(0.002, 0.009);
+    let range_2 = num_gen::decimal().with_decimals(2).range(0.02, 0.09);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
 
