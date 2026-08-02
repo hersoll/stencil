@@ -57,6 +57,14 @@ impl ContinuousSolution {
         self.write(" = ");
         self.newline()
     }
+
+    pub fn space(&mut self) -> &mut Self {
+        self.write(" quad ")
+    }
+
+    pub fn wide_space(&mut self) -> &mut Self {
+        self.write(" wide ")
+    }
 }
 
 impl Display for ContinuousSolution {
