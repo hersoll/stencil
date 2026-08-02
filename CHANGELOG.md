@@ -1,17 +1,25 @@
 # Changelog
 
+## [0.12.3] - TBD
+
+### Added
+- Implemented `as_integer()` on `Numbers`
+- Implemented `decimals()` on `Numbers`
+- Added `Solution::block_with_text()` solution builder
+- Made a common `NumberGenerator` trait
+
+### Fixed
+- Fixed bug where specifying the number of decimals printed would not work if the number was an integer
+
 ## [0.12.2] - 2026-08-02
 
 ### Added
 - Implemented `sqrt()` and `root(n)` on `Numbers`
 - Implemented `extend(n)` on `Numbers`
 - Implemented `can_be_simplified()` on `Numbers`
-- Implemented `as_integer()` on `Numbers`
-- Implemented `decimals()` on `Numbers`
 - Added non-integer exponent problems
-- Added `Solution::inline()`, `Solution::block()` and `Solution::block_with_text()` solution builders
+- Added `Solution::inline()` and `Solution::block()` solution builders
 - Added `as_block_math()` to `MathDisplay`
-- Made a common `NumberGenerator` trait
 
 ### Changed
 - Updated `README`
@@ -21,7 +29,6 @@
 ### Fixed
 - Creating a new entry in the editor works properly again
 - When a new topic is created, the linked problems get their difficulties set properly
-- Fixed bug where specifying the number of decimals printed would not work if the number was an integer
 
 ## [0.12.1] - 2026-07-30
 
