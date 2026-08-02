@@ -19,9 +19,9 @@ struct SolutionPart {
 ///
 /// # Usage:
 ///```rust
-/// use typst_writer::formatting::{self, SolutionWithSteps};
+/// use typst_writer::formatting::{self, Solution};
 ///
-/// let mut sol = SolutionWithSteps::new();
+/// let mut sol = Solution::with_steps();
 /// sol.add_line(String::from("Hello,")).with_step(formatting::subtract_number(1));
 /// sol.add_line(String::from("world!"));
 /// let str = sol.to_string();

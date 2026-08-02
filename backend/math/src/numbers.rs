@@ -8,7 +8,12 @@
 //! otherwise you're better of just treating pi as a `Symbol` in the problem.
 mod implementations;
 mod operations;
-use crate::utils::{gcd, simplified_fraction};
+use tracing::error;
+
+use crate::{
+    Number::{Decimal, Fraction, Integer},
+    utils::{gcd, simplified_fraction},
+};
 
 pub const PI: Number = Number::Irrational {
     value: std::f64::consts::PI,
@@ -286,6 +291,27 @@ impl Number {
                 denominator,
             } => numerator % denominator == 0,
             Irrational { .. } => false,
+        }
+    }
+
+    /// Returns the underlaying integer of a Decimal number.
+    ///
+    /// Mostly used in solutions to show calculations
+    ///
+    /// ## Example
+    /// ```rust
+    /// use math::Number;
+    /// let decimal = Number::decimal_from_f64(1.23, 2);
+    /// assert_eq!(decimal.as_integer(), 123);
+    /// ```
+    pub fn as_integer(&self) -> Number {
+        match self {
+            Integer(_) => *self,
+            Decimal { integer, .. } => Integer(*integer),
+            _ => {
+                error!("Called as_integer() on a non-decimal Number");
+                Integer(0)
+            }
         }
     }
 
