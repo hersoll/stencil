@@ -315,6 +315,15 @@ impl Number {
         }
     }
 
+    pub fn decimals(&self) -> u8 {
+        if let Number::Decimal { decimals, .. } = self {
+            *decimals
+        } else {
+            error!("Called decimals() on a non-decimal Number");
+            0
+        }
+    }
+
     /// Inside graph strings we need actual numbers, decimals can't be output
     /// as num("1.2"), like they normally do in Display. This function accounts for that.
     ///

@@ -9,19 +9,23 @@ impl Display for Number {
             write!(f, "+")?;
         }
         match self {
-            Number::Integer(int) => write!(f, "{int}"),
+            Number::Integer(int) => {
+                if let Some(decimals) = f.precision() {
+                    write!(f, "num(\"{:.*}\")", decimals, self.value())
+                } else {
+                    write!(f, "{int}")
+                }
+            }
             Number::Decimal { integer, decimals } => {
-                // The decimal value is actually an integer
-                if self.is_integer() {
+                if let Some(decimals) = f.precision() {
+                    // Write with the given number of decimals
+                    write!(f, "num(\"{:.*}\")", decimals, self.value())
+                }
+                // The decimal value is actually an integer, don't include decimals
+                else if self.is_integer() {
                     write!(f, "{}", *integer / 10i32.pow(*decimals as u32))
                 } else {
-                    // num() is a formatting library which outputs the decimals with commas
-                    if let Some(decimals) = f.precision() {
-                        // Write with the given number of decimals
-                        write!(f, "num(\"{:.*}\")", decimals, self.value())
-                    } else {
-                        write!(f, "num(\"{}\")", self.value())
-                    }
+                    write!(f, "num(\"{}\")", self.value())
                 }
             }
             Number::Fraction {

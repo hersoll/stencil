@@ -34,13 +34,17 @@ fn generate_multiplication_problem(
     let int_1 = num_1.as_integer();
     let int_2 = num_2.as_integer();
     let int_total = int_1 * int_2;
+    let total_decimals = num_1.decimals() + num_2.decimals();
     let solution_text = get_solution(id, lang)?;
     let mut solution_math = Solution::block_with_text();
     solution_math
         .newline()
         .write(format!("{int_1} dot {int_2} &= {int_total}"))
         .newline()
-        .write(format!("{num_1} dot {num_2} &= {answer}"));
+        .write(format!(
+            "{num_1} dot {num_2} &= {answer:.*}",
+            total_decimals as usize
+        ));
 
     Ok(Problem {
         id,
