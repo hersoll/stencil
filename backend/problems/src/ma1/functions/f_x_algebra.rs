@@ -6,10 +6,11 @@ use math::{
     num_gen::{self, NumberGenerator},
     symbols::{self, X},
 };
+use registry::get_question;
 use types::{
     format_strings::HasReplacements,
     lang::Language,
-    problems::{Problem, ProblemParameters, Solution},
+    problems::{Answer, Problem, ProblemParameters, Question, Solution},
 };
 use typst_writer::formatting::equation_solution;
 

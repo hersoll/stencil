@@ -1,6 +1,6 @@
-mod answers;
-mod questions;
-mod solutions;
+pub mod answers;
+pub mod questions;
+pub mod solutions;
 pub use answers::Answer;
 pub use questions::Question;
 pub use solutions::Solution;

@@ -1,13 +1,28 @@
-use std::fmt::Display;
+mod subquestions;
+pub use subquestions::*;
 
 use math::{MathDisplay, Number, Polynomial, Term};
+use std::fmt::Display;
 
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct Question(String);
+pub struct Question(pub(crate) String);
 
 impl Question {
     pub fn as_str(&self) -> &str {
         &self.0
+    }
+
+    /// Ergonomic constructor to make the pathing look nicer.
+    ///
+    /// Question::subquestions() looks better when starting a new struct than SubQuestions::default()
+    pub fn subquestions() -> SubQuestions {
+        SubQuestions::default()
+    }
+}
+
+impl From<&str> for Question {
+    fn from(s: &str) -> Self {
+        Self(s.to_string())
     }
 }
 

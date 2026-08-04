@@ -1,6 +1,3 @@
-use crate::formatting::{
-    subanswer, subanswers_end, subanswers_start, subquestion, subquestions_end, subquestions_start,
-};
 use crate::typst_file_builder::{AnswerSet, QuestionSet};
 use anyhow::{Result, anyhow};
 use db::prefixes::PrefixEntry;
@@ -9,6 +6,8 @@ use std::collections::HashMap;
 use std::fmt::Write;
 use types::lang::Language;
 use types::pdf::DocumentOptions;
+use types::problems::answers::{subanswer, subanswers_end, subanswers_start};
+use types::problems::questions::{subquestion, subquestions_end, subquestions_start};
 
 type PrefixRegistry = std::sync::RwLockReadGuard<'static, HashMap<i32, PrefixEntry>>;
 
@@ -287,13 +286,4 @@ fn push_grouped_enum(
     prefixed_answers.answers.push(grouped_answers);
 
     Ok(())
-}
-
-/// To make nested lists have the same width available for solutions (to avoid weird formatting
-/// near line breaks) as regular solutions, we need to adjust their insets.
-///
-/// The rule for this is set in formatting::solution_rules()
-/// TODO: The entire nested solution is unbreakable right now.
-pub fn adjust_nested_answer(answer: &str) -> String {
-    answer.replace("#solution", "#nested_solution")
 }

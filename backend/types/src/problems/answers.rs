@@ -1,12 +1,25 @@
+mod subanswers;
+pub use subanswers::*;
+
 use math::{MathDisplay, Number, Polynomial, PolynomialVariable, Term};
 use std::fmt::Display;
 
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct Answer(String);
+pub struct Answer(pub(crate) String);
 
 impl Answer {
     pub fn as_str(&self) -> &str {
         &self.0
+    }
+
+    pub fn subanswers() -> SubAnswers {
+        SubAnswers::default()
+    }
+}
+
+impl From<&str> for Answer {
+    fn from(s: &str) -> Self {
+        Self(s.to_string())
     }
 }
 
