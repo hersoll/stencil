@@ -17,7 +17,7 @@ fn two_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
     let percentage = percentage_range.random();
     let decimal_form = (percentage / 100).to_decimal();
 
-    let question = format!("${percentage}%$").as_math();
+    let question = format!("${percentage}%$");
     let answer = decimal_form.as_math();
     let solution = format!("$1% = num(0.01) \\ 10% = num(0.10) \\ {percentage}% = {decimal_form}$");
 

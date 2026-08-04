@@ -10,6 +10,7 @@
 
 ### Fixed
 - `.decimals()` no longer prints an error message when used on an integer
+- `two_digit_to_decimal_form` outputs in math mode correctly
 
 ## [0.12.3] - 2026-08-03
 
