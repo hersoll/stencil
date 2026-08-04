@@ -316,11 +316,13 @@ impl Number {
     }
 
     pub fn decimals(&self) -> u8 {
-        if let Number::Decimal { decimals, .. } = self {
-            *decimals
-        } else {
-            error!("Called decimals() on a non-decimal Number");
-            0
+        match self {
+            Integer(_) => 0,
+            Decimal { decimals, .. } => *decimals,
+            _ => {
+                error!("Called decimals() on a non-compatible Number: {self}");
+                0
+            }
         }
     }
 

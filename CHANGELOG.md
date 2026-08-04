@@ -8,6 +8,9 @@
 ### Changed
 - Changed `decimal().with_decimals(N)` to `decimals(N)` in `num_gen`
 
+### Fixed
+- `.decimals()` no longer prints an error message when used on an integer
+
 ## [0.12.3] - 2026-08-03
 
 ### Added
