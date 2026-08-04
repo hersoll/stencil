@@ -11,6 +11,9 @@ pub struct DecimalGenerator {
     /// See [`NumberKind`] for more info.
     numbers: NumberKind,
     /// How many decimals will the generated number have?
+    /// Forces the generated number to have the given amount of decimals
+    ///
+    /// For example, prevents the generator from producing 0.3 when decimal places is 2.
     decimal_places: u8,
 }
 
@@ -24,15 +27,6 @@ pub struct FinishedDecimalGenerator {
     decimal_places: u8,
 }
 
-impl Default for DecimalGenerator {
-    fn default() -> Self {
-        Self {
-            numbers: NumberKind::NotDefined,
-            decimal_places: 3,
-        }
-    }
-}
-
 /// Generate a random decimal number depending on the parameters given in the builder.
 ///
 /// # Examples
@@ -40,39 +34,35 @@ impl Default for DecimalGenerator {
 /// ```
 /// use math::num_gen;
 /// use math::num_gen::NumberGenerator;
-/// // Default is three decimal places
-/// let num = num_gen::decimal().range(1.234, 1.236).random();
+///
+/// let num = num_gen::decimals(3).range(1.234, 1.236).random();
 /// assert!(num == 1.234 || num == 1.235 || num == 1.236); // Range is inclusive
 ///
-/// let num = num_gen::decimal().with_decimals(2).range(1.2, 1.3).random();
-/// assert!(num > 1.2 && num < 1.3); // Forces 2 decimal places, num can't be 1.2
+/// // Forces 2 decimal places, num can't be 1.2
+/// let num = num_gen::decimals(2).range(1.2, 1.3).random();
+/// assert!(num > 1.2 && num < 1.3);
 ///
-/// let nums = num_gen::decimal().choose(&[1.2, 1.54, 1.456]);
+/// let nums = num_gen::decimals(3).choose(&[1.2, 1.54, 1.456]);
 /// let num_one = nums.random();
 /// let num_two = nums.random(); // random() can be called multiple times on the same range
 /// assert!(num_one == 1.2 || num_one == 1.54 || num_one == 1.456);
 ///
-/// let nums = num_gen::decimal().with_decimals(1).range(-0.1, 0.5).exclude_multiple(&[0.1, 0.2, 0.4]);
+/// let nums = num_gen::decimals(1).range(-0.1, 0.5).exclude_multiple(&[0.1, 0.2, 0.4]);
 /// let num = nums.random();
 /// let num_negative = nums.negative();
 /// assert!(num == -0.1 || num == 0.3 || num == 0.5);
 /// assert_eq!(num_negative, -0.1);
 /// ```
-pub fn decimal() -> DecimalGenerator {
-    DecimalGenerator::default()
+pub fn decimals(places: u8) -> DecimalGenerator {
+    DecimalGenerator {
+        numbers: NumberKind::NotDefined,
+        decimal_places: places,
+    }
 }
 
 impl DecimalGenerator {
-    /// Forces the generated number to have the given amount of decimals
-    ///
-    /// For example, prevents the generator from producing 0.3 when decimal places is 2.
-    pub fn with_decimals(mut self, places: u8) -> Self {
-        self.decimal_places = places;
-        self
-    }
-
     /// Choose from the provided numbers when generating.
-    pub fn choose(mut self, numbers: &[f64]) -> FinishedDecimalGenerator {
+    pub fn numbers(mut self, numbers: &[f64]) -> FinishedDecimalGenerator {
         let int_numbers: Vec<i32> = numbers
             .iter()
             .map(|num| float_to_int(*num, self.decimal_places))
@@ -194,7 +184,7 @@ mod tests {
 
     #[test]
     fn range() {
-        let decimal_range = num_gen::decimal().with_decimals(2).range(1.2, 1.4);
+        let decimal_range = num_gen::decimals(2).range(1.2, 1.4);
         for _ in 0..100 {
             let num = decimal_range.random();
             assert!(num.value() >= 1.2 && num.value() <= 1.4);
@@ -204,7 +194,7 @@ mod tests {
             }
         }
 
-        let decimal_range = num_gen::decimal().with_decimals(1).range(1.27, 1.34);
+        let decimal_range = num_gen::decimals(1).range(1.27, 1.34);
         for _ in 0..10 {
             let num = decimal_range.random();
             assert!(num.value() == 1.3);

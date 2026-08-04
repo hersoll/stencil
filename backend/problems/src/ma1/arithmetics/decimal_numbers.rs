@@ -100,9 +100,9 @@ fn generate_division_problem(
 /// Relative difficulty: 1
 #[problem]
 fn add_decimals_two_decimals_first(id: i32, _lang: Language) -> Result<Problem> {
-    let two_decimal_range = num_gen::decimal().with_decimals(2).range(0.1, 0.3);
+    let two_decimal_range = num_gen::decimals(2).range(0.1, 0.3);
     let two_decimal_num = two_decimal_range.random();
-    let one_decimal_range = num_gen::decimal().with_decimals(1).range(0.2, 0.6);
+    let one_decimal_range = num_gen::decimals(1).range(0.2, 0.6);
     let one_decimal_num = one_decimal_range.random();
     let sum = one_decimal_num + two_decimal_num;
     let question = format!("${two_decimal_num} + {one_decimal_num}$");
@@ -125,9 +125,9 @@ fn add_decimals_two_decimals_first(id: i32, _lang: Language) -> Result<Problem> 
 /// Relative difficulty: 1
 #[problem]
 fn add_decimals_one_decimal_first(id: i32, _lang: Language) -> Result<Problem> {
-    let two_decimal_range = num_gen::decimal().with_decimals(2).range(0.1, 0.3);
+    let two_decimal_range = num_gen::decimals(2).range(0.1, 0.3);
     let two_decimal_num = two_decimal_range.random();
-    let one_decimal_range = num_gen::decimal().with_decimals(1).range(0.2, 0.6);
+    let one_decimal_range = num_gen::decimals(1).range(0.2, 0.6);
     let one_decimal_num = one_decimal_range.random();
     let sum = one_decimal_num + two_decimal_num;
     let question = format!("${one_decimal_num} + {two_decimal_num}$");
@@ -150,9 +150,9 @@ fn add_decimals_one_decimal_first(id: i32, _lang: Language) -> Result<Problem> {
 /// Relative difficulty: 2
 #[problem]
 fn subtract_decimals_two_decimals_first(id: i32, _lang: Language) -> Result<Problem> {
-    let larger_num_range = num_gen::decimal().with_decimals(2).range(0.3, 0.9);
+    let larger_num_range = num_gen::decimals(2).range(0.3, 0.9);
     let larger_num = larger_num_range.random();
-    let smaller_num_range = num_gen::decimal().with_decimals(1).range(0.1, larger_num);
+    let smaller_num_range = num_gen::decimals(1).range(0.1, larger_num);
     let smaller_num = smaller_num_range.random();
     let difference = larger_num - smaller_num;
     let question = format!("${larger_num} - {smaller_num}$");
@@ -174,7 +174,7 @@ fn subtract_decimals_two_decimals_first(id: i32, _lang: Language) -> Result<Prob
 /// Relative difficulty: 2
 #[problem]
 fn multiply_one_decimal_integer(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(1).range(0.1, 0.9);
+    let range_1 = num_gen::decimals(1).range(0.1, 0.9);
     let range_2 = num_gen::integer().range(2, 9);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
@@ -184,7 +184,7 @@ fn multiply_one_decimal_integer(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 2
 #[problem]
 fn multiply_two_decimals_integer(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(2).range(0.01, 0.09);
+    let range_1 = num_gen::decimals(2).range(0.01, 0.09);
     let range_2 = num_gen::integer().range(2, 9);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
@@ -194,7 +194,7 @@ fn multiply_two_decimals_integer(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 2
 #[problem]
 fn multiply_three_decimals_integer(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
+    let range_1 = num_gen::decimals(3).range(0.001, 0.009);
     let range_2 = num_gen::integer().range(2, 9);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
@@ -204,7 +204,7 @@ fn multiply_three_decimals_integer(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 2
 #[problem]
 fn divide_one_decimal_integer(id: i32, lang: Language) -> Result<Problem> {
-    let answer_range = num_gen::decimal().with_decimals(1).range(0.4, 0.9);
+    let answer_range = num_gen::decimals(1).range(0.4, 0.9);
     let denom_range = num_gen::integer().range(3, 9);
     generate_division_problem(id, lang, &answer_range, &denom_range)
 }
@@ -214,7 +214,7 @@ fn divide_one_decimal_integer(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 3
 #[problem]
 fn multiply_two_decimals_ten(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(2).range(0.01, 0.09);
+    let range_1 = num_gen::decimals(2).range(0.01, 0.09);
     let range_2 = num_gen::integer().numbers(&[20, 30, 40, 50, 60, 70, 80, 90]);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
@@ -224,7 +224,7 @@ fn multiply_two_decimals_ten(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 3
 #[problem]
 fn multiply_two_decimals_hundred(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(2).range(0.01, 0.09);
+    let range_1 = num_gen::decimals(2).range(0.01, 0.09);
     let range_2 = num_gen::integer().numbers(&[100, 200, 300, 400, 500, 600, 700, 800, 900]);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
@@ -234,7 +234,7 @@ fn multiply_two_decimals_hundred(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 3
 #[problem]
 fn multiply_three_decimals_ten(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
+    let range_1 = num_gen::decimals(3).range(0.001, 0.009);
     let range_2 = num_gen::integer().numbers(&[20, 30, 40, 50, 60, 70, 80, 90]);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
@@ -244,7 +244,7 @@ fn multiply_three_decimals_ten(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 3
 #[problem]
 fn multiply_three_decimals_hundred(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
+    let range_1 = num_gen::decimals(3).range(0.001, 0.009);
     let range_2 = num_gen::integer().numbers(&[100, 200, 300, 400, 500, 600, 700, 800, 900]);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
@@ -254,7 +254,7 @@ fn multiply_three_decimals_hundred(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 3
 #[problem]
 fn multiply_three_decimals_thousand(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
+    let range_1 = num_gen::decimals(3).range(0.001, 0.009);
     let range_2 =
         num_gen::integer().numbers(&[1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
@@ -265,8 +265,8 @@ fn multiply_three_decimals_thousand(id: i32, lang: Language) -> Result<Problem> 
 /// Relative difficulty: 3
 #[problem]
 fn multiply_two_decimals_one_decimal(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(2).range(0.01, 0.09);
-    let range_2 = num_gen::decimal().with_decimals(1).range(0.1, 0.9);
+    let range_1 = num_gen::decimals(2).range(0.01, 0.09);
+    let range_2 = num_gen::decimals(1).range(0.1, 0.9);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
 
@@ -275,8 +275,8 @@ fn multiply_two_decimals_one_decimal(id: i32, lang: Language) -> Result<Problem>
 /// Relative difficulty: 3
 #[problem]
 fn multiply_two_decimals_two_decimals(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(2).range(0.02, 0.09);
-    let range_2 = num_gen::decimal().with_decimals(2).range(0.02, 0.09);
+    let range_1 = num_gen::decimals(2).range(0.02, 0.09);
+    let range_2 = num_gen::decimals(2).range(0.02, 0.09);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
 
@@ -285,8 +285,8 @@ fn multiply_two_decimals_two_decimals(id: i32, lang: Language) -> Result<Problem
 /// Relative difficulty: 3
 #[problem]
 fn multiply_three_decimals_one_decimal(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(3).range(0.001, 0.009);
-    let range_2 = num_gen::decimal().with_decimals(1).range(0.1, 0.9);
+    let range_1 = num_gen::decimals(3).range(0.001, 0.009);
+    let range_2 = num_gen::decimals(1).range(0.1, 0.9);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
 
@@ -295,8 +295,8 @@ fn multiply_three_decimals_one_decimal(id: i32, lang: Language) -> Result<Proble
 /// Relative difficulty: 3
 #[problem]
 fn multiply_three_decimals_two_decimals(id: i32, lang: Language) -> Result<Problem> {
-    let range_1 = num_gen::decimal().with_decimals(3).range(0.002, 0.009);
-    let range_2 = num_gen::decimal().with_decimals(2).range(0.02, 0.09);
+    let range_1 = num_gen::decimals(3).range(0.002, 0.009);
+    let range_2 = num_gen::decimals(2).range(0.02, 0.09);
     generate_multiplication_problem(id, lang, &range_1, &range_2)
 }
 
@@ -305,9 +305,9 @@ fn multiply_three_decimals_two_decimals(id: i32, lang: Language) -> Result<Probl
 /// Relative difficulty: 3
 #[problem]
 fn subtract_decimals_one_decimal_first(id: i32, _lang: Language) -> Result<Problem> {
-    let larger_num_range = num_gen::decimal().with_decimals(1).range(0.1, 0.9);
+    let larger_num_range = num_gen::decimals(1).range(0.1, 0.9);
     let larger_num = larger_num_range.random();
-    let smaller_num_range = num_gen::decimal().with_decimals(2).range(0.01, 0.09);
+    let smaller_num_range = num_gen::decimals(2).range(0.01, 0.09);
     let smaller_num = smaller_num_range.random();
     let difference = larger_num - smaller_num;
     let question = format!("${larger_num} - {smaller_num}$");
@@ -330,8 +330,7 @@ fn subtract_decimals_one_decimal_first(id: i32, _lang: Language) -> Result<Probl
 #[problem]
 fn divide_tens_tens(id: i32, lang: Language) -> Result<Problem> {
     let (denom, denom_range) = num_gen::integer().range_step(20, 90, 10).and_random();
-    let (answer, answer_range) = num_gen::decimal()
-        .with_decimals(1)
+    let (answer, answer_range) = num_gen::decimals(1)
         .range(0.2, 0.9)
         .exclude(0.5)
         .and_random();
@@ -365,10 +364,7 @@ fn divide_tens_tens(id: i32, lang: Language) -> Result<Problem> {
 #[problem]
 fn divide_tens_hundreds(id: i32, lang: Language) -> Result<Problem> {
     let (denom, denom_range) = num_gen::integer().range_step(200, 900, 100).and_random();
-    let (answer, answer_range) = num_gen::decimal()
-        .with_decimals(2)
-        .range(0.02, 0.09)
-        .and_random();
+    let (answer, answer_range) = num_gen::decimals(2).range(0.02, 0.09).and_random();
     let numerator = denom * answer;
 
     // First do 12 / 3 instead
@@ -398,7 +394,7 @@ fn divide_tens_hundreds(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 4
 #[problem]
 fn divide_tens_one_decimal(id: i32, lang: Language) -> Result<Problem> {
-    let denom_range = num_gen::decimal().with_decimals(1).range(0.2, 0.9);
+    let denom_range = num_gen::decimals(1).range(0.2, 0.9);
     let answer_range = num_gen::integer().range_step(20, 90, 10);
     generate_division_problem(id, lang, &answer_range, &denom_range)
 }
@@ -408,7 +404,7 @@ fn divide_tens_one_decimal(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn divide_tens_two_decimals(id: i32, lang: Language) -> Result<Problem> {
-    let denom_range = num_gen::decimal().with_decimals(2).range(0.02, 0.09);
+    let denom_range = num_gen::decimals(2).range(0.02, 0.09);
     let answer_range = num_gen::integer().range_step(200, 900, 100);
     generate_division_problem(id, lang, &answer_range, &denom_range)
 }
@@ -418,7 +414,7 @@ fn divide_tens_two_decimals(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn divide_hundreds_two_decimals(id: i32, lang: Language) -> Result<Problem> {
-    let denom_range = num_gen::decimal().with_decimals(2).range(0.02, 0.09);
+    let denom_range = num_gen::decimals(2).range(0.02, 0.09);
     let answer_range = num_gen::integer().range_step(2000, 9000, 1000);
     generate_division_problem(id, lang, &answer_range, &denom_range)
 }
@@ -428,10 +424,7 @@ fn divide_hundreds_two_decimals(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn divide_one_decimal_one_decimal(id: i32, lang: Language) -> Result<Problem> {
-    let denom_range = num_gen::decimal()
-        .with_decimals(1)
-        .range(0.2, 0.9)
-        .exclude(0.5);
+    let denom_range = num_gen::decimals(2).range(0.2, 0.9).exclude(0.5);
     let answer_range = num_gen::integer().range(2, 9).exclude(5);
     generate_division_problem(id, lang, &answer_range, &denom_range)
 }
@@ -441,10 +434,7 @@ fn divide_one_decimal_one_decimal(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 6
 #[problem]
 fn divide_one_decimal_two_decimals(id: i32, lang: Language) -> Result<Problem> {
-    let denom_range = num_gen::decimal()
-        .with_decimals(2)
-        .range(0.02, 0.09)
-        .exclude(0.05);
+    let denom_range = num_gen::decimals(2).range(0.02, 0.09).exclude(0.05);
     let answer_range = num_gen::integer().range_step(20, 90, 10).exclude(50);
     let answer = answer_range.random();
     let denom = denom_range.random();
@@ -482,10 +472,7 @@ fn divide_one_decimal_two_decimals(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 6
 #[problem]
 fn divide_two_decimals_one_decimal(id: i32, lang: Language) -> Result<Problem> {
-    let denom_range = num_gen::decimal()
-        .with_decimals(1)
-        .range(0.2, 0.9)
-        .exclude(0.5);
+    let denom_range = num_gen::decimals(1).range(0.2, 0.9).exclude(0.5);
     let answer = denom_range.random();
     let denom = denom_range.random();
     let numerator = (denom * answer).round(2);
@@ -522,10 +509,7 @@ fn divide_two_decimals_one_decimal(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn divide_two_decimals_two_decimals(id: i32, lang: Language) -> Result<Problem> {
-    let denom_range = num_gen::decimal()
-        .with_decimals(2)
-        .range(0.02, 0.09)
-        .exclude(0.05);
+    let denom_range = num_gen::decimals(2).range(0.02, 0.09).exclude(0.05);
     let answer_range = num_gen::integer().range(2, 9).exclude(5);
     generate_division_problem(id, lang, &answer_range, &denom_range)
 }
@@ -535,10 +519,7 @@ fn divide_two_decimals_two_decimals(id: i32, lang: Language) -> Result<Problem> 
 /// Relative difficulty: 5
 #[problem]
 fn one_decimal_squared(id: i32, lang: Language) -> Result<Problem> {
-    let (base, base_range) = num_gen::decimal()
-        .with_decimals(1)
-        .range(0.2, 0.9)
-        .and_random();
+    let (base, base_range) = num_gen::decimals(1).range(0.2, 0.9).and_random();
 
     let solution_text = get_solution(id, lang)?.replace_placeholders(&[("base", base.as_math())]);
     let mut solution = Solution::block_with_text();
@@ -562,10 +543,7 @@ fn one_decimal_squared(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn two_decimals_squared(id: i32, lang: Language) -> Result<Problem> {
-    let (base, base_range) = num_gen::decimal()
-        .with_decimals(2)
-        .range(0.02, 0.09)
-        .and_random();
+    let (base, base_range) = num_gen::decimals(2).range(0.02, 0.09).and_random();
 
     let solution_text = get_solution(id, lang)?.replace_placeholders(&[("base", base.as_math())]);
     let mut solution = Solution::block_with_text();
@@ -589,10 +567,7 @@ fn two_decimals_squared(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn one_decimal_cubed(id: i32, lang: Language) -> Result<Problem> {
-    let (base, base_range) = num_gen::decimal()
-        .with_decimals(1)
-        .range(0.1, 0.3)
-        .and_random();
+    let (base, base_range) = num_gen::decimals(1).range(0.1, 0.3).and_random();
 
     let solution_text = get_solution(id, lang)?.replace_placeholders(&[("base", base.as_math())]);
     let mut solution = Solution::block_with_text();

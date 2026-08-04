@@ -36,6 +36,7 @@ pub fn integer() -> IntegerGenerator {
 }
 
 impl IntegerGenerator {
+    // Mostly used during fraction generation
     pub fn number(mut self, number: i32) -> Self {
         self.numbers = NumberKind::Single(number);
         self

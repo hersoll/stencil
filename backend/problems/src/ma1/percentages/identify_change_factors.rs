@@ -58,7 +58,7 @@ fn integer_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 2
 #[problem]
 fn factor_to_increase_two_decimals(id: i32, lang: Language) -> Result<Problem> {
-    let factor_range = num_gen::decimal().with_decimals(2).range(1.04, 1.25);
+    let factor_range = num_gen::decimals(2).range(1.04, 1.25);
     let change_factor = factor_range.random();
     let increase = math::utils::change_factor_to_percentage(change_factor);
 
@@ -82,7 +82,7 @@ fn factor_to_increase_two_decimals(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 2
 #[problem]
 fn factor_to_decrease_two_decimals(id: i32, lang: Language) -> Result<Problem> {
-    let factor_range = num_gen::decimal().with_decimals(2).range(0.73, 0.98); // yes, very arbitrary :)
+    let factor_range = num_gen::decimals(2).range(0.73, 0.98); // yes, very arbitrary :)
     let change_factor = factor_range.random();
     let decrease = math::utils::change_factor_to_percentage(change_factor).abs();
 
@@ -107,7 +107,7 @@ fn factor_to_decrease_two_decimals(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 3
 #[problem]
 fn factor_to_large_decrease_two_decimals(id: i32, lang: Language) -> Result<Problem> {
-    let factor_range = num_gen::decimal().with_decimals(2).range(0.11, 0.39);
+    let factor_range = num_gen::decimals(2).range(0.11, 0.39);
     let change_factor = factor_range.random();
     let decrease = math::utils::change_factor_to_percentage(change_factor).abs();
 
@@ -132,7 +132,7 @@ fn factor_to_large_decrease_two_decimals(id: i32, lang: Language) -> Result<Prob
 /// Relative difficulty: 2
 #[problem]
 fn factor_to_increase_one_decimal(id: i32, lang: Language) -> Result<Problem> {
-    let factor_range = num_gen::decimal().with_decimals(1).range(1.1, 1.9);
+    let factor_range = num_gen::decimals(1).range(1.1, 1.9);
     let change_factor = factor_range.random();
     let increase = math::utils::change_factor_to_percentage(change_factor);
 
@@ -157,7 +157,7 @@ fn factor_to_increase_one_decimal(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 2
 #[problem]
 fn factor_to_decrease_one_decimal(id: i32, lang: Language) -> Result<Problem> {
-    let factor_range = num_gen::decimal().with_decimals(1).range(0.1, 0.9);
+    let factor_range = num_gen::decimals(1).range(0.1, 0.9);
     let change_factor = factor_range.random();
     let decrease = math::utils::change_factor_to_percentage(change_factor).abs();
 
@@ -182,7 +182,7 @@ fn factor_to_decrease_one_decimal(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 4
 #[problem]
 fn factor_to_increase_above_2(id: i32, lang: Language) -> Result<Problem> {
-    let factor_range = num_gen::decimal().with_decimals(2).range(2.01, 2.99);
+    let factor_range = num_gen::decimals(2).range(2.01, 2.99);
     let change_factor = factor_range.random();
     let increase = math::utils::change_factor_to_percentage(change_factor);
 
@@ -207,7 +207,7 @@ fn factor_to_increase_above_2(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn factor_to_increase_large_number(id: i32, lang: Language) -> Result<Problem> {
-    let factor_range = num_gen::decimal().with_decimals(2).range(5.0, 9.99);
+    let factor_range = num_gen::decimals(2).range(5.0, 9.99);
     let change_factor = factor_range.random();
     let increase = math::utils::change_factor_to_percentage(change_factor);
 
@@ -232,7 +232,7 @@ fn factor_to_increase_large_number(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
-    let increase_range = num_gen::decimal().with_decimals(1).range(2, 10);
+    let increase_range = num_gen::decimals(1).range(2, 10);
     let increase = increase_range.random();
     let change_factor = math::utils::to_change_factor(increase);
 
@@ -257,7 +257,7 @@ fn decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn decimal_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
-    let decrease_range = num_gen::decimal().with_decimals(1).range(1, 10);
+    let decrease_range = num_gen::decimals(1).range(1, 10);
     let decrease = decrease_range.random();
     let change_factor = math::utils::to_change_factor(-decrease);
 
@@ -282,7 +282,7 @@ fn decimal_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 4
 #[problem]
 fn large_decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
-    let increase_range = num_gen::decimal().with_decimals(1).range(10, 40);
+    let increase_range = num_gen::decimals(1).range(10, 40);
     let increase = increase_range.random();
     let change_factor = math::utils::to_change_factor(increase);
 
@@ -307,7 +307,7 @@ fn large_decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> 
 /// Relative difficulty: 4
 #[problem]
 fn large_decimal_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
-    let decrease_range = num_gen::decimal().with_decimals(1).range(10, 40);
+    let decrease_range = num_gen::decimals(1).range(10, 40);
     let decrease = decrease_range.random();
     let change_factor = math::utils::to_change_factor(-decrease);
 
