@@ -1,3 +1,6 @@
+use crate::formatting::{
+    subanswer, subanswers_end, subanswers_start, subquestion, subquestions_end, subquestions_start,
+};
 use crate::typst_file_builder::{AnswerSet, QuestionSet};
 use anyhow::{Result, anyhow};
 use db::prefixes::PrefixEntry;
@@ -266,23 +269,19 @@ fn push_grouped_enum(
     let mut grouped_questions = String::new();
     let mut grouped_answers = String::new();
 
-    // Questions header
-    writeln!(
-        grouped_questions,
-        "{prefix_text}: \n\n#enum(numbering: \"a)\", indent: -0.8em,"
-    )?;
+    // The prefix text before writing sub-problems
+    writeln!(grouped_questions, "{prefix_text}: \n\n")?;
 
-    // Answers header
-    writeln!(grouped_answers, "#enum(numbering: \"a)\",")?;
+    grouped_questions += &subquestions_start();
+    grouped_answers += &subanswers_start();
 
     for j in idx..idx + group_length {
-        let nested_answer = adjust_nested_answer(&answer_set.answers[j]);
-        writeln!(grouped_questions, "[{}],", question_set.questions[j])?;
-        writeln!(grouped_answers, "[{}],", nested_answer)?;
+        grouped_questions += &subquestion(&question_set.questions[j]);
+        grouped_answers += &subanswer(&answer_set.answers[j]);
     }
 
-    grouped_questions.push(')');
-    grouped_answers.push(')');
+    grouped_questions += &subquestions_end();
+    grouped_answers += &subanswers_end();
 
     prefixed_questions.questions.push(grouped_questions);
     prefixed_answers.answers.push(grouped_answers);
@@ -295,6 +294,6 @@ fn push_grouped_enum(
 ///
 /// The rule for this is set in formatting::solution_rules()
 /// TODO: The entire nested solution is unbreakable right now.
-fn adjust_nested_answer(answer: &str) -> String {
+pub fn adjust_nested_answer(answer: &str) -> String {
     answer.replace("#solution", "#nested_solution")
 }

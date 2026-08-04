@@ -2,9 +2,13 @@ mod columns;
 pub mod evaluables;
 mod math_formatting;
 mod solutions;
+use std::fmt::Display;
+
 pub use columns::*;
 pub use math_formatting::*;
 pub use solutions::*;
+
+use crate::prefix_handler::adjust_nested_answer;
 
 // item = unbreakable, block = breakable
 pub fn list_item(s: &str) -> String {
@@ -87,4 +91,25 @@ pub fn equation_solution(equation_string: &str) -> String {
         .join(", ");
 
     format!("#v(-0.5em)\n#equation-solution(({combined_equations}),({combined_steps}),)")
+}
+
+pub fn subquestions_start() -> String {
+    String::from("#enum(numbering: \"a)\", indent: -0.8em,\n")
+}
+pub fn subquestion(q: impl Display) -> String {
+    format!("[{q}],\n")
+}
+pub fn subquestions_end() -> String {
+    String::from(")\n")
+}
+
+pub fn subanswers_start() -> String {
+    String::from("#enum(numbering: \"a)\",\n")
+}
+pub fn subanswer(a: impl Display) -> String {
+    let nested = adjust_nested_answer(&a.to_string());
+    format!("[{nested}],\n")
+}
+pub fn subanswers_end() -> String {
+    String::from(")\n")
 }

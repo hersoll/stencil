@@ -5,6 +5,7 @@
 ### Added
 - Added `12/30` and `12/300` problems
 - Added more dynamic `ProblemParameters` struct for more ergonomic problem generation
+- Support for subquestions and subanswers outside of prefix grouping
 
 ### Changed
 - Changed `decimal().with_decimals(N)` to `decimals(N)` in `num_gen`
