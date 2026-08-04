@@ -27,15 +27,11 @@ fn find_m(id: i32, lang: Language) -> Result<Problem> {
 
     // Always show the intersection with the x-axis.
     let x_intersect = -multiplier;
-    let x_min = if x_intersect < 0 {
-        x_intersect - 1
-    } else {
-        Number::Integer(-1)
-    };
-    let x_max = if x_intersect > 0 {
-        x_intersect + 1
-    } else {
-        Number::Integer(1)
+    use std::cmp::Ordering::*;
+    let (x_min, x_max) = match x_intersect.as_i32().cmp(&0) {
+        Less => (x_intersect - 1, Number::Integer(1)),
+        Equal => (Number::Integer(-2), Number::Integer(2)),
+        Greater => (Number::Integer(-1), x_intersect + 1),
     };
 
     let question_graph = Axes::new()
