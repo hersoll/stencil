@@ -1,6 +1,11 @@
 # Changelog
 
-## [0.12.3] - TBD
+## [0.12.4] - TBD
+
+### Added
+- Added `12/30` and `12/300` problems
+
+## [0.12.3] - 2026-08-03
 
 ### Added
 - Implemented `as_integer()` on `Numbers`

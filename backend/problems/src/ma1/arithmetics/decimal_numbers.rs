@@ -324,6 +324,75 @@ fn subtract_decimals_one_decimal_first(id: i32, _lang: Language) -> Result<Probl
     })
 }
 
+/// 12 / 30
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn divide_tens_tens(id: i32, lang: Language) -> Result<Problem> {
+    let (denom, denom_range) = num_gen::integer().range_step(20, 90, 10).and_random();
+    let (answer, answer_range) = num_gen::decimal()
+        .with_decimals(1)
+        .range(0.2, 0.9)
+        .exclude(0.5)
+        .and_random();
+    let numerator = denom * answer;
+
+    // First do 12 / 3 instead
+    let small_denom = denom / 10;
+    let simple_answer = numerator / small_denom;
+
+    let solution_text = get_solution(id, lang)?;
+    let mut solution_math = Solution::block_with_text();
+    solution_math
+        .newline()
+        .write(format!("{numerator}/{small_denom} &= {simple_answer}"))
+        .wide_space()
+        .write(format!("{numerator}/{denom} &= {answer}"));
+
+    Ok(Problem {
+        id,
+        question: format!("$ {numerator}/{denom} $"),
+        answer: answer.as_math(),
+        solution: format!("{solution_text} \\ {solution_math}"),
+        identifiers: vec![answer, denom],
+        combinations: denom_range.len() * answer_range.len(),
+    })
+}
+
+/// 12 / 300
+/// Absolute difficulty: 2
+/// Relative difficulty: 3
+#[problem]
+fn divide_tens_hundreds(id: i32, lang: Language) -> Result<Problem> {
+    let (denom, denom_range) = num_gen::integer().range_step(200, 900, 100).and_random();
+    let (answer, answer_range) = num_gen::decimal()
+        .with_decimals(2)
+        .range(0.02, 0.09)
+        .and_random();
+    let numerator = denom * answer;
+
+    // First do 12 / 3 instead
+    let small_denom = denom / 100;
+    let simple_answer = numerator / small_denom;
+
+    let solution_text = get_solution(id, lang)?;
+    let mut solution_math = Solution::block_with_text();
+    solution_math
+        .newline()
+        .write(format!("{numerator}/{small_denom} &= {simple_answer}"))
+        .wide_space()
+        .write(format!("{numerator}/{denom} &= {answer}"));
+
+    Ok(Problem {
+        id,
+        question: format!("$ {numerator}/{denom} $"),
+        answer: answer.as_math(),
+        solution: format!("{solution_text} \\ {solution_math}"),
+        identifiers: vec![answer, denom],
+        combinations: denom_range.len() * answer_range.len(),
+    })
+}
+
 /// 12 / 0,3
 /// Absolute difficulty: 4
 /// Relative difficulty: 4
