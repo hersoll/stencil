@@ -1,11 +1,14 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    MathDisplay, Number, Polynomial, Term,
+    Number, Polynomial, Term,
     num_gen::{self, NumberGenerator},
     symbols,
 };
-use types::{lang::Language, problems::Problem};
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 use typst_writer::{self, formatting::parentheses};
 
 /// 3(x+1)
@@ -29,14 +32,14 @@ fn positive_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
         abs_const = constant.abs()
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
-    })
+    }))
 }
 
 /// 3(2a-4)
@@ -61,14 +64,14 @@ fn with_coefficient_on_variable(id: i32, _lang: Language) -> Result<Problem> {
         abs_const = constant.abs()
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
-    })
+    }))
 }
 
 /// -2(x+4)
@@ -94,14 +97,14 @@ fn negative_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
         const_p = parentheses(&constant),
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
-    })
+    }))
 }
 
 /// 3 - (2x - 1)
@@ -130,14 +133,14 @@ fn const_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
         t3_m = -&t3,
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![initial_const, constant],
         combinations: i_range.len() * c_range.len(),
-    })
+    }))
 }
 
 /// 2x - (7x - 1)
@@ -167,14 +170,14 @@ fn var_term_minus_parenthesis(id: i32, _lang: Language) -> Result<Problem> {
         t3_m = -&t3,
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${simplified}$"),
+        answer: simplified,
         solution,
         identifiers: vec![initial, constant],
         combinations: i_range.len() * c_range.len(),
-    })
+    }))
 }
 
 /// (2x + 1) + (3x - 4)
@@ -208,14 +211,14 @@ fn add_parentheses(id: i32, _lang: Language) -> Result<Problem> {
             = &{term_var_1} {term_var_2:+} {term_const_1:+}{term_const_2:+} = {answer}$",
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * const_range.len(),
-    })
+    }))
 }
 
 /// (2x + 1) - (3x - 4)
@@ -253,14 +256,14 @@ fn subtract_parentheses(id: i32, _lang: Language) -> Result<Problem> {
         term_const_2_m = -term_const_2,
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * const_range.len(),
-    })
+    }))
 }
 
 /// 4(2x + 1) + 2(3x - 4)
@@ -297,14 +300,14 @@ fn multiply_and_add(id: i32, _lang: Language) -> Result<Problem> {
         "$&{factor_1}({exp_1}) + {factor_2}({exp_2}) = \\ = &{mult_1} {mult_2:+} = {answer}$",
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * coef_range.len(),
-    })
+    }))
 }
 
 /// -4(3 - 4x)
@@ -332,14 +335,14 @@ fn negative_factor_and_coef(id: i32, _lang: Language) -> Result<Problem> {
         t2_p = parentheses(&t2),
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${simplified_answer}$"),
+        answer: simplified_answer,
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
-    })
+    }))
 }
 
 /// x(x+1)
@@ -363,14 +366,14 @@ fn multiply_by_variable(id: i32, _lang: Language) -> Result<Problem> {
         abs_const = constant.abs()
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![constant],
         combinations: c_range.len(),
-    })
+    }))
 }
 
 /// 4(2x + 1) - (3x - 4)
@@ -408,14 +411,14 @@ fn multiply_first_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
         exp_2_m = -&exp_2,
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * coef_range.len(),
-    })
+    }))
 }
 
 /// 4(2x + 1) - 2(3x - 4)
@@ -454,14 +457,14 @@ fn multiply_and_subtract(id: i32, _lang: Language) -> Result<Problem> {
         "$&{factor_1}({exp_1}) - {factor_2}({exp_2}) = \\ = &{mult_1} {mult_2:+} = {answer}$",
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef_1, const_1],
         combinations: coef_range.len() * coef_range.len(),
-    })
+    }))
 }
 
 /// 3x(1 - 2x)
@@ -495,14 +498,14 @@ fn multiply_by_variable_term(id: i32, _lang: Language) -> Result<Problem> {
         }
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef_1, coef_2],
         combinations: coef_range.len() * coef_range.len(),
-    })
+    }))
 }
 
 /// x(3x + 1) - 3(2 + x)
@@ -539,14 +542,14 @@ fn one_variable_one_constant(id: i32, _lang: Language) -> Result<Problem> {
          =&{mult_1}{mult_2:+} = \\ =&{answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef_1, factor],
         combinations: coef_range.len().pow(2),
-    })
+    }))
 }
 
 /// 3(3x + 1) - x(2 + x)
@@ -583,14 +586,14 @@ fn one_constant_one_variable(id: i32, _lang: Language) -> Result<Problem> {
          =&{mult_1}{mult_2:+} = \\ =&{answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef_1, factor],
         combinations: coef_range.len().pow(2),
-    })
+    }))
 }
 
 /// 3x(3x + 1) - 2x(2 + x)
@@ -625,14 +628,14 @@ fn multiply_both_by_variable_terms(id: i32, _lang: Language) -> Result<Problem> 
          =&{mult_1}{mult_2:+} = {answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef_1, coef_2],
         combinations: coef_range.len().pow(2),
-    })
+    }))
 }
 
 /// 2x(1 + y) - 3(x + y)
@@ -671,14 +674,14 @@ fn mixing_variables(id: i32, _lang: Language) -> Result<Problem> {
          =& {answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor1, factor2],
-        combinations: num_range.len(),
-    })
+        combinations: num_range,
+    }))
 }
 
 /// x^2(1 - y) + 3x(y - 1) - y(3x + 1)
@@ -728,12 +731,12 @@ fn mixing_variables_and_exponents(id: i32, _lang: Language) -> Result<Problem> {
         =&{answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor1, factor2, factor3],
         combinations: num_range.len() * 2,
-    })
+    }))
 }

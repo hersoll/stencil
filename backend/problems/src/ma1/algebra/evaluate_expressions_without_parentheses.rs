@@ -1,11 +1,15 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    Evaluable, MathDisplay, Number, Polynomial, Term, VariableList,
+    Evaluable, Number, Polynomial, Term, VariableList,
     num_gen::{self, NumberGenerator},
     symbols,
 };
-use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
+use types::{
+    format_strings::HasReplacements,
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 
 /// Evaluate 3x - 1 when x = -3
 /// Absolute difficulty: 1
@@ -41,14 +45,14 @@ fn evaluate_simple(id: i32, lang: Language) -> Result<Problem> {
         coef * value,
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef, value],
         combinations: coef_range.len() * value_range.len(),
-    })
+    }))
 }
 
 /// Evaluate 3x - 2y + 1 when x = -3 and y = 2
@@ -90,14 +94,14 @@ fn evaluate_intermediate(id: i32, lang: Language) -> Result<Problem> {
         coef_2 * value_y,
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![coef, coef_2],
         combinations: coef_range.len().pow(2),
-    })
+    }))
 }
 
 /// Evaluate 3x^2 + 2xy^2 + 3x if x = -3 and y = 2
@@ -150,12 +154,12 @@ fn evaluate_advanced(id: i32, lang: Language) -> Result<Problem> {
         expression.print_evaluation_by_parts(&replacements),
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![Number::Integer(0)],
+        identifiers: Number::Integer(0),
         combinations: 1,
-    })
+    }))
 }

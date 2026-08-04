@@ -5,7 +5,11 @@ use math::{
     num_gen::{self, NumberGenerator},
     symbols::X,
 };
-use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
+use types::{
+    format_strings::HasReplacements,
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 use typst_writer::formatting::{equation_solution, parentheses};
 
 /// Calculate k between (1, 3) and (4, 9) [positive integers]
@@ -31,14 +35,14 @@ fn find_k_all_positives(id: i32, lang: Language) -> Result<Problem> {
         "$ k = (y_2 - y_1)/(x_2 - x_1) =({y_end} - {y_start})/({x_end} - {x_start}) = {y_step} / {x_step} = {k} $"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![x_start, x_end, y_start, y_end],
         combinations: small_range.len().pow(3),
-    })
+    }))
 }
 
 /// Calculate k between (1, -2) and (-5, 3)
@@ -69,14 +73,14 @@ fn find_k_with_negatives(id: i32, lang: Language) -> Result<Problem> {
         parentheses(&x_start),
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![x_start, x_end, y_start, y_end],
         combinations: small_range.len().pow(2),
-    })
+    }))
 }
 
 /// Calculate k between (27, 32) and (34, 18)
@@ -104,14 +108,14 @@ fn find_k_large_integers(id: i32, lang: Language) -> Result<Problem> {
         "$ k = (y_2 - y_1)/(x_2 - x_1) =({y_end} - {y_start})/({x_end} - {x_start}) = {y_step} / {x_step} = {k} $"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![x_start, x_end, y_start, y_end],
         combinations: start_range.len().pow(2),
-    })
+    }))
 }
 
 /// Find the equation of the line between (1, 3) and (4, 9) [positive integers]
@@ -153,14 +157,14 @@ fn find_equation_small_positives(id: i32, lang: Language) -> Result<Problem> {
             ))
             .as_str();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![k, m],
-        combinations: small_range.len().pow(3),
-    })
+        combinations: small_range,
+    }))
 }
 
 /// Find the equation of the line between (1, -3) and (-4, 9)
@@ -213,14 +217,14 @@ fn find_equation_with_negatives(id: i32, lang: Language) -> Result<Problem> {
     ))
     .as_str();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![k, m],
-        combinations: small_range.len().pow(3),
-    })
+        combinations: small_range.len().pow(2),
+    }))
 }
 
 /// Find the equation of the line between (17, 30) and (29, 54)
@@ -270,14 +274,14 @@ fn find_equation_large_integers(id: i32, lang: Language) -> Result<Problem> {
         p_x_start = parentheses(&x_start),
     ))
     .as_str();
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![k, m],
         combinations: 30,
-    })
+    }))
 }
 
 /// Find the equation of the line between (17, 30) and (29, 30)
@@ -319,14 +323,14 @@ fn find_equation_k_zero(id: i32, lang: Language) -> Result<Problem> {
                     ",
     ))
     .as_str();
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![k, m],
         combinations: 30,
-    })
+    }))
 }
 
 /// Find the equation of the line between (17, 30) and (29, 42)
@@ -370,14 +374,14 @@ fn find_equation_k_one(id: i32, lang: Language) -> Result<Problem> {
         m_mult = -k * x_start,
     ))
     .as_str();
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![k, m],
         combinations: 30,
-    })
+    }))
 }
 
 /// Find the equation of the line between (17, 30) and (23, 40)
@@ -450,12 +454,13 @@ fn find_equation_k_fraction(id: i32, lang: Language) -> Result<Problem> {
         },
     ))
     .as_str();
-    Ok(Problem {
+
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![k.numerator(), k.denominator()],
         combinations: 15,
-    })
+    }))
 }

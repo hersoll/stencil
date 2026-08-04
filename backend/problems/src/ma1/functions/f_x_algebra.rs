@@ -6,8 +6,12 @@ use math::{
     num_gen::{self, NumberGenerator},
     symbols::{self, X},
 };
-use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
-use typst_writer::formatting::{Solution, equation_solution};
+use types::{
+    format_strings::HasReplacements,
+    lang::Language,
+    problems::{Problem, ProblemParameters, Solution},
+};
+use typst_writer::formatting::equation_solution;
 
 // In this module, problems in the form of f(3) is known as "calculating y"
 // and problems like f(x) = 3 are known as "calculating x"
@@ -39,15 +43,14 @@ fn without_notation_y(id: i32, lang: Language) -> Result<Problem> {
         .add_line(expression.print_evaluation_by_parts(&replacement))
         .add_aligned("y", y_value);
 
-    let problem = Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: format!("$y = {}$", y_value),
         solution: solution.to_string(),
         identifiers: vec![k, m],
         combinations: k_range.len() * m_range.len(),
-    };
-    Ok(problem)
+    }))
 }
 
 /// y = 2x + 2, y = 2
@@ -73,15 +76,14 @@ fn without_notation_x(id: i32, lang: Language) -> Result<Problem> {
         lhs = answer * coefficient
     ));
 
-    let problem = Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("$x = {}$", answer),
+        answer: format!("$x = {answer}$"),
         solution,
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
-    };
-    Ok(problem)
+    }))
 }
 
 /// f(3), no negatives
@@ -109,15 +111,14 @@ fn find_y_no_negatives(id: i32, lang: Language) -> Result<Problem> {
         prod = x * coefficient
     );
 
-    let problem = Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: format!("$f({x}) = {y}$"),
         solution: equation_solution(&solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
-    };
-    Ok(problem)
+    }))
 }
 
 /// Find x where f(x) = 2
@@ -147,15 +148,14 @@ fn find_x_where_f_x(id: i32, lang: Language) -> Result<Problem> {
         y_c = y - constant
     );
 
-    let problem = Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: format!("$x = {x}$"),
         solution: equation_solution(&solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
-    };
-    Ok(problem)
+    }))
 }
 
 /// Solve the equation f(x) = 4
@@ -191,15 +191,14 @@ fn equation_f_x_equals(id: i32, lang: Language) -> Result<Problem> {
         y_c = y - constant
     );
 
-    let problem = Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: format!("${var} = {x}$"),
         solution: equation_solution(&solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
-    };
-    Ok(problem)
+    }))
 }
 
 /// f(-3)
@@ -235,15 +234,14 @@ fn find_y(id: i32, lang: Language) -> Result<Problem> {
         par_x = typst_writer::formatting::parentheses(&x),
     );
 
-    let problem = Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: format!("${f_name}({x}) = {y}$"),
         solution: equation_solution(&solution),
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
-    };
-    Ok(problem)
+    }))
 }
 
 /// f(x) = 2x + 4. Bestäm f(a+1)
@@ -282,15 +280,14 @@ fn insert_algebra_positive(id: i32, lang: Language) -> Result<Problem> {
         mult_algebra = function_coefficient * algebra_expression.clone(),
     );
 
-    let problem = Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer,
         solution,
         identifiers: vec![function_coefficient, algebra_coefficient],
         combinations: function_coefficient_range.len() * algebra_coefficient_range.len(),
-    };
-    Ok(problem)
+    }))
 }
 
 /// f(x) = 4 - 2x. Bestäm f(2a-1)
@@ -330,15 +327,14 @@ fn insert_algebra_negative(id: i32, lang: Language) -> Result<Problem> {
         mult_algebra = function_coefficient * algebra_expression.clone(),
     );
 
-    let problem = Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer,
         solution,
         identifiers: vec![function_coefficient, algebra_coefficient],
         combinations: function_coefficient_range.len() * algebra_coefficient_range.len(),
-    };
-    Ok(problem)
+    }))
 }
 
 // f(x) = 3x - 2. Find the value of f(f(4))
@@ -376,12 +372,12 @@ fn insert_number_twice(id: i32, lang: Language) -> Result<Problem> {
         first_evaluation = function.print_replacements(&first_replacement),
         second_evaluation = function.print_replacements(&second_replacement)
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![k, m, val],
         combinations: k_range.len() * m_range.len() * val_range.len(),
-    })
+    }))
 }

@@ -1,7 +1,11 @@
 use anyhow::Result;
 use macros::problem;
 use math::num_gen::{self, NumberGenerator};
-use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
+use types::{
+    format_strings::HasReplacements,
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 
 /// Which change factor is equivalent to an increase of 10%?
 /// Absolute difficulty: 1
@@ -18,14 +22,14 @@ fn integer_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
         "$100% + {increase}% = {total}% = {change_factor}$",
         total = 100 + increase
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${change_factor}$"),
+        answer: change_factor,
         solution,
-        identifiers: vec![increase],
-        combinations: increase_range.len(),
-    })
+        identifiers: increase,
+        combinations: increase_range,
+    }))
 }
 
 /// Which change factor is equivalent to a decrease of 10%?
@@ -43,14 +47,14 @@ fn integer_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
         "$100% - {decrease}% = {total}% = {change_factor}$",
         total = 100 - decrease
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${change_factor}$"),
+        answer: change_factor,
         solution,
-        identifiers: vec![decrease],
-        combinations: decrease_range.len(),
-    })
+        identifiers: decrease,
+        combinations: decrease_range,
+    }))
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 1.23
@@ -67,14 +71,14 @@ fn factor_to_increase_two_decimals(id: i32, lang: Language) -> Result<Problem> {
         "${change_factor} = {total}% = 100% + {increase}%$",
         total = 100 + increase
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
-        question: format!("${change_factor}$"),
+        question: change_factor,
         answer,
         solution,
-        identifiers: vec![change_factor],
-        combinations: factor_range.len(),
-    })
+        identifiers: change_factor,
+        combinations: factor_range,
+    }))
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 0.87
@@ -92,14 +96,14 @@ fn factor_to_decrease_two_decimals(id: i32, lang: Language) -> Result<Problem> {
         "${change_factor} = {total}% = 100% - {decrease}%$",
         total = 100 - decrease
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
-        question: format!("${change_factor}$"),
+        question: change_factor,
         answer,
         solution,
-        identifiers: vec![change_factor],
-        combinations: factor_range.len(),
-    })
+        identifiers: change_factor,
+        combinations: factor_range,
+    }))
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 0.23
@@ -117,14 +121,15 @@ fn factor_to_large_decrease_two_decimals(id: i32, lang: Language) -> Result<Prob
         "${change_factor} = {total}% = 100% - {decrease}%$",
         total = 100 - decrease
     );
-    Ok(Problem {
+
+    Ok(Problem::from(ProblemParameters {
         id,
-        question: format!("${change_factor}$"),
+        question: change_factor,
         answer,
         solution,
-        identifiers: vec![change_factor],
-        combinations: factor_range.len(),
-    })
+        identifiers: change_factor,
+        combinations: factor_range,
+    }))
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 1.2
@@ -142,14 +147,14 @@ fn factor_to_increase_one_decimal(id: i32, lang: Language) -> Result<Problem> {
         "${change_factor} = {total}% = 100% + {increase}%$",
         total = 100 + increase
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
-        question: format!("${change_factor}$"),
+        question: change_factor,
         answer,
         solution,
-        identifiers: vec![change_factor],
-        combinations: factor_range.len(),
-    })
+        identifiers: change_factor,
+        combinations: factor_range,
+    }))
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 0.8
@@ -167,14 +172,14 @@ fn factor_to_decrease_one_decimal(id: i32, lang: Language) -> Result<Problem> {
         "${change_factor} = {total}% = 100% - {decrease}%$",
         total = 100 - decrease
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
-        question: format!("${change_factor}$"),
+        question: change_factor,
         answer,
         solution,
-        identifiers: vec![change_factor],
-        combinations: factor_range.len(),
-    })
+        identifiers: change_factor,
+        combinations: factor_range,
+    }))
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 2.12
@@ -192,14 +197,14 @@ fn factor_to_increase_above_2(id: i32, lang: Language) -> Result<Problem> {
         "${change_factor} = {total}% = 100% + {increase}%$",
         total = 100 + increase
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
-        question: format!("${change_factor}$"),
+        question: change_factor,
         answer,
         solution,
-        identifiers: vec![change_factor],
-        combinations: factor_range.len(),
-    })
+        identifiers: change_factor,
+        combinations: factor_range,
+    }))
 }
 
 /// Decide if there is an increase or a decrease, and by how many percentages, when the change factor is 8.12
@@ -217,14 +222,14 @@ fn factor_to_increase_large_number(id: i32, lang: Language) -> Result<Problem> {
         "${change_factor} = {total}% = 100% + {increase}%$",
         total = 100 + increase
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
-        question: format!("${change_factor}$"),
+        question: change_factor,
         answer,
         solution,
-        identifiers: vec![change_factor],
-        combinations: factor_range.len(),
-    })
+        identifiers: change_factor,
+        combinations: factor_range,
+    }))
 }
 
 /// Which change factor is equivalent to an increase of 4.3%?
@@ -242,14 +247,14 @@ fn decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> {
         "$100% + {increase}% = {total}% = {change_factor}$",
         total = 100 + increase
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${change_factor}$"),
+        answer: change_factor,
         solution,
-        identifiers: vec![increase],
-        combinations: increase_range.len(),
-    })
+        identifiers: increase,
+        combinations: increase_range,
+    }))
 }
 
 /// Which change factor is equivalent to a decrease of 4.3%?
@@ -267,14 +272,14 @@ fn decimal_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> {
         "$100% - {decrease}% = {total}% = {change_factor}$",
         total = 100 - decrease
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${change_factor}$"),
+        answer: change_factor,
         solution,
-        identifiers: vec![decrease],
-        combinations: decrease_range.len(),
-    })
+        identifiers: decrease,
+        combinations: decrease_range,
+    }))
 }
 
 /// Which change factor is equivalent to an increase of 10.3%?
@@ -292,14 +297,14 @@ fn large_decimal_increase_to_factor(id: i32, lang: Language) -> Result<Problem> 
         "$100% + {increase}% = {total}% = {change_factor}$",
         total = 100 + increase
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${change_factor}$"),
+        answer: change_factor,
         solution,
-        identifiers: vec![increase],
-        combinations: increase_range.len(),
-    })
+        identifiers: increase,
+        combinations: increase_range,
+    }))
 }
 
 /// Which change factor is equivalent to a decrease of 14.3%?
@@ -317,12 +322,12 @@ fn large_decimal_decrease_to_factor(id: i32, lang: Language) -> Result<Problem> 
         "$100% - {decrease}% = {total}% = {change_factor}$",
         total = 100 - decrease
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${change_factor}$"),
+        answer: change_factor,
         solution,
-        identifiers: vec![decrease],
-        combinations: decrease_range.len(),
-    })
+        identifiers: decrease,
+        combinations: decrease_range,
+    }))
 }

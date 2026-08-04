@@ -4,7 +4,10 @@ use math::{
     MathDisplay,
     num_gen::{self, NumberGenerator},
 };
-use types::{lang::Language, problems::Problem};
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 
 /// Write 56% in decimal form
 /// Absolute difficulty: 1
@@ -21,14 +24,14 @@ fn two_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
     let answer = decimal_form.as_math();
     let solution = format!("$1% = num(0.01) \\ 10% = num(0.10) \\ {percentage}% = {decimal_form}$");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![percentage],
-        combinations: percentage_range.len(),
-    })
+        identifiers: percentage,
+        combinations: percentage_range,
+    }))
 }
 
 /// Write 156% in decimal form
@@ -46,14 +49,14 @@ fn three_digit_to_decimal_form(id: i32, _lang: Language) -> Result<Problem> {
     let answer = decimal_form.as_math();
     let solution = format!("$1% = num(0.01) \\ 10% = num(0.10) \\ {percentage}% = {decimal_form}$");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![percentage],
-        combinations: percentage_range.len(),
-    })
+        identifiers: percentage,
+        combinations: percentage_range,
+    }))
 }
 
 /// Convert 0,3 to percent form
@@ -69,12 +72,12 @@ fn decimal_to_percent(id: i32, _lang: Language) -> Result<Problem> {
     let answer = format!("${percentage}%$");
     let solution = format!("${decimal_form} = {decimal_form:.2} = {percentage}%$");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![percentage],
-        combinations: percentage_range.len(),
-    })
+        identifiers: percentage,
+        combinations: percentage_range,
+    }))
 }

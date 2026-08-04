@@ -1,11 +1,11 @@
 use anyhow::Result;
 use macros::problem;
-use math::{
-    MathDisplay,
-    num_gen::{self, NumberGenerator},
-};
+use math::num_gen::{self, NumberGenerator};
 use registry::get_solution;
-use types::{lang::Language, problems::Problem};
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 
 /// 3 + 4 * 2
 /// Absolute difficulty: 1
@@ -25,14 +25,14 @@ fn addition_multiplication(id: i32, lang: Language) -> Result<Problem> {
         $ {term_1} + colored({factor_1} dot {factor_2}) = {term_1} + colored({product}) = {answer} $
         "
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![term_1, factor_1, factor_2],
         combinations: t1_range.len() + f1_range.len() + f2_range.len(),
-    })
+    }))
 }
 
 /// 10 - 4 * 2
@@ -54,14 +54,14 @@ fn subtraction_multiplication(id: i32, lang: Language) -> Result<Problem> {
         $ {term_1} - colored({factor_1} dot {factor_2}) = {term_1} - colored({product}) = {answer} $
         "
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![term_1, factor_1, factor_2],
         combinations: f1_range.len() + f2_range.len(),
-    })
+    }))
 }
 
 /// 5 * 3 + 4 * 2
@@ -84,14 +84,14 @@ fn mult_add_mult(id: i32, lang: Language) -> Result<Problem> {
         $ colored({factor_1} dot {factor_2}) + colored({factor_3} dot {factor_4}) =
         colored({product_1}) + colored({product_2}) = {answer} $"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor_1, factor_2, factor_3, factor_4],
         combinations: f_range.len().pow(4),
-    })
+    }))
 }
 
 /// 5 * 7 - 4 * 2
@@ -117,14 +117,14 @@ fn mult_sub_mult(id: i32, lang: Language) -> Result<Problem> {
         $ colored({factor_1} dot {factor_2}) - colored({factor_3} dot {factor_4}) =
         colored({product_1}) - colored({product_2}) = {answer} $"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor_1, factor_2, factor_3, factor_4],
         combinations: f_range.len().pow(2),
-    })
+    }))
 }
 
 /// 10 + (2 + 1) * 3
@@ -149,14 +149,14 @@ fn add_par_mult(id: i32, lang: Language) -> Result<Problem> {
         $ {term_1} + colored(({term_2} + {term_3})) dot {factor} = {term_1} + colored({par_sum} dot {factor}) = \\
         = {term_1} + {product} = {answer} $"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![term_1, term_2, term_3, factor],
         combinations: f_range.len() * t_range.len().pow(3),
-    })
+    }))
 }
 
 /// 20 - (8 - 3) * 3
@@ -183,14 +183,14 @@ fn sub_par_mult(id: i32, lang: Language) -> Result<Problem> {
         $ {term_1} - colored(({par_1} - {par_2})) dot {factor} = {term_1} - colored({par_diff} dot {factor}) = \\
         = {term_1} - {product} = {answer} $"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![term_1, par_1, factor],
         combinations: t_range.len() * p_range.len() * f_range.len(),
-    })
+    }))
 }
 
 /// 7 + 3^2
@@ -214,14 +214,14 @@ fn add_power(id: i32, lang: Language) -> Result<Problem> {
     "
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![term, base],
         combinations: t_range.len() * base_range.len(),
-    })
+    }))
 }
 
 /// 13 - 3^2
@@ -246,14 +246,14 @@ fn sub_power(id: i32, lang: Language) -> Result<Problem> {
     "
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![term, base],
         combinations: t_range.len() * base_range.len(),
-    })
+    }))
 }
 
 /// 2 * 3^2
@@ -277,14 +277,14 @@ fn mult_power(id: i32, lang: Language) -> Result<Problem> {
     "
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor, base],
         combinations: f_range.len() * base_range.len(),
-    })
+    }))
 }
 
 /// (2 + 3)^2
@@ -310,14 +310,14 @@ fn par_add_power(id: i32, lang: Language) -> Result<Problem> {
     "
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![term_1],
-        combinations: t_range.len(),
-    })
+        identifiers: term_1,
+        combinations: t_range,
+    }))
 }
 
 /// (12 - 4)^2
@@ -346,14 +346,14 @@ fn par_sub_power(id: i32, lang: Language) -> Result<Problem> {
     "
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![term_1],
-        combinations: t_range.len(),
-    })
+        identifiers: term_1,
+        combinations: t_range,
+    }))
 }
 
 /// (2 * 3)^2
@@ -380,14 +380,14 @@ fn par_mult_power(id: i32, lang: Language) -> Result<Problem> {
     "
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![factor_1],
-        combinations: f_range.len(),
-    })
+        identifiers: factor_1,
+        combinations: f_range,
+    }))
 }
 
 /// 4 * 3^2 + 10
@@ -411,14 +411,14 @@ fn mult_power_add(id: i32, _lang: Language) -> Result<Problem> {
         = {product} + {term} = {answer}$
 "
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor, base, term],
         combinations: f_range.len() * base_range.len() * term_range.len(),
-    })
+    }))
 }
 
 /// 4 * 3^2 - 10
@@ -442,12 +442,12 @@ fn mult_power_sub(id: i32, _lang: Language) -> Result<Problem> {
         = {product} - {term} = {answer}$
 "
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
         identifiers: vec![factor, base],
         combinations: f_range.len() * base_range.len(),
-    })
+    }))
 }

@@ -1,11 +1,9 @@
-mod continuous;
-mod with_steps;
-use continuous::*;
-use with_steps::*;
-
 use anyhow::Result;
 use std::fmt::Write;
-use types::pdf::SolutionDecoration;
+use types::{
+    pdf::SolutionDecoration,
+    problems::{Answer, Solution},
+};
 
 static SOLUTION_HEADING_SPACE: &str = "0.3em";
 static SOLUTION_RADIUS: &str = "0.5em";
@@ -16,33 +14,8 @@ static SOLUTION_OUTSET: &str = "1.7em";
 static SOLUTION_NESTED_OUTSET: &str = "3em";
 static SOLUTION_BACKGROUND_PADDING: &str = "0.5em";
 
-/// A mathematical solution that is formatted to Typst
-///
-/// Helper struct that acts as a springboard for SolutionWithSteps and ContinousSolution
-/// This is simply so the API becomes Solution::with_steps() instead of writing out
-/// SolutionWithSteps::new()
-pub struct Solution;
-
-impl Solution {
-    pub fn with_steps() -> SolutionWithSteps {
-        SolutionWithSteps::default()
-    }
-
-    pub fn inline() -> ContinuousSolution {
-        ContinuousSolution::inline()
-    }
-
-    pub fn block() -> ContinuousSolution {
-        ContinuousSolution::block()
-    }
-
-    pub fn block_with_text() -> ContinuousSolution {
-        ContinuousSolution::block_with_text()
-    }
-}
-
 /// Formats the answer and solution strings to show up as a proper solution in the Typst file
-pub fn build_solution(answer: &str, solution: &str) -> Result<String> {
+pub fn build_solution(answer: &Answer, solution: &Solution) -> Result<String> {
     let mut out = String::with_capacity(1024);
     writeln!(out, "{answer}")?;
     writeln!(out, "#solution[")?;

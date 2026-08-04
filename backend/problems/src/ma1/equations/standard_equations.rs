@@ -5,10 +5,13 @@ use math::{
     num_gen::{self, NumberGenerator},
     symbols::{self, X},
 };
-use types::{lang::Language, problems::Problem};
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters, Solution},
+};
 use typst_writer::{
     custom_math::solutions,
-    formatting::{Solution, divide_number, subtract_number},
+    formatting::{divide_number, subtract_number},
 };
 
 /// x + 3 = 12
@@ -26,14 +29,14 @@ fn only_addition_or_subtraction(id: i32, _lang: Language) -> Result<Problem> {
         .add_aligned(unknown, answer)
         .to_string(); // x = 9
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${unknown}{constant:+} = {}$", answer + constant),
         answer: format!("${unknown} = {answer}$"),
         solution,
-        identifiers: vec![constant],
-        combinations: constant_range.len(),
-    })
+        identifiers: constant,
+        combinations: constant_range,
+    }))
 }
 
 /// 3x = 12
@@ -51,14 +54,14 @@ fn only_multiplication(id: i32, _lang: Language) -> Result<Problem> {
         .add_aligned(unknown, answer) // x = 4
         .to_string();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${coefficient}{unknown} = {}$", answer * coefficient),
         answer: format!("${unknown} = {answer}$"),
         solution,
         identifiers: vec![coefficient],
         combinations: coefficient_range.len(),
-    })
+    }))
 }
 
 /// 4x + 1 = 13
@@ -86,7 +89,7 @@ fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
         .add_aligned(unknown, answer)
         .to_string();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!(
             "${term}{constant:+} = {rhs}$",
@@ -96,7 +99,7 @@ fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
         solution,
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
-    })
+    }))
 }
 
 /// 6x + 8 = 20
@@ -125,7 +128,7 @@ fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
         .add_aligned(unknown, answer)
         .to_string();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!(
             "${term}{constant:+} = {rhs}$",
@@ -135,7 +138,7 @@ fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
         solution,
         identifiers: vec![coefficient, constant],
         combinations: coefficient_range.len() * constant_range.len(),
-    })
+    }))
 }
 
 /// 6x + 8 = 19
@@ -168,7 +171,7 @@ fn positive_rational(id: i32, _lang: Language) -> Result<Problem> {
             (1, 1)
         };
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!(
             "${cf}x {co:+} = {rhs}$",
@@ -180,5 +183,5 @@ fn positive_rational(id: i32, _lang: Language) -> Result<Problem> {
         solution,
         identifiers: vec![coefficient, constant],
         combinations: denominator_range.len() * constant_range.len(),
-    })
+    }))
 }

@@ -5,8 +5,11 @@ use math::{
     num_gen::{self, NumberGenerator},
     symbols,
 };
-use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::{Solution, divide_number, subtract_number, subtract_term};
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters, Solution},
+};
+use typst_writer::formatting::{divide_number, subtract_number, subtract_term};
 
 /// 4x + 1 = 2x + 3
 /// Absolute difficulty: 2
@@ -45,14 +48,14 @@ fn two_positive_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     }
     sol.add_aligned(unknown, answer);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_str,
-        solution: sol.to_string(),
+        solution: sol,
         identifiers: vec![lhs_coef, rhs_coef],
-        combinations: lhs_range.len(),
-    })
+        combinations: lhs_range,
+    }))
 }
 
 /// 2x + 1 = 4x + 3
@@ -92,14 +95,14 @@ fn two_positive_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     }
     sol.add_aligned(answer, unknown); // -1 = x
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_str,
-        solution: sol.to_string(),
+        solution: sol,
         identifiers: vec![lhs_coef, rhs_coef],
-        combinations: rhs_range.len(),
-    })
+        combinations: rhs_range,
+    }))
 }
 
 /// 4x + 1 = 4 - 2x
@@ -137,14 +140,14 @@ fn one_negative_coef_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
         .with_step(divide_number(subtracted_term.coefficient))
         .add_aligned(unknown, answer); // x = 0.5
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_str,
-        solution: sol.to_string(),
+        solution: sol,
         identifiers: vec![lhs_coef, rhs_coef],
-        combinations: lhs_range.len(),
-    })
+        combinations: lhs_range,
+    }))
 }
 
 /// 4 - 2x = 1 + 4x
@@ -180,14 +183,14 @@ fn one_negative_coef_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
         .with_step(divide_number(subtracted_term.coefficient))
         .add_aligned(answer, unknown); // 0.5 = x
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_str,
-        solution: sol.to_string(),
+        solution: sol,
         identifiers: vec![lhs_coef, rhs_coef],
-        combinations: rhs_range.len(),
-    })
+        combinations: rhs_range,
+    }))
 }
 
 // 4 - 4x = 8 - 2x
@@ -225,14 +228,14 @@ fn two_negative_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     }
     sol.add_aligned(answer, unknown); // -2 = x
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_str,
-        solution: sol.to_string(),
+        solution: sol,
         identifiers: vec![lhs_coef, rhs_coef],
-        combinations: lhs_range.len(),
-    })
+        combinations: lhs_range,
+    }))
 }
 
 // 4 - 2x = 8 - 4x
@@ -271,14 +274,14 @@ fn two_negative_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     }
     sol.add_aligned(unknown, answer); // x = 2
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_str,
-        solution: sol.to_string(),
+        solution: sol,
         identifiers: vec![lhs_coef, rhs_coef],
-        combinations: rhs_range.len(),
-    })
+        combinations: rhs_range,
+    }))
 }
 
 // 4x = 6x - 6
@@ -314,14 +317,14 @@ fn positive_coefs_lhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
     }
     solution.add_aligned(answer, unknown); // 3 = x
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_str,
-        solution: solution.to_string(),
+        solution,
         identifiers: vec![lhs_coef, rhs_coef],
-        combinations: rhs_range.len(),
-    })
+        combinations: rhs_range,
+    }))
 }
 
 // 6x - 6 = 4x
@@ -357,12 +360,12 @@ fn positive_coefs_rhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
     }
     solution.add_aligned(unknown, answer); // x = 3
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_str,
-        solution: solution.to_string(),
+        solution,
         identifiers: vec![lhs_coef, rhs_coef],
-        combinations: lhs_range.len(),
-    })
+        combinations: lhs_range,
+    }))
 }

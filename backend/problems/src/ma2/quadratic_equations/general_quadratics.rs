@@ -4,7 +4,10 @@ use math::{
     Number,
     num_gen::{self, NumberGenerator},
 };
-use types::{lang::Language, problems::Problem};
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 use typst_writer::custom_math::solutions;
 
 fn quadratics_template(symmetry: Number, distance: Number) -> (String, String, String) {
@@ -31,14 +34,14 @@ fn small_numbers_positive_p(id: i32, _lang: Language) -> Result<Problem> {
     let distance = num_gen::integer().range(-symmetry + 1, 5).random();
     let (question, answer, solution) = quadratics_template(symmetry, distance);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![symmetry, distance],
         combinations: sym_range.len() * 2,
-    })
+    }))
 }
 
 /// Absolute difficulty: 4
@@ -49,12 +52,12 @@ fn positive_p(id: i32, _lang: Language) -> Result<Problem> {
     let distance = num_gen::integer().range(1, 10).random();
     let (question, answer, solution) = quadratics_template(symmetry, distance);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![symmetry, distance],
         combinations: sym_range.len() * 10,
-    })
+    }))
 }

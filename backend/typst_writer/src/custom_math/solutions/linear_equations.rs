@@ -1,5 +1,6 @@
-use crate::formatting::{Solution, divide_number, subtract_number};
+use crate::formatting::{divide_number, subtract_number};
 use math::{self, Number, symbols::Symbol, utils::gcd};
+use types::problems::Solution;
 
 /// Equations of the form 3x + 5 = 14. Zeroes for coefficient or constant is not allowed.
 pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answer: i32) -> String {

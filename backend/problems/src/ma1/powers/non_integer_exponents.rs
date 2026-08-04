@@ -6,8 +6,10 @@ use math::{
     symbols,
 };
 use registry::get_solution;
-use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::Solution;
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters, Solution},
+};
 
 /// Calculate 9^(1/2)
 /// Absolute difficulty: 5
@@ -22,14 +24,14 @@ fn square_root(id: i32, _lang: Language) -> Result<Problem> {
     let answer = base.sqrt();
     let solution = format!("${base}^(1/2) = sqrt({base}) = {answer}$");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// Calculate 8^(1/3)
@@ -43,14 +45,14 @@ fn cubic_root(id: i32, _lang: Language) -> Result<Problem> {
     let answer = base.root(3);
     let solution = format!("${base}^(1/3) = root(3, {base}) = {answer}$");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// Simplify 7^(1/2) * 7^(1/2)
@@ -64,14 +66,14 @@ fn fraction_times_fraction(id: i32, _lang: Language) -> Result<Problem> {
     let answer = base.as_math();
     let solution =
         format!("${base}^(1/2) dot {base}^(1/2) = {base}^(1/2 + 1/2) = {base}^1 = {base}$");
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// Simplify 7^(1/3) * 7^(1/3) * 7^(1/3)
@@ -86,14 +88,14 @@ fn fraction_times_fraction_times_fraction(id: i32, _lang: Language) -> Result<Pr
     let solution = format!(
         "${base}^(1/3) dot {base}^(1/3) dot {base}^(1/3) = {base}^(1/3 + 1/3 + 1/3) = {base}^1 = {base}$"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// Simplify x^(1/3) * x^(2/3)
@@ -109,7 +111,7 @@ fn multiply_variables_to_exponent_one(id: i32, _lang: Language) -> Result<Proble
     let second_numerator = denominator - first_numerator;
     let var = symbols::get_unknown()?;
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!(
             "${var}^({first_numerator}/{denominator}) dot {var}^({second_numerator}/{denominator})$"
@@ -119,9 +121,9 @@ fn multiply_variables_to_exponent_one(id: i32, _lang: Language) -> Result<Proble
             "${var}^({first_numerator}/{denominator}) dot {var}^({second_numerator}/{denominator}) =
             {var}^({first_numerator}/{denominator} + {second_numerator}/{denominator}) = {var}^1 = {var}$"
         ),
-        identifiers: vec![denominator],
-        combinations: denom_range.len(),
-    })
+        identifiers: denominator,
+        combinations: denom_range,
+    }))
 }
 
 /// Simplify (7^(1/2))^2
@@ -138,14 +140,14 @@ fn fraction_power_integer(id: i32, _lang: Language) -> Result<Problem> {
         "$({base}^(1/{exponent}))^{exponent} = {base}^(1/{exponent} dot {exponent}) = 
         {base}^({exponent}/{exponent}) = {base}^1 = {base}$"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![base, exponent],
         combinations: base_range.len() * exp_range.len(),
-    })
+    }))
 }
 
 /// Simplify (7^2)^(1/2)
@@ -162,14 +164,14 @@ fn integer_power_fraction(id: i32, _lang: Language) -> Result<Problem> {
         "$({base}^{exponent})^(1/{exponent}) = {base}^({exponent} dot 1/{exponent}) = 
         {base}^({exponent}/{exponent}) = {base}^1 = {base}$"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![base, exponent],
         combinations: base_range.len() * exp_range.len(),
-    })
+    }))
 }
 
 /// Simplify (7^8)^(1/2)
@@ -189,14 +191,14 @@ fn large_integer_power_fraction(id: i32, _lang: Language) -> Result<Problem> {
         "$({base}^{initial_exponent})^(1/{frac_exponent}) = {base}^({initial_exponent} dot 1/{frac_exponent}) = 
         {base}^({initial_exponent}/{frac_exponent}) = {base}^{final_exponent}$"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![base, final_exponent, frac_exponent],
         combinations: base_range.len() * exp_range.len() * frac_range.len(),
-    })
+    }))
 }
 
 /// Simplify (7^(1/2))^12
@@ -216,14 +218,14 @@ fn fraction_power_large_integer(id: i32, _lang: Language) -> Result<Problem> {
         "$({base}^(1/{frac_exponent}))^{initial_exponent} = {base}^(1/{frac_exponent} dot {initial_exponent}) = 
         {base}^({initial_exponent}/{frac_exponent}) = {base}^{final_exponent}$"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![base, final_exponent, frac_exponent],
         combinations: base_range.len() * exp_range.len() * frac_range.len(),
-    })
+    }))
 }
 
 /// Simplify x^(3/2) * sqrt(x)
@@ -236,18 +238,18 @@ fn multiply_half_and_sqrt(id: i32, _lang: Language) -> Result<Problem> {
     let var = symbols::get_unknown()?;
     let final_exponent = (numerator + 1) / 2;
     let answer = PolynomialVariable::from((var, final_exponent));
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${var}^({numerator}/2) dot sqrt({var})$"),
-        answer: answer.as_math(),
+        answer,
         solution: format!(
             "${var}^({numerator}/2) dot sqrt({var}) = {var}^({numerator}/2) dot {var}^(1/2) = 
             {var}^({numerator}/2 + 1/2) = {var}^({}/2) = {answer}$",
             numerator + 1,
         ),
-        identifiers: vec![numerator],
-        combinations: num_range.len(),
-    })
+        identifiers: numerator,
+        combinations: num_range,
+    }))
 }
 
 /// Simplify sqrt(x) * x^(3/2)
@@ -260,18 +262,18 @@ fn multiply_sqrt_and_half(id: i32, _lang: Language) -> Result<Problem> {
     let var = symbols::get_unknown()?;
     let final_exponent = (numerator + 1) / 2;
     let answer = PolynomialVariable::from((var, final_exponent));
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("$sqrt({var}) dot {var}^({numerator}/2)$"),
-        answer: answer.as_math(),
+        answer,
         solution: format!(
             "$sqrt({var}) dot {var}^({numerator}/2) = {var}^(1/2) dot {var}^({numerator}/2) = 
             {var}^(1/2 + {numerator}/2) = {var}^({}/2) = {answer}$",
             numerator + 1,
         ),
-        identifiers: vec![numerator],
-        combinations: num_range.len(),
-    })
+        identifiers: numerator,
+        combinations: num_range,
+    }))
 }
 
 /// Simplify 3x^(1/2) * x^(5/2)
@@ -287,15 +289,15 @@ fn multiply_variables_first_coefficient(id: i32, _lang: Language) -> Result<Prob
     let total_numerator = first_exp + second_exp;
     let final_exp = total_numerator / 2;
     let answer = coef * Term::from_var((var, final_exp));
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${coef}{var}^({first_exp}/2) dot {var}^({second_exp}/2)$"),
-        answer: answer.as_math(),
         solution: format!("${coef}{var}^({first_exp}/2) dot {var}^({second_exp}/2) = 
             {coef}{var}^({first_exp}/2 + {second_exp}/2) = {coef}{var}^({total_numerator}/2) = {answer}$"),
+        answer,
         identifiers: vec![coef, first_exp, second_exp],
         combinations: coef_range.len() * exp_range.len().pow(2),
-    })
+    }))
 }
 
 /// Simplify x^(1/2) * 3x^(5/2)
@@ -311,15 +313,15 @@ fn multiply_variables_second_coefficient(id: i32, _lang: Language) -> Result<Pro
     let total_numerator = first_exp + second_exp;
     let final_exp = total_numerator / 2;
     let answer = coef * Term::from_var((var, final_exp));
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${var}^({first_exp}/2) dot {coef}{var}^({second_exp}/2)$"),
-        answer: answer.as_math(),
         solution: format!("${var}^({first_exp}/2) dot {coef}{var}^({second_exp}/2) = 
             {coef}{var}^({first_exp}/2 + {second_exp}/2) = {coef}{var}^({total_numerator}/2) = {answer}$"),
+        answer,
         identifiers: vec![coef, first_exp, second_exp],
         combinations: coef_range.len() * exp_range.len().pow(2),
-    })
+    }))
 }
 
 /// Simplify 2x^(1/2) * 3x^(5/2)
@@ -338,15 +340,15 @@ fn multiply_variables_both_coefficients(id: i32, lang: Language) -> Result<Probl
     let final_exp = total_numerator / 2;
     let answer = total_coef * Term::from_var((var, final_exp));
     let solution_text = get_solution(id, lang)?;
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${first_coef}{var}^({first_exp}/2) dot {second_coef}{var}^({second_exp}/2)$"),
-        answer: answer.as_math(),
         solution: format!("{solution_text} \\ $ {first_coef}{var}^({first_exp}/2) dot {second_coef}{var}^({second_exp}/2) = 
             {total_coef}{var}^({first_exp}/2 + {second_exp}/2) = {total_coef}{var}^({total_numerator}/2) = {answer} $"),
+        answer,
         identifiers: vec![first_coef, second_coef, first_exp, second_exp],
         combinations: coef_range.len().pow(2) * exp_range.len().pow(2),
-    })
+    }))
 }
 
 /// Simplify: Nx^n / sqrt(n)
@@ -361,15 +363,15 @@ fn power_divided_by_sqrt(id: i32, _lang: Language) -> Result<Problem> {
     let double_exp = 2 * exp;
     let answer_exp = (double_exp - 1) / 2;
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("#block($ ({coef}{var}^{exp})/sqrt({var}) $)"),
         answer: format!("${coef}{var}^({answer_exp})$"),
         solution: format!("$ ({coef}{var}^{exp})/sqrt({var}) = ({coef}{var}^{exp})/{var}^(1/2) = 
             {coef}{var}^({exp} - 1/2) = {coef}{var}^({double_exp}/2 - 1/2) = {coef}{var}^({answer_exp}) $"),
-        identifiers: vec![exp],
-        combinations: exp_range.len()
-    })
+        identifiers: exp,
+        combinations: exp_range
+    }))
 }
 
 /// x^(1/2) * x^(1/3)
@@ -386,7 +388,7 @@ fn variable_fraction_times_fraction(id: i32, _lang: Language) -> Result<Problem>
     let total_frac = frac_1 + frac_2;
     let var = symbols::get_unknown()?;
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${var}^({frac_1}) dot {var}^({frac_2})$"),
         answer: format!("${var}^({total_frac})$"),
@@ -396,7 +398,7 @@ fn variable_fraction_times_fraction(id: i32, _lang: Language) -> Result<Problem>
         ),
         identifiers: vec![denom_1, denom_2],
         combinations: denom_1_range.len() * denom_2_range.len(),
-    })
+    }))
 }
 
 /// Simplify: sqrt(n) / x^n
@@ -410,7 +412,7 @@ fn sqrt_divided_by_power(id: i32, _lang: Language) -> Result<Problem> {
     let double_exp = 2 * exp;
     let answer_exp = (1 - double_exp) / 2;
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("#block($ sqrt({var})/{var}^{exp} $)"),
         answer: format!("${var}^({answer_exp})$"),
@@ -418,9 +420,9 @@ fn sqrt_divided_by_power(id: i32, _lang: Language) -> Result<Problem> {
             "$ sqrt({var})/({var}^{exp}) = {var}^(1/2)/({var}^{exp}) = 
             {var}^(1/2 - {exp}) = {var}^(1/2 - {double_exp}/2) = {var}^({answer_exp}) $"
         ),
-        identifiers: vec![exp],
-        combinations: exp_range.len(),
-    })
+        identifiers: exp,
+        combinations: exp_range,
+    }))
 }
 
 /// 2x^(1/2) * x^(1/3)
@@ -438,7 +440,7 @@ fn variable_fraction_times_fraction_one_coef(id: i32, _lang: Language) -> Result
     let total_frac = frac_1 + frac_2;
     let var = symbols::get_unknown()?;
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${coef}{var}^({frac_1}) dot {var}^({frac_2})$"),
         answer: format!("${coef}{var}^({total_frac})$"),
@@ -448,7 +450,7 @@ fn variable_fraction_times_fraction_one_coef(id: i32, _lang: Language) -> Result
         ),
         identifiers: vec![denom_1, denom_2],
         combinations: denom_1_range.len() * denom_2_range.len(),
-    })
+    }))
 }
 
 /// 2x^(1/2) * 3x^(1/3)
@@ -477,14 +479,14 @@ fn variable_fraction_times_fraction_two_coefs(id: i32, _lang: Language) -> Resul
         .equals(format!("{total_coef}{var}^({extend_1} + {extend_2})"))
         .equals(format!("{total_coef}{var}^({total_frac})"));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${coef_1}{var}^({frac_1}) dot {coef_2}{var}^({frac_2})$"),
         answer: format!("${total_coef}{var}^({total_frac})$"),
-        solution: solution.to_string(),
+        solution,
         identifiers: vec![denom_1, denom_2],
         combinations: denom_1_range.len() * denom_2_range.len(),
-    })
+    }))
 }
 
 /// Write as a power: sqrt(x^n) / x
@@ -504,14 +506,14 @@ fn sqrt_power(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("{var}^({sqrt_exp})/{var}"))
         .equals(format!("{var}^({sqrt_exp} - 1)"))
         .equals(format!("{var}^({final_exp})"));
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("$sqrt({var}^{exp})/{var}$"),
         answer: format!("${var}^({final_exp})$"),
-        solution: solution.to_string(),
-        identifiers: vec![exp],
-        combinations: exp_range.len(),
-    })
+        solution,
+        identifiers: exp,
+        combinations: exp_range,
+    }))
 }
 
 /// Calculate 4^-1/2
@@ -531,14 +533,14 @@ fn negative_half_power(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("1/sqrt({square})"))
         .equals(&answer_str);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${square}^(-1/2)$"),
         answer: answer_str.as_block_math(),
-        solution: solution.to_string(),
-        identifiers: vec![square],
-        combinations: sq_range.len(),
-    })
+        solution,
+        identifiers: square,
+        combinations: sq_range,
+    }))
 }
 
 /// Calculate 4^-1/3
@@ -555,14 +557,14 @@ fn negative_third_power(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("1/{cube}^(1/3)"))
         .equals(format!("1/root(3, {cube})"))
         .equals(&answer_str);
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${cube}^(-1/3)$"),
         answer: answer_str.as_block_math(),
-        solution: solution.to_string(),
-        identifiers: vec![cube],
-        combinations: cube_range.len(),
-    })
+        solution,
+        identifiers: cube,
+        combinations: cube_range,
+    }))
 }
 
 /// Calculate 4^(3/2)
@@ -582,14 +584,14 @@ fn exponent_three_halves(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("(sqrt({base}))^3"))
         .equals(format!("{sqrt}^3"))
         .equals(format!("{answer}"));
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${base}^(3/2)$"),
-        answer: answer.as_math(),
-        solution: solution.to_string(),
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        answer,
+        solution,
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// Calculate 8^(2/3)
@@ -609,14 +611,15 @@ fn exponent_two_thirds(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("(root(3, {base}))^2"))
         .equals(format!("{root}^2"))
         .equals(format!("{answer}"));
-    Ok(Problem {
+
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${base}^(2/3)$"),
-        answer: answer.as_math(),
-        solution: solution.to_string(),
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        answer,
+        solution,
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// Calculate 4^(-3/2)
@@ -638,14 +641,15 @@ fn exponent_negative_three_halves(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("1/(sqrt({base}))^3"))
         .equals(format!("1/{sqrt}^3"))
         .equals(&answer_str);
-    Ok(Problem {
+
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${base}^(-3/2)$"),
         answer: answer_str.as_block_math(),
-        solution: solution.to_string(),
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        solution,
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// Calculate 8^(-2/3)
@@ -667,12 +671,13 @@ fn exponent_negative_two_thirds(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("1/(root(3, {base}))^2"))
         .equals(format!("1/{root}^2"))
         .equals(&answer_str);
-    Ok(Problem {
+
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${base}^(-2/3)$"),
         answer: answer_str.as_block_math(),
-        solution: solution.to_string(),
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        solution,
+        identifiers: base,
+        combinations: base_range,
+    }))
 }

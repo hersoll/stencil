@@ -1,8 +1,11 @@
 use anyhow::Result;
 use macros::problem;
 use math::num_gen::{self, NumberGenerator};
-use types::{lang::Language, problems::Problem};
-use typst_writer::formatting::{self, Solution, divide_number, multiply_number};
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters, Solution},
+};
+use typst_writer::formatting::{self, divide_number, multiply_number};
 
 /// x/3 = 4
 /// Absolute difficulty: 1
@@ -23,14 +26,14 @@ fn one_denom_one_variable(id: i32, _lang: Language) -> Result<Problem> {
         .with_step(multiply_number(denominator))
         .add_aligned(unknown, final_answer);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         question,
         answer,
-        solution: solution.to_string(),
+        solution,
         id,
-        identifiers: vec![denominator],
-        combinations: denominator_range.len(),
-    })
+        identifiers: denominator,
+        combinations: denominator_range,
+    }))
 }
 
 /// x/5 + x = 12
@@ -60,14 +63,14 @@ fn one_denom_and_unit_variable_integers_positive(id: i32, _lang: Language) -> Re
         .with_step(divide_number(denominator + 1))
         .add_aligned(unknown, final_answer);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         question,
         answer,
-        solution: solution.to_string(),
+        solution,
         id,
-        identifiers: vec![denominator],
-        combinations: denominator_range.len(),
-    })
+        identifiers: denominator,
+        combinations: denominator_range,
+    }))
 }
 /// x - x/3 = 8
 /// Absolute difficulty: 5
@@ -96,14 +99,14 @@ fn unit_variable_and_one_denom_integers_positive(id: i32, _lang: Language) -> Re
         .with_step(divide_number(denominator - 1))
         .add_aligned(unknown, final_answer);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         question,
         answer,
-        solution: solution.to_string(),
+        solution,
         id,
-        identifiers: vec![denominator],
-        combinations: denominator_range.len(),
-    })
+        identifiers: denominator,
+        combinations: denominator_range,
+    }))
 }
 
 /// x/4 - x = 9
@@ -125,23 +128,24 @@ fn unit_variable_and_one_denom_integers_with_negatives(
     let question = format!("$ {unknown}/{denominator} - {unknown} &= {rhs} $");
     let answer = format!("${unknown} = {final_answer}$");
 
-    let mut sol = Solution::with_steps();
-    sol.add_aligned(format!("{unknown}/{denominator} - {unknown}"), rhs)
-        .with_step(formatting::multiply_number(denominator));
-    sol.add_aligned(
-        format!("{unknown} - {denominator}{unknown}"),
-        rhs * denominator,
-    );
-    sol.add_aligned(format!("{}{unknown}", 1 - denominator), rhs * denominator)
-        .with_step(formatting::divide_number(1 - denominator));
-    sol.add_aligned(unknown, final_answer);
+    let mut solution = Solution::with_steps();
+    solution
+        .add_aligned(format!("{unknown}/{denominator} - {unknown}"), rhs)
+        .with_step(formatting::multiply_number(denominator))
+        .add_aligned(
+            format!("{unknown} - {denominator}{unknown}"),
+            rhs * denominator,
+        )
+        .add_aligned(format!("{}{unknown}", 1 - denominator), rhs * denominator)
+        .with_step(formatting::divide_number(1 - denominator))
+        .add_aligned(unknown, final_answer);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
+        id,
         question,
         answer,
-        solution: sol.to_string(),
-        id,
-        identifiers: vec![denominator],
-        combinations: denominator_range.len(),
-    })
+        solution,
+        identifiers: denominator,
+        combinations: denominator_range,
+    }))
 }

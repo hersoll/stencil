@@ -1,7 +1,6 @@
 use crate::picker;
 use crate::split_strings::select_variant;
 use anyhow::{Result, anyhow};
-use math::Number;
 use registry::RegistryError;
 use registry::get_problem_data;
 use std::collections::HashMap;
@@ -9,6 +8,7 @@ use std::sync::{LazyLock, RwLock};
 use tracing::error;
 use types::difficulty::{AbsoluteDifficulty, DifficultyCategory};
 use types::pdf::ProblemOptions;
+use types::problems::Identifiers;
 use types::problems::Problem;
 use types::{errors::ApiError, lang::Language};
 
@@ -56,7 +56,7 @@ pub async fn generate_problem_set(
 fn generate_problems(problem_ids: &[i32], lang: Language) -> Result<Vec<Problem>> {
     // The actual generated problems
     let mut problems = Vec::new();
-    let mut generated_identifiers_per_problem: HashMap<i32, Vec<Vec<i32>>> = HashMap::new();
+    let mut generated_identifiers_per_problem: HashMap<i32, Vec<Identifiers>> = HashMap::new();
     // For problems with multiple text variants, this keeps track of which variant was used last
     let mut latest_variant_index: HashMap<i32, usize> = HashMap::new();
 
@@ -78,7 +78,7 @@ fn generate_problems(problem_ids: &[i32], lang: Language) -> Result<Vec<Problem>
 /// If there are no more possible identifiers to generate, reset (which might repeat problems)
 fn get_unique_problem(
     problem_id: i32,
-    generated_identifiers: &mut Vec<Vec<i32>>,
+    generated_identifiers: &mut Vec<Identifiers>,
     variant_indices: &mut HashMap<i32, usize>,
     lang: Language,
 ) -> Result<Problem> {
@@ -86,11 +86,9 @@ fn get_unique_problem(
     let mut problem = (generator)(problem_id, lang)?;
 
     // Reset if all combinations are exhausted
-    if generated_identifiers.len() >= problem.combinations {
+    if generated_identifiers.len() >= problem.combinations.size() {
         generated_identifiers.clear();
     }
-
-    let mut problem_identifiers_as_i32 = convert_identifiers_to_i32s(&problem.identifiers);
 
     // If we generate a non-unique problem, retry until we get a unique problem.
     // We should always be able to do this, since the earlier `if` statement makes
@@ -99,9 +97,8 @@ fn get_unique_problem(
     // Therefore, if we are unable to generate a unique problem, something has gone wrong,
     // most likely when defining `identifiers` and `combinations` in the `Problem`. Fix it!!!
     let mut tries = 0u16;
-    while generated_identifiers.contains(&problem_identifiers_as_i32) {
+    while generated_identifiers.contains(&problem.identifiers) {
         problem = (generator)(problem_id, lang)?;
-        problem_identifiers_as_i32 = convert_identifiers_to_i32s(&problem.identifiers);
         tries += 1;
 
         // 65_535 tries until we call it a day
@@ -115,7 +112,7 @@ Check the identifiers and combinations in the Problem definition",
             return Err(anyhow!(error_msg));
         }
     }
-    generated_identifiers.push(problem_identifiers_as_i32);
+    generated_identifiers.push(problem.identifiers.clone());
 
     // Is this problem in the split hashmap?
     if let std::collections::hash_map::Entry::Vacant(e) = variant_indices.entry(problem_id) {
@@ -134,22 +131,6 @@ Check the identifiers and combinations in the Problem definition",
     }
 
     Ok(problem)
-}
-
-/// Converts identifiers into `i32`s.
-///
-/// While the identifiers are [`Numbers`](Number), they can't be hashed due to the `f64` variant.
-/// It's easier to store them as `i32`s.
-fn convert_identifiers_to_i32s(identifiers: &[Number]) -> Vec<i32> {
-    identifiers
-        .iter()
-        .map(|num| match num {
-            Number::Integer(i) => *i,
-            Number::Decimal { integer, .. } => *integer,
-            Number::Fraction { numerator, .. } => *numerator,
-            Number::Irrational { .. } => 0i32,
-        })
-        .collect()
 }
 
 /// Given a problem_id, returns a pointer to the function that generates that problem.

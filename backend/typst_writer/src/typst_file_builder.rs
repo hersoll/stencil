@@ -83,10 +83,10 @@ impl TypstFileBuilder {
                     formatting::build_solution(&problem.answer, &problem.solution)?;
                 (problem.question, answer_with_solution)
             } else {
-                (problem.question, problem.answer)
+                (problem.question, problem.answer.to_string())
             };
 
-            new_question_set.questions.push(q);
+            new_question_set.questions.push(q.to_string());
             new_answer_set.answers.push(a);
             problem_ids.push(problem.id);
         }

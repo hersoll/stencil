@@ -5,7 +5,10 @@ use math::{
     num_gen::{self, NumberGenerator},
     symbols,
 };
-use types::{lang::Language, problems::Problem};
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 
 /// 5^4 * 5^2
 /// Absolute difficulty: 1
@@ -22,14 +25,14 @@ fn simple_multiplication(id: i32, _lang: Language) -> Result<Problem> {
         "${base}^{exp1} dot {base}^{exp2} = {base}^({exp1} + {exp2}) = {base}^{total_exp}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![exp1, exp2],
         combinations: exp1_range.len() * exp2_range.len(),
-    })
+    }))
 }
 
 /// x^4 * x^2
@@ -47,14 +50,14 @@ fn simple_multiplication_variables(id: i32, _lang: Language) -> Result<Problem> 
         "${base}^{exp1} dot {base}^{exp2} = {base}^({exp1} + {exp2}) = {base}^{total_exp}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![exp1, exp2],
         combinations: exp1_range.len() * exp2_range.len(),
-    })
+    }))
 }
 
 /// 5^4 / 5^2
@@ -72,14 +75,14 @@ fn simple_division(id: i32, _lang: Language) -> Result<Problem> {
         "$display({base}^{exp1} / {base}^{exp2} = {base}^({exp1} - {exp2}) = {base}^{total_exp})$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![exp1, base],
         combinations: exp1_range.len() * base_range.len(),
-    })
+    }))
 }
 
 /// a^4 / a^2
@@ -97,14 +100,14 @@ fn simple_division_variables(id: i32, _lang: Language) -> Result<Problem> {
         "$display({base}^{exp1} / {base}^{exp2} = {base}^({exp1} - {exp2}) = {base}^{total_exp})$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![exp1],
-        combinations: exp1_range.len(),
-    })
+        identifiers: exp1,
+        combinations: exp1_range,
+    }))
 }
 /// (5^4)^2
 /// Absolute difficulty: 2
@@ -120,14 +123,14 @@ fn double_exponentiation(id: i32, _lang: Language) -> Result<Problem> {
     let solution =
         format!("$ ({base}^{exp1})^{exp2} = {base}^({exp1} dot {exp2}) = {base}^{total_exp} $");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![exp1, base],
         combinations: exp1_range.len() * base_range.len(),
-    })
+    }))
 }
 
 /// (x^4)^2
@@ -144,14 +147,14 @@ fn double_exponentiation_variables(id: i32, _lang: Language) -> Result<Problem> 
     let solution =
         format!("$ ({base}^{exp1})^{exp2} = {base}^({exp1} dot {exp2}) = {base}^{total_exp} $");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![exp1],
-        combinations: exp1_range.len(),
-    })
+        identifiers: exp1,
+        combinations: exp1_range,
+    }))
 }
 
 /// (5^3 * 5^6) / 5^2
@@ -175,14 +178,14 @@ fn multiplication_and_division(id: i32, _lang: Language) -> Result<Problem> {
         exp1 + exp2
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![base, exp1, exp2],
         combinations: exp1_range.len() * base_range.len() * exp2_range.len(),
-    })
+    }))
 }
 
 /// (4x)^2
@@ -200,14 +203,14 @@ fn variable_term_power_2(id: i32, _lang: Language) -> Result<Problem> {
         "$ ({coef}{variable})^{exp} = {coef}^{exp}{variable}^{exp} = {final_coef}{variable}^{exp} $"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![coef, exp],
         combinations: coef_range.len() * exp_range.len(),
-    })
+    }))
 }
 
 /// (2x)^3
@@ -225,14 +228,14 @@ fn variable_term_power_3(id: i32, _lang: Language) -> Result<Problem> {
         "$ ({coef}{variable})^{exp} = {coef}^{exp}{variable}^{exp} = {final_coef}{variable}^{exp} $"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![coef, exp],
         combinations: coef_range.len() * exp_range.len(),
-    })
+    }))
 }
 
 /// (2x)^3 / 4x
@@ -261,14 +264,14 @@ fn variable_term_power_and_divide_x(id: i32, _lang: Language) -> Result<Problem>
         $"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer,
         solution,
         identifiers: vec![coef, exp],
         combinations: coef_range.len() * exp_range.len(),
-    })
+    }))
 }
 
 /// (3x)^3 / 9x^2
@@ -297,12 +300,12 @@ fn variable_term_power_and_divide_x_squared(id: i32, _lang: Language) -> Result<
         $"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${answer}$"),
+        answer,
         solution,
         identifiers: vec![coef, exp],
         combinations: coef_range.len() * exp_range.len(),
-    })
+    }))
 }

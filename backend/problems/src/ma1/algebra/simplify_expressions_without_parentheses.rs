@@ -6,7 +6,10 @@ use math::{
     symbols,
 };
 use rand::seq::IndexedRandom;
-use types::{lang::Language, problems::Problem};
+use types::{
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 
 /// 3x + 4 + 2x + 1
 /// Absolute difficulty: 1
@@ -45,14 +48,14 @@ fn one_variable_and_constants_no_negatives(id: i32, _lang: Language) -> Result<P
         = &{simplified_expression}$",
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![first_coef, first_const],
         combinations: first_coef_range.len() * first_const_range.len(),
-    })
+    }))
 }
 
 /// 3x - 5 - 5x + 2
@@ -88,14 +91,14 @@ fn one_variable_and_constants(id: i32, _lang: Language) -> Result<Problem> {
         = &{simplified_expression}$",
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![first_coef, first_const],
         combinations: coef_range.len() * const_range.len(),
-    })
+    }))
 }
 
 /// 2x - 3y + 3x - 8y + 1
@@ -147,14 +150,14 @@ fn two_variables_and_constants(id: i32, _lang: Language) -> Result<Problem> {
         = &{simplified_expression}$",
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![first_coef_a, second_coef_a],
         combinations: coef_range.len().pow(2),
-    })
+    }))
 }
 
 /// x^2 + 2x + 3x^2 - 4x
@@ -193,14 +196,14 @@ fn one_variable_different_exponents(id: i32, _lang: Language) -> Result<Problem>
         = &{simplified_expression}$",
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![first_coef, first_exp],
         combinations: coef_range.len() * exp_range.len(),
-    })
+    }))
 }
 
 /// 3x - xy + 4x + 4xy - y^2
@@ -244,12 +247,12 @@ fn simplify_variable_combinations(id: i32, _lang: Language) -> Result<Problem> {
         = &{simplified}$",
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
-        question: format!("${expression}$"),
-        answer: format!("${simplified}$"),
+        question: expression,
+        answer: simplified,
         solution,
-        identifiers: vec![Number::Integer(1)],
+        identifiers: Number::Integer(1),
         combinations: 1,
-    })
+    }))
 }

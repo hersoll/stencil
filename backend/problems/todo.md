@@ -143,3 +143,23 @@
 - [ ] Text question: What do you find out with the equation f(x) = 4?
 - [ ] Text question: Find y if x is 4
 - [ ] Text question: Find x if y is 4
+
+## f(x) graphically
+### 2 / 1
+- [ ] Find y when x = 2
+- [ ] Find x when y = 2
+### 4 / 2
+- [ ] Evaluate f(2)
+- [ ] Solve the equation f(x) = 2
+### 5 / 3
+- [ ] ABC f(1), equation f(x) = 2
+### 6 / 4
+- [ ] Solve f(x) = g(x)
+- [ ] Solve the inequality f(x) > 1 (linear)
+### 8 / 5
+- [ ] Solve the inequality f(x) < 3 (quadratic)
+### 8 / 6
+- [ ] Solve the inequality f(x) > g(x)
+- [ ] Solve the inequality f(x) >= g(x)
+### 9 / 7
+- [ ] Solve the equation f(x) = kx + m

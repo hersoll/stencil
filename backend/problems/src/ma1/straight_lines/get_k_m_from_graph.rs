@@ -6,7 +6,11 @@ use math::{
     symbols::X,
 };
 use registry::get_problem_data;
-use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
+use types::{
+    format_strings::HasReplacements,
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 use typst_writer::graphing::{Axes, Graph};
 
 /// Find m in graph
@@ -51,14 +55,14 @@ fn find_m(id: i32, lang: Language) -> Result<Problem> {
     let answer = format!("$m = {m}$");
     let solution = format!("{solution}\n{solution_graph}");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![k],
-        combinations: k_range.len(),
-    })
+        identifiers: k,
+        combinations: k_range,
+    }))
 }
 
 /// Find k in graph
@@ -92,14 +96,14 @@ fn find_k(id: i32, lang: Language) -> Result<Problem> {
     let answer = format!("$k = {k}$");
     let solution = format!("{solution}\n{solution_graph}");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![k],
-        combinations: k_range.len(),
-    })
+        identifiers: k,
+        combinations: k_range,
+    }))
 }
 
 /// Find k and m in graph (k and m are integers)
@@ -135,14 +139,14 @@ fn find_k_and_m_integers(id: i32, _lang: Language) -> Result<Problem> {
     let answer = format!("$y = {}$", expr.sorted());
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![k],
-        combinations: k_range.len(),
-    })
+        identifiers: k,
+        combinations: k_range,
+    }))
 }
 
 /// Draw the graph of 3x - 1
@@ -196,14 +200,14 @@ fn draw_own_easy_integers(id: i32, lang: Language) -> Result<Problem> {
     let question = format!("{question_text}\n{question_graph}");
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_graph,
         solution,
-        identifiers: vec![k],
-        combinations: k_range.len(),
-    })
+        identifiers: k,
+        combinations: k_range,
+    }))
 }
 
 /// Find k and m in graph (k and m are large numbers), y = 40x + 300
@@ -235,14 +239,14 @@ fn find_k_and_m_large_numbers(id: i32, _lang: Language) -> Result<Problem> {
     let answer = format!("$y = {}$", expr.sorted());
     let solution = format!("$k = {five_k}/5 = {k}$\n{solution_graph}", five_k = k * 5);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
-        identifiers: vec![k],
-        combinations: k_range.len(),
-    })
+        identifiers: k,
+        combinations: k_range,
+    }))
 }
 
 /// Draw the graph of y = x + 1
@@ -281,14 +285,14 @@ fn draw_own_unit_k(id: i32, lang: Language) -> Result<Problem> {
     let question = format!("{question_text}\n{question_graph}");
     let solution = problem_data.get_solution(lang).to_string();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_graph,
         solution,
-        identifiers: vec![k],
-        combinations: k_range.len(),
-    })
+        identifiers: k,
+        combinations: k_range,
+    }))
 }
 
 /// Draw the graph of y = 2
@@ -323,14 +327,14 @@ fn draw_own_horizontal(id: i32, lang: Language) -> Result<Problem> {
     let question = format!("{question_text}\n{question_graph}");
     let solution = problem_data.get_solution(lang).to_string();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_graph,
         solution,
-        identifiers: vec![m],
-        combinations: m_range.len(),
-    })
+        identifiers: m,
+        combinations: m_range,
+    }))
 }
 
 /// Find k and m in graph (k is a fraction)
@@ -366,14 +370,14 @@ fn find_k_m_fraction(id: i32, _lang: Language) -> Result<Problem> {
     let answer = format!("$y = {}$", expr.sorted());
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![k.numerator(), k.denominator()],
-        combinations: k_range.len(),
-    })
+        combinations: k_range,
+    }))
 }
 
 /// Draw the graph of y = 3x/5 + 2
@@ -415,12 +419,12 @@ fn draw_own_fraction(id: i32, lang: Language) -> Result<Problem> {
     let question = format!("{question_text}\n{question_graph}");
     let solution = format!("{}\n{solution_graph}", problem_data.get_solution(lang));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer: answer_graph,
         solution,
         identifiers: vec![num, denom],
-        combinations: k_range.len(),
-    })
+        combinations: k_range,
+    }))
 }

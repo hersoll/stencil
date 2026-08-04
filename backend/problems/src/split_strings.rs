@@ -12,7 +12,7 @@
 
 use anyhow::{Result, ensure};
 use std::fmt::Write;
-use types::problems::Problem;
+use types::problems::{Answer, Problem, Question, Solution};
 
 /// Selects the text variant with number `index` if the problem has splittable strings in it, and
 /// increments the index.
@@ -23,9 +23,9 @@ pub fn select_variant(problem: &mut Problem, index: &mut usize) -> Result<bool> 
     // Variant count will keep track of how many variants there are, and will make sure the split_string
     // function errors if the count differs between strings.
     let mut variant_count = 0;
-    let questions = split_string(&problem.question, &mut variant_count)?;
-    let answers = split_string(&problem.answer, &mut variant_count)?;
-    let solutions = split_string(&problem.solution, &mut variant_count)?;
+    let questions = split_string(problem.question.as_str(), &mut variant_count)?;
+    let answers = split_string(problem.answer.as_str(), &mut variant_count)?;
+    let solutions = split_string(problem.solution.as_str(), &mut variant_count)?;
 
     if variant_count == 0 {
         // No splits in this problem, we are finished
@@ -34,13 +34,13 @@ pub fn select_variant(problem: &mut Problem, index: &mut usize) -> Result<bool> 
 
     // Just because one field might be split doesn't mean they all are.
     if let Some(question) = questions.get(*index) {
-        problem.question = question.clone();
+        problem.question = Question::from(question.clone());
     }
     if let Some(answer) = answers.get(*index) {
-        problem.answer = answer.clone();
+        problem.answer = Answer::from(answer.clone());
     }
     if let Some(solution) = solutions.get(*index) {
-        problem.solution = solution.clone();
+        problem.solution = Solution::from(solution.clone());
     }
 
     // Increment the counter so the next problem has another variant

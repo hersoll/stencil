@@ -6,8 +6,11 @@ use math::{
 };
 use rand::Rng;
 use registry::get_solution;
-use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
-use typst_writer::formatting::Solution;
+use types::{
+    format_strings::HasReplacements,
+    lang::Language,
+    problems::{Problem, ProblemParameters, Solution},
+};
 
 /// Shuffles the order of two numbers. Returns true if switched.
 fn shuffle_order(num_1: &mut Number, num_2: &mut Number) -> bool {
@@ -46,10 +49,10 @@ fn generate_multiplication_problem(
             total_decimals as usize
         ));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${num_1} dot {num_2}$"),
-        answer: answer.as_math(),
+        answer,
         solution: format!("{solution_text} \\ {solution_math}"),
         identifiers: if swapped {
             vec![num_2, num_1]
@@ -57,7 +60,7 @@ fn generate_multiplication_problem(
             vec![num_1, num_2]
         },
         combinations: range_1.len() * range_2.len(),
-    })
+    }))
 }
 
 fn generate_division_problem(
@@ -85,14 +88,14 @@ fn generate_division_problem(
         .wide_space()
         .write(format!("{numerator}/{denom} &= {answer}"));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("$ {numerator}/{denom} $"),
-        answer: answer.as_math(),
+        answer,
         solution: format!("{solution_text} \\ {solution_math}"),
         identifiers: vec![answer, denom],
         combinations: answer_range.len() * denom_range.len(),
-    })
+    }))
 }
 
 /// 0,14 + 0,3
@@ -110,14 +113,14 @@ fn add_decimals_two_decimals_first(id: i32, _lang: Language) -> Result<Problem> 
     let solution = format!(
         "${two_decimal_num} + {one_decimal_num} = {two_decimal_num} + {one_decimal_num:.2} = {sum}$"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![one_decimal_num, two_decimal_num],
         combinations: two_decimal_range.len() * one_decimal_range.len(),
-    })
+    }))
 }
 
 /// 0,3 + 0,14
@@ -135,14 +138,14 @@ fn add_decimals_one_decimal_first(id: i32, _lang: Language) -> Result<Problem> {
     let solution = format!(
         "${one_decimal_num} + {two_decimal_num} = {one_decimal_num:.2} + {two_decimal_num} = {sum}$"
     );
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![one_decimal_num, two_decimal_num],
         combinations: two_decimal_range.len() * one_decimal_range.len(),
-    })
+    }))
 }
 
 /// 0,75 - 0,2
@@ -159,14 +162,14 @@ fn subtract_decimals_two_decimals_first(id: i32, _lang: Language) -> Result<Prob
     let answer = format!("${difference}$");
     let solution =
         format!("${larger_num} - {smaller_num} = {larger_num} - {smaller_num:.2} = {difference}$");
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![larger_num, smaller_num],
         combinations: larger_num_range.len() * smaller_num_range.len(),
-    })
+    }))
 }
 
 /// 0,3 * 4
@@ -314,14 +317,14 @@ fn subtract_decimals_one_decimal_first(id: i32, _lang: Language) -> Result<Probl
     let answer = format!("${difference}$");
     let solution =
         format!("${larger_num} - {smaller_num} = {larger_num:.2} - {smaller_num} = {difference}$");
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
         answer,
         solution,
         identifiers: vec![larger_num, smaller_num],
         combinations: larger_num_range.len() * smaller_num_range.len(),
-    })
+    }))
 }
 
 /// 12 / 30
@@ -348,14 +351,14 @@ fn divide_tens_tens(id: i32, lang: Language) -> Result<Problem> {
         .wide_space()
         .write(format!("{numerator}/{denom} &= {answer}"));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("$ {numerator}/{denom} $"),
-        answer: answer.as_math(),
+        answer,
         solution: format!("{solution_text} \\ {solution_math}"),
         identifiers: vec![answer, denom],
         combinations: denom_range.len() * answer_range.len(),
-    })
+    }))
 }
 
 /// 12 / 300
@@ -379,14 +382,14 @@ fn divide_tens_hundreds(id: i32, lang: Language) -> Result<Problem> {
         .wide_space()
         .write(format!("{numerator}/{denom} &= {answer}"));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("$ {numerator}/{denom} $"),
-        answer: answer.as_math(),
+        answer,
         solution: format!("{solution_text} \\ {solution_math}"),
         identifiers: vec![answer, denom],
         combinations: denom_range.len() * answer_range.len(),
-    })
+    }))
 }
 
 /// 12 / 0,3
@@ -457,14 +460,14 @@ fn divide_one_decimal_two_decimals(id: i32, lang: Language) -> Result<Problem> {
         .wide_space()
         .write(format!("{numerator}/{denom} &= {answer}"));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("$ {numerator}/{denom} $"),
-        answer: answer.as_math(),
+        answer,
         solution: format!("{solution_text} \\ {solution_math}"),
         identifiers: vec![answer, denom],
         combinations: answer_range.len() * denom_range.len(),
-    })
+    }))
 }
 
 /// 0,12 / 0,3
@@ -494,14 +497,14 @@ fn divide_two_decimals_one_decimal(id: i32, lang: Language) -> Result<Problem> {
         .wide_space()
         .write(format!("{numerator}/{denom} &= {answer}"));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("$ {numerator}/{denom} $"),
-        answer: answer.as_math(),
+        answer,
         solution: format!("{solution_text} \\ {solution_math}"),
         identifiers: vec![answer, denom],
         combinations: denom_range.len().pow(2),
-    })
+    }))
 }
 
 /// 0,12 / 0,03
@@ -528,14 +531,14 @@ fn one_decimal_squared(id: i32, lang: Language) -> Result<Problem> {
         .equals(format!("{base} dot {base}"))
         .equals(base.pow(2));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${base}^2$"),
-        answer: base.pow(2).as_math(),
+        answer: base.pow(2),
         solution: format!("{solution_text} \\ {solution}"),
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// 0,04^2
@@ -552,14 +555,14 @@ fn two_decimals_squared(id: i32, lang: Language) -> Result<Problem> {
         .equals(format!("{base} dot {base}"))
         .equals(base * base);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${base}^2$"),
-        answer: (base * base).as_math(),
+        answer: (base * base),
         solution: format!("{solution_text} \\ {solution}"),
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// 0,2^3
@@ -576,12 +579,12 @@ fn one_decimal_cubed(id: i32, lang: Language) -> Result<Problem> {
         .equals(format!("{base} dot {base} dot {base}"))
         .equals(base.pow(3));
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${base}^3$"),
-        answer: base.pow(3).as_math(),
+        answer: base.pow(3),
         solution: format!("{solution_text} \\ {solution}"),
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }

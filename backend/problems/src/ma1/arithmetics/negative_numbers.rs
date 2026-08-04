@@ -1,10 +1,14 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    MathDisplay, Number,
+    Number,
     num_gen::{self, NumberGenerator},
 };
-use types::{format_strings::HasReplacements, lang::Language, problems::Problem};
+use types::{
+    format_strings::HasReplacements,
+    lang::Language,
+    problems::{Problem, ProblemParameters},
+};
 use typst_writer::{
     drawing::NumberLine,
     formatting::{add_number, parentheses, subtract_number},
@@ -31,14 +35,14 @@ fn subtract_larger(id: i32, lang: Language) -> Result<Problem> {
         ("normal", format!("${first} - {second} = {answer}$")),
     ]);
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${first} - {second}$"),
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![first],
-        combinations: first_range.len(),
-    })
+        identifiers: first,
+        combinations: first_range,
+    }))
 }
 
 /// 5 - 78
@@ -60,14 +64,14 @@ fn subtract_larger_with_large_number(id: i32, lang: Language) -> Result<Problem>
         "{solution_str} ${second} - {first} = {reverse} arrow.r.double {first} - {second} = {answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${first} - {second}$"),
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![first],
-        combinations: first_range.len(),
-    })
+        identifiers: first,
+        combinations: first_range,
+    }))
 }
 
 /// 15 - 78
@@ -91,14 +95,14 @@ fn subtract_larger_with_large_numbers(id: i32, lang: Language) -> Result<Problem
         "{solution_str} ${second} - {first} = {reverse} arrow.r.double {first} - {second} = {answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${first} - {second}$"),
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![first],
-        combinations: first_range.len(),
-    })
+        identifiers: first,
+        combinations: first_range,
+    }))
 }
 
 /// -4 + 2
@@ -120,14 +124,14 @@ fn start_negative_addition_below_zero(id: i32, lang: Language) -> Result<Problem
         ("abs_first", first.abs().to_string()),
         ("answer", answer.to_string()),
     ]);
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${first}+{second}$"),
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![first],
-        combinations: first_range.len(),
-    })
+        identifiers: first,
+        combinations: first_range,
+    }))
 }
 
 /// -4 + 6
@@ -149,14 +153,14 @@ fn start_negative_addition_above_zero(id: i32, lang: Language) -> Result<Problem
         ("abs_first", first.abs().to_string()),
         ("answer", answer.to_string()),
     ]);
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${first}+{second}$"),
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![first],
-        combinations: first_range.len(),
-    })
+        identifiers: first,
+        combinations: first_range,
+    }))
 }
 
 /// -4 - 6
@@ -173,14 +177,14 @@ fn start_negative_subtraction(id: i32, lang: Language) -> Result<Problem> {
         .build_string()?;
     let solution_str = registry::get_solution(id, lang)?;
     let solution = format!("{solution_str} {number_line}");
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${first}-{second}$"),
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![first],
-        combinations: first_range.len(),
-    })
+        identifiers: first,
+        combinations: first_range,
+    }))
 }
 
 /// 4 + (-2)
@@ -190,19 +194,19 @@ fn start_negative_subtraction(id: i32, lang: Language) -> Result<Problem> {
 fn add_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 10).and_random();
     let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
-    let ans = first + second;
-    Ok(Problem {
+    let answer = first + second;
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${first} + {second_p}$", second_p = parentheses(&second)),
-        answer: format!("${ans}$"),
+        answer,
         solution: format!(
-            "${first} + {second_p} = {first} - {second_a} = {ans}$",
+            "${first} + {second_p} = {first} - {second_a} = {answer}$",
             second_p = parentheses(&second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
         combinations: first_range.len() * second_range.len(),
-    })
+    }))
 }
 
 /// 4 - (-2)
@@ -212,19 +216,19 @@ fn add_negative(id: i32, _lang: Language) -> Result<Problem> {
 fn subtract_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(1, 10).and_random();
     let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
-    let ans = first - second;
-    Ok(Problem {
+    let answer = first - second;
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!("${first} - {second_p}$", second_p = parentheses(&second)),
-        answer: format!("${ans}$"),
+        answer,
         solution: format!(
-            "${first} - {second_p} = {first} + {second_a} = {ans}$",
+            "${first} - {second_p} = {first} + {second_a} = {answer}$",
             second_p = parentheses(&second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
         combinations: first_range.len() * second_range.len(),
-    })
+    }))
 }
 
 /// 4 * (-2)
@@ -235,17 +239,17 @@ fn positive_times_negative(id: i32, lang: Language) -> Result<Problem> {
     let (first_val, first_range) = num_gen::integer().range(1, 10).and_random();
     let (second_val, second_range) = num_gen::integer().range(-10, -1).and_random();
     let question = format!("${first_val} dot ({second_val})$");
-    let ans = first_val * second_val;
+    let answer = first_val * second_val;
     let solution = registry::get_solution(id, lang)?.to_string();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: format!("${ans}$"),
+        answer,
         solution,
         identifiers: vec![first_val, second_val],
         combinations: first_range.len() * second_range.len(),
-    })
+    }))
 }
 
 /// (-4) * 2
@@ -255,18 +259,16 @@ fn positive_times_negative(id: i32, lang: Language) -> Result<Problem> {
 fn negative_times_positive(id: i32, lang: Language) -> Result<Problem> {
     let (first_val, first_range) = num_gen::integer().range(-10, -1).and_random();
     let (second_val, second_range) = num_gen::integer().range(1, 10).and_random();
-    let question = format!("$({first_val}) dot {second_val}$");
-    let ans = first_val * second_val;
     let solution = registry::get_solution(id, lang)?.to_string();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
-        question,
-        answer: format!("${ans}$"),
+        question: format!("$({first_val}) dot {second_val}$"),
+        answer: first_val * second_val,
         solution,
         identifiers: vec![first_val, second_val],
         combinations: first_range.len() * second_range.len(),
-    })
+    }))
 }
 
 /// (-4) * (-2)
@@ -276,18 +278,16 @@ fn negative_times_positive(id: i32, lang: Language) -> Result<Problem> {
 fn negative_times_negative(id: i32, lang: Language) -> Result<Problem> {
     let (first_val, first_range) = num_gen::integer().range(-10, -1).and_random();
     let (second_val, second_range) = num_gen::integer().range(-10, -1).and_random();
-    let question = format!("$({first_val}) dot ({second_val})$");
-    let ans = first_val * second_val;
     let solution = registry::get_solution(id, lang)?.to_string();
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
-        question,
-        answer: format!("${ans}$"),
+        question: format!("$({first_val}) dot ({second_val})$"),
+        answer: first_val * second_val,
         solution,
         identifiers: vec![first_val, second_val],
         combinations: first_range.len() * second_range.len(),
-    })
+    }))
 }
 
 /// (-4) + (-2)
@@ -297,24 +297,24 @@ fn negative_times_negative(id: i32, lang: Language) -> Result<Problem> {
 fn negative_plus_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-10, -1).and_random();
     let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
-    let ans = first + second;
-    Ok(Problem {
+    let answer = first + second;
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!(
             "${first_p} + {second_p}$",
             first_p = parentheses(&first),
             second_p = parentheses(&second)
         ),
-        answer: format!("${ans}$"),
+        answer,
         solution: format!(
-            "${first_p} + {second_p} = {first} - {second_a} = {ans}$",
+            "${first_p} + {second_p} = {first} - {second_a} = {answer}$",
             first_p = parentheses(&first),
             second_p = parentheses(&second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
         combinations: first_range.len() * second_range.len(),
-    })
+    }))
 }
 
 /// (-4) - (-2)
@@ -324,24 +324,24 @@ fn negative_plus_negative(id: i32, _lang: Language) -> Result<Problem> {
 fn negative_minus_negative(id: i32, _lang: Language) -> Result<Problem> {
     let (first, first_range) = num_gen::integer().range(-10, -1).and_random();
     let (second, second_range) = num_gen::integer().range(-10, -1).and_random();
-    let ans = first - second;
-    Ok(Problem {
+    let answer = first - second;
+    Ok(Problem::from(ProblemParameters {
         id,
         question: format!(
             "${first_p} - {second_p}$",
             first_p = parentheses(&first),
             second_p = parentheses(&second)
         ),
-        answer: format!("${ans}$"),
+        answer,
         solution: format!(
-            "${first_p} - {second_p} = {first} + {second_a} = {ans}$",
+            "${first_p} - {second_p} = {first} + {second_a} = {answer}$",
             first_p = parentheses(&first),
             second_p = parentheses(&second),
             second_a = second.abs()
         ),
         identifiers: vec![first, second],
         combinations: first_range.len() * second_range.len(),
-    })
+    }))
 }
 
 /// (-3)^2
@@ -354,14 +354,14 @@ fn negative_number_squared(id: i32, _lang: Language) -> Result<Problem> {
     let answer = base.pow(2);
     let solution = format!("$({base})^2 = ({base}) dot ({base}) = {answer}$");
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// (-2)^3
@@ -378,14 +378,14 @@ fn negative_number_cubed(id: i32, _lang: Language) -> Result<Problem> {
         &= colored({square}) dot ({base}) = {answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// -2^2
@@ -404,14 +404,14 @@ fn number_squared_then_negative(id: i32, lang: Language) -> Result<Problem> {
         $-{base}^2 = -({base}^2) = -({square}) = {answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![base],
-        combinations: base_range.len(),
-    })
+        identifiers: base,
+        combinations: base_range,
+    }))
 }
 
 /// (-1)^23
@@ -422,7 +422,7 @@ fn single_high_exponent(id: i32, lang: Language) -> Result<Problem> {
     let base = Number::Integer(-1);
     let (exp, exp_range) = num_gen::integer().range(16, 99).and_random();
     let question = format!("$({base})^{exp}$");
-    let answer = if exp % 2 == 0 { 1 } else { -1 };
+    let answer = Number::Integer(if exp % 2 == 0 { 1 } else { -1 });
     let solution_text = registry::get_solution(id, lang)?;
     let solution = format!(
         "{solution_text} \\
@@ -430,14 +430,14 @@ fn single_high_exponent(id: i32, lang: Language) -> Result<Problem> {
         $({base})^{exp} = {answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![exp],
-        combinations: exp_range.len(),
-    })
+        identifiers: exp,
+        combinations: exp_range,
+    }))
 }
 
 /// (-1)^23 - 1^20
@@ -456,12 +456,12 @@ fn double_high_exponent(id: i32, _lang: Language) -> Result<Problem> {
         (-1)^{first_exp} - 1^{second_exp} = colored({first_power}) - colored(1) = {answer}$"
     );
 
-    Ok(Problem {
+    Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer: answer.as_math(),
+        answer,
         solution,
-        identifiers: vec![first_exp],
-        combinations: exp_range.len(),
-    })
+        identifiers: first_exp,
+        combinations: exp_range,
+    }))
 }
