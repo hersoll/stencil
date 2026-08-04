@@ -50,7 +50,7 @@ impl Default for Axes {
             y_max: None,
             x_tick: None,
             y_tick: None,
-            has_minor_tick: false,
+            has_minor_tick: true,
             x_minor_tick: None,
             y_minor_tick: None,
             grid: GridType::Both,
@@ -268,50 +268,6 @@ impl Axes {
         };
     }
 
-    // NOTE: Currently not in use, decided that the axes shouldn't be changed if explicitly set.
-    // Make sure the graph looks OK when you create a problem
-
-    // /// Makes the ratio between the x-axis and y-axis closer to 1 (including ticks)
-    // /// to make the graph look good
-    // fn auto_fit_range(&mut self) {
-    //     let max_ratio = Number::Integer(2);
-    //
-    //     // Distance between grid lines
-    //     // x_tick and y_tick will always be Some() here
-    //     let (x_dist, y_dist) = match self.grid {
-    //         GridType::Both => (
-    //             self.x_minor_tick.unwrap_or(self.x_tick.unwrap()),
-    //             self.y_minor_tick.unwrap_or(self.y_tick.unwrap()),
-    //         ),
-    //         _ => (self.x_tick.unwrap(), self.y_tick.unwrap()),
-    //     };
-    //
-    //     // Alternate between increasing to the right and to the left
-    //     let mut go_right = true;
-    //     while ((self.y_max.unwrap() - &self.y_min.unwrap()) / &y_dist)
-    //         / &((self.x_max - &self.x_min) / &x_dist)
-    //         >= max_ratio
-    //     {
-    //         match go_right {
-    //             true => self.x_max = self.x_max + 1,
-    //             false => self.x_min = self.x_min - 1,
-    //         }
-    //         go_right = !go_right;
-    //     }
-    //
-    //     let mut go_up = true;
-    //     while ((self.x_max - &self.x_min) / &x_dist)
-    //         / &((self.y_max.unwrap() - &self.y_min.unwrap()) / &y_dist)
-    //         >= max_ratio
-    //     {
-    //         match go_up {
-    //             true => self.y_max = Some(self.y_max.unwrap() + 1),
-    //             false => self.y_min = Some(self.y_min.unwrap() - 1),
-    //         }
-    //         go_up = !go_up;
-    //     }
-    // }
-
     // Don't change ticks if explicitly set
     fn set_ticks(&mut self) {
         if let (None, None) = (self.x_tick, self.y_tick) {
@@ -333,17 +289,24 @@ impl Axes {
             One,
             Five,
         }
+        const MIN_MAJOR_TICKS: i32 = 2;
+        const MAX_MAJOR_TICKS: i32 = 12;
+        const MAX_MINOR_TICKS: i32 = 32;
 
         let mut x_tick = Number::Integer(1);
         let mut y_tick = Number::Integer(1);
 
+        // Start by adjusting major ticks - we can only fit so many numbered ticks
         for (tick, min, max) in [
             (&mut x_tick, self.x_min, self.x_max),
             (&mut y_tick, self.y_min.unwrap(), self.y_max.unwrap()),
         ] {
             let mut starting_number = StartingNumber::One;
-            // Distance of 11 = 12 ticks
-            while (max - min) / *tick > Number::Integer(11) {
+            // Examples:
+            // max = 10, min = -5, tick = 5
+            // (max - min) / tick = 3, but the actual count is 4 (-5, 0, 5, 10)
+            // That's why we compare with MAX_MAJOR_TICKS - 1
+            while (max - min) / *tick > MAX_MAJOR_TICKS - 1 {
                 match starting_number {
                     StartingNumber::One => {
                         *tick *= 5;
@@ -356,8 +319,7 @@ impl Axes {
                 }
             }
 
-            // Distance of 1 = 2 ticks
-            while (max - min) / *tick < Number::Integer(1) {
+            while (max - min) / *tick < MIN_MAJOR_TICKS - 1 {
                 match starting_number {
                     StartingNumber::One => {
                         *tick /= 2;
@@ -373,13 +335,19 @@ impl Axes {
 
         if self.has_minor_tick {
             if x_tick != Number::Integer(1) {
-                self.x_minor_tick = Some(x_tick / 5);
-                self.grid = GridType::Both;
+                let minor_tick = x_tick / 5;
+                if (self.x_max - self.x_min) / minor_tick < MAX_MINOR_TICKS - 1 {
+                    self.x_minor_tick = Some(minor_tick);
+                    self.grid = GridType::Both;
+                }
             }
 
             if y_tick != Number::Integer(1) {
-                self.y_minor_tick = Some(y_tick / 5);
-                self.grid = GridType::Both;
+                let minor_tick = y_tick / 5;
+                if (self.y_max.unwrap() - self.y_min.unwrap()) / minor_tick < MAX_MINOR_TICKS - 1 {
+                    self.y_minor_tick = Some(minor_tick);
+                    self.grid = GridType::Both;
+                }
             }
         }
 
