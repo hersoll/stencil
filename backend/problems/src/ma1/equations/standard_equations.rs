@@ -24,9 +24,9 @@ fn only_addition_or_subtraction(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
 
     let solution = Solution::with_steps()
-        .add_aligned(format!("{unknown}{constant:+}"), answer + constant) // x + 3 = 12
-        .with_step(subtract_number(constant))
-        .add_aligned(unknown, answer)
+        .aligned(format!("{unknown}{constant:+}"), answer + constant) // x + 3 = 12
+        .step(subtract_number(constant))
+        .aligned(unknown, answer)
         .to_string(); // x = 9
 
     Ok(Problem::from(ProblemParameters {
@@ -49,9 +49,9 @@ fn only_multiplication(id: i32, _lang: Language) -> Result<Problem> {
     let unknown = symbols::get_unknown()?;
 
     let solution = Solution::with_steps()
-        .add_aligned(format!("{coefficient}{unknown}"), coefficient * answer) // 3x = 12
-        .with_step(divide_number(coefficient))
-        .add_aligned(unknown, answer) // x = 4
+        .aligned(format!("{coefficient}{unknown}"), coefficient * answer) // 3x = 12
+        .step(divide_number(coefficient))
+        .aligned(unknown, answer) // x = 4
         .to_string();
 
     Ok(Problem::from(ProblemParameters {
@@ -79,14 +79,14 @@ fn positive_up_to_5(id: i32, _lang: Language) -> Result<Problem> {
     let term = Term::from_num_and_vars(coefficient, unknown);
 
     let solution = Solution::with_steps()
-        .add_aligned(
+        .aligned(
             format!("{term}{constant:+}"),
             coefficient * answer + constant,
         )
-        .with_step(subtract_number(constant))
-        .add_aligned(&term, coefficient * answer)
-        .with_step(divide_number(coefficient))
-        .add_aligned(unknown, answer)
+        .step(subtract_number(constant))
+        .aligned(&term, coefficient * answer)
+        .step(divide_number(coefficient))
+        .aligned(unknown, answer)
         .to_string();
 
     Ok(Problem::from(ProblemParameters {
@@ -118,14 +118,14 @@ fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
     let term = Term::from_num_and_vars(coefficient, unknown);
 
     let solution = Solution::with_steps()
-        .add_aligned(
+        .aligned(
             format!("{term}{constant:+}"),
             coefficient * answer + constant,
         )
-        .with_step(subtract_number(constant))
-        .add_aligned(&term, coefficient * answer)
-        .with_step(divide_number(coefficient))
-        .add_aligned(unknown, answer)
+        .step(subtract_number(constant))
+        .aligned(&term, coefficient * answer)
+        .step(divide_number(coefficient))
+        .aligned(unknown, answer)
         .to_string();
 
     Ok(Problem::from(ProblemParameters {

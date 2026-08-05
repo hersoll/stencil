@@ -9,17 +9,17 @@ pub fn integer_answer(coefficient: i32, unknown: char, constant: i32, final_answ
     }
 
     let mut sol = Solution::with_steps();
-    sol.add_aligned(
+    sol.aligned(
         format!("{coefficient}{unknown}{constant:+}"),
         coefficient * final_answer + constant,
     )
-    .with_step(subtract_number(constant))
-    .add_aligned(
+    .step(subtract_number(constant))
+    .aligned(
         format!("{coefficient}{unknown}"),
         coefficient * final_answer,
     )
-    .with_step(divide_number(coefficient))
-    .add_aligned(unknown, final_answer);
+    .step(divide_number(coefficient))
+    .aligned(unknown, final_answer);
     sol.to_string()
 }
 
@@ -62,13 +62,13 @@ pub fn positive_rational_answer(
     };
 
     let mut sol = Solution::with_steps();
-    sol.add_aligned(
+    sol.aligned(
         format!("{coefficient}{unknown}{constant:+}"),
         numerator + constant,
     )
-    .with_step(subtract_number(constant))
-    .add_aligned(format!("{coefficient}{unknown}"), numerator)
-    .with_step(divide_number(coefficient))
-    .add_aligned(unknown, answer_with_simplification);
+    .step(subtract_number(constant))
+    .aligned(format!("{coefficient}{unknown}"), numerator)
+    .step(divide_number(coefficient))
+    .aligned(unknown, answer_with_simplification);
     sol.to_string()
 }

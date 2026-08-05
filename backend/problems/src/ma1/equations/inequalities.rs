@@ -26,9 +26,9 @@ fn addition_subtraction_only(id: i32, _lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned_inequality(var + constant, sign, rhs)
-        .with_step(formatting::subtract_number(constant))
-        .add_aligned_inequality(var, sign, answer);
+        .aligned_inequality(var + constant, sign, rhs)
+        .step(formatting::subtract_number(constant))
+        .aligned_inequality(var, sign, answer);
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -54,9 +54,9 @@ fn multiplication_only(id: i32, _lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned_inequality(coef * var, sign, rhs)
-        .with_step(formatting::divide_number(coef))
-        .add_aligned_inequality(var, sign, answer);
+        .aligned_inequality(coef * var, sign, rhs)
+        .step(formatting::divide_number(coef))
+        .aligned_inequality(var, sign, answer);
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -83,11 +83,11 @@ fn standard(id: i32, _lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned_inequality(&lhs, sign, rhs)
-        .with_step(formatting::subtract_number(constant))
-        .add_aligned_inequality(coef * var, sign, rhs - constant)
-        .with_step(formatting::divide_number(coef))
-        .add_aligned_inequality(var, sign, answer);
+        .aligned_inequality(&lhs, sign, rhs)
+        .step(formatting::subtract_number(constant))
+        .aligned_inequality(coef * var, sign, rhs - constant)
+        .step(formatting::divide_number(coef))
+        .aligned_inequality(var, sign, answer);
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -115,9 +115,9 @@ fn negative_division(id: i32, lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned_inequality(&lhs, sign, rhs)
-        .with_step(formatting::divide_number(coef))
-        .add_aligned_inequality(var, swapped_sign, answer);
+        .aligned_inequality(&lhs, sign, rhs)
+        .step(formatting::divide_number(coef))
+        .aligned_inequality(var, swapped_sign, answer);
 
     let solution = get_solution(id, lang)?.replace_one("solution", solution);
 
@@ -146,9 +146,9 @@ fn positive_division(id: i32, lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned_inequality(&lhs, sign, rhs)
-        .with_step(formatting::divide_number(coef))
-        .add_aligned_inequality(var, sign, answer);
+        .aligned_inequality(&lhs, sign, rhs)
+        .step(formatting::divide_number(coef))
+        .aligned_inequality(var, sign, answer);
 
     let solution = get_solution(id, lang)?.replace_one("solution", solution);
 
@@ -179,11 +179,11 @@ fn constant_negative_coef(id: i32, _lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned_inequality(&lhs, sign, rhs)
-        .with_step(formatting::subtract_number(constant))
-        .add_aligned_inequality(coef * var, sign, rhs - constant)
-        .with_step(formatting::divide_number(coef))
-        .add_aligned_inequality(var, swapped_sign, answer);
+        .aligned_inequality(&lhs, sign, rhs)
+        .step(formatting::subtract_number(constant))
+        .aligned_inequality(coef * var, sign, rhs - constant)
+        .step(formatting::divide_number(coef))
+        .aligned_inequality(var, swapped_sign, answer);
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -218,13 +218,13 @@ fn x_on_both_sides(id: i32, lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned_inequality(&lhs, sign, &rhs)
-        .with_step(formatting::subtract_term(&(coef_1 * var)))
-        .add_aligned_inequality(const_1, sign, (total_coef * var).and(&const_2).simplify())
-        .with_step(formatting::subtract_number(const_2))
-        .add_aligned_inequality(total_const, sign, total_coef * var)
-        .with_step(formatting::divide_number(total_coef))
-        .add_aligned_inequality(answer, sign, var);
+        .aligned_inequality(&lhs, sign, &rhs)
+        .step(formatting::subtract_term(&(coef_1 * var)))
+        .aligned_inequality(const_1, sign, (total_coef * var).and(&const_2).simplify())
+        .step(formatting::subtract_number(const_2))
+        .aligned_inequality(total_const, sign, total_coef * var)
+        .step(formatting::divide_number(total_coef))
+        .aligned_inequality(answer, sign, var);
 
     let solution = get_solution(id, lang)?
         .replace_multiple(&[("solution", solution.to_string()), ("var", var.as_math())]);
@@ -256,11 +256,11 @@ fn largest_integer(id: i32, lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned_inequality(&lhs, sign, rhs)
-        .with_step(formatting::subtract_number(constant))
-        .add_aligned_inequality(coef * var, sign, rhs - constant)
-        .with_step(formatting::divide_number(coef))
-        .add_aligned_inequality(var, swapped_sign, answer);
+        .aligned_inequality(&lhs, sign, rhs)
+        .step(formatting::subtract_number(constant))
+        .aligned_inequality(coef * var, sign, rhs - constant)
+        .step(formatting::divide_number(coef))
+        .aligned_inequality(var, swapped_sign, answer);
 
     let question = format!("${lhs} {sign} {rhs}$");
     let question = get_question(id, lang)?.replace_one("eq", question);
@@ -298,11 +298,11 @@ fn smallest_integer(id: i32, lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned_inequality(&lhs, sign, rhs)
-        .with_step(formatting::subtract_number(constant))
-        .add_aligned_inequality(coef * var, sign, rhs - constant)
-        .with_step(formatting::divide_number(coef))
-        .add_aligned_inequality(var, swapped_sign, answer);
+        .aligned_inequality(&lhs, sign, rhs)
+        .step(formatting::subtract_number(constant))
+        .aligned_inequality(coef * var, sign, rhs - constant)
+        .step(formatting::divide_number(coef))
+        .aligned_inequality(var, swapped_sign, answer);
 
     let question = format!("${lhs} {sign} {rhs}$");
     let question = get_question(id, lang)?.replace_one("eq", question);
@@ -346,18 +346,18 @@ fn double_inequality(id: i32, lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_line(format!(
+        .line(format!(
             "{lower_limit} {sign} {expression} {sign} {higher_limit}"
         ))
-        .with_step(formatting::subtract_number(constant))
-        .add_line(format!(
+        .step(formatting::subtract_number(constant))
+        .line(format!(
             "{} {sign} {} {sign} {}",
             lower_limit - constant,
             coef * var,
             higher_limit - constant
         ))
-        .with_step(formatting::divide_number(coef))
-        .add_line(format!(
+        .step(formatting::divide_number(coef))
+        .line(format!(
             "{lower_answer} {sign} {var} {sign} {higher_answer}"
         ));
     let solution = get_solution(id, lang)?.replace_multiple(&[
@@ -410,18 +410,18 @@ fn double_split_inequality(id: i32, lang: Language) -> Result<Problem> {
 
     let mut solution_1 = Solution::with_steps();
     solution_1
-        .add_aligned_inequality(&expr_2, sign, middle_number)
-        .with_step(formatting::subtract_number(const_2))
-        .add_aligned_inequality(coef_2 * var, sign, middle_number - const_2)
-        .with_step(formatting::divide_number(coef_2))
-        .add_aligned_inequality(var, sign, higher_answer);
+        .aligned_inequality(&expr_2, sign, middle_number)
+        .step(formatting::subtract_number(const_2))
+        .aligned_inequality(coef_2 * var, sign, middle_number - const_2)
+        .step(formatting::divide_number(coef_2))
+        .aligned_inequality(var, sign, higher_answer);
     let mut solution_2 = Solution::with_steps();
     solution_2
-        .add_aligned_inequality(middle_number, sign, &expr_1)
-        .with_step(formatting::subtract_number(const_1))
-        .add_aligned_inequality(middle_number - const_1, sign, coef_1 * var)
-        .with_step(formatting::divide_number(coef_1))
-        .add_aligned_inequality(lower_answer, sign, var);
+        .aligned_inequality(middle_number, sign, &expr_1)
+        .step(formatting::subtract_number(const_1))
+        .aligned_inequality(middle_number - const_1, sign, coef_1 * var)
+        .step(formatting::divide_number(coef_1))
+        .aligned_inequality(lower_answer, sign, var);
 
     let solution = get_solution(id, lang)?.replace_multiple(&[
         ("eq_1", format!("${expr_2} {sign} {middle_number}$")),

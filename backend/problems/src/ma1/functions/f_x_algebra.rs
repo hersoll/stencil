@@ -34,14 +34,12 @@ fn without_notation_y(id: i32, lang: Language) -> Result<Problem> {
 
     expression = expression.aligned();
     let mut solution = Solution::with_steps();
-    solution
-        .add_line(&expression)
-        .with_step(format!("x = {x_value}"));
+    solution.line(&expression).step(format!("x = {x_value}"));
     let replacement = [(symbols::X, &x_value)];
     solution
-        .add_line(expression.print_replacements(&replacement))
-        .add_line(expression.print_evaluation_by_parts(&replacement))
-        .add_aligned("y", y_value);
+        .line(expression.print_replacements(&replacement))
+        .line(expression.print_evaluation_by_parts(&replacement))
+        .aligned("y", y_value);
 
     Ok(Problem::from(ProblemParameters {
         id,

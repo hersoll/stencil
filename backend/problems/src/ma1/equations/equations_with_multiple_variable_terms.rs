@@ -35,18 +35,18 @@ fn two_positive_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let answer_str = format!("${unknown} = {answer}$");
 
     let mut sol = Solution::with_steps();
-    sol.add_aligned(lhs_pol, rhs_pol) // 4x + 1 = 2x + 3
-        .with_step(subtract_term(&rhs_term));
+    sol.aligned(lhs_pol, rhs_pol) // 4x + 1 = 2x + 3
+        .step(subtract_term(&rhs_term));
 
     let subtracted_term = lhs_term - rhs_term;
 
-    sol.add_aligned(format!("{subtracted_term}{lhs_const:+}"), rhs_const) // 2x + 1 = 3
-        .with_step(subtract_number(lhs_const));
+    sol.aligned(format!("{subtracted_term}{lhs_const:+}"), rhs_const) // 2x + 1 = 3
+        .step(subtract_number(lhs_const));
     if subtracted_term.coefficient.value() > 1.0 {
-        sol.add_aligned(&subtracted_term, rhs_const - lhs_const) // 2x = 2
-            .with_step(divide_number(subtracted_term.coefficient));
+        sol.aligned(&subtracted_term, rhs_const - lhs_const) // 2x = 2
+            .step(divide_number(subtracted_term.coefficient));
     }
-    sol.add_aligned(unknown, answer);
+    sol.aligned(unknown, answer);
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -82,18 +82,18 @@ fn two_positive_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let answer_str = format!("${unknown} = {answer}$");
 
     let mut sol = Solution::with_steps();
-    sol.add_aligned(lhs_pol, rhs_pol) // 2x + 1 = 4x + 3
-        .with_step(subtract_term(&lhs_term));
+    sol.aligned(lhs_pol, rhs_pol) // 2x + 1 = 4x + 3
+        .step(subtract_term(&lhs_term));
 
     let subtracted_term = rhs_term - lhs_term;
 
-    sol.add_aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 1 = 2x + 3
-        .with_step(subtract_number(rhs_const));
+    sol.aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 1 = 2x + 3
+        .step(subtract_number(rhs_const));
     if subtracted_term.coefficient.value() > 1.0 {
-        sol.add_aligned(lhs_const - rhs_const, &subtracted_term) // -2 = 2x
-            .with_step(divide_number(subtracted_term.coefficient));
+        sol.aligned(lhs_const - rhs_const, &subtracted_term) // -2 = 2x
+            .step(divide_number(subtracted_term.coefficient));
     }
-    sol.add_aligned(answer, unknown); // -1 = x
+    sol.aligned(answer, unknown); // -1 = x
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -132,13 +132,13 @@ fn one_negative_coef_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 
     let subtracted_term = lhs_term - rhs_term.clone();
 
-    sol.add_aligned(lhs_pol, rhs_pol) // 4x + 1 = 4 - 2x
-        .with_step(subtract_term(&rhs_term))
-        .add_aligned(format!("{subtracted_term}{lhs_const:+}"), rhs_const) // 6x + 1 = 4
-        .with_step(subtract_number(lhs_const))
-        .add_aligned(&subtracted_term, rhs_const - lhs_const) // 6x = 3
-        .with_step(divide_number(subtracted_term.coefficient))
-        .add_aligned(unknown, answer); // x = 0.5
+    sol.aligned(lhs_pol, rhs_pol) // 4x + 1 = 4 - 2x
+        .step(subtract_term(&rhs_term))
+        .aligned(format!("{subtracted_term}{lhs_const:+}"), rhs_const) // 6x + 1 = 4
+        .step(subtract_number(lhs_const))
+        .aligned(&subtracted_term, rhs_const - lhs_const) // 6x = 3
+        .step(divide_number(subtracted_term.coefficient))
+        .aligned(unknown, answer); // x = 0.5
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -175,13 +175,13 @@ fn one_negative_coef_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 
     let subtracted_term = rhs_term - lhs_term.clone();
     let mut sol = Solution::with_steps();
-    sol.add_aligned(lhs_pol, rhs_pol) // 4 - 2x = 1 + 4x
-        .with_step(subtract_term(&lhs_term))
-        .add_aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 4 = 6x + 1
-        .with_step(subtract_number(rhs_const))
-        .add_aligned(lhs_const - rhs_const, &subtracted_term) // 3 = 6x
-        .with_step(divide_number(subtracted_term.coefficient))
-        .add_aligned(answer, unknown); // 0.5 = x
+    sol.aligned(lhs_pol, rhs_pol) // 4 - 2x = 1 + 4x
+        .step(subtract_term(&lhs_term))
+        .aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 4 = 6x + 1
+        .step(subtract_number(rhs_const))
+        .aligned(lhs_const - rhs_const, &subtracted_term) // 3 = 6x
+        .step(divide_number(subtracted_term.coefficient))
+        .aligned(answer, unknown); // 0.5 = x
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -218,15 +218,15 @@ fn two_negative_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 
     let mut sol = Solution::with_steps();
     let subtracted_term = rhs_term - lhs_term.clone();
-    sol.add_aligned(lhs_pol, rhs_pol) // 4 - 4x = 8 - 2x
-        .with_step(subtract_term(&lhs_term))
-        .add_aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 4 = 2x + 8
-        .with_step(subtract_number(rhs_const));
+    sol.aligned(lhs_pol, rhs_pol) // 4 - 4x = 8 - 2x
+        .step(subtract_term(&lhs_term))
+        .aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 4 = 2x + 8
+        .step(subtract_number(rhs_const));
     if subtracted_term.coefficient.value() > 1.0 {
-        sol.add_aligned(lhs_const - rhs_const, &subtracted_term) // -4 = 2x
-            .with_step(divide_number(subtracted_term.coefficient));
+        sol.aligned(lhs_const - rhs_const, &subtracted_term) // -4 = 2x
+            .step(divide_number(subtracted_term.coefficient));
     }
-    sol.add_aligned(answer, unknown); // -2 = x
+    sol.aligned(answer, unknown); // -2 = x
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -264,15 +264,15 @@ fn two_negative_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
     let total_var = lhs_term - rhs_term.clone();
     let total_coef = lhs_coef - rhs_coef;
     let mut sol = Solution::with_steps();
-    sol.add_aligned(&lhs_pol, &rhs_pol) // 4 - 2x = 8 - 4x
-        .with_step(subtract_term(&rhs_term))
-        .add_aligned(format!("{total_var}{lhs_const:+}"), rhs_const) // 4 + 2x = 8
-        .with_step(subtract_number(lhs_const));
+    sol.aligned(&lhs_pol, &rhs_pol) // 4 - 2x = 8 - 4x
+        .step(subtract_term(&rhs_term))
+        .aligned(format!("{total_var}{lhs_const:+}"), rhs_const) // 4 + 2x = 8
+        .step(subtract_number(lhs_const));
     if total_coef > 1 {
-        sol.add_aligned(total_var, rhs_const - lhs_const) // 2x = 4
-            .with_step(divide_number(total_coef));
+        sol.aligned(total_var, rhs_const - lhs_const) // 2x = 4
+            .step(divide_number(total_coef));
     }
-    sol.add_aligned(unknown, answer); // x = 2
+    sol.aligned(unknown, answer); // x = 2
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -304,18 +304,18 @@ fn positive_coefs_lhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned(&lhs_term, rhs_pol) // 4x = 6x - 6
-        .with_step(subtract_term(&lhs_term));
+        .aligned(&lhs_term, rhs_pol) // 4x = 6x - 6
+        .step(subtract_term(&lhs_term));
     let total_var = rhs_term - lhs_term;
     solution
-        .add_aligned(0, format!("{total_var}{rhs_const:+}")) // 0 = 2x - 6
-        .with_step(subtract_number(rhs_const));
+        .aligned(0, format!("{total_var}{rhs_const:+}")) // 0 = 2x - 6
+        .step(subtract_number(rhs_const));
     if total_var.coefficient > Number::Integer(1) {
         solution
-            .add_aligned(-rhs_const, total_var) // 6 = 2x
-            .with_step(divide_number(rhs_coef - lhs_coef));
+            .aligned(-rhs_const, total_var) // 6 = 2x
+            .step(divide_number(rhs_coef - lhs_coef));
     }
-    solution.add_aligned(answer, unknown); // 3 = x
+    solution.aligned(answer, unknown); // 3 = x
 
     Ok(Problem::from(ProblemParameters {
         id,
@@ -347,18 +347,18 @@ fn positive_coefs_rhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned(&lhs_pol, &rhs_term) // 6x - 6 = 4x
-        .with_step(subtract_term(&rhs_term));
+        .aligned(&lhs_pol, &rhs_term) // 6x - 6 = 4x
+        .step(subtract_term(&rhs_term));
     let total_var = lhs_term - rhs_term;
     solution
-        .add_aligned(format!("{total_var}{lhs_const:+}"), 0) // 2x - 6 = 0
-        .with_step(subtract_number(lhs_const));
+        .aligned(format!("{total_var}{lhs_const:+}"), 0) // 2x - 6 = 0
+        .step(subtract_number(lhs_const));
     if total_var.coefficient > Number::Integer(1) {
         solution
-            .add_aligned(total_var, -lhs_const) // 2x = 6
-            .with_step(divide_number(lhs_coef - rhs_coef));
+            .aligned(total_var, -lhs_const) // 2x = 6
+            .step(divide_number(lhs_coef - rhs_coef));
     }
-    solution.add_aligned(unknown, answer); // x = 3
+    solution.aligned(unknown, answer); // x = 3
 
     Ok(Problem::from(ProblemParameters {
         id,

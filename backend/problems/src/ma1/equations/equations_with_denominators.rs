@@ -22,9 +22,9 @@ fn one_denom_one_variable(id: i32, _lang: Language) -> Result<Problem> {
     let answer = format!("${unknown} = {final_answer}$");
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned(format!("{unknown}/{denominator}"), rhs)
-        .with_step(multiply_number(denominator))
-        .add_aligned(unknown, final_answer);
+        .aligned(format!("{unknown}/{denominator}"), rhs)
+        .step(multiply_number(denominator))
+        .aligned(unknown, final_answer);
 
     Ok(Problem::from(ProblemParameters {
         question,
@@ -53,15 +53,15 @@ fn one_denom_and_unit_variable_integers_positive(id: i32, _lang: Language) -> Re
     let answer = format!("${unknown} = {final_answer}$");
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned(format!("{unknown}/{denominator} + {unknown}"), rhs)
-        .with_step(multiply_number(denominator))
-        .add_aligned(
+        .aligned(format!("{unknown}/{denominator} + {unknown}"), rhs)
+        .step(multiply_number(denominator))
+        .aligned(
             format!("{unknown} + {denominator}{unknown}"),
             rhs * denominator,
         )
-        .add_aligned(format!("{}{unknown}", denominator + 1), rhs * denominator)
-        .with_step(divide_number(denominator + 1))
-        .add_aligned(unknown, final_answer);
+        .aligned(format!("{}{unknown}", denominator + 1), rhs * denominator)
+        .step(divide_number(denominator + 1))
+        .aligned(unknown, final_answer);
 
     Ok(Problem::from(ProblemParameters {
         question,
@@ -89,15 +89,15 @@ fn unit_variable_and_one_denom_integers_positive(id: i32, _lang: Language) -> Re
     let answer = format!("${unknown} = {final_answer}$");
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned(format!("{unknown} - {unknown}/{denominator}"), rhs)
-        .with_step(multiply_number(denominator))
-        .add_aligned(
+        .aligned(format!("{unknown} - {unknown}/{denominator}"), rhs)
+        .step(multiply_number(denominator))
+        .aligned(
             format!("{denominator}{unknown} - {unknown}"),
             rhs * denominator,
         )
-        .add_aligned(format!("{}{unknown}", denominator - 1), rhs * denominator)
-        .with_step(divide_number(denominator - 1))
-        .add_aligned(unknown, final_answer);
+        .aligned(format!("{}{unknown}", denominator - 1), rhs * denominator)
+        .step(divide_number(denominator - 1))
+        .aligned(unknown, final_answer);
 
     Ok(Problem::from(ProblemParameters {
         question,
@@ -130,15 +130,15 @@ fn unit_variable_and_one_denom_integers_with_negatives(
 
     let mut solution = Solution::with_steps();
     solution
-        .add_aligned(format!("{unknown}/{denominator} - {unknown}"), rhs)
-        .with_step(formatting::multiply_number(denominator))
-        .add_aligned(
+        .aligned(format!("{unknown}/{denominator} - {unknown}"), rhs)
+        .step(formatting::multiply_number(denominator))
+        .aligned(
             format!("{unknown} - {denominator}{unknown}"),
             rhs * denominator,
         )
-        .add_aligned(format!("{}{unknown}", 1 - denominator), rhs * denominator)
-        .with_step(formatting::divide_number(1 - denominator))
-        .add_aligned(unknown, final_answer);
+        .aligned(format!("{}{unknown}", 1 - denominator), rhs * denominator)
+        .step(formatting::divide_number(1 - denominator))
+        .aligned(unknown, final_answer);
 
     Ok(Problem::from(ProblemParameters {
         id,

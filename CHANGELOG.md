@@ -6,6 +6,9 @@
 - Inequality sign support
 - Inequality problems
 
+### Changed
+- Removed words `add` and `with` in `SolutionWithSteps` methods for brevity
+
 ### Fixed
 - Equation solutions are centered even when text is present
 

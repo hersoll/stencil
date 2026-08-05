@@ -37,7 +37,7 @@ impl SolutionWithSteps {
     /// Adds a step instruction to the latest line
     ///
     /// Overrides any previously set step for the same line!
-    pub fn with_step(&mut self, step: impl Display) -> &mut Self {
+    pub fn step(&mut self, step: impl Display) -> &mut Self {
         match self.parts.last_mut() {
             Some(part) => part.step = Some(step.to_string()),
             None => tracing::error!(
@@ -54,24 +54,24 @@ impl SolutionWithSteps {
     /// the expression, since those eliminate a lot `format!()` usage in calls.
     ///
     /// Note that this class of methods return `&mut Self` to be able to chain `.add_line().with_step()`
-    pub fn add_line(&mut self, line: impl Display) -> &mut Self {
+    pub fn line(&mut self, line: impl Display) -> &mut Self {
         self.add_expression(format!("{line}"));
         self
     }
 
-    pub fn add_equation(&mut self, lhs: impl Display, rhs: impl Display) -> &mut Self {
+    pub fn equation(&mut self, lhs: impl Display, rhs: impl Display) -> &mut Self {
         let equation_string = format!("{lhs} = {rhs}");
         self.add_expression(equation_string);
         self
     }
 
-    pub fn add_aligned(&mut self, lhs: impl Display, rhs: impl Display) -> &mut Self {
+    pub fn aligned(&mut self, lhs: impl Display, rhs: impl Display) -> &mut Self {
         let equation_string = format!("{lhs} &= {rhs}");
         self.add_expression(equation_string);
         self
     }
 
-    pub fn add_aligned_inequality(
+    pub fn aligned_inequality(
         &mut self,
         lhs: impl Display,
         sign: InequalitySign,
