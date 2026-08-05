@@ -28,7 +28,7 @@ pub static PREAMBLE_STR: &str = r##"
 
     let color-operations = operations.map(op => if op != $$ { colored(op) } else { op })
 
-    share-align({
+    align(center)[#share-align({
       grid(
         columns: (max-eq-width, auto),
         inset: (top: 0.2em, rest: 0.5em),
@@ -36,7 +36,7 @@ pub static PREAMBLE_STR: &str = r##"
         grid.vline(x: 1, stroke: (paint: line_color, thickness: 0.5pt)),
         ..equations.zip(color-operations).flatten(),
       )
-    })
+    })]
   }
 }
 

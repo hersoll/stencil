@@ -5,6 +5,9 @@
 ### Added
 - Inequality sign support
 
+### Fixed
+- Equation solutions are centered even when text is present
+
 ## [0.12.4] - 2026-08-05
 
 ### Added
