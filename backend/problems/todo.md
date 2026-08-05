@@ -70,6 +70,28 @@
 - [ ] 2/x = 5
 - [ ] 2/x = 3/7
 
+## Inequalities
+### 3/1
+- [ ] x + 5 > 10
+- [ ] 2x > 10
+### 4/2
+- [ ] 3x + 1 > 10 (both < and <= from now on)
+### 4/3
+- [ ] -2x > 8
+### 4/4
+- [ ] 10 - 2x > 2
+- [ ] 10 - 2x > 2 + 6x
+### 6/5
+- [ ] The smallest integer that holds for 10 - 2x > 2
+- [ ] The largest integer that holds for 10 - 2x > 22
+### 7/7
+- [ ] 4 < 3x + 1 < 10
+### 8/8
+- [ ] 2x + 1 < 5 < 10x - 4
+### 10/10
+- [ ] x^2 < 16
+- [ ] x^2 > 16
+
 ## Integer exponents
 - [ ] 2x * x
 - [ ] x * 2x

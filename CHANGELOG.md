@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12.5] - TBD
+
+### Added
+- Inequality sign support
+
 ## [0.12.4] - 2026-08-05
 
 ### Added
