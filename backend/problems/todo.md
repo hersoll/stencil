@@ -72,22 +72,23 @@
 
 ## Inequalities
 ### 3/1
-- [ ] x + 5 > 10
-- [ ] 2x > 10
+- [x] x + 5 > 10
+- [x] 2x > 10
 ### 4/2
-- [ ] 3x + 1 > 10 (both < and <= from now on)
+- [x] 3x + 1 > 10 (both < and <= from now on)
 ### 4/3
-- [ ] -2x > 8
+- [x] -2x > 8
+- [x] 2x > -8
 ### 4/4
-- [ ] 10 - 2x > 2
-- [ ] 10 - 2x > 2 + 6x
+- [x] 10 - 2x > 2
+- [x] 10 - 2x > 2 + 6x
 ### 6/5
-- [ ] The smallest integer that holds for 10 - 2x > 2
-- [ ] The largest integer that holds for 10 - 2x > 22
+- [x] The smallest integer that holds for 10 - 2x > 2
+- [x] The largest integer that holds for 10 - 2x > 22
 ### 7/7
-- [ ] 4 < 3x + 1 < 10
+- [x] 4 < 3x + 1 < 10
 ### 8/8
-- [ ] 2x + 1 < 5 < 10x - 4
+- [x] 2x + 1 < 5 < 10x - 4
 ### 10/10
 - [ ] x^2 < 16
 - [ ] x^2 > 16

@@ -62,8 +62,12 @@ impl Term {
     /// let function = k_term.and(&m_term);
     /// assert_eq!(function.to_string(), String::from("3x-2"));
     /// ```
-    pub fn and(&self, other: &Term) -> Polynomial {
-        Polynomial::from_terms(&[self, other])
+    pub fn and<T>(&self, other: &T) -> Polynomial
+    where
+        T: Into<Term> + Clone,
+    {
+        let other = other.clone().into();
+        Polynomial::from_terms(&[self, &other])
     }
 
     /// Returns the Term with the coefficient changed to its absolute value.

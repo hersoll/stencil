@@ -5,7 +5,7 @@ pub use statics::*;
 pub mod inequality_sign;
 use std::fmt::Display;
 
-use crate::{Number, Term};
+use crate::{Number, Polynomial, Term};
 
 /// Represents symbolic values.
 ///
@@ -50,5 +50,25 @@ impl std::ops::Mul<&'static Symbol> for Number {
     type Output = Term;
     fn mul(self, rhs: &'static Symbol) -> Self::Output {
         self * Term::from_var(rhs)
+    }
+}
+
+/// Adding a Symbol and a Number turns it into a polynomial
+impl std::ops::Add<Number> for &'static Symbol {
+    type Output = Polynomial;
+    fn add(self, rhs: Number) -> Self::Output {
+        let t1 = Term::from_var(self);
+        let t2 = Term::from_num(rhs);
+        t1.and(&t2)
+    }
+}
+
+/// Adding a Number and a Symbol turns it into a polynomial
+impl std::ops::Add<&'static Symbol> for Number {
+    type Output = Polynomial;
+    fn add(self, rhs: &'static Symbol) -> Self::Output {
+        let t1 = Term::from_var(rhs);
+        let t2 = Term::from_num(self);
+        t1.and(&t2)
     }
 }

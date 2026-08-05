@@ -4,6 +4,7 @@
 
 ### Added
 - Inequality sign support
+- Inequality problems
 
 ### Fixed
 - Equation solutions are centered even when text is present

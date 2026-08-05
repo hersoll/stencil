@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use math::symbols::inequality_sign::InequalitySign;
+
 /// Internal representation of a line in the [`SolutionWithSteps`]
 #[derive(Clone)]
 struct SolutionPart {
@@ -66,6 +68,17 @@ impl SolutionWithSteps {
     pub fn add_aligned(&mut self, lhs: impl Display, rhs: impl Display) -> &mut Self {
         let equation_string = format!("{lhs} &= {rhs}");
         self.add_expression(equation_string);
+        self
+    }
+
+    pub fn add_aligned_inequality(
+        &mut self,
+        lhs: impl Display,
+        sign: InequalitySign,
+        rhs: impl Display,
+    ) -> &mut Self {
+        let inequality_string = format!("{lhs} &{sign} {rhs}");
+        self.add_expression(inequality_string);
         self
     }
 
