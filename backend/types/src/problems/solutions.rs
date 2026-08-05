@@ -6,6 +6,8 @@ use with_steps::*;
 use math::{MathDisplay, Number};
 use std::fmt::Display;
 
+use crate::format_strings::Subdivision;
+
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Solution(String);
 
@@ -36,6 +38,12 @@ impl Solution {
 impl From<String> for Solution {
     fn from(s: String) -> Self {
         Self(s)
+    }
+}
+
+impl From<Subdivision> for Solution {
+    fn from(s: Subdivision) -> Self {
+        Self(s.to_string())
     }
 }
 

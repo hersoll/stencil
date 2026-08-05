@@ -1,16 +1,17 @@
 use crate::picker;
 use crate::split_strings::select_variant;
 use anyhow::{Result, anyhow};
-use registry::RegistryError;
-use registry::get_problem_data;
-use std::collections::HashMap;
+use registry::{RegistryError, get_problem_data};
+use std::collections::{HashMap, hash_map::Entry};
 use std::sync::{LazyLock, RwLock};
 use tracing::error;
-use types::difficulty::{AbsoluteDifficulty, DifficultyCategory};
-use types::pdf::ProblemOptions;
-use types::problems::Identifiers;
-use types::problems::Problem;
-use types::{errors::ApiError, lang::Language};
+use types::{
+    difficulty::{AbsoluteDifficulty, DifficultyCategory},
+    errors::ApiError,
+    lang::Language,
+    pdf::ProblemOptions,
+    problems::{Identifiers, Problem},
+};
 
 pub type ProblemGenerator = fn(i32, Language) -> Result<Problem>;
 
@@ -115,7 +116,7 @@ Check the identifiers and combinations in the Problem definition",
     generated_identifiers.push(problem.identifiers.clone());
 
     // Is this problem in the split hashmap?
-    if let std::collections::hash_map::Entry::Vacant(e) = variant_indices.entry(problem_id) {
+    if let Entry::Vacant(e) = variant_indices.entry(problem_id) {
         // This is not a previously split problem!
         //
         // The function call here returns true if a split exists - if so, we need to add it to the HashMap.

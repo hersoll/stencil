@@ -26,7 +26,7 @@ fn subtract_larger(id: i32, lang: Language) -> Result<Problem> {
         .build_string()?;
 
     let answer = first - second;
-    let solution = registry::get_solution(id, lang)?.replace_placeholders(&[
+    let solution = registry::get_solution(id, lang)?.replace_multiple(&[
         ("number_line", number_line),
         (
             "reverse",
@@ -117,7 +117,7 @@ fn start_negative_addition_below_zero(id: i32, lang: Language) -> Result<Problem
     let number_line = NumberLine::from_ends(-10, 0)
         .with_arc(first, answer, add_number(second))
         .build_string()?;
-    let solution = registry::get_solution(id, lang)?.replace_placeholders(&[
+    let solution = registry::get_solution(id, lang)?.replace_multiple(&[
         ("number_line", number_line),
         ("first", first.to_string()),
         ("second", second.to_string()),
@@ -146,7 +146,7 @@ fn start_negative_addition_above_zero(id: i32, lang: Language) -> Result<Problem
     let number_line = NumberLine::from_ends(first, answer)
         .with_arc(first, answer, add_number(second))
         .build_string()?;
-    let solution = registry::get_solution(id, lang)?.replace_placeholders(&[
+    let solution = registry::get_solution(id, lang)?.replace_multiple(&[
         ("number_line", number_line),
         ("first", first.to_string()),
         ("second", second.to_string()),

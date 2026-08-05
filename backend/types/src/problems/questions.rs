@@ -4,6 +4,8 @@ pub use subquestions::*;
 use math::{MathDisplay, Number, Polynomial, Term};
 use std::fmt::Display;
 
+use crate::format_strings::Subdivision;
+
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Question(pub(crate) String);
 
@@ -29,6 +31,12 @@ impl From<&str> for Question {
 impl From<String> for Question {
     fn from(s: String) -> Self {
         Self(s)
+    }
+}
+
+impl From<Subdivision> for Question {
+    fn from(s: Subdivision) -> Self {
+        Self(s.to_string())
     }
 }
 

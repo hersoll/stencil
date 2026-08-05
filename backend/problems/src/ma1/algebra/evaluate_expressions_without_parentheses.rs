@@ -33,7 +33,7 @@ fn evaluate_simple(id: i32, lang: Language) -> Result<Problem> {
         ("unknown", unknown.to_string()),
         ("value", value.to_string()),
     ];
-    let question = registry::get_question(id, lang)?.replace_placeholders(&replacement_map);
+    let question = registry::get_question(id, lang)?.replace_multiple(&replacement_map);
     let replacements = [(unknown, &value)];
     let answer = expression.evaluate(&replacements);
 
@@ -75,7 +75,7 @@ fn evaluate_intermediate(id: i32, lang: Language) -> Result<Problem> {
     let const_term = Term::from_num(constant);
 
     let expression = Polynomial::from_terms(&[&first_term, &second_term, &const_term]);
-    let question = registry::get_question(id, lang)?.replace_placeholders(&[
+    let question = registry::get_question(id, lang)?.replace_multiple(&[
         ("expression", expression.to_string()),
         ("unknown_a", first_unknown.to_string()),
         ("unknown_b", second_unknown.to_string()),
@@ -136,7 +136,7 @@ fn evaluate_advanced(id: i32, lang: Language) -> Result<Problem> {
     let value_x = num_gen::integer().range(-2, -1).random();
     let value_y = num_gen::integer().range(-2, -1).random();
 
-    let question = registry::get_question(id, lang)?.replace_placeholders(&[
+    let question = registry::get_question(id, lang)?.replace_multiple(&[
         ("expression", expression.to_string()),
         ("unknown_a", first_unknown.to_string()),
         ("unknown_b", second_unknown.to_string()),

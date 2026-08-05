@@ -524,7 +524,7 @@ fn divide_two_decimals_two_decimals(id: i32, lang: Language) -> Result<Problem> 
 fn one_decimal_squared(id: i32, lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::decimals(1).range(0.2, 0.9).and_random();
 
-    let solution_text = get_solution(id, lang)?.replace_placeholders(&[("base", base.as_math())]);
+    let solution_text = get_solution(id, lang)?.replace_one("base", base.as_math());
     let mut solution = Solution::block_with_text();
     solution
         .write(format!("{base}^2"))
@@ -548,7 +548,7 @@ fn one_decimal_squared(id: i32, lang: Language) -> Result<Problem> {
 fn two_decimals_squared(id: i32, lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::decimals(2).range(0.02, 0.09).and_random();
 
-    let solution_text = get_solution(id, lang)?.replace_placeholders(&[("base", base.as_math())]);
+    let solution_text = get_solution(id, lang)?.replace_one("base", base.as_math());
     let mut solution = Solution::block_with_text();
     solution
         .write(format!("{base}^2"))
@@ -572,7 +572,7 @@ fn two_decimals_squared(id: i32, lang: Language) -> Result<Problem> {
 fn one_decimal_cubed(id: i32, lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::decimals(1).range(0.1, 0.3).and_random();
 
-    let solution_text = get_solution(id, lang)?.replace_placeholders(&[("base", base.as_math())]);
+    let solution_text = get_solution(id, lang)?.replace_one("base", base.as_math());
     let mut solution = Solution::block_with_text();
     solution
         .write(format!("{base}^3"))

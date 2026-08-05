@@ -191,8 +191,7 @@ fn draw_own_easy_integers(id: i32, lang: Language) -> Result<Problem> {
     let m_term = Term::from_num(m);
     let expr = k_term.and(&m_term);
 
-    let question_text =
-        registry::get_question(id, lang)?.replace_placeholders(&[("fn", format!("y = {expr}"))]);
+    let question_text = registry::get_question(id, lang)?.replace_one("fn", format!("y = {expr}"));
     let question = format!("{question_text}\n{question_graph}");
     let solution = format!("$k = {k}$, $m = {m}$\n{solution_graph}");
 
@@ -277,7 +276,7 @@ fn draw_own_unit_k(id: i32, lang: Language) -> Result<Problem> {
     let problem_data = get_problem_data(id)?;
     let question_text = problem_data
         .get_question(lang)
-        .replace_placeholders(&[("fn", format!("y = {}", expr.sorted()))]);
+        .replace_one("fn", format!("y = {}", expr.sorted()));
     let question = format!("{question_text}\n{question_graph}");
     let solution = problem_data.get_solution(lang).to_string();
 
@@ -319,7 +318,7 @@ fn draw_own_horizontal(id: i32, lang: Language) -> Result<Problem> {
     let problem_data = get_problem_data(id)?;
     let question_text = problem_data
         .get_question(lang)
-        .replace_placeholders(&[("fn", format!("y = {m}"))]);
+        .replace_one("fn", format!("y = {m}"));
     let question = format!("{question_text}\n{question_graph}");
     let solution = problem_data.get_solution(lang).to_string();
 
@@ -411,7 +410,7 @@ fn draw_own_fraction(id: i32, lang: Language) -> Result<Problem> {
     let problem_data = get_problem_data(id)?;
     let question_text = problem_data
         .get_question(lang)
-        .replace_placeholders(&[("fn", format!("y = {function}"))]);
+        .replace_one("fn", format!("y = {function}"));
     let question = format!("{question_text}\n{question_graph}");
     let solution = format!("{}\n{solution_graph}", problem_data.get_solution(lang));
 

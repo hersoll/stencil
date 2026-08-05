@@ -1,11 +1,13 @@
 # Changelog
 
-## [0.12.4] - TBD
+## [0.12.4] - 2026-08-05
 
 ### Added
 - Added `12/30` and `12/300` problems
 - Added more dynamic `ProblemParameters` struct for more ergonomic problem generation
 - Support for subquestions and subanswers outside of prefix grouping
+- Support for subdivisions in DB q/a/s strings
+- More ergonomic `replace_one()` in addition to `replace_placeholders()` (now `replace_multiple()`)
 
 ### Changed
 - Changed `decimal().with_decimals(N)` to `decimals(N)` in `num_gen`
