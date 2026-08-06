@@ -12,6 +12,7 @@
 
 ### Fixed
 - Equation solutions are centered even when text is present
+- Removed possible numerator integers in `divide_one_decimal_integer`
 
 ## [0.12.4] - 2026-08-05
 

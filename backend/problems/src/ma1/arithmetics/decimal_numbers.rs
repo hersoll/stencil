@@ -207,8 +207,8 @@ fn multiply_three_decimals_integer(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 2
 #[problem]
 fn divide_one_decimal_integer(id: i32, lang: Language) -> Result<Problem> {
-    let answer_range = num_gen::decimals(1).range(0.4, 0.9);
-    let denom_range = num_gen::integer().range(3, 9);
+    let answer_range = num_gen::decimals(1).range(0.4, 0.9).exclude(0.5);
+    let denom_range = num_gen::integer().range(3, 9).exclude(5);
     generate_division_problem(id, lang, &answer_range, &denom_range)
 }
 
