@@ -1,22 +1,13 @@
 //! The `picker` is responsible for choosing which problems will be included in a problem set, and
 //! in what order.
 //!
-//! The algorithm is different depending on whether a single topic is included in the set or not:
+//! If possible, on of every problem is automatically allocated.
+//! Then the rest problems are distributed according to a distribution function (normal distribution).
+//! More problems in difficulties 4-5, less the more extreme we go.
 //!
-//! - Single topic: It is assumed this is a "lesson stencil", where it is important to get a good progression.
-//!   We distribute the problems evenly across the available ones to make sure every variant gets
-//!   its chance to shine, and can be certain that earlier problems have appeared so we can build
-//!   on them.
-//!
-//! - Multiple topics: Thought of as a "revising stencil". Now it's more important that
-//!   difficulty-appropriate problems appear. Even if a topic has more intro-level problems, it's
-//!   no use to include a bunch of those if the intent is to revise properly. The problems are in
-//!   this case distributed according to a distribution function (normal distribution). More
-//!   problems in difficulties 4-5, less the more extreme we go.
-//!
-//! The ordering of the problems is the same no matter which selection algorithm has been done.
-//! The gist is that the problems are sorted by absolute difficulty and then relative difficulty,
+//! Finally: the problems are sorted by absolute difficulty and then relative difficulty,
 //! with randomization within a relative difficulty of the same topic.
+//! If multiple topics are present they are mixed with each other.
 
 use db::problems::ProblemIdsAndDifficulties;
 use rand::prelude::*;
@@ -32,11 +23,11 @@ use types::{
 /// Standard deviation for the difficulty distribution.
 ///
 /// Currently eyeballed to make a function that "looks good".
-const NORMAL_DISTRIBUTION_STDEV: f64 = 3.1;
+const NORMAL_DISTRIBUTION_STDEV: f64 = 2.6;
 /// Mean for the difficulty distribution.
 ///
 /// Currently eyeballed to make a function that "looks good".
-const NORMAL_DISTRIBUTION_MEAN: f64 = 4.3;
+const NORMAL_DISTRIBUTION_MEAN: f64 = 4.9;
 
 /// Helper struct for easier data grouping
 struct ProblemForSelection {
@@ -69,7 +60,6 @@ pub fn select_problems(
     min_difficulty: AbsoluteDifficulty,
     max_difficulty: AbsoluteDifficulty,
 ) -> Result<Vec<i32>, ApiError> {
-    // NOTE: Surely we parse this earlier?
     if problems.is_empty() {
         tracing::error!("Problem set is empty");
         return Err(BadRequest(String::from(
@@ -83,26 +73,12 @@ pub fn select_problems(
         .map(ProblemForSelection::from_problem)
         .collect();
 
-    // The selection process is different depending on if we have multiple topics or not
-    let multiple_topics = problems
-        .iter()
-        .any(|p| p.topic_id != problems.first().unwrap().topic_id);
-
-    if multiple_topics {
-        distribute_problems_across_multiple_topics(
-            number_of_problems,
-            &mut problems,
-            min_difficulty,
-            max_difficulty,
-        );
-    } else {
-        distribute_problems_for_single_topic(
-            number_of_problems,
-            &mut problems,
-            min_difficulty,
-            max_difficulty,
-        );
-    }
+    distribute_problems(
+        number_of_problems,
+        &mut problems,
+        min_difficulty,
+        max_difficulty,
+    );
 
     // We now know precisely how many of each problem should be included in the set.
     // The only thing left to do is order them in a thoughtful way!
@@ -111,7 +87,7 @@ pub fn select_problems(
 
 /// Distribute problems according to a difficulty curve determined by the
 /// `difficulty_distribution_function`.
-fn distribute_problems_across_multiple_topics(
+fn distribute_problems(
     number_of_problems: u8,
     problems: &mut [ProblemForSelection],
     min_difficulty: AbsoluteDifficulty,
@@ -125,26 +101,63 @@ fn distribute_problems_across_multiple_topics(
     // to apply to that difficulty
     let absolute_difficulties_with_problems =
         check_which_difficulties_have_problems(problems, min_difficulty, max_difficulty);
-    tracing::debug!(
-        "Absolute difficulties with problems: \n{absolute_difficulties_with_problems:?}"
-    );
 
-    let problem_count_per_absolute_difficulty = get_problem_count_per_difficulty(
+    let desired_problem_count_per_absolute_difficulty = get_problem_count_per_difficulty(
         &absolute_difficulties_with_problems,
         get_difficulty_distribution_function(),
         number_of_problems,
     );
-    tracing::debug!(
-        "Problem count per absolute_difficulty:\n{problem_count_per_absolute_difficulty:?}"
-    );
+
+    // From now on we only need a usize version of number_of_problems (comparing with len())
+    let number_of_problems = number_of_problems as usize;
+    let mut total_occurrences = 0;
+    let mut actual_problem_count_per_difficulty: Vec<u8> =
+        vec![0; absolute_difficulties_with_problems.len()];
+
+    // We want at least one of every problem, no matter how the distribution turns out
+    // (as long as it fits the `number_of_problems`)
+    if problems.len() <= number_of_problems {
+        actual_problem_count_per_difficulty = absolute_difficulties_with_problems
+            .iter()
+            .map(|difficulty| {
+                problems
+                    .iter()
+                    .filter(|problem| problem.absolute_difficulty == *difficulty)
+                    .count() as u8
+            })
+            .collect();
+
+        total_occurrences = problems.len();
+    }
+
+    // For the rest of the problems, we try to fit them into the normal distribution.
+    // Lowest relative fill between actual count and desired count goes first.
+    // Repeat until done.
+    while total_occurrences < number_of_problems {
+        let mut relative_fill_per_difficulty: Vec<(AbsoluteDifficulty, f64)> = Vec::new();
+        for (i, val) in actual_problem_count_per_difficulty.iter().enumerate() {
+            relative_fill_per_difficulty.push((
+                absolute_difficulties_with_problems[i],
+                *val as f64 / desired_problem_count_per_absolute_difficulty[i] as f64,
+            ));
+        }
+        let lowest_index = relative_fill_per_difficulty
+            .iter()
+            .enumerate()
+            .min_by(|(_, (_, a)), (_, (_, b))| a.total_cmp(b))
+            .map(|(i, _)| i)
+            .unwrap();
+        actual_problem_count_per_difficulty[lowest_index] += 1;
+        total_occurrences += 1;
+    }
 
     // Determine the count of each problem (one difficulty at a time)
     //
     // We can zip the two vecs since they are aligned. If only five difficulties have problems,
-    // the `problem_count_per_absolute_difficulty` vec will have five elements.
+    // the `desired_problem_count_per_absolute_difficulty` vec will have five elements.
     zip(
         absolute_difficulties_with_problems,
-        problem_count_per_absolute_difficulty,
+        actual_problem_count_per_difficulty,
     )
     .for_each(|(difficulty, count)| {
         set_count_per_problem_for_difficulty(
@@ -157,23 +170,6 @@ fn distribute_problems_across_multiple_topics(
     });
 }
 
-/// Distribute problems evenly across to make sure every problem variant gets a chance to shine
-fn distribute_problems_for_single_topic(
-    number_of_problems: u8,
-    problems: &mut [ProblemForSelection],
-    min_difficulty: AbsoluteDifficulty,
-    max_difficulty: AbsoluteDifficulty,
-) {
-    let mut relevant_problems: Vec<&mut ProblemForSelection> = problems
-        .iter_mut()
-        .filter(|p| {
-            p.absolute_difficulty >= min_difficulty && p.absolute_difficulty <= max_difficulty
-        })
-        .collect();
-
-    occurrences_within_topic(&mut relevant_problems, number_of_problems.into());
-}
-
 /// Returns a `Vec` of every `AbsoluteDifficulty` in the range that has at least one problem.
 ///
 /// Since subsequent steps in the selection process requires us to calculate the amount of problems
@@ -184,14 +180,17 @@ fn check_which_difficulties_have_problems(
     min_difficulty: AbsoluteDifficulty,
     max_difficulty: AbsoluteDifficulty,
 ) -> Vec<AbsoluteDifficulty> {
-    (min_difficulty.number..=max_difficulty.number)
-        .filter(|num| {
-            problems
-                .iter()
-                .find(|problem| problem.absolute_difficulty.number == *num)
-                .is_some()
-        })
-        .map(AbsoluteDifficulty::from_num)
+    let mut present = [false; 11]; // index 11 since difficulty goes up to 10
+
+    for problem in problems {
+        present[problem.absolute_difficulty.number as usize] = true;
+    }
+
+    let min = min_difficulty.number as usize;
+    let max = max_difficulty.number as usize;
+    (min..=max)
+        .filter(|&i| present[i])
+        .map(|i| AbsoluteDifficulty::from_num(i as u8))
         .collect()
 }
 
@@ -226,27 +225,17 @@ fn get_problem_count_per_difficulty(
         .map(|difficulty| distribution_function(difficulty.number))
         .collect();
 
-    // To convert the ratios into actual counts that add up to `number_of_problems`,
+    // To convert the ratios into actual counts that roughly add up to `number_of_problems`,
     // we multiply them with a normalization constant
+    //
+    // NOTE: Currently it's ok if the rounding makes it so the total does not add upp to exactly
+    // `number_of_problems`. The distribution is simply used as a guide.
     let normalization_constant =
         number_of_problems as f64 / ratio_per_difficulty.iter().sum::<f64>();
-    let mut count_per_difficulty: Vec<u8> = ratio_per_difficulty
+    ratio_per_difficulty
         .iter()
         .map(|ratio| (ratio * normalization_constant).round() as u8)
-        .collect();
-
-    // The rounding might make the total be off by 1 (or, god forbid, even more)
-    let mut total: u8 = count_per_difficulty.iter().sum();
-    while total > number_of_problems {
-        *count_per_difficulty.iter_mut().max_by_key(|x| **x).unwrap() -= 1;
-        total -= 1;
-    }
-    while total < number_of_problems {
-        *count_per_difficulty.iter_mut().min_by_key(|x| **x).unwrap() += 1;
-        total += 1;
-    }
-
-    count_per_difficulty
+        .collect()
 }
 
 /// Takes a set of problems and decides how many of each
@@ -260,27 +249,43 @@ fn set_count_per_problem_for_difficulty(
     // The problem count per topic is used to determine how many occurrences to assign to each topic
     let mut problems_per_topic: HashMap<i32, u8> = HashMap::new();
 
-    // Count problems them by topic
+    // Count problems by topic
     problems
         .iter()
         .for_each(|p| *problems_per_topic.entry(p.topic_id).or_default() += 1);
 
-    let problem_count = problems.len();
-
-    // The number of occurences should be proportional to the amount of problems per topic.
-    // Since some rounding might happen, we want to do the topics with the lowest counts first since
-    // they are more sensitive to rounding errors
+    // Start by assigning occurences so each problem gets at least one occurrence (IF IT FITS)
+    // This is ensured by simply using the problems_per_topic map.
+    // NOTE: This hinges on the fact that `occurrences_per_topic` splits occurrences evenly as a baseline
     let mut occurrences_per_topic: Vec<(i32, u8)> = problems_per_topic.into_iter().collect();
+
+    // Since some rounding error handling might happen, we want to make sure we adjust the count
+    // that is largest. So we sort it by count which makes the largest count the last.
     occurrences_per_topic.sort_by_key(|(_, count)| *count);
-    occurrences_per_topic = occurrences_per_topic
-        .iter()
-        .map(|(topic_id, count)| {
-            let ratio = *count as f64 / problem_count as f64;
-            let float_count = ratio * number_of_problems as f64;
-            let int_count = float_count.round() as u8;
-            (*topic_id, int_count)
-        })
-        .collect();
+
+    if problems.len() <= number_of_problems as usize {
+        // The rest of the occurrences are assigned by ratio: If 50% of occurrences have been used,
+        // double every number
+        let occurrences_used = problems.len();
+        let occurrence_used_ratio = 1.0
+            - (number_of_problems as f64 - occurrences_used as f64) / (number_of_problems as f64);
+        let factor = 1.0 / occurrence_used_ratio;
+        occurrences_per_topic.iter_mut().for_each(|(_, count)| {
+            let float_count = *count as f64 * factor;
+            *count = float_count.round() as u8;
+        });
+    } else {
+        // Couldn't fit one of every problem: assign count by problems per topic ratio
+        occurrences_per_topic = occurrences_per_topic
+            .iter()
+            .map(|(topic_id, count)| {
+                let ratio = *count as f64 / problems.len() as f64;
+                let float_count = ratio * number_of_problems as f64;
+                let int_count = float_count.round() as u8;
+                (*topic_id, int_count)
+            })
+            .collect();
+    }
 
     // Handle rounding errors
     let mut total_occurrence: u8 = occurrences_per_topic.iter().map(|(_, count)| *count).sum();
@@ -312,14 +317,10 @@ fn set_count_per_problem_for_difficulty(
 /// Given a set of problems which all come from the same topic and the same absolute difficulty,
 /// and the total `number_of_occurrences` for the list, determines how many of each problem
 /// should be included
-///
-/// NOTE: Mutates the array in-place, no return
 fn occurrences_within_topic(
     problems: &mut [&mut ProblemForSelection],
     number_of_occurrences: usize,
 ) {
-    // All of the problems have the same absolute difficulty (if we've gone the multiple topics route)
-    // and come from the same topic.
     // In the spirit of Marxism we start by dividing as many occurences evenly between them as we can.
     let problem_count = problems.len();
     let minimum_occurrence_per_problem = (number_of_occurrences / problem_count) as u8;
@@ -347,7 +348,7 @@ fn occurrences_within_topic(
             .unwrap(); // safety: will have at least one difficulty :)
 
         // It's not enough to find the neediest difficulty, we can only increment one problem at a time.
-        // We need to find the neediest problem within the neediest difficulty
+        // We need to find the neediest problem within the neediest difficulty (first index if multiple)
         problems
             .iter_mut()
             .filter(|p| p.relative_difficulty == neediest_relative_difficulty)
@@ -397,9 +398,6 @@ fn order_problems(problems: Vec<ProblemForSelection>) -> Vec<i32> {
     for (difficulty, orders) in ordered_problems_by_topic_and_absolute_difficulty {
         ordered_problems_by_absolute_difficulty.insert(difficulty, interweave(&orders));
     }
-    tracing::debug!(
-        "Problem order per absolute_difficulty:\n {ordered_problems_by_absolute_difficulty:?}"
-    );
 
     let mut orders_as_vec: Vec<_> = ordered_problems_by_absolute_difficulty
         .into_iter()
@@ -449,11 +447,7 @@ fn order_problems_in_topic(
     // We could just add the problem's id to the order function (that is what we'll return in the end),
     // but since we will group them by absolute difficulty in the end we also need to include that
     // info in the vec.
-    struct OrderData {
-        id: i32,
-        absolute_difficulty: AbsoluteDifficulty,
-    }
-    let mut order: Vec<OrderData> = Vec::new();
+    let mut order: Vec<(i32, AbsoluteDifficulty)> = Vec::new();
     let mut rng = rand::rng();
     for problems in problems_per_relative_difficulty.values_mut() {
         while problems.iter().any(|p| p.occurrences > 0) {
@@ -466,10 +460,7 @@ fn order_problems_in_topic(
             let idx = *candidates.choose(&mut rng).unwrap();
 
             let problem = &mut problems[idx];
-            order.push(OrderData {
-                id: problem.problem_id,
-                absolute_difficulty: problem.absolute_difficulty,
-            });
+            order.push((problem.problem_id, problem.absolute_difficulty));
             problem.occurrences -= 1;
         }
     }
@@ -489,15 +480,15 @@ fn order_problems_in_topic(
     let mut order_per_absolute_difficulty: HashMap<AbsoluteDifficulty, Vec<i32>> = HashMap::new();
     let mut current_difficulty = AbsoluteDifficulty::from_num(1);
 
-    for problem in order {
+    for (id, difficulty) in order {
         // we might encounter the next chunk
-        while problem.absolute_difficulty > current_difficulty {
-            current_difficulty.number += 1;
+        if difficulty > current_difficulty {
+            current_difficulty = difficulty;
         }
         order_per_absolute_difficulty
             .entry(current_difficulty)
             .or_default()
-            .push(problem.id);
+            .push(id);
     }
     order_per_absolute_difficulty
 }

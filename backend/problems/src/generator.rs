@@ -48,7 +48,6 @@ pub async fn generate_problem_set(
         AbsoluteDifficulty::from_num(options.starting_difficulty.to_minimum_difficulty_num()),
         AbsoluteDifficulty::from_num(options.ending_difficulty.to_maximum_difficulty_num()),
     )?;
-    tracing::debug!("Problem order:\n{problem_ids:?}");
 
     let problem_set = generate_problems(&problem_ids, lang)?;
     Ok(problem_set)

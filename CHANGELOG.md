@@ -7,6 +7,7 @@
 - Inequality problems
 
 ### Changed
+- New `picker` algorithm: add one of each problem if possible, gaussian on the rest
 - Removed words `add` and `with` in `SolutionWithSteps` methods for brevity
 
 ### Fixed
