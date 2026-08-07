@@ -79,10 +79,14 @@ impl Axes {
     }
 
     pub fn new_solution() -> Self {
-        Self {
-            font_size: FontSize::Em(1.0),
-            ..Axes::default()
-        }
+        let mut axes = Axes::new();
+        axes.solution_size();
+        axes
+    }
+
+    pub fn solution_size(&mut self) -> &mut Self {
+        self.font_size = FontSize::Em(1.0);
+        self
     }
 
     pub fn x_range(&mut self, min: impl Into<Number>, max: impl Into<Number>) -> &mut Self {
@@ -97,11 +101,13 @@ impl Axes {
     /// Takes `padding` into account, adjust it beforehand if needed.
     pub fn fit_x(&mut self, x: impl Into<Number>) -> &mut Self {
         let x = x.into();
-        if self.x_min > x {
-            self.x_min = x;
+        let lower_bound = x - self.padding;
+        let upper_bound = x + self.padding;
+        if self.x_min > lower_bound {
+            self.x_min = lower_bound;
         }
-        if self.x_max < x {
-            self.x_max = x;
+        if self.x_max < upper_bound {
+            self.x_max = upper_bound;
         }
 
         self
@@ -171,7 +177,6 @@ impl Axes {
         // Make sure the y_range is set if not manually set
         self.set_y_range()?;
         self.set_ticks();
-        //self.auto_fit_range();
 
         // If we haven't passed any graphs, assume we want it empty and add an invisible line
         if self.graphs.is_empty() {

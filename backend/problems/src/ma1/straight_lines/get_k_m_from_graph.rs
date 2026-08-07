@@ -11,7 +11,7 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters},
 };
-use typst_writer::graphing::{Axes, Graph, GridType};
+use typst_writer::graphing::{Axes, Graph};
 
 /// Find m in graph
 /// Absolute difficulty: 1

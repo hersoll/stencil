@@ -57,15 +57,24 @@ impl Graph {
 
     /// Add a single dot to the graph.
     ///
-    /// If you need multiple dots, use with_dots_at() instead.
-    pub fn dot(mut self, x: impl Into<Number>, y: impl Into<Number>) -> Self {
-        let x = x.into().for_graphs();
-        let y = y.into().for_graphs();
-        let color = "red";
-        let dot_anchor = format!("plot.add-anchor(\"dot\", ({x}, {y}))");
-        let dot = format!("circle(\"graph.dot\", radius: 0.07, fill: {color})");
-        self.additions.axis_relative.push(dot_anchor);
-        self.additions.canvas_relative.push(dot);
+    /// If you need multiple dots, use dots() instead.
+    pub fn dot(self, x: impl Into<Number>, y: impl Into<Number>) -> Self {
+        let x = x.into();
+        let y = y.into();
+        self.dots(vec![(x, y)])
+    }
+
+    /// Add multiple dots to the graph.
+    pub fn dots<T: Into<Number>>(mut self, coords: Vec<(T, T)>) -> Self {
+        for (i, (x, y)) in coords.into_iter().enumerate() {
+            let x = x.into().for_graphs();
+            let y = y.into().for_graphs();
+            let color = "red";
+            let dot_anchor = format!("plot.add-anchor(\"dot_{i}\", ({x}, {y}))");
+            let dot = format!("circle(\"graph.dot_{i}\", radius: 0.07, fill: {color})");
+            self.additions.axis_relative.push(dot_anchor);
+            self.additions.canvas_relative.push(dot);
+        }
         self
     }
 

@@ -7,6 +7,10 @@ pub fn simplified_fraction(numerator: i32, denominator: i32) -> (i32, i32) {
         // abs() since one negative fucks it up
         new_numerator = new_numerator.abs();
         new_denominator = new_denominator.abs();
+    } else if new_denominator < 0 {
+        // Only keep the numerator negative
+        new_numerator = -new_numerator;
+        new_denominator = new_denominator.abs();
     }
 
     let gcd = utils::gcd(new_numerator, new_denominator);

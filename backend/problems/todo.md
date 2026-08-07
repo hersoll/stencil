@@ -171,13 +171,17 @@
 - [x] Find y when x = 2
 - [x] Find x when y = 2
 ### 4 / 4
-- [ ] Evaluate f(2)
-- [ ] Solve the equation f(x) = 2
+- [x] Evaluate f(2)
+- [x] Solve the equation f(x) = 2
 ### 5 / 5
-- [ ] ABC f(1), equation f(x) = 2
+- [x] ABC f(1), equation f(x) = 2
+- [x] Evaluate f(0)
+- [x] Solve the equation f(x) = 0
 ### 6 / 6
-- [ ] Solve f(x) = g(x)
+- [ ] Solve f(x) = g(x) (both linear)
 - [ ] Solve the inequality f(x) > 1 (linear)
+### 7 / 7
+- [ ] Solve f(x) = g(x) (one quadratic)
 ### 8 / 8
 - [ ] Solve the inequality f(x) < 3 (quadratic)
 ### 8 / 9

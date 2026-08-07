@@ -34,11 +34,9 @@ pub fn select_variant(problem: &mut Problem, index: &mut usize) -> Result<bool> 
 
     // Just because one field might be split doesn't mean they all are.
     if let Some(question) = questions.get(*index) {
-        dbg!(&question);
         problem.question = Question::from(question.clone());
     }
     if let Some(answer) = answers.get(*index) {
-        dbg!(&answer);
         problem.answer = Answer::from(answer.clone());
     }
     if let Some(solution) = solutions.get(*index) {
