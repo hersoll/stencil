@@ -49,3 +49,41 @@ fn find_y(id: i32, lang: Language) -> Result<Problem> {
         combinations: x_range.len() * m_range.len(),
     }))
 }
+
+/// Find x if y = 4
+/// Absolute difficulty: 2
+/// Relative difficulty: 1
+#[problem]
+fn find_x(id: i32, lang: Language) -> Result<Problem> {
+    let k = Number::from((-1, 2));
+    let m = num_gen::integer().range(4, 7).exclude(6).random();
+
+    let (x, x_range) = num_gen::integer().range_step(2, 6, 2).and_random();
+    let f = |x: Number| (k * x + m).simplify();
+    let y = f(x);
+
+    let mut axes = Axes::new();
+    axes.x_range(-1, 7);
+
+    let question = get_question(id, lang)?.replace_multiple(&[
+        ("graph", axes.add_graph(Graph::linear(k, m)).build_string()?),
+        ("y", y.to_string()),
+    ]);
+    axes.clear_graphs();
+    let solution = get_solution(id, lang)?.replace_multiple(&[
+        (
+            "graph",
+            axes.add_graph(Graph::linear(k, m).dot_with_lines(x, y))
+                .build_string()?,
+        ),
+        ("y", y.to_string()),
+    ]);
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question,
+        answer: format!("$x = {x}$"),
+        solution,
+        identifiers: vec![y],
+        combinations: x_range,
+    }))
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.6] - TBD
+
+### Added
+- f(x) graph problems
+- `dot_with_lines` for graphs
+
 ## [0.12.5] - 2026-08-07
 
 ### Added

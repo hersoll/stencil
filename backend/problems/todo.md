@@ -168,20 +168,20 @@
 
 ## f(x) graphically
 ### 2 / 1
-- [ ] Find y when x = 2
-- [ ] Find x when y = 2
-### 4 / 2
+- [x] Find y when x = 2
+- [x] Find x when y = 2
+### 4 / 4
 - [ ] Evaluate f(2)
 - [ ] Solve the equation f(x) = 2
-### 5 / 3
+### 5 / 5
 - [ ] ABC f(1), equation f(x) = 2
-### 6 / 4
+### 6 / 6
 - [ ] Solve f(x) = g(x)
 - [ ] Solve the inequality f(x) > 1 (linear)
-### 8 / 5
+### 8 / 8
 - [ ] Solve the inequality f(x) < 3 (quadratic)
-### 8 / 6
+### 8 / 9
 - [ ] Solve the inequality f(x) > g(x)
 - [ ] Solve the inequality f(x) >= g(x)
-### 9 / 7
+### 9 / 10
 - [ ] Solve the equation f(x) = kx + m
