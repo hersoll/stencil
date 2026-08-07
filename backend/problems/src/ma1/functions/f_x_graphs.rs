@@ -18,7 +18,7 @@ use typst_writer::graphing::{Axes, Graph};
 #[problem]
 fn find_y(id: i32, lang: Language) -> Result<Problem> {
     let k = Number::from((-1, 2));
-    let m = num_gen::integer().range(4, 7).exclude(6).random();
+    let (m, m_range) = num_gen::integer().range(4, 7).exclude(6).and_random();
 
     let (x, x_range) = num_gen::integer().range_step(2, 6, 2).and_random();
     let f = |x: Number| (k * x + m).simplify();
@@ -45,7 +45,7 @@ fn find_y(id: i32, lang: Language) -> Result<Problem> {
         question,
         answer: format!("$y = {y}$"),
         solution,
-        identifiers: x,
-        combinations: x_range,
+        identifiers: vec![x, m],
+        combinations: x_range.len() * m_range.len(),
     }))
 }
