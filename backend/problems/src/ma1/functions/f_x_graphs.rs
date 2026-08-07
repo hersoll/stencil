@@ -1,5 +1,3 @@
-use std::cmp::Ordering::{Greater, Less};
-
 use anyhow::Result;
 use macros::problem;
 use math::{
@@ -13,7 +11,7 @@ use types::{
     lang::Language,
     problems::{Answer, Problem, ProblemParameters, Question},
 };
-use typst_writer::graphing::{Axes, Direction, Graph};
+use typst_writer::graphing::{Axes, Graph};
 
 /// Find y if x = 2
 /// Absolute difficulty: 2
@@ -357,22 +355,12 @@ fn f_equals_g_linear(id: i32, lang: Language) -> Result<Problem> {
     let k1 = ((y - m1) / x).simplify();
     let k2 = ((y - m2) / x).simplify();
 
-    let legend_dir = match (0.cmp(&x.as_i32()), 0.cmp(&y.as_i32())) {
-        (Greater, Greater) => Direction::NorthWest,
-        (Less, Greater) => Direction::NorthEast,
-        (Greater, Less) => Direction::SouthWest,
-        (Less, Less) => Direction::SouthEast,
-        (Less, _) => Direction::NorthEast,
-        (Greater, _) => Direction::NorthWest,
-        (_, _) => Direction::NorthEast,
-    };
-
     let graph = Axes::new()
         .x_range(-3, 3)
         .fit_x(x)
         .add_graph(Graph::linear(k1, m1).label("$f(x)$"))
         .add_graph(Graph::linear(k2, m2).label("$g(x)$"))
-        .legend(Direction::South)
+        .legend()
         .build_string()?;
 
     let question = get_question(id, lang)?.replace_one("graph", graph);
