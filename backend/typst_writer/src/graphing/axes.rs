@@ -1,6 +1,6 @@
 use crate::{drawing::FontSize, graphing::graphs::Graph};
 use anyhow::{Result, anyhow};
-use math::{Number, ZERO};
+use math::Number;
 use std::fmt::Write;
 
 pub enum GridType {
@@ -58,7 +58,7 @@ impl Default for Axes {
             grid: GridType::Major,
             can_break: false,
             graphs: Vec::new(),
-            padding: ZERO,
+            padding: Number::Integer(1),
         }
     }
 }
@@ -88,6 +88,22 @@ impl Axes {
     pub fn x_range(&mut self, min: impl Into<Number>, max: impl Into<Number>) -> &mut Self {
         self.x_min = min.into();
         self.x_max = max.into();
+        self
+    }
+
+    /// Used to automatically make sure that a certain x value is contained within the window.
+    /// Can be combined with [`x_range()`].
+    ///
+    /// Takes `padding` into account, adjust it beforehand if needed.
+    pub fn fit_x(&mut self, x: impl Into<Number>) -> &mut Self {
+        let x = x.into();
+        if self.x_min > x {
+            self.x_min = x;
+        }
+        if self.x_max < x {
+            self.x_max = x;
+        }
+
         self
     }
 
