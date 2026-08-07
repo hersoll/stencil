@@ -89,8 +89,8 @@ impl IntegerGenerator {
         if let Number::Integer(integer_num) = num {
             self.exclusions.push(integer_num);
         } else {
-            tracing::error!(
-                "Don't call num_gen::integer().exclude() with a non-integer, ya dum dum! Passed value: {num}"
+            tracing::debug!(
+                "(It's fine) Called num_gen::integer().exclude() with a non-integer: {num}"
             )
         }
         self
