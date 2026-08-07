@@ -1,7 +1,7 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    Evaluable, Number, Term,
+    Evaluable, MathDisplay, Number, Term,
     functions::Function,
     num_gen::{self, NumberGenerator},
     symbols::{self, X},
@@ -157,7 +157,7 @@ fn find_x_where_f_x(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// Solve the equation f(x) = 4
-/// Absolute difficulty: 4
+/// Absolute difficulty: 5
 /// Relative difficulty: 6
 #[problem]
 fn equation_f_x_equals(id: i32, lang: Language) -> Result<Problem> {
@@ -200,7 +200,7 @@ fn equation_f_x_equals(id: i32, lang: Language) -> Result<Problem> {
 }
 
 /// f(-3)
-/// Absolute difficulty: 4
+/// Absolute difficulty: 5
 /// Relative difficulty: 5
 #[problem]
 fn find_y(id: i32, lang: Language) -> Result<Problem> {
@@ -244,7 +244,7 @@ fn find_y(id: i32, lang: Language) -> Result<Problem> {
 
 /// f(x) = 2x - 1
 /// a) f(3)     b) f(x) = 4
-/// Absolute difficulty: 4
+/// Absolute difficulty: 5
 /// Relative difficulty: 6
 #[problem]
 fn combination_x_y(id: i32, lang: Language) -> Result<Problem> {
@@ -254,7 +254,7 @@ fn combination_x_y(id: i32, lang: Language) -> Result<Problem> {
         .and_random();
     let x_range = num_gen::integer().range(-7, 7);
     let x_1 = x_range.random();
-    let x_2 = x_range.random();
+    let x_2 = x_range.exclude(x_1).random();
     let (constant, constant_range) = num_gen::integer().range(-10, 10).exclude(0).and_random();
     let y_1 = coefficient * x_1 + constant;
     let y_2 = coefficient * x_2 + constant;
@@ -311,9 +311,85 @@ fn combination_x_y(id: i32, lang: Language) -> Result<Problem> {
     }))
 }
 
+/// Text question: find K(3) and solve K(x) = 4
+/// Absolute difficulty: 5
+/// Relative difficulty: 7
+#[problem]
+fn text_f_x_y(id: i32, lang: Language) -> Result<Problem> {
+    let (coefficient, coefficient_range) = num_gen::integer().range(2, 6).and_random();
+    let x_range = num_gen::integer().range(3, 7);
+    let x_1 = x_range.random();
+    let x_2 = x_range.exclude(x_1).random();
+    let (constant, constant_range) = num_gen::integer().range(1, 5).and_random();
+    let y_1 = coefficient * x_1 + constant;
+    let y_2 = coefficient * x_2 + constant;
+    let f_name = symbols::K_CAPS;
+
+    let f_x = format!("{f_name}(x)");
+    let f_x_1 = format!("{f_name}({x_1})");
+
+    let expression = format!("${f_x} = {coefficient}x {constant:+}$");
+    let mut question_strs = registry::get_question(id, lang)?.to_subdivisions();
+    let mut question = Question::subquestions();
+    question
+        .pre(question_strs.pre().replace_one("K(x)", expression))
+        .subquestion(question_strs.sub().replace_one("x", x_1))
+        .subquestion(question_strs.sub().replace_one("y", y_2));
+
+    let mut answer_strs = registry::get_answer(id, lang)?.to_subdivisions();
+    let mut answer = Answer::subanswers();
+    answer
+        .subanswer(
+            answer_strs
+                .sub()
+                .replace_multiple(&[("x", x_1.as_math()), ("y", y_1.as_math())]),
+        )
+        .subanswer(
+            answer_strs
+                .sub()
+                .replace_multiple(&[("x", x_2.as_math()), ("y", y_2.as_math())]),
+        );
+
+    let first_solution = equation_solution(&format!(
+        "{f_name}(x) &= {coefficient}x {constant:+} \\x={x_1} \\
+           {f_name}(colored({x_1})) &= {par_coef} dot colored({par_x}) {constant:+} \\ \\
+           {f_x_1} &= {y_1} \\",
+        par_coef = typst_writer::formatting::parentheses(&coefficient),
+        par_x = typst_writer::formatting::parentheses(&x_1),
+    ));
+
+    let second_solution = equation_solution(&format!(
+        "{f_x} &= {coefficient}x {constant:+} \\{f_x}={y_2} \\
+       colored({y_2}) &= {coefficient}x {constant:+} \\ {sub_con}\\
+              {y_c} &= {coefficient}x \\ {div_coef}\\
+       {x_2} &= x \\",
+        sub_con = typst_writer::formatting::subtract_number(constant),
+        div_coef = typst_writer::formatting::divide_number(coefficient),
+        y_c = y_2 - constant
+    ));
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question,
+        answer,
+        solution: format!("{first_solution} \\ {second_solution}"),
+        identifiers: vec![coefficient, constant],
+        combinations: coefficient_range.len() * constant_range.len(),
+    }))
+}
+
+/// Text question: text subquestions
+/// Absolute difficulty: 5
+/// Relative difficulty: 8
+#[problem]
+fn text_text_x_y(id: i32, lang: Language) -> Result<Problem> {
+    // It's the same, just different text
+    text_f_x_y(id, lang)
+}
+
 /// f(x) = 2x + 4. Bestäm f(a+1)
 /// Absolute difficulty: 7
-/// Relative difficulty: 7
+/// Relative difficulty: 10
 #[problem]
 fn insert_algebra_positive(id: i32, lang: Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
@@ -359,7 +435,7 @@ fn insert_algebra_positive(id: i32, lang: Language) -> Result<Problem> {
 
 /// f(x) = 4 - 2x. Bestäm f(2a-1)
 /// Absolute difficulty: 7
-/// Relative difficulty: 8
+/// Relative difficulty: 11
 #[problem]
 fn insert_algebra_negative(id: i32, lang: Language) -> Result<Problem> {
     let (function_coefficient, function_coefficient_range) =
@@ -406,7 +482,7 @@ fn insert_algebra_negative(id: i32, lang: Language) -> Result<Problem> {
 
 // f(x) = 3x - 2. Find the value of f(f(4))
 /// Absolute difficulty: 8
-/// Relative difficulty: 9
+/// Relative difficulty: 12
 #[problem]
 fn insert_number_twice(id: i32, lang: Language) -> Result<Problem> {
     let (k, k_range) = num_gen::integer().range(2, 5).and_random();

@@ -161,11 +161,10 @@
 - [x] Calculate 4^-3/2
 
 ## f(x) algebraically
-- [ ] Text question: What does f(3) calculate?
-- [ ] Text question: What does f(3) = 4 mean?
-- [ ] Text question: What do you find out with the equation f(x) = 4?
-- [ ] Text question: Find y if x is 4
-- [ ] Text question: Find x if y is 4
+- [x] Text question: What does f(3) calculate?
+- [x] Text question: What do you find out with the equation f(x) = 4?
+- [x] Text question: Find y if x is 4
+- [x] Text question: Find x if y is 4
 
 ## f(x) graphically
 ### 2 / 1
