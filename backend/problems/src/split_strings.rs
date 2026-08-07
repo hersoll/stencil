@@ -34,9 +34,11 @@ pub fn select_variant(problem: &mut Problem, index: &mut usize) -> Result<bool> 
 
     // Just because one field might be split doesn't mean they all are.
     if let Some(question) = questions.get(*index) {
+        dbg!(&question);
         problem.question = Question::from(question.clone());
     }
     if let Some(answer) = answers.get(*index) {
+        dbg!(&answer);
         problem.answer = Answer::from(answer.clone());
     }
     if let Some(solution) = solutions.get(*index) {
@@ -49,40 +51,43 @@ pub fn select_variant(problem: &mut Problem, index: &mut usize) -> Result<bool> 
     Ok(true)
 }
 
-/// Split the string on its [s1 || s2] parts.
+/// Split the string on its [[s1 || s2]] parts.
 ///
 /// variant_count specifies how many variants there MUST be, if the argument != 0
 fn split_string(s: &str, variant_count: &mut usize) -> Result<Vec<String>> {
+    const SPLIT_START: &str = "[[";
+    const SPLIT_END: &str = "]]";
+    let marker_length = SPLIT_START.len();
     let mut index_to_slice_at = 0;
     // The trunk is the non-changing part of the String
     let mut trunk = String::with_capacity(s.len());
     // The branches are the possible variants
     let mut branches: Vec<Vec<&str>> = Vec::new();
-    while let Some(first_bracket) = s[index_to_slice_at..].find("[")
-        && let Some(second_bracket) = s[index_to_slice_at..].find("]")
-        && first_bracket < second_bracket
+    while let Some(start_index) = s[index_to_slice_at..].find(SPLIT_START)
+        && let Some(end_index) = s[index_to_slice_at..].find(SPLIT_END)
+        && start_index < end_index
     {
         // The indices first_bracket and second_bracket are relative to the sliced string.
         // We can't look at s inside this loop since the indices will be out of sync
         let slice = &s[index_to_slice_at..];
-        let variants: Vec<&str> = slice[(first_bracket + 1)..second_bracket]
+        let variants: Vec<&str> = slice[(start_index + marker_length)..end_index]
             .split(" || ")
             .collect();
         if variants.len() == 1 {
-            // We have encountered square brackets in some other context, for example
+            // We have encountered the markers in some other context, for example
             // a Typst #block[]. Ignore!
             // Everything, including the contents inside [], is written to the trunk.
-            write!(trunk, "{}", &slice[..=second_bracket])?;
+            write!(trunk, "{}", &slice[..end_index + marker_length])?;
         } else {
             // Everything before the [] is written to the trunk
-            write!(trunk, "{}", &slice[..first_bracket])?;
+            write!(trunk, "{}", &slice[..start_index])?;
             // Add the spot for the branch to be inserted
             write!(trunk, "{{_branch_}}")?;
             branches.push(variants);
         }
 
         // Find more brackets after the point we ended on
-        index_to_slice_at += second_bracket + 1;
+        index_to_slice_at += end_index + marker_length;
     }
     if index_to_slice_at < s.len() {
         // Write any dangling suffix to the trunk
@@ -111,7 +116,7 @@ fn split_string(s: &str, variant_count: &mut usize) -> Result<Vec<String>> {
         let mut current_trunk = trunk.clone();
         // Do once for each [] block (i).
         // `branch` is the index of the branch:
-        // [0 || 1 || 2]
+        // [[0 || 1 || 2]]
         for (i, _) in branches.iter().enumerate() {
             current_trunk = current_trunk.replacen("{_branch_}", branches[i][branch], 1);
         }
@@ -138,14 +143,28 @@ mod tests {
 
     #[test]
     fn returns_empty_when_no_split_in_bracket() -> Result<()> {
-        let input = "This string has no || in its [brackets]!";
+        let input = "This string has no || in its [[brackets]]!";
+        assert_eq!(split_string(input, &mut 0)?, Vec::<String>::new());
+        Ok(())
+    }
+
+    #[test]
+    fn returns_empty_when_only_start_bracket() -> Result<()> {
+        let input = "This string only has [[start brackets!";
+        assert_eq!(split_string(input, &mut 0)?, Vec::<String>::new());
+        Ok(())
+    }
+
+    #[test]
+    fn returns_empty_when_only_end_bracket() -> Result<()> {
+        let input = "This string only has end]] brackets!";
         assert_eq!(split_string(input, &mut 0)?, Vec::<String>::new());
         Ok(())
     }
 
     #[test]
     fn splits_with_one_correct_split_into_two() -> Result<()> {
-        let input = "I want to [split || share] this.";
+        let input = "I want to [[split || share]] this.";
         let expected = vec![
             String::from("I want to split this."),
             String::from("I want to share this."),
@@ -156,7 +175,7 @@ mod tests {
 
     #[test]
     fn splits_with_one_correct_split_into_three() -> Result<()> {
-        let input = "I want to [split || share || keep] this.";
+        let input = "I want to [[split || share || keep]] this.";
         let expected = vec![
             String::from("I want to split this."),
             String::from("I want to share this."),
@@ -168,7 +187,7 @@ mod tests {
 
     #[test]
     fn splits_with_two_correct_splits() -> Result<()> {
-        let input = "The [dog || cat] [barks || meows].";
+        let input = "The [[dog || cat]] [[barks || meows]].";
         let expected = vec![
             String::from("The dog barks."),
             String::from("The cat meows."),
@@ -179,10 +198,21 @@ mod tests {
 
     #[test]
     fn ignores_brackets_without_split() -> Result<()> {
-        let input = "The word [split] should not be split but [I || you] should.";
+        let input = "The word [[split]] should not be split but [[I || you]] should.";
         let expected = vec![
-            String::from("The word [split] should not be split but I should."),
-            String::from("The word [split] should not be split but you should."),
+            String::from("The word [[split]] should not be split but I should."),
+            String::from("The word [[split]] should not be split but you should."),
+        ];
+        assert_eq!(split_string(input, &mut 0)?, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn splits_typst_brackets_correctly() -> Result<()> {
+        let input = "Here is a split question inside brackets: [Alternative [[one || two]]]";
+        let expected = vec![
+            String::from("Here is a split question inside brackets: [Alternative one]"),
+            String::from("Here is a split question inside brackets: [Alternative two]"),
         ];
         assert_eq!(split_string(input, &mut 0)?, expected);
         Ok(())
