@@ -40,7 +40,7 @@ fn find_m(id: i32, lang: Language) -> Result<Problem> {
         .build_string()?;
     let solution_graph = Axes::new_solution()
         .x_range(x_min, x_max)
-        .add_graph(Graph::linear(k, m).with_dot_at(0, m))
+        .add_graph(Graph::linear(k, m).dot(0, m))
         .build_string()?;
 
     let problem_data = registry::get_problem_data(id)?;
@@ -120,11 +120,7 @@ fn find_k_and_m_integers(id: i32, _lang: Language) -> Result<Problem> {
         .build_string()?;
     let solution_graph = Axes::new_solution()
         .x_range(x_min, x_max)
-        .add_graph(
-            Graph::linear(k, m)
-                .with_simple_slope_hint()
-                .with_dot_at(0, m),
-        )
+        .add_graph(Graph::linear(k, m).with_simple_slope_hint().dot(0, m))
         .build_string()?;
 
     let k_term = k * X;
@@ -180,11 +176,7 @@ fn draw_own_easy_integers(id: i32, lang: Language) -> Result<Problem> {
         .y_range(y_min, y_max)
         .x_tick(1)
         .y_tick(1)
-        .add_graph(
-            Graph::linear(k, m)
-                .with_simple_slope_hint()
-                .with_dot_at(0, m),
-        )
+        .add_graph(Graph::linear(k, m).with_simple_slope_hint().dot(0, m))
         .build_string()?;
 
     let k_term = k * X;

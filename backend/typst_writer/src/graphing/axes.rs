@@ -146,6 +146,11 @@ impl Axes {
         self
     }
 
+    pub fn clear_graphs(&mut self) -> &mut Self {
+        self.graphs.clear();
+        self
+    }
+
     pub fn build_string(&mut self) -> Result<String> {
         // Make sure the y_range is set if not manually set
         self.set_y_range()?;

@@ -58,7 +58,7 @@ impl Graph {
     /// Add a single dot to the graph.
     ///
     /// If you need multiple dots, use with_dots_at() instead.
-    pub fn with_dot_at(mut self, x: impl Into<Number>, y: impl Into<Number>) -> Self {
+    pub fn dot(mut self, x: impl Into<Number>, y: impl Into<Number>) -> Self {
         let x = x.into().for_graphs();
         let y = y.into().for_graphs();
         let color = "red";
@@ -67,6 +67,22 @@ impl Graph {
         self.additions.axis_relative.push(dot_anchor);
         self.additions.canvas_relative.push(dot);
         self
+    }
+
+    /// Add a single dot to the graph, with dashed lines going from the x- and y-axes.
+    pub fn dot_with_lines(mut self, x: impl Into<Number>, y: impl Into<Number>) -> Self {
+        let x = x.into();
+        let y = y.into();
+
+        let dashed_style = "style: (stroke: (paint: black, dash: \"dashed\"))";
+        let lines = format!(
+            "
+plot.add((({x}, 0), ({x}, {y})), {dashed_style})
+plot.add(((0, {y}), ({x}, {y})), {dashed_style})"
+        );
+
+        self.additions.axis_relative.push(lines);
+        self.dot(x, y)
     }
 
     /// Adds horizontal and vertical lines to show where one can calculate the slope.
