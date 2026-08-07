@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use math::{
     Number, ZERO,
     functions::{Function, FunctionKind},
@@ -6,10 +8,15 @@ use math::{
 const LABEL_PADDING: f64 = 0.2;
 
 pub struct Graph {
-    pub name: Option<String>,
     pub function: Function,
     pub additions: GraphAdditions,
+    /// A short name which is used to differentiate different plots
+    pub name: Option<String>,
+    /// Actual user-facing name, generally math-formatted
+    pub label: Label,
 }
+
+pub struct Label(Option<String>);
 
 /// Additional elements that need to be added to the graph,
 /// like dots, dashed lines, labels
@@ -28,6 +35,7 @@ impl Graph {
     pub fn linear(k: impl Into<Number>, m: impl Into<Number>) -> Graph {
         Graph {
             name: None,
+            label: Label(None),
             function: Function::linear(k, m),
             additions: GraphAdditions::default(),
         }
@@ -42,9 +50,15 @@ impl Graph {
         }
         Graph {
             name: None,
+            label: Label(None),
             function: Function::exponential(c, a),
             additions: GraphAdditions::default(),
         }
+    }
+
+    pub fn label(mut self, label: impl Display) -> Self {
+        self.label = Label(Some(label.to_string()));
+        self
     }
 
     /// Must be called if and only if there are more than one graph in the same Axes.
@@ -263,6 +277,16 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
             FunctionKind::Exponential { c, a } => {
                 format!("{} * calc.pow({}, t)", c.for_graphs(), a.for_graphs())
             }
+        }
+    }
+}
+
+impl Display for Label {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Label(Some(label)) = self {
+            write!(f, ", label: [{label}]")
+        } else {
+            write!(f, "")
         }
     }
 }

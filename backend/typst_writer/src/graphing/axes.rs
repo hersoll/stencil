@@ -1,4 +1,7 @@
-use crate::{drawing::FontSize, graphing::graphs::Graph};
+use crate::{
+    drawing::FontSize,
+    graphing::{Direction, graphs::Graph},
+};
 use anyhow::{Result, anyhow};
 use math::Number;
 use std::fmt::Write;
@@ -31,6 +34,8 @@ pub struct Axes {
     allow_minor_tick: bool,
     allow_minor_lines: bool,
 
+    legend: Option<Direction>,
+
     /// Where should grid lines be drawn?
     grid: GridType,
 
@@ -55,6 +60,7 @@ impl Default for Axes {
             allow_minor_lines: true,
             x_minor_tick: None,
             y_minor_tick: None,
+            legend: None,
             grid: GridType::Major,
             can_break: false,
             graphs: Vec::new(),
@@ -163,6 +169,11 @@ impl Axes {
         self
     }
 
+    pub fn legend(&mut self, dir: Direction) -> &mut Self {
+        self.legend = Some(dir);
+        self
+    }
+
     pub fn add_graph(&mut self, graph: Graph) -> &mut Self {
         self.graphs.push(graph);
         self
@@ -184,12 +195,20 @@ impl Axes {
         }
 
         let mut out = String::with_capacity(256);
+        let height = if self.legend.is_some() { 5.8 } else { 5.0 };
         writeln!(
             out,
-            "#block(height: 5cm)[#set text(size: {})\n#cetz.canvas({{",
+            "#block(height: {height}cm)[#set text(size: {})\n#cetz.canvas({{",
             self.font_size
         )?;
         writeln!(out, "import cetz.draw: *")?;
+        if self.legend.is_some() {
+            writeln!(out, "set-style(legend: (")?;
+            writeln!(out, "  item: (spacing: .1),")?;
+            writeln!(out, "  stroke: (paint: gray, thickness: 0.8pt),")?;
+            writeln!(out, "  radius: 4pt,")?;
+            writeln!(out, "))")?;
+        }
         writeln!(out, "plot.plot(")?;
         writeln!(out, "axis-style: \"school-book\",")?;
         writeln!(out, "name: \"graph\",")?;
@@ -210,15 +229,19 @@ impl Axes {
         if let Some(y_minor_tick) = self.y_minor_tick {
             writeln!(out, "y-minor-tick-step: {},", y_minor_tick.for_graphs())?;
         }
+        if let Some(direction) = self.legend {
+            writeln!(out, "legend: \"{direction}\",")?;
+        }
 
         writeln!(out, "{{")?;
         for graph in self.graphs.iter() {
             writeln!(
                 out,
-                "plot.add(domain: ({}, {}), t => {})",
+                "plot.add(domain: ({}, {}), t => {} {})",
                 self.x_min.for_graphs(),
                 self.x_max.for_graphs(),
-                graph.to_typst()
+                graph.to_typst(),
+                graph.label,
             )?;
             for add in graph.additions.axis_relative.iter() {
                 writeln!(out, "{add}")?;

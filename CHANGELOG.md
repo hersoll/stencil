@@ -5,6 +5,7 @@
 ### Added
 - f(x) graph problems
 - `dot_with_lines` for graphs
+- Graph legend support
 
 ## [0.12.5] - 2026-08-07
 
