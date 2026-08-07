@@ -11,7 +11,7 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters},
 };
-use typst_writer::graphing::{Axes, Graph};
+use typst_writer::graphing::{Axes, Graph, GridType};
 
 /// Find m in graph
 /// Absolute difficulty: 1
@@ -219,10 +219,12 @@ fn find_k_and_m_large_numbers(id: i32, _lang: Language) -> Result<Problem> {
 
     let question_graph = Axes::new()
         .x_range(x_min, x_max)
+        .without_minor_tick()
         .add_graph(Graph::linear(k, m))
         .build_string()?;
     let solution_graph = Axes::new_solution()
         .x_range(x_min, x_max)
+        .without_minor_tick()
         .add_graph(Graph::linear(k, m).with_slope_hint(0, 5, ("x", "y")))
         .build_string()?;
 

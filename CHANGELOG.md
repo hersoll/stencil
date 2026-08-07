@@ -1,18 +1,24 @@
 # Changelog
 
-## [0.12.5] - TBD
+## [0.12.5] - 2026-08-07
 
 ### Added
 - Inequality sign support
 - Inequality problems
+- Text variant f(x) problems
+- More granular support for major ticks and major gridlines in Axes
 
 ### Changed
 - New `picker` algorithm: add one of each problem if possible, gaussian on the rest
 - Removed words `add` and `with` in `SolutionWithSteps` methods for brevity
+- New split marker: `[[split_one || split_two]]` and support for markers of any length
 
 ### Fixed
 - Equation solutions are centered even when text is present
 - Removed possible numerator integers in `divide_one_decimal_integer`
+
+### Removed
+- No more minor ticks for `large_k` problem
 
 ## [0.12.4] - 2026-08-05
 

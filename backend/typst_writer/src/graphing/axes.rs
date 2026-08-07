@@ -28,7 +28,8 @@ pub struct Axes {
     y_tick: Option<Number>,
     x_minor_tick: Option<Number>,
     y_minor_tick: Option<Number>,
-    has_minor_tick: bool,
+    allow_minor_tick: bool,
+    allow_minor_lines: bool,
 
     /// Where should grid lines be drawn?
     grid: GridType,
@@ -50,10 +51,11 @@ impl Default for Axes {
             y_max: None,
             x_tick: None,
             y_tick: None,
-            has_minor_tick: true,
+            allow_minor_tick: true,
+            allow_minor_lines: true,
             x_minor_tick: None,
             y_minor_tick: None,
-            grid: GridType::Both,
+            grid: GridType::Major,
             can_break: false,
             graphs: Vec::new(),
             padding: ZERO,
@@ -105,8 +107,12 @@ impl Axes {
         self
     }
 
-    pub fn with_minor_tick(&mut self) -> &mut Self {
-        self.has_minor_tick = true;
+    pub fn without_minor_tick(&mut self) -> &mut Self {
+        self.allow_minor_tick = false;
+        self
+    }
+    pub fn without_minor_lines(&mut self) -> &mut Self {
+        self.allow_minor_lines = false;
         self
     }
 
@@ -333,12 +339,14 @@ impl Axes {
             }
         }
 
-        if self.has_minor_tick {
+        if self.allow_minor_tick {
             if x_tick != Number::Integer(1) {
                 let minor_tick = x_tick / 5;
                 if (self.x_max - self.x_min) / minor_tick < MAX_MINOR_TICKS - 1 {
                     self.x_minor_tick = Some(minor_tick);
-                    self.grid = GridType::Both;
+                    if self.allow_minor_lines {
+                        self.grid = GridType::Both;
+                    }
                 }
             }
 
@@ -346,7 +354,9 @@ impl Axes {
                 let minor_tick = y_tick / 5;
                 if (self.y_max.unwrap() - self.y_min.unwrap()) / minor_tick < MAX_MINOR_TICKS - 1 {
                     self.y_minor_tick = Some(minor_tick);
-                    self.grid = GridType::Both;
+                    if self.allow_minor_lines {
+                        self.grid = GridType::Both;
+                    }
                 }
             }
         }
