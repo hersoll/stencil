@@ -178,7 +178,7 @@
 - [x] Evaluate f(0)
 - [x] Solve the equation f(x) = 0
 ### 6 / 6
-- [ ] Solve f(x) = g(x) (both linear)
+- [x] Solve f(x) = g(x) (both linear)
 - [ ] Solve the inequality f(x) > 1 (linear)
 ### 7 / 7
 - [ ] Solve f(x) = g(x) (one quadratic)

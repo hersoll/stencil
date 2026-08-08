@@ -42,7 +42,7 @@ pub struct FinishedDecimalGenerator {
 /// let num = num_gen::decimals(2).range(1.2, 1.3).random();
 /// assert!(num > 1.2 && num < 1.3);
 ///
-/// let nums = num_gen::decimals(3).choose(&[1.2, 1.54, 1.456]);
+/// let nums = num_gen::decimals(3).numbers(&[1.2, 1.54, 1.456]);
 /// let num_one = nums.random();
 /// let num_two = nums.random(); // random() can be called multiple times on the same range
 /// assert!(num_one == 1.2 || num_one == 1.54 || num_one == 1.456);

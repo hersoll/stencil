@@ -1,3 +1,11 @@
+mod exponential;
+mod linear;
+mod quadratic;
+pub use exponential::*;
+pub use linear::*;
+pub use quadratic::*;
+use tracing::error;
+
 use std::fmt::Display;
 
 use crate::{
@@ -20,12 +28,19 @@ pub struct Function {
     aligned: bool,
 }
 
-/// The FunctionKind enum contains information about which kind of function it is (duh), but also numbers
-/// that are specific to that kind of function. This makes ergonomics easier when matching over the
-/// kinds since you can do FunctionKind::Linear {k, m} => ...
 pub enum FunctionKind {
-    Linear { k: Number, m: Number },
-    Exponential { c: Number, a: Number },
+    Linear(LinearFunction),
+    Exponential(ExponentialFunction),
+    Quadratic(QuadraticFunction),
+}
+
+impl Default for FunctionKind {
+    fn default() -> Self {
+        FunctionKind::Linear(LinearFunction {
+            k: Number::Integer(1),
+            m: Number::Integer(0),
+        })
+    }
 }
 
 impl Default for Function {
@@ -33,10 +48,10 @@ impl Default for Function {
         Self {
             name: symbols::Y,
             variable: symbols::X,
-            kind: FunctionKind::Linear {
+            kind: FunctionKind::Linear(LinearFunction {
                 k: Number::Integer(1),
                 m: Number::Integer(0),
-            },
+            }),
             show_as_function: false,
             aligned: false,
         }
@@ -49,7 +64,7 @@ impl Function {
         let m = m.into();
 
         Function {
-            kind: FunctionKind::Linear { k, m },
+            kind: FunctionKind::Linear(LinearFunction { k, m }),
             ..Default::default()
         }
     }
@@ -63,10 +78,90 @@ impl Function {
             a = Number::Integer(1)
         }
         Function {
-            kind: FunctionKind::Exponential { c, a },
+            kind: FunctionKind::Exponential(ExponentialFunction { c, a }),
             ..Default::default()
         }
     }
+
+    /// Returns a quadratic with the specified symmetry line and distance to zero points
+    pub fn quadratic_from_sym_dist(
+        symmetry: impl Into<Number> + Copy,
+        distance: impl Into<Number> + Copy,
+    ) -> Self {
+        let kind = if let Some(quad) = QuadraticFunction::from_symmetry_distance(symmetry, distance)
+        {
+            FunctionKind::Quadratic(quad)
+        } else {
+            FunctionKind::default()
+        };
+        Function {
+            kind,
+            ..Default::default()
+        }
+    }
+
+    /// Returns a quadratic with the specified symmetry line and distance to zero points,
+    /// with factor k
+    pub fn quadratic_from_sym_dist_k(
+        symmetry: impl Into<Number>,
+        distance: impl Into<Number>,
+        k: impl Into<Number>,
+    ) -> Self {
+        let kind = if let Some(quad) =
+            QuadraticFunction::from_symmetry_distance_k(symmetry, distance, k)
+        {
+            FunctionKind::Quadratic(quad)
+        } else {
+            FunctionKind::default()
+        };
+        Function {
+            kind,
+            ..Default::default()
+        }
+    }
+
+    /// Returns a quadratic that goes through the specified points
+    ///
+    /// Will return the default linear if at least two x:es are identical
+    pub fn quadratic_from_points(
+        (x1, y1): (impl Into<Number>, impl Into<Number>),
+        (x2, y2): (impl Into<Number>, impl Into<Number>),
+        (x3, y3): (impl Into<Number>, impl Into<Number>),
+    ) -> Self {
+        let kind = if let Some(quad) = QuadraticFunction::from_points((x1, y1), (x2, y2), (x3, y3))
+        {
+            FunctionKind::Quadratic(quad)
+        } else {
+            FunctionKind::default()
+        };
+        Function {
+            kind,
+            ..Default::default()
+        }
+    }
+
+    /// Returns a quadratic in the form of `ax^2 + bx +c`.
+    ///
+    /// If `a == 0`, returns a linear function instead
+    pub fn quadratic_from_abc(
+        a: impl Into<Number> + Copy,
+        b: impl Into<Number> + Copy,
+        c: impl Into<Number> + Copy,
+    ) -> Self {
+        let kind = if let Some(quad) = QuadraticFunction::from_abc(a, b, c) {
+            FunctionKind::Quadratic(quad)
+        } else {
+            FunctionKind::Linear(LinearFunction {
+                k: b.into(),
+                m: c.into(),
+            })
+        };
+        Function {
+            kind,
+            ..Default::default()
+        }
+    }
+
     /// Set the `name` of the [`Function`].
     pub fn with_name(mut self, name: &'static Symbol) -> Self {
         self.name = name;
@@ -101,12 +196,12 @@ impl Function {
     ///
     /// Returns an empty [`Vec`] if the y-value is outside the domain of the function
     pub fn get_x(&self, y: &Number) -> Vec<Number> {
-        match self.kind {
-            FunctionKind::Linear { k, m } => {
+        match &self.kind {
+            FunctionKind::Linear(LinearFunction { k, m }) => {
                 // Don't use this when k = 0, please
-                if k == 0 { vec![] } else { vec![(*y - m) / k] }
+                if *k == 0 { vec![] } else { vec![(*y - m) / k] }
             }
-            FunctionKind::Exponential { c, a } => {
+            FunctionKind::Exponential(ExponentialFunction { c, a }) => {
                 // No solution if y and c have opposite signs, since a positive value can't become
                 // negative through exponentiation
                 if *y * c < 0 {
@@ -116,6 +211,7 @@ impl Function {
                     vec![((*y / c).value().log2() / a.value().log2()).into()]
                 }
             }
+            FunctionKind::Quadratic(quad) => quad.get_x(y),
         }
     }
 
@@ -129,9 +225,12 @@ impl Function {
     /// As such, the Number might not be formatted properly for printing. Use
     /// [`Evaluable`](super::evaluables::Evaluable) for pretty printing!
     pub fn get_y(&self, x: &Number) -> Option<Number> {
-        match self.kind {
-            FunctionKind::Linear { k, m } => Some(k * x + m),
-            FunctionKind::Exponential { c, a } => Some(c * a.value().powf(x.value())),
+        match &self.kind {
+            FunctionKind::Linear(LinearFunction { k, m }) => Some(k * x + m),
+            FunctionKind::Exponential(ExponentialFunction { c, a }) => {
+                Some(c * a.value().powf(x.value()))
+            }
+            FunctionKind::Quadratic(quad) => Some(quad.get_y(x)),
         }
     }
 
@@ -149,12 +248,18 @@ impl Function {
     /// i.e `3x + 1` or `-2 dot 1.07^x`
     pub fn get_function_body(&self) -> String {
         match self.kind {
-            FunctionKind::Linear { k, m } => {
+            FunctionKind::Linear(LinearFunction { k, m }) => {
                 let poly = (k * self.variable).and(&Term::from_num(m));
                 poly.to_string()
             }
-            FunctionKind::Exponential { c, a } => {
+            FunctionKind::Exponential(ExponentialFunction { c, a }) => {
                 format!("{c} dot {a}^{x}", x = self.variable)
+            }
+            FunctionKind::Quadratic(QuadraticFunction { a, b, c }) => {
+                let poly = (a * self.variable * self.variable)
+                    .and(&(b * self.variable))
+                    .and(&Term::from_num(c));
+                poly.to_string()
             }
         }
     }
@@ -177,8 +282,8 @@ impl Display for Function {
 }
 
 impl Evaluable for Function {
-    fn print_replacements(&self, replacements: &[Replacement]) -> String {
-        let replacements = Replacements::from_array(replacements);
+    fn print_replacements(&self, replacement_vec: &[Replacement]) -> String {
+        let replacements = Replacements::from_array(replacement_vec);
         // Should y be replaced with a number?
         let declaration = if let Some(y_value) = replacements.get_replacement_for(self.name) {
             format!("colored({y_value})")
@@ -192,20 +297,23 @@ impl Evaluable for Function {
         // Should x be replaced with a number?
         let body = if let Some(x_value) = replacements.get_replacement_for(self.variable) {
             let x = format!("colored({})", utils::parenthesize(x_value));
-            match self.kind {
-                FunctionKind::Linear { k, m } => {
-                    let m = Term::from_num(m);
-                    if k == 0 {
+            match &self.kind {
+                FunctionKind::Linear(LinearFunction { k, m }) => {
+                    let m = Term::from_num(*m);
+                    if *k == 0 {
                         format!("{m}")
-                    } else if k == 1 {
+                    } else if *k == 1 {
                         format!("{x} {m:+}")
                     } else {
                         format!("{k} dot {x} {m:+}")
                     }
                 }
-                FunctionKind::Exponential { c, a } => {
-                    format!("{c} dot {a}^({x})") // parentheses to make sure it's picked up?
+                FunctionKind::Exponential(ExponentialFunction { c, a }) => {
+                    format!("{c} dot {a}^({x})")
                 }
+                FunctionKind::Quadratic(func) => func
+                    .as_poly(self.variable)
+                    .print_replacements(replacement_vec),
             }
         } else {
             self.get_function_body()
@@ -215,8 +323,8 @@ impl Evaluable for Function {
         format!("{declaration} {equality_sign} {body}")
     }
 
-    fn print_evaluation_by_parts(&self, replacements: &[Replacement]) -> String {
-        let replacements = Replacements::from_array(replacements);
+    fn print_evaluation_by_parts(&self, replacement_vec: &[Replacement]) -> String {
+        let replacements = Replacements::from_array(replacement_vec);
 
         // Should y be replaced with a number?
         let declaration = if let Some(y_value) = replacements.get_replacement_for(self.name) {
@@ -230,18 +338,21 @@ impl Evaluable for Function {
         };
         // Should x be replaced with a number?
         let body = if let Some(x) = replacements.get_replacement_for(self.variable) {
-            match self.kind {
-                FunctionKind::Linear { k, m } => {
-                    let m = Term::from_num(m); // Does not print if 0
-                    if k == 0 {
+            match &self.kind {
+                FunctionKind::Linear(LinearFunction { k, m }) => {
+                    let m = Term::from_num(*m); // Does not print if 0
+                    if *k == 0 {
                         format!("{m}")
                     } else {
                         format!("{kx}{m:+}", kx = k * x)
                     }
                 }
-                FunctionKind::Exponential { c, a } => {
+                FunctionKind::Exponential(ExponentialFunction { c, a }) => {
                     format!("{c} dot {ax}", ax = a.pow(*x))
                 }
+                FunctionKind::Quadratic(func) => func
+                    .as_poly(self.variable)
+                    .print_evaluation_by_parts(replacement_vec),
             }
         } else {
             self.get_function_body()
@@ -254,9 +365,11 @@ impl Evaluable for Function {
         let replacements = Replacements::from_array(replacements);
 
         if let Some(x) = replacements.get_replacement_for(self.variable) {
-            match self.kind {
-                FunctionKind::Linear { k, m } => k * x + m,
-                FunctionKind::Exponential { c, a } => c * a.pow(*x),
+            if let Some(y) = self.get_y(x) {
+                y
+            } else {
+                error!("Tried to evaluate() a functions with an invalid x value");
+                Number::Integer(-1000)
             }
         } else {
             panic!(
@@ -266,6 +379,3 @@ impl Evaluable for Function {
         }
     }
 }
-
-#[cfg(test)]
-mod linear_tests;

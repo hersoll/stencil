@@ -161,7 +161,18 @@ impl Evaluable for Term {
 
         use std::fmt::Write;
         // Always print the coefficient first
-        let mut s = self.coefficient.to_string();
+        let mut s = String::new();
+        let coefficient_written = self.coefficient.abs() != 1;
+        if self.coefficient == -1 && !self.variables.list.is_empty() {
+            write!(s, "-").unwrap();
+        } else if self.coefficient != 1 {
+            write!(s, "{}", self.coefficient).unwrap();
+        } else if self.coefficient == 1 && self.variables.list.is_empty() {
+            write!(s, "1").unwrap()
+        } else if self.coefficient == -1 && self.variables.list.is_empty() {
+            write!(s, "-1").unwrap()
+        }
+
         // For each variable, replace that variable with a number (if it exists in Replacements)
         for (i, var) in self.variables.list.iter().enumerate() {
             match replacements
@@ -179,9 +190,12 @@ impl Evaluable for Term {
                     // have dots between them. That's why we need to add them in the beginning and
                     // the end, but this means we must trim "dot" on successive replacements
                     s = s.trim_end_matches(" dot ").to_string();
+                    if coefficient_written {
+                        write!(s, " dot ").unwrap()
+                    }
                     write!(
                         &mut s,
-                        " dot colored({}){}{}",
+                        "colored({}){}{}",
                         parenthesize(num),
                         if var.exponent > 1 {
                             format!("^{}", var.exponent)

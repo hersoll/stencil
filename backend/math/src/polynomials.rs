@@ -207,11 +207,13 @@ impl Evaluable for Polynomial {
     fn print_replacements(&self, replacements: &[Replacement]) -> String {
         let mut s = String::new();
         self.terms.iter().enumerate().for_each(|(i, term)| {
-            // Terms don't add signs by themselves when printing replacements
-            if i > 0 && term.coefficient > 0 {
-                s += "+";
+            if term.coefficient != 0 {
+                // Terms don't add signs by themselves when printing replacements
+                if i > 0 && term.coefficient > 0 {
+                    s += "+";
+                }
+                s += &term.print_replacements(replacements);
             }
-            s += &term.print_replacements(replacements);
         });
 
         s
@@ -220,11 +222,13 @@ impl Evaluable for Polynomial {
     fn print_evaluation_by_parts(&self, replacements: &[Replacement]) -> String {
         let mut s = String::new();
         self.terms.iter().enumerate().for_each(|(i, term)| {
-            // Terms don't add signs by themselves when printing evaluations
-            if i > 0 && term.coefficient > 0 {
-                s += "+";
+            if term.coefficient != 0 {
+                // Terms don't add signs by themselves when printing evaluations
+                if i > 0 && term.coefficient > 0 {
+                    s += "+";
+                }
+                s += &term.print_evaluation_by_parts(replacements);
             }
-            s += &term.print_evaluation_by_parts(replacements);
         });
 
         s

@@ -41,7 +41,7 @@ mod tests {
     #[test]
     fn simplifies_when_one_is_negative() {
         assert_eq!(simplified_fraction(-4, 8), (-1, 2));
-        assert_eq!(simplified_fraction(18, -6), (3, -1));
+        assert_eq!(simplified_fraction(18, -6), (-3, 1));
     }
 
     #[test]

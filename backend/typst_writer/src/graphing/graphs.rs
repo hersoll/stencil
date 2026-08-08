@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use math::{
     Number, ZERO,
-    functions::{Function, FunctionKind},
+    functions::{ExponentialFunction, Function, FunctionKind, LinearFunction, QuadraticFunction},
 };
 
 const LABEL_PADDING: f64 = 0.2;
@@ -271,11 +271,17 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
     /// the method lives here due to it being typst (and therefore graph) related, not mathematical
     pub fn to_typst(&self) -> String {
         match self.function.kind {
-            FunctionKind::Linear { k, m } => {
+            FunctionKind::Linear(LinearFunction { k, m }) => {
                 format!("{} * float(t) + {}", k.for_graphs(), m.for_graphs())
             }
-            FunctionKind::Exponential { c, a } => {
+            FunctionKind::Exponential(ExponentialFunction { c, a }) => {
                 format!("{} * calc.pow({}, t)", c.for_graphs(), a.for_graphs())
+            }
+            FunctionKind::Quadratic(QuadraticFunction { a, b, c }) => {
+                let a = a.for_graphs();
+                let b = b.for_graphs();
+                let c = c.for_graphs();
+                format!("{a} * calc.pow(t, 2) + {b} * t + {c}")
             }
         }
     }
