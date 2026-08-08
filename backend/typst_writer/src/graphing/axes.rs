@@ -1,6 +1,6 @@
 use crate::{drawing::FontSize, graphing::graphs::Graph};
 use anyhow::{Result, anyhow};
-use math::Number;
+use math::{Number, functions::FunctionKind};
 use std::fmt::Write;
 
 pub enum GridType {
@@ -41,6 +41,8 @@ pub struct Axes {
 
     /// The actual graphs (plots) to be drawn in the coordinate system
     graphs: Vec<Graph>,
+    /// Custom axis-relative elements which are raw strings from the caller
+    customs: Vec<String>,
 }
 
 impl Default for Axes {
@@ -61,6 +63,7 @@ impl Default for Axes {
             grid: GridType::Major,
             can_break: false,
             graphs: Vec::new(),
+            customs: Vec::new(),
             padding: Number::Integer(1),
         }
     }
@@ -113,6 +116,16 @@ impl Axes {
             self.x_max = upper_bound;
         }
 
+        self
+    }
+
+    pub fn y_min(&mut self, min: impl Into<Number>) -> &mut Self {
+        self.y_min = Some(min.into());
+        self
+    }
+
+    pub fn y_max(&mut self, max: impl Into<Number>) -> &mut Self {
+        self.y_max = Some(max.into());
         self
     }
 
@@ -181,6 +194,11 @@ impl Axes {
         self
     }
 
+    pub fn custom(&mut self, s: String) -> &mut Self {
+        self.customs.push(s);
+        self
+    }
+
     pub fn build_string(&mut self) -> Result<String> {
         // Make sure the y_range is set if not manually set
         self.set_y_range()?;
@@ -232,17 +250,21 @@ impl Axes {
 
         writeln!(out, "{{")?;
         for graph in self.graphs.iter() {
+            let name = graph.name.clone().unwrap_or("f".into());
+            writeln!(out, "let {name}(x) = {}", graph.to_typst())?;
             writeln!(
                 out,
-                "plot.add(domain: ({}, {}), t => {} {})",
+                "plot.add(domain: ({}, {}), {name} {})",
                 self.x_min.for_graphs(),
                 self.x_max.for_graphs(),
-                graph.to_typst(),
                 graph.label,
             )?;
             for add in graph.additions.axis_relative.iter() {
                 writeln!(out, "{add}")?;
             }
+        }
+        for custom in self.customs.iter() {
+            writeln!(out, "{custom}")?;
         }
         writeln!(out, "}})")?;
         // Need to loop through the graphs again to get all the canvas-relative additions
@@ -281,26 +303,40 @@ impl Axes {
             ));
         }
 
+        fn adjust_min_max(min: &mut Number, max: &mut Number, extreme: Number) {
+            if extreme < *min {
+                *min = extreme;
+            }
+            if extreme > *max {
+                *max = extreme;
+            }
+        }
+
         let mut min = Number::Integer(i32::MAX);
         let mut max = Number::Integer(i32::MIN);
         for graph in self.graphs.iter() {
             // Check the endpoints of the graph
             for val in [self.x_min, self.x_max].iter() {
                 if let Some(extreme) = graph.function.get_y(val) {
-                    if extreme < min {
-                        min = extreme;
-                    }
-                    if extreme > max {
-                        max = extreme;
-                    }
+                    adjust_min_max(&mut min, &mut max, extreme);
                 }
             }
-            // Here we can also check for other extremes, like the extremum of a quadratic function
-            // or amplitude of a sine wave
+            // Here we check for other extremes, like the extremum of a quadratic function
+            if let FunctionKind::Quadratic(quad) = &graph.function.kind {
+                // There is a native extreme() method for quadratics, but it might panic if
+                // the symmetry is a complicated fraction.
+                let symmetry = quad.symmetry().to_decimal();
+                let extreme = graph.function.get_y(&symmetry).unwrap().to_decimal();
+                adjust_min_max(&mut min, &mut max, extreme);
+            }
         }
 
-        self.y_min = Some(min - self.padding);
-        self.y_max = Some(max + self.padding);
+        if self.y_min.is_none() {
+            self.y_min = Some(min - self.padding);
+        }
+        if self.y_max.is_none() {
+            self.y_max = Some(max + self.padding);
+        }
 
         Ok(())
     }

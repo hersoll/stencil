@@ -1,5 +1,6 @@
 use crate::Number;
 
+#[derive(Debug, Copy, Clone)]
 pub struct LinearFunction {
     pub k: Number,
     pub m: Number,

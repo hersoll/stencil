@@ -7,6 +7,7 @@ use math::{
 
 const LABEL_PADDING: f64 = 0.2;
 
+#[derive(Default)]
 pub struct Graph {
     pub function: Function,
     pub additions: GraphAdditions,
@@ -16,6 +17,7 @@ pub struct Graph {
     pub label: Label,
 }
 
+#[derive(Default)]
 pub struct Label(Option<String>);
 
 /// Additional elements that need to be added to the graph,
@@ -54,6 +56,19 @@ impl Graph {
             function: Function::exponential(c, a),
             additions: GraphAdditions::default(),
         }
+    }
+
+    /// Generate a `Graph` struct if you already have a `Function`
+    pub fn from_function(function: Function) -> Self {
+        Graph {
+            function,
+            ..Default::default()
+        }
+    }
+
+    pub fn function(mut self, function: Function) -> Self {
+        self.function = function;
+        self
     }
 
     pub fn label(mut self, label: impl Display) -> Self {
@@ -272,16 +287,16 @@ plot.add((({x_1}, {y_0}), ({x_1}, {y_1})), {dashed_style})"
     pub fn to_typst(&self) -> String {
         match self.function.kind {
             FunctionKind::Linear(LinearFunction { k, m }) => {
-                format!("{} * float(t) + {}", k.for_graphs(), m.for_graphs())
+                format!("{} * float(x) + {}", k.for_graphs(), m.for_graphs())
             }
             FunctionKind::Exponential(ExponentialFunction { c, a }) => {
-                format!("{} * calc.pow({}, t)", c.for_graphs(), a.for_graphs())
+                format!("{} * calc.pow({}, x)", c.for_graphs(), a.for_graphs())
             }
             FunctionKind::Quadratic(QuadraticFunction { a, b, c }) => {
                 let a = a.for_graphs();
                 let b = b.for_graphs();
                 let c = c.for_graphs();
-                format!("{a} * calc.pow(t, 2) + {b} * t + {c}")
+                format!("{a} * calc.pow(x, 2) + {b} * x + {c}")
             }
         }
     }

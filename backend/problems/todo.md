@@ -179,13 +179,14 @@
 - [x] Solve the equation f(x) = 0
 ### 6 / 6
 - [x] Solve f(x) = g(x) (both linear)
-- [ ] Solve the inequality f(x) > 1 (linear)
+- [x] Solve the inequality f(x) > 1 (linear)
 ### 7 / 7
-- [ ] Solve f(x) = g(x) (one quadratic)
+- [x] Solve f(x) = g(x) (one quadratic)
+- [x] Solve the inequality f(x) < g(x) (linear)
 ### 8 / 8
-- [ ] Solve the inequality f(x) < 3 (quadratic)
-### 8 / 9
-- [ ] Solve the inequality f(x) > g(x)
-- [ ] Solve the inequality f(x) >= g(x)
-### 9 / 10
-- [ ] Solve the equation f(x) = kx + m
+- [x] Solve the inequality f(x) < 3 (quadratic)
+- [x] Solve the inequality f(x) > g(x) (quadratic)
+### 9 / 9
+- [x] Solve the inequality f(x) < g(x) (quadratic)
+### 10 / 10
+- [x] Solve the equation f(x) = kx + m

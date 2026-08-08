@@ -64,6 +64,24 @@ impl InequalitySign {
             .choose(&mut rng)
             .unwrap_or(&InequalitySign::Greater) // Should never be reached
     }
+
+    pub fn is_less(&self) -> bool {
+        use InequalitySign::*;
+        match self {
+            Less => true,
+            Leq => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_greater(&self) -> bool {
+        use InequalitySign::*;
+        match self {
+            Less => false,
+            Leq => false,
+            _ => true,
+        }
+    }
 }
 
 impl Display for InequalitySign {

@@ -2,7 +2,7 @@ use tracing::error;
 
 use crate::{Number, Polynomial, Term, ZERO, symbols::Symbol};
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub struct QuadraticFunction {
     /// All constructors assert a != 0
     pub a: Number,
@@ -116,6 +116,23 @@ impl QuadraticFunction {
         (self.a * variable * variable)
             .and(&(self.b * variable))
             .and(&Term::from_num(self.c))
+    }
+
+    /// Returns the x value of the symmetry line
+    pub fn symmetry(&self) -> Number {
+        (-self.b / (2 * self.a)).simplify()
+    }
+
+    /// Returns the most extreme y value
+    pub fn extreme_value(&self) -> Number {
+        self.get_y(&self.symmetry()).simplify()
+    }
+
+    /// Returns the coordinate of the extremum
+    pub fn extremum(&self) -> (Number, Number) {
+        let x = self.symmetry();
+        let y = self.get_y(&x);
+        (x, y)
     }
 }
 

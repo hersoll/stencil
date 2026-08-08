@@ -7,6 +7,9 @@
 - `dot_with_lines` for graphs
 - Graph legend support
 - Support for quadratic functions
+- You can now change `y_min` or `y_max` separately for `Axes`
+- It's now possible to add custom objects to graphs
+- Added `is_less()` and `is_greater()` for `InequalitySign`
 
 ## [0.12.5] - 2026-08-07
 

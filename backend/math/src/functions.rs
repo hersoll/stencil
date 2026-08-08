@@ -15,6 +15,7 @@ use crate::{
     utils,
 };
 
+#[derive(Debug, Copy, Clone)]
 pub struct Function {
     /// The output [`Symbol`], generally the "y variable"
     pub name: &'static Symbol,
@@ -28,6 +29,7 @@ pub struct Function {
     aligned: bool,
 }
 
+#[derive(Debug, Copy, Clone)]
 pub enum FunctionKind {
     Linear(LinearFunction),
     Exponential(ExponentialFunction),
