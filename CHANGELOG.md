@@ -2,6 +2,9 @@
 
 ## [0.12.7] - TBD
 
+### Added
+- `shuffle_numbers()` available for all problems
+
 ### Changed
 - Renamed `standard_powers` to `integer_exponents` 
 

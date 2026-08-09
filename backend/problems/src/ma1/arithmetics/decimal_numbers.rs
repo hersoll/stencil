@@ -1,10 +1,9 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    MathDisplay, Number,
+    MathDisplay,
     num_gen::{self, NumberGenerator},
 };
-use rand::Rng;
 use registry::get_solution;
 use types::{
     format_strings::HasReplacements,
@@ -12,16 +11,7 @@ use types::{
     problems::{Problem, ProblemParameters, Solution},
 };
 
-/// Shuffles the order of two numbers. Returns true if switched.
-fn shuffle_order(num_1: &mut Number, num_2: &mut Number) -> bool {
-    let mut rng = rand::rng();
-    if rng.random::<f32>() > 0.5 {
-        std::mem::swap(&mut *num_1, &mut *num_2);
-        true
-    } else {
-        false
-    }
-}
+use crate::shuffle_numbers;
 
 fn generate_multiplication_problem(
     id: i32,
@@ -31,7 +21,7 @@ fn generate_multiplication_problem(
 ) -> Result<Problem> {
     let mut num_1 = range_1.random();
     let mut num_2 = range_2.random();
-    let swapped = shuffle_order(&mut num_1, &mut num_2);
+    let swapped = shuffle_numbers(&mut num_1, &mut num_2);
     let answer = num_1 * num_2;
     // Needed for solution
     let int_1 = num_1.as_integer();
