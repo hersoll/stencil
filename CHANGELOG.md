@@ -1,6 +1,11 @@
 # Changelog
 
-## [0.12.6] - TBD
+## [0.12.7] - TBD
+
+### Changed
+- Renamed `standard_powers` to `integer_exponents` 
+
+## [0.12.6] - 2026-08-08 
 
 ### Added
 - f(x) graph problems
