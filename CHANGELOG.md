@@ -12,6 +12,9 @@
 - Renamed `standard_powers` to `integer_exponents` 
 - Renamed `linebreak()` to `linebreak_equality()` in inline solutions
 
+### Fixed
+- Editor context menu is moved up so all buttons are accessible at all times
+
 ## [0.12.6] - 2026-08-08 
 
 ### Added

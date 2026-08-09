@@ -17,8 +17,8 @@
   let popoverElement: HTMLDivElement;
 
   export function show(target: { x: number; y: number }) {
-    popoverElement.style.top = `${target.y + 10}px`;
-    popoverElement.style.left = `${target.x + 10}px`;
+    popoverElement.style.top = `${target.y - 80}px`;
+    popoverElement.style.left = `${target.x + 15}px`;
     popoverElement.showPopover();
   }
 
