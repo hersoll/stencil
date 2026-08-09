@@ -37,7 +37,11 @@ pub fn subtract_number(val: impl Into<Number>) -> String {
     }
 }
 
-pub fn subtract_term(term: &Term) -> String {
+pub fn subtract_term<T>(term: &T) -> String
+where
+    T: Into<Term> + Clone,
+{
+    let term = term.clone().into();
     use std::cmp::Ordering::*;
     match term.partial_cmp(&0) {
         Some(Greater) => format!("- #h({OPERATOR_SPACE}em) {}", term),

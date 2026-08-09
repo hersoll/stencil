@@ -557,3 +557,242 @@ fn find_x_multiplication(id: i32, _lang: Language) -> Result<Problem> {
         combinations: const_range.len(),
     }))
 }
+
+/// Solve the equation 5^x / 5^3 = 5^12
+/// Absolute difficulty: 4
+/// Relative difficulty: 10
+#[problem]
+fn find_x_division(id: i32, _lang: Language) -> Result<Problem> {
+    let answer = num_gen::integer().range(5, 14).random();
+    let (constant, const_range) = num_gen::integer().range(2, answer - 2).and_random();
+    let base = const_range.random();
+    let rhs_num = answer - constant;
+    let var = symbols::get_unknown()?;
+
+    let lhs = format!("{base}^({var}) / {base}^{constant}");
+    let rhs = format!("{base}^({rhs_num})");
+    let equation = format!("{lhs} = {rhs}");
+    let solution = Solution::with_steps()
+        .aligned(lhs, &rhs)
+        .aligned(format!("{base}^({var} - {constant})"), rhs)
+        .step(format!("cancel({base})"))
+        .aligned(format!("{var} - {constant}"), rhs_num)
+        .step(formatting::add_number(constant))
+        .aligned(var, answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: equation.as_block_math(),
+        answer: format!("${var} = {answer}$"),
+        solution,
+        identifiers: constant,
+        combinations: const_range.len(),
+    }))
+}
+
+/// Solve the equation 5^2x * 5^3 = 5^12
+/// Absolute difficulty: 5
+/// Relative difficulty: 15
+#[problem]
+fn find_coef_x_multiplication(id: i32, _lang: Language) -> Result<Problem> {
+    let answer = num_gen::integer().range(2, 8).random();
+    let (constant, const_range) = num_gen::integer().range(2, 7).and_random();
+    let (coef, coef_range) = num_gen::integer().range(2, 5).and_random();
+    let base = const_range.random();
+    let rhs_num = coef * answer + constant;
+    let var = symbols::get_unknown()?;
+    let var_term = coef * var;
+
+    let lhs = format!("{base}^({var_term}) dot {base}^{constant}");
+    let rhs = format!("{base}^({rhs_num})");
+    let equation = format!("{lhs} = {rhs}");
+    let solution = Solution::with_steps()
+        .aligned(lhs, &rhs)
+        .aligned(format!("{base}^({var_term} + {constant})"), rhs)
+        .step(format!("cancel({base})"))
+        .aligned(format!("{var_term} + {constant}"), rhs_num)
+        .step(formatting::subtract_number(constant))
+        .aligned(var_term, answer * coef)
+        .step(formatting::divide_number(coef))
+        .aligned(var, answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: equation.as_math(),
+        answer: format!("${var} = {answer}$"),
+        solution,
+        identifiers: vec![coef, constant],
+        combinations: const_range.len() * coef_range.len(),
+    }))
+}
+
+/// Solve the equation 5^2x / 5^3 = 5^12
+/// Absolute difficulty: 5
+/// Relative difficulty: 15
+#[problem]
+fn find_coef_x_division(id: i32, _lang: Language) -> Result<Problem> {
+    let (answer, answer_range) = num_gen::integer().range(2, 8).and_random();
+    let (coef, coef_range) = num_gen::integer().range(2, 5).and_random();
+    let constant = num_gen::integer().range(2, coef * answer - 2).random();
+    let base = answer_range.random();
+    let rhs_num = coef * answer - constant;
+    let var = symbols::get_unknown()?;
+    let var_term = coef * var;
+
+    let lhs = format!("{base}^({var_term}) / {base}^{constant}");
+    let rhs = format!("{base}^({rhs_num})");
+    let equation = format!("{lhs} = {rhs}");
+    let solution = Solution::with_steps()
+        .aligned(lhs, &rhs)
+        .aligned(format!("{base}^({var_term} - {constant})"), rhs)
+        .step(format!("cancel({base})"))
+        .aligned(format!("{var_term} - {constant}"), rhs_num)
+        .step(formatting::add_number(constant))
+        .aligned(var_term, answer * coef)
+        .step(formatting::divide_number(coef))
+        .aligned(var, answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: equation.as_block_math(),
+        answer: format!("${var} = {answer}$"),
+        solution,
+        identifiers: coef,
+        combinations: coef_range,
+    }))
+}
+
+/// ab^2 * a^3b^5
+/// Absolute difficulty: 5
+/// Relative difficulty: 15
+#[problem]
+fn multiply_two_variables(id: i32, _lang: Language) -> Result<Problem> {
+    let (var1, var2) = symbols::get_two_unknowns()?;
+    let exp_range = num_gen::integer().range(1, 5);
+    let (exp_1, exp_2) = (exp_range.random(), exp_range.random());
+    let (exp_3, exp_4) = (exp_range.random(), exp_range.random());
+    let v1 = var1.powi(exp_1);
+    let v2 = var2.powi(exp_2);
+    let v3 = var1.powi(exp_3);
+    let v4 = var2.powi(exp_4);
+    let t1 = &v1 * &v2;
+    let t2 = &v3 * &v4;
+    let equation = format!("{t1} dot {t2}");
+    let answer = t1 * t2;
+
+    let solution = Solution::inline()
+        .write(&equation)
+        .equals(format!("{v1} dot {v3} dot {v2} dot {v4}"))
+        .linebreak_equality()
+        .equals(format!("{} dot {}", v1 * v3, v2 * v4))
+        .equals(&answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: equation.as_math(),
+        answer,
+        solution,
+        identifiers: vec![exp_1, exp_2],
+        combinations: exp_range.len().pow(2),
+    }))
+}
+
+/// Solve the equation 5^2x / 5^3 = 5^x * 5^4
+/// Absolute difficulty: 6
+/// Relative difficulty: 18
+#[problem]
+fn find_x_on_both_sides(id: i32, _lang: Language) -> Result<Problem> {
+    let (answer, answer_range) = num_gen::integer().range(4, 8).and_random();
+    let (left_coef, coef_range) = num_gen::integer().range(2, 5).and_random();
+    let right_coef = 1;
+    let left_constant = num_gen::integer()
+        .range(2, (left_coef - right_coef) * answer - 2)
+        .random();
+    let right_constant = answer * (left_coef - right_coef) - left_constant;
+    let base = answer_range.random();
+    let var = symbols::get_unknown()?;
+    let var_term = left_coef * var;
+    let coef_diff = left_coef - right_coef;
+    let simplified_term = coef_diff * var;
+
+    let lhs = format!("{base}^({var_term}) / {base}^{left_constant}");
+    let rhs = format!("{base}^{var} dot {base}^({right_constant})");
+    let equation = format!("{lhs} = {rhs}");
+    let mut solution = Solution::with_steps();
+    solution
+        .aligned(lhs, &rhs)
+        .aligned(
+            format!("{base}^({var_term} - {left_constant})"),
+            format!("{base}^({var} + {right_constant})"),
+        )
+        .step(format!("cancel({base})"))
+        .aligned(var_term.and(&-left_constant), var + right_constant)
+        .step(formatting::subtract_term(&var))
+        .aligned((simplified_term).and(&-left_constant), right_constant)
+        .step(formatting::add_number(left_constant))
+        .aligned(simplified_term, answer * coef_diff);
+    if coef_diff > 1 {
+        solution
+            .step(formatting::divide_number(coef_diff))
+            .aligned(var, answer);
+    }
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: equation.as_block_math(),
+        answer: format!("${var} = {answer}$"),
+        solution: solution.to_string(),
+        identifiers: left_coef,
+        combinations: coef_range,
+    }))
+}
+
+/// 4ab^2 * 2a^3b^5
+/// Absolute difficulty: 6
+/// Relative difficulty: 18
+#[problem]
+fn multiply_two_variables_with_coefs(id: i32, _lang: Language) -> Result<Problem> {
+    let (var1, var2) = symbols::get_two_unknowns()?;
+    let coef_range = num_gen::integer().range(2, 6);
+    let coef_1 = coef_range.random();
+    let coef_2 = coef_range.random();
+    let exp_range = num_gen::integer().range(1, 5);
+    let (exp_1, exp_2) = (exp_range.random(), exp_range.random());
+    let (exp_3, exp_4) = (exp_range.random(), exp_range.random());
+    let v1 = var1.powi(exp_1);
+    let v2 = var2.powi(exp_2);
+    let v3 = var1.powi(exp_3);
+    let v4 = var2.powi(exp_4);
+    let t1 = coef_1 * (&v1 * &v2);
+    let t2 = coef_2 * (&v3 * &v4);
+    let equation = format!("{t1} dot {t2}");
+    let answer = t1 * t2;
+
+    let solution = Solution::inline()
+        .write(&equation)
+        .equals(format!(
+            "{coef_1} dot {coef_2} dot {v1} dot {v3} dot {v2} dot {v4}"
+        ))
+        .linebreak_equality()
+        .equals(format!(
+            "{} dot {} dot {}",
+            coef_1 * coef_2,
+            v1 * v3,
+            v2 * v4
+        ))
+        .equals(&answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: equation.as_math(),
+        answer,
+        solution,
+        identifiers: vec![exp_1, exp_2],
+        combinations: exp_range.len().pow(2),
+    }))
+}

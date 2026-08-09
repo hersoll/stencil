@@ -5,6 +5,7 @@
 ### Added
 - `shuffle_numbers()` available for all problems
 - Variable multiplication problems
+- Exponential equation problems
 - impl `Mul` for `&Term`
 
 ### Changed
