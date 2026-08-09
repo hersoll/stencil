@@ -11,7 +11,7 @@ use types::{
     problems::{Problem, ProblemParameters, Solution},
 };
 
-use crate::shuffle_numbers;
+use crate::shuffle;
 
 fn generate_multiplication_problem(
     id: i32,
@@ -21,7 +21,7 @@ fn generate_multiplication_problem(
 ) -> Result<Problem> {
     let mut num_1 = range_1.random();
     let mut num_2 = range_2.random();
-    let swapped = shuffle_numbers(&mut num_1, &mut num_2);
+    let swapped = shuffle(&mut num_1, &mut num_2);
     let answer = num_1 * num_2;
     // Needed for solution
     let int_1 = num_1.as_integer();

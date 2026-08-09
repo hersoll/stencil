@@ -1,14 +1,16 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    Term,
+    Number, Term,
     num_gen::{self, NumberGenerator},
     symbols,
 };
 use types::{
     lang::Language,
-    problems::{Problem, ProblemParameters},
+    problems::{Problem, ProblemParameters, Solution},
 };
+
+use crate::shuffle;
 
 /// 5^4 * 5^2
 /// Absolute difficulty: 1
@@ -157,9 +159,221 @@ fn double_exponentiation_variables(id: i32, _lang: Language) -> Result<Problem> 
     }))
 }
 
-/// (5^3 * 5^6) / 5^2
+/// x * x
 /// Absolute difficulty: 3
 /// Relative difficulty: 5
+#[problem]
+fn x_times_x(id: i32, _lang: Language) -> Result<Problem> {
+    let var = symbols::get_unknown()?;
+    let solution = Solution::inline()
+        .write(format!("{var} dot {var}"))
+        .equals(format!("{var}^1 dot {var}^1"))
+        .equals(format!("{var}^(1+1)"))
+        .equals(var * var)
+        .to_string();
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("${var} dot {var}$"),
+        answer: var * var,
+        solution,
+        identifiers: 1,
+        combinations: 1,
+    }))
+}
+
+/// x * 2x
+/// Absolute difficulty: 3
+/// Relative difficulty: 6
+#[problem]
+fn x_times_coef_x(id: i32, _lang: Language) -> Result<Problem> {
+    let (mut coef_1, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let mut coef_2 = Number::Integer(1);
+    shuffle(&mut coef_1, &mut coef_2);
+
+    let var = symbols::get_unknown()?;
+    let t1 = coef_1 * var;
+    let t2 = coef_2 * var;
+    let total_coef = coef_1 * coef_2;
+    let answer = &t1 * &t2;
+
+    let solution = Solution::inline()
+        .write(format!("{t1} dot {t2}"))
+        .equals(format!("{total_coef} dot {var} dot {var}"))
+        .equals(&answer)
+        .to_string();
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("${t1} dot {t2}$"),
+        answer,
+        solution,
+        identifiers: vec![coef_1, coef_2],
+        combinations: coef_range.len() * 2,
+    }))
+}
+
+/// 3x * 2x
+/// Absolute difficulty: 3
+/// Relative difficulty: 7
+#[problem]
+fn coef_x_times_coef_x(id: i32, _lang: Language) -> Result<Problem> {
+    let (coef_1, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let coef_2 = coef_range.random();
+
+    let var = symbols::get_unknown()?;
+    let t1 = coef_1 * var;
+    let t2 = coef_2 * var;
+    let answer = &t1 * &t2;
+
+    let solution = Solution::inline()
+        .write(format!("{t1} dot {t2}"))
+        .equals(format!("{coef_1} dot {coef_2} dot {var} dot {var}"))
+        .equals(&answer)
+        .to_string();
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("${t1} dot {t2}$"),
+        answer,
+        solution,
+        identifiers: vec![coef_1, coef_2],
+        combinations: coef_range.len().pow(2),
+    }))
+}
+
+/// x * x^2
+/// Absolute difficulty: 3
+/// Relative difficulty: 7
+#[problem]
+fn x_squared_times_x(id: i32, _lang: Language) -> Result<Problem> {
+    let var = symbols::get_unknown()?;
+    let mut exp_1 = 1;
+    let mut exp_2 = 2;
+    shuffle(&mut exp_1, &mut exp_2);
+    let t1 = var.powi(exp_1);
+    let t2 = var.powi(exp_2);
+    let answer = &t1 * &t2;
+
+    let solution = Solution::inline()
+        .write(format!("{t1} dot {t2}"))
+        .equals(format!("{var}^({exp_1}+{exp_2})"))
+        .equals(&answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("${t1} dot {t2}$"),
+        answer,
+        solution,
+        identifiers: 1,
+        combinations: 1,
+    }))
+}
+
+/// x^2 * 2x
+/// Absolute difficulty: 3
+/// Relative difficulty: 8
+#[problem]
+fn x_squared_times_coef_x(id: i32, _lang: Language) -> Result<Problem> {
+    let (mut coef_1, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let mut coef_2 = Number::Integer(1);
+    shuffle(&mut coef_1, &mut coef_2);
+    let mut exp_1 = Number::Integer(1);
+    let mut exp_2 = Number::Integer(2);
+    shuffle(&mut exp_1, &mut exp_2);
+
+    let var = symbols::get_unknown()?;
+    let var_1 = var.powi(exp_1);
+    let var_2 = var.powi(exp_2);
+    let t1 = coef_1 * var_1.clone();
+    let t2 = coef_2 * var_2.clone();
+    let total_coef = coef_1 * coef_2;
+    let answer = &t1 * &t2;
+
+    let solution = Solution::inline()
+        .write(format!("{t1} dot {t2}"))
+        .equals(format!("{total_coef} dot {var_1} dot {var_2}"))
+        .equals(&answer)
+        .to_string();
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("${t1} dot {t2}$"),
+        answer,
+        solution,
+        identifiers: vec![coef_1, coef_2],
+        combinations: coef_range.len() * 2,
+    }))
+}
+
+/// 3x^2 * 2x
+/// Absolute difficulty: 3
+/// Relative difficulty: 8
+#[problem]
+fn coef_x_squared_times_coef_x(id: i32, _lang: Language) -> Result<Problem> {
+    let (coef_1, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let coef_2 = coef_range.random();
+    let mut exp_1 = Number::Integer(1);
+    let mut exp_2 = Number::Integer(2);
+    shuffle(&mut exp_1, &mut exp_2);
+
+    let var = symbols::get_unknown()?;
+    let var_1 = var.powi(exp_1);
+    let var_2 = var.powi(exp_2);
+    let t1 = coef_1 * var_1.clone();
+    let t2 = coef_2 * var_2.clone();
+    let answer = &t1 * &t2;
+
+    let solution = Solution::inline()
+        .write(format!("{t1} dot {t2}"))
+        .equals(format!("{coef_1} dot {coef_2} dot {var_1} dot {var_2}"))
+        .equals(&answer)
+        .to_string();
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("${t1} dot {t2}$"),
+        answer,
+        solution,
+        identifiers: vec![coef_1, coef_2],
+        combinations: coef_range.len() * 2,
+    }))
+}
+
+/// 3x^4 * 2x^3
+/// Absolute difficulty: 3
+/// Relative difficulty: 8
+#[problem]
+fn variable_term_times_variable_term(id: i32, _lang: Language) -> Result<Problem> {
+    let (coef_1, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let coef_2 = coef_range.random();
+    let (exp_1, exp_range) = num_gen::integer().range(2, 6).and_random();
+    let exp_2 = exp_range.random();
+
+    let var = symbols::get_unknown()?;
+    let var_1 = var.powi(exp_1);
+    let var_2 = var.powi(exp_2);
+    let t1 = coef_1 * var_1.clone();
+    let t2 = coef_2 * var_2.clone();
+    let total_coef = coef_1 * coef_2;
+    let answer = &t1 * &t2;
+
+    let solution = Solution::inline()
+        .write(format!("{t1} dot {t2}"))
+        .equals(format!("{coef_1} dot {coef_2} dot {var_1} dot {var_2}"))
+        .linebreak()
+        .equals(format!("{total_coef} dot {var}^({exp_1} + {exp_2})"))
+        .equals(&answer)
+        .to_string();
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("${t1} dot {t2}$"),
+        answer,
+        solution,
+        identifiers: vec![exp_1, exp_2],
+        combinations: exp_range.len() * 2,
+    }))
+}
+
+/// (5^3 * 5^6) / 5^2
+/// Absolute difficulty: 4
+/// Relative difficulty: 10
 #[problem]
 fn multiplication_and_division(id: i32, _lang: Language) -> Result<Problem> {
     let (base, base_range) = num_gen::integer().range(3, 9).and_random();
@@ -189,8 +403,8 @@ fn multiplication_and_division(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (4x)^2
-/// Absolute difficulty: 3
-/// Relative difficulty: 6
+/// Absolute difficulty: 4
+/// Relative difficulty: 10
 #[problem]
 fn variable_term_power_2(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
@@ -214,8 +428,8 @@ fn variable_term_power_2(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (2x)^3
-/// Absolute difficulty: 3
-/// Relative difficulty: 7
+/// Absolute difficulty: 4
+/// Relative difficulty: 11
 #[problem]
 fn variable_term_power_3(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
@@ -239,8 +453,8 @@ fn variable_term_power_3(id: i32, _lang: Language) -> Result<Problem> {
 }
 
 /// (2x)^3 / 4x
-/// Absolute difficulty: 4
-/// Relative difficulty: 8
+/// Absolute difficulty: 5
+/// Relative difficulty: 15
 #[problem]
 fn variable_term_power_and_divide_x(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;
@@ -275,8 +489,8 @@ fn variable_term_power_and_divide_x(id: i32, _lang: Language) -> Result<Problem>
 }
 
 /// (3x)^3 / 9x^2
-/// Absolute difficulty: 5
-/// Relative difficulty: 9
+/// Absolute difficulty: 6
+/// Relative difficulty: 18
 #[problem]
 fn variable_term_power_and_divide_x_squared(id: i32, _lang: Language) -> Result<Problem> {
     let variable = symbols::get_unknown()?;

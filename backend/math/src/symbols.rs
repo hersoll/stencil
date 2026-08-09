@@ -15,6 +15,13 @@ use crate::{Number, Polynomial, Term};
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Symbol(pub &'static str);
 
+impl Symbol {
+    /// Note that exp will be an integer
+    pub fn powi(&'static self, exp: impl Into<Number>) -> Term {
+        Term::from_var((self, exp.into().as_i32()))
+    }
+}
+
 impl Display for Symbol {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
