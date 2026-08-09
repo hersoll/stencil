@@ -4,9 +4,12 @@
 
 ### Added
 - `shuffle_numbers()` available for all problems
+- Variable multiplication problems
+- impl `Mul` for `&Term`
 
 ### Changed
 - Renamed `standard_powers` to `integer_exponents` 
+- Renamed `linebreak()` to `linebreak_equality()` in inline solutions
 
 ## [0.12.6] - 2026-08-08 
 
