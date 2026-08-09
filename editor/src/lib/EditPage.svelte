@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { stripKind, type Entry } from './types';
+  import { stripKind, type Entry, type Kind } from './types';
   import { API_URL } from '$src/main';
   import ContextMenu from './ContextMenu.svelte';
   import ServerMessage from './ServerMessage.svelte';
@@ -18,7 +18,6 @@
   // Will contain the reset function from the EntryList, so it can be called inside this component
   let resetList = $state(() => {});
 
-  type Kind = 'problem' | 'topic' | 'chapter' | 'course' | 'prefix';
   let kind = $state<Kind>('problem');
   let kinds = [
     { name: 'course', desc: 'Courses' },

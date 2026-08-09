@@ -8,16 +8,14 @@ export function stripKind<T extends { kind: string }>(
   return rest;
 }
 
+export type Kind = 'problem' | 'topic' | 'chapter' | 'course' | 'prefix';
+
 //==========================================
 //  "Enum"
 //==========================================
 
 export type Entry =
-  | CourseEntry
-  | ChapterEntry
-  | TopicEntry
-  | ProblemEntry
-  | PrefixEntry;
+  CourseEntry | ChapterEntry | TopicEntry | ProblemEntry | PrefixEntry;
 
 //==========================================
 //  Utility Types

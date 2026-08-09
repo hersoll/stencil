@@ -9,6 +9,7 @@
     type ChapterEntryRaw,
     type CourseEntryRaw,
     type Entry,
+    type Kind,
     type PrefixEntryRaw,
     type ProblemEntryRaw,
     type TopicEntryRaw
@@ -25,8 +26,25 @@
     onClickOutsideList,
     getPrivateCount,
     resetList = $bindable()
+  }: {
+    kind: Kind;
+    handleEntryClick: Function;
+    handleEntryDrag: Function;
+    handleEntryDrop: Function;
+    onClickOutsideList: Function;
+    getPrivateCount: Function;
+    resetList: any;
   } = $props();
-  let search = $state('');
+
+  let searches = $state({
+    course: '',
+    chapter: '',
+    topic: '',
+    problem: '',
+    prefix: ''
+  });
+  let search = $derived(searches[kind]);
+
   let entries = $state<Entry[]>([]);
   let listElement: HTMLDivElement;
   let defaultEntry: Entry;
@@ -207,7 +225,7 @@
       type="search"
       placeholder="Search"
       autocorrect="off"
-      bind:value={search}
+      bind:value={searches[kind]}
       onkeydown={e =>
         e.key === 'Enter' && (e.preventDefault(), e.currentTarget?.blur())}
     />
