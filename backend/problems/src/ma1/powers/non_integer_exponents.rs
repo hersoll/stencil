@@ -1,7 +1,7 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    MathDisplay, PolynomialVariable, Term,
+    MathDisplay, Number, PolynomialVariable, Term,
     num_gen::{self, NumberGenerator},
     symbols,
 };
@@ -10,6 +10,7 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters, Solution},
 };
+use typst_writer::formatting;
 
 /// Calculate 9^(1/2)
 /// Absolute difficulty: 5
@@ -398,6 +399,39 @@ fn variable_fraction_times_fraction(id: i32, _lang: Language) -> Result<Problem>
         ),
         identifiers: vec![denom_1, denom_2],
         combinations: denom_1_range.len() * denom_2_range.len(),
+    }))
+}
+
+/// Solve the equation 5^2x = sqrt(5)
+/// Absolute difficulty: 7
+/// Relative difficulty: 6
+#[problem]
+fn find_x_sqrt(id: i32, _lang: Language) -> Result<Problem> {
+    let (coef, coef_range) = num_gen::integer().range(2, 5).and_random();
+    let base = num_gen::integer().range(2, 8).exclude(4).random();
+    let var = symbols::get_unknown()?;
+    let var_term = coef * var;
+    let answer = Number::fraction(1, 2) / coef;
+
+    let lhs = format!("{base}^({var_term})");
+    let rhs = format!("sqrt({base})");
+    let equation = format!("{lhs} = {rhs}");
+    let solution = Solution::with_steps()
+        .aligned(&lhs, &rhs)
+        .aligned(&lhs, format!("{base}^(1/2)"))
+        .step(format!("cancel({base})"))
+        .aligned(var_term, "1/2")
+        .step(formatting::divide_number(coef))
+        .aligned(var, answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: equation.as_math(),
+        answer: format!("${var} = {answer}$"),
+        solution,
+        identifiers: coef,
+        combinations: coef_range.len(),
     }))
 }
 

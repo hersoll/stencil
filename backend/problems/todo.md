@@ -150,8 +150,7 @@
 ### 7 / 6
 - [x] Write as a power: Nx^n / sqrt(x)
 - [x] Simplify x^(1/2) * x^(1/3)
-- [ ] Solve 5^2x = sqrt(5)
-- [ ] Solve 5^2x * sqrt(5) = 5^7
+- [x] Solve 5^2x = sqrt(5)
 ### 7 / 7
 - [x] Write as a power: sqrt(x) / x^n
 - [x] Simplify 2x^(1/2) * x^(1/3)
