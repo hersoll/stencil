@@ -98,6 +98,7 @@
   async function publishEntries() {
     const response = await fetch(`${API_URL}/edit/publish/${kind}`);
     serverMessage.show(response);
+    resetList();
   }
 
   function handleEntryDrag(entry: Entry) {
