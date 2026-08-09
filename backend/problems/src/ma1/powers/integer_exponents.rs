@@ -1,7 +1,7 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    Number, Term,
+    MathDisplay, Number, Term,
     num_gen::{self, NumberGenerator},
     symbols,
 };
@@ -9,6 +9,7 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters, Solution},
 };
+use typst_writer::formatting;
 
 use crate::shuffle;
 
@@ -521,5 +522,38 @@ fn variable_term_power_and_divide_x_squared(id: i32, _lang: Language) -> Result<
         solution,
         identifiers: vec![coef, exp],
         combinations: coef_range.len() * exp_range.len(),
+    }))
+}
+
+/// Solve the equation 5^x * 5^3 = 5^12
+/// Absolute difficulty: 4
+/// Relative difficulty: 10
+#[problem]
+fn find_x_multiplication(id: i32, _lang: Language) -> Result<Problem> {
+    let answer = num_gen::integer().range(2, 12).random();
+    let (constant, const_range) = num_gen::integer().range(2, 7).and_random();
+    let base = const_range.random();
+    let rhs_num = answer + constant;
+    let var = symbols::get_unknown()?;
+
+    let lhs = format!("{base}^({var}) dot {base}^{constant}");
+    let rhs = format!("{base}^({rhs_num})");
+    let equation = format!("{lhs} = {rhs}");
+    let solution = Solution::with_steps()
+        .aligned(lhs, &rhs)
+        .aligned(format!("{base}^({var} + {constant})"), rhs)
+        .step(format!("cancel({base})"))
+        .aligned(format!("{var} + {constant}"), rhs_num)
+        .step(formatting::subtract_number(constant))
+        .aligned(var, answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: equation.as_math(),
+        answer: format!("${var} = {answer}$"),
+        solution,
+        identifiers: constant,
+        combinations: const_range.len(),
     }))
 }
