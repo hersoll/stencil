@@ -8,6 +8,7 @@
 - Exponential equation problems
 - impl `Mul` for `&Term`
 - The Publish All button in the editor reloads the entry list
+- `Number::fraction(num, denom)` constructor
 
 ### Changed
 - Renamed `standard_powers` to `integer_exponents` 

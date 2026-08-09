@@ -55,6 +55,14 @@ impl Number {
         }
     }
 
+    /// Constructor for fractions
+    pub fn fraction(numerator: i32, denominator: i32) -> Number {
+        Self::Fraction {
+            numerator,
+            denominator,
+        }
+    }
+
     /// Converts any `Number` into a `Number::Decimal`.
     ///
     /// Converting a `Fraction` or `Irrational` will give the `Decimal` a maximum of 6 decimals, use
