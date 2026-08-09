@@ -53,7 +53,7 @@ impl ContinuousSolution {
     /// Assumes you are breaking in an equality and automatically appends `=` as well.
     ///
     /// Use [`newline()`] if you just want a new line
-    pub fn linebreak(&mut self) -> &mut Self {
+    pub fn linebreak_equality(&mut self) -> &mut Self {
         self.write(" = ");
         self.newline()
     }

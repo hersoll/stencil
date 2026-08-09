@@ -580,7 +580,7 @@ fn exponent_three_halves(id: i32, _lang: Language) -> Result<Problem> {
         .write(format!("{base}^(3/2)"))
         .equals(format!("{base}^(1/2 dot 3)"))
         .equals(format!("({base}^(1/2))^3"))
-        .linebreak()
+        .linebreak_equality()
         .equals(format!("(sqrt({base}))^3"))
         .equals(format!("{sqrt}^3"))
         .equals(format!("{answer}"));
@@ -607,7 +607,7 @@ fn exponent_two_thirds(id: i32, _lang: Language) -> Result<Problem> {
         .write(format!("{base}^(2/3)"))
         .equals(format!("{base}^(1/3 dot 2)"))
         .equals(format!("({base}^(1/3))^2"))
-        .linebreak()
+        .linebreak_equality()
         .equals(format!("(root(3, {base}))^2"))
         .equals(format!("{root}^2"))
         .equals(format!("{answer}"));
@@ -637,7 +637,7 @@ fn exponent_negative_three_halves(id: i32, _lang: Language) -> Result<Problem> {
         .equals(format!("1/{base}^(3/2)"))
         .equals(format!("1/{base}^(1/2 dot 3)"))
         .equals(format!("1/({base}^(1/2))^3"))
-        .linebreak()
+        .linebreak_equality()
         .equals(format!("1/(sqrt({base}))^3"))
         .equals(format!("1/{sqrt}^3"))
         .equals(&answer_str);
@@ -666,7 +666,7 @@ fn exponent_negative_two_thirds(id: i32, _lang: Language) -> Result<Problem> {
         .write(format!("{base}^(-2/3)"))
         .equals(format!("1/{base}^(2/3)"))
         .equals(format!("1/{base}^(1/3 dot 2)"))
-        .linebreak()
+        .linebreak_equality()
         .equals(format!("1/({base}^(1/3))^2"))
         .equals(format!("1/(root(3, {base}))^2"))
         .equals(format!("1/{root}^2"))

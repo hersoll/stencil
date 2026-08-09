@@ -357,7 +357,7 @@ fn variable_term_times_variable_term(id: i32, _lang: Language) -> Result<Problem
     let solution = Solution::inline()
         .write(format!("{t1} dot {t2}"))
         .equals(format!("{coef_1} dot {coef_2} dot {var_1} dot {var_2}"))
-        .linebreak()
+        .linebreak_equality()
         .equals(format!("{total_coef} dot {var}^({exp_1} + {exp_2})"))
         .equals(&answer)
         .to_string();
