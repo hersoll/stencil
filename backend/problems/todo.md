@@ -118,12 +118,17 @@
 - [x] 3ab^2 * 4a^3b^5
 
 ## Negative exponents
-- [ ] 3^2 * 3^-3
-- [ ] 3^2 / 3^-3
-- [ ] (3^-2)^2
-- [ ] Calculate 2^-2
+### 3 / 1
+- [x] 3^2 * 3^-3
+- [x] 3^2 / 3^-3
+### 3 / 2
+- [x] (3^-2)^2
+### 3 / 3
+- [x] Write as a fraction: x^-3
+### 4 / 5
+- [x] Calculate 2^-2
+### 6 / 8
 - [ ] Calculate 3^2 * 2^-3
-- [ ] Write as a fraction: x^-3
 - [ ] Write as a fraction: (2x)^-3
 - [ ] Write as a fraction: 2x^-3
 

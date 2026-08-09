@@ -9,6 +9,7 @@
 - impl `Mul` for `&Term`
 - The Publish All button in the editor reloads the entry list
 - `Number::fraction(num, denom)` constructor
+- Added negative exponent problems
 
 ### Changed
 - Renamed `standard_powers` to `integer_exponents` 
