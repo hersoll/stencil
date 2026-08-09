@@ -72,6 +72,18 @@ impl std::ops::Mul for Term {
         }
     }
 }
+
+impl std::ops::Mul for &Term {
+    type Output = Term;
+    fn mul(self, rhs: Self) -> Self::Output {
+        Term {
+            coefficient: self.coefficient * rhs.coefficient,
+            variables: self.variables.clone() * rhs.variables.clone(),
+            colored: self.colored,
+        }
+    }
+}
+
 impl std::ops::MulAssign for Term {
     fn mul_assign(&mut self, rhs: Self) {
         self.coefficient = self.coefficient * rhs.coefficient;
