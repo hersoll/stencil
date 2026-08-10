@@ -262,7 +262,12 @@ fn find_x_and_y_with_f(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn find_y_zero(id: i32, lang: Language) -> Result<Problem> {
-    let k = num_gen::integer().range(-2, 2).exclude(0).random();
+    // k = -1 makes y-intersect and x-intersect the same
+    let k = num_gen::integer()
+        .range(-2, 2)
+        .exclude(0)
+        .exclude(-1)
+        .random();
     let (m, m_range) = num_gen::integer().range(-3, 3).exclude(0).and_random();
     let x = Number::Integer(0);
     let y = m;
@@ -303,7 +308,12 @@ fn find_y_zero(id: i32, lang: Language) -> Result<Problem> {
 /// Relative difficulty: 5
 #[problem]
 fn find_x_zero(id: i32, lang: Language) -> Result<Problem> {
-    let (k, k_range) = num_gen::integer().range(-2, 2).exclude(0).and_random();
+    // k = -1 makes y-intersect and x-intersect the same
+    let (k, k_range) = num_gen::integer()
+        .range(-2, 2)
+        .exclude(0)
+        .exclude(-1)
+        .and_random();
     let (m, m_range) = num_gen::integer()
         .range_step(-4, 4, 2)
         .exclude(0)

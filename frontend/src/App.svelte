@@ -21,7 +21,9 @@
   import LayoutView from './lib/LayoutView/LayoutView.svelte';
   import { API_URL } from './main';
 
-  let activeCourseName: string = $state(localStorage.getItem('course') || '');
+  let activeCourseName: string = $state(
+    localStorage.getItem('course') || 'mat1b'
+  );
 
   // Keeps track of which page to show
   let view: View = $state('addSet');

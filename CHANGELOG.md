@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12.8] - TBD
+
+### Fixed
+- `f(0)` problems no longer produces `k = -1`
+
 ## [0.12.7] - 2026-08-10
 
 ### Added
