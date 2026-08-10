@@ -2,6 +2,12 @@
 
 ## [0.12.8] - TBD
 
+### Added
+- Basic course with multiplication table problems
+
+### Changed
+- Default course `mat1b`
+
 ### Fixed
 - `f(0)` problems no longer produces `k = -1`
 

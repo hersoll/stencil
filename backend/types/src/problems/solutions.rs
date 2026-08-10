@@ -6,7 +6,7 @@ use with_steps::*;
 use math::{MathDisplay, Number};
 use std::fmt::Display;
 
-use crate::format_strings::Subdivision;
+use crate::format_strings::{SolutionString, Subdivision};
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Solution(String);
@@ -62,6 +62,12 @@ impl From<ContinuousSolution> for Solution {
 impl From<SolutionWithSteps> for Solution {
     fn from(solution: SolutionWithSteps) -> Self {
         Self(solution.to_string())
+    }
+}
+
+impl From<SolutionString> for Solution {
+    fn from(s: SolutionString) -> Self {
+        Self(s.to_string())
     }
 }
 

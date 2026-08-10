@@ -76,6 +76,7 @@
   }}
 >
   <option value="" disabled selected hidden>{i18n.t('select_course')}</option>
+  <option value="basic">{getCourseDesc('basic')}</option>
   <option value="mat1b">{getCourseDesc('mat1b')}</option>
   <option value="mat2b">{getCourseDesc('mat2b')}</option>
   <!-- <optgroup label="Nivå 1">  MAKE THIS LANGUAGE DEPENDENT -->

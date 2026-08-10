@@ -1,5 +1,6 @@
 use rand::Rng;
 
+pub mod basic;
 pub mod generator;
 pub mod ma1;
 pub mod ma2;
