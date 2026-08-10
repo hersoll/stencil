@@ -2,7 +2,7 @@ use crate::shuffle;
 use anyhow::Result;
 use macros::problem;
 use math::{
-    MathDisplay,
+    MathDisplay, Number,
     num_gen::{self, NumberGenerator},
     symbols,
     utils::parenthesize,
@@ -153,5 +153,103 @@ fn calculate_fraction(id: i32, _lang: Language) -> Result<Problem> {
         solution,
         identifiers: base,
         combinations: base_range,
+    }))
+}
+
+/// Calculate 7^-2 * 2^3
+/// Absolute difficulty: 6
+/// Relative difficulty: 8
+#[problem]
+fn calculate_two_powers(id: i32, _lang: Language) -> Result<Problem> {
+    let (base1, base_range) = num_gen::integer().range(2, 9).and_random();
+    let base2 = base_range.clone().exclude(base1).random();
+    // 4^3 and above are too large to calculate
+    let max_exp1 = if base1 < 4 { 3 } else { 2 };
+    let max_exp2 = if base2 < 4 { 3 } else { 2 };
+    let exp1 = num_gen::integer().range(2, max_exp1).random();
+    let exp2 = num_gen::integer().range(2, max_exp2).random();
+
+    let question = format!("{base1}^(-{exp1}) dot {base2}^({exp2})");
+    let numerator = base2.pow(exp2);
+    let denominator = base1.pow(exp1);
+    let answer = Number::fraction(numerator, denominator);
+    let mut solution = Solution::block();
+    solution
+        .write(&question)
+        .equals(format!("1 / {base1}^{exp1} dot {base2}^({exp2})"))
+        .equals(format!("1 / {denominator} dot {numerator}"))
+        .equals(answer);
+    if answer.can_be_simplified() {
+        solution.equals(answer.simplify());
+    }
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: question.as_math(),
+        answer: answer.simplify().as_block_math(),
+        solution: solution.to_string(),
+        identifiers: vec![base1, base2],
+        combinations: base_range.len() * (base_range.len() - 1),
+    }))
+}
+
+/// Write 2x^-3 as a fraction
+/// Absolute difficulty: 6
+/// Relative difficulty: 8
+#[problem]
+fn coef_x_as_fraction(id: i32, lang: Language) -> Result<Problem> {
+    let (exp, exp_range) = num_gen::integer().range(2, 6).and_random();
+    let (coef, coef_range) = num_gen::integer().range(2, 7).and_random();
+    let var = symbols::get_unknown()?;
+
+    let question = format!("{coef}{var}^(-{exp})");
+    let answer = format!("{coef} / ({var}^{exp})");
+
+    let mut solution = Solution::block_with_text();
+    solution
+        .write(&question)
+        .equals(format!("{coef} dot {var}^(-{exp})"))
+        .equals(format!("{coef} dot 1 / {var}^({exp})"))
+        .equals(&answer);
+    let solution = get_solution(id, lang)?
+        .replace_multiple(&[("solution", solution.to_string()), ("var", var.as_math())]);
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: question.as_math(),
+        answer: answer.as_block_math(),
+        solution,
+        identifiers: vec![exp, coef],
+        combinations: exp_range.len() * coef_range.len(),
+    }))
+}
+
+/// Write (4x)^-2 as a fraction
+/// Absolute difficulty: 6
+/// Relative difficulty: 8
+#[problem]
+fn parenthesis_x_as_fraction(id: i32, _lang: Language) -> Result<Problem> {
+    let (coef, coef_range) = num_gen::integer().range(2, 7).and_random();
+    let max_exp = if coef < 4 { 3 } else { 2 };
+    let exp = num_gen::integer().range(2, max_exp).random();
+    let var = symbols::get_unknown()?;
+    let final_coef = coef.pow(exp);
+
+    let question = format!("({coef}{var})^(-{exp})");
+    let answer = format!("1 / ({final_coef}{var}^{exp})");
+
+    let solution = Solution::block()
+        .write(&question)
+        .equals(format!("1 / ({coef}{var})^({exp})"))
+        .equals(&answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: question.as_math(),
+        answer: answer.as_block_math(),
+        solution,
+        identifiers: coef,
+        combinations: coef_range,
     }))
 }

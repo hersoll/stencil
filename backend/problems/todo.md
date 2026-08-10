@@ -128,9 +128,9 @@
 ### 4 / 5
 - [x] Calculate 2^-2
 ### 6 / 8
-- [ ] Calculate 3^2 * 2^-3
-- [ ] Write as a fraction: (2x)^-3
-- [ ] Write as a fraction: 2x^-3
+- [x] Calculate 3^2 * 2^-3
+- [x] Write as a fraction: (2x)^-3
+- [x] Write as a fraction: 2x^-3
 
 ## Non-integer exponents
 ### 5 / 1

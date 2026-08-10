@@ -56,10 +56,12 @@ impl Number {
     }
 
     /// Constructor for fractions
-    pub fn fraction(numerator: i32, denominator: i32) -> Number {
+    pub fn fraction(numerator: impl Into<Number>, denominator: impl Into<Number>) -> Number {
+        let numerator = numerator.into();
+        let denominator = denominator.into();
         Self::Fraction {
-            numerator,
-            denominator,
+            numerator: numerator.as_i32(),
+            denominator: denominator.as_i32(),
         }
     }
 

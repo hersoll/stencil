@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.12.7] - TBD
+## [0.12.7] - 2026-08-10
 
 ### Added
 - `shuffle_numbers()` available for all problems
