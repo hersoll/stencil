@@ -8,6 +8,7 @@
 - Added `show_simplification()` for fractions
 - Implemented `HasCoef` trait on numeric and algebra types
 - Added more arithmetics impls for `Symbol`
+- Added more courses in selector
 
 ### Changed
 - Default course `mat1b`
