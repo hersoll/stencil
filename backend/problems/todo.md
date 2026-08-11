@@ -67,9 +67,9 @@
 - [ ] 3(x + 1) - 2(x + 3) = 2(x - 1)
 
 ## Equations with denominators
-- [ ] (x+1)/3 = 5
-- [ ] 2/x = 5
-- [ ] 2/x = 3/7
+- [x] (x+1)/3 = 5
+- [x] 2/x = 5
+- [x] 2/x = 3/7
 
 ## Inequalities
 ### 3/1

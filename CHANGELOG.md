@@ -1,9 +1,10 @@
 # Changelog
 
-## [0.12.8] - TBD
+## [1.0.0] - TBD
 
 ### Added
 - Basic course with multiplication table problems
+- Some more equations with denominators
 
 ### Changed
 - Default course `mat1b`

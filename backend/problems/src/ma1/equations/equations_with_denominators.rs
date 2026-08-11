@@ -1,7 +1,13 @@
 use anyhow::Result;
 use macros::problem;
-use math::num_gen::{self, NumberGenerator};
+use math::{
+    Number,
+    num_gen::{self, NumberGenerator},
+    symbols,
+};
+use registry::get_solution;
 use types::{
+    format_strings::HasReplacements,
     lang::Language,
     problems::{Problem, ProblemParameters, Solution},
 };
@@ -36,9 +42,123 @@ fn one_denom_one_variable(id: i32, _lang: Language) -> Result<Problem> {
     }))
 }
 
-/// x/5 + x = 12
+/// (2x + 1)/3 = 4
+/// Absolute difficulty: 4
+/// Relative difficulty: 4
+#[problem]
+fn expression_divided_by_number(id: i32, _lang: Language) -> Result<Problem> {
+    let answer = num_gen::integer().range(-8, 8).random();
+    let (coef, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let (denom, denom_range) = num_gen::integer()
+        .range(2, 7)
+        .exclude(coef)
+        .exclude(coef / 2)
+        .exclude(coef / 3)
+        .exclude(coef / 4)
+        .and_random();
+    let rhs = num_gen::integer().range(-10, 10).exclude(0).random();
+    let constant = rhs * denom - coef * answer;
+    let var = symbols::get_unknown()?;
+    let var_term = coef * var;
+
+    let lhs = format!("({var_term} {constant:+})/{denom}");
+    let solution = Solution::with_steps()
+        .aligned(&lhs, rhs)
+        .step(formatting::multiply_number(denom))
+        .aligned(var_term.and(&constant), rhs * denom)
+        .step(formatting::subtract_number(constant))
+        .aligned(var_term, rhs * denom - constant)
+        .step(formatting::divide_number(coef))
+        .aligned(var, answer)
+        .to_string();
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("$ {lhs} = {rhs} $"),
+        answer: format!("${var} = {answer}$"),
+        solution,
+        identifiers: vec![coef, denom],
+        combinations: coef_range.len() * denom_range.len(),
+    }))
+}
+
+/// 2/x = 5
+/// Absolute difficulty: 4
+/// Relative difficulty: 5
+#[problem]
+fn divided_by_x(id: i32, _lang: Language) -> Result<Problem> {
+    let (numerator, num_range) = num_gen::integer().range(2, 9).and_random();
+    let rhs = num_range
+        .clone()
+        .exclude(numerator)
+        .exclude(numerator / 2)
+        .exclude(numerator / 3)
+        .exclude(numerator / 4)
+        .random();
+    let var = symbols::get_unknown()?;
+    let answer = Number::fraction(numerator, rhs);
+    let lhs = format!("{numerator} / {var}");
+    let mut solution = Solution::with_steps();
+    solution
+        .aligned(&lhs, rhs)
+        .step(format!("dot {var}"))
+        .aligned(numerator, rhs * var)
+        .step(formatting::divide_number(rhs));
+    if answer.can_be_simplified() {
+        solution.aligned(var, format!("{answer} = {}", answer.simplify()));
+    } else {
+        solution.aligned(var, answer);
+    }
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("$ {lhs} = {rhs} $"),
+        answer: format!("${var} = {}$", answer.simplify()),
+        solution,
+        identifiers: numerator,
+        combinations: num_range,
+    }))
+}
+
+/// 2/x = 5/7
 /// Absolute difficulty: 5
-/// Relative difficulty: 2
+/// Relative difficulty: 6
+#[problem]
+fn two_fractions(id: i32, lang: Language) -> Result<Problem> {
+    // Choose from odd and even to prevent awkward fractions, like 2/4
+    let (numerator1, even_range) = num_gen::integer().range_step(2, 8, 2).and_random();
+    let (numerator2, odd_range) = num_gen::integer().range_step(3, 9, 2).and_random();
+    let denom2 = even_range.random();
+
+    let var = symbols::get_unknown()?;
+    let answer = Number::fraction(numerator1 * denom2, numerator2);
+    let lhs = format!("{numerator1} / {var}");
+    let rhs = format!("{numerator2} / {denom2}");
+
+    let mut solution = Solution::with_steps();
+    solution
+        .aligned(&lhs, &rhs)
+        .step(format!("dot {var} dot {denom2}"))
+        .aligned(numerator1 * denom2, numerator2 * var)
+        .step(formatting::divide_number(numerator2));
+    if answer.can_be_simplified() {
+        solution.aligned(var, format!("{answer} = {}", answer.simplify()));
+    } else {
+        solution.aligned(var, answer);
+    }
+
+    let solution = get_solution(id, lang)?.replace_one("solution", solution);
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("$ {lhs} = {rhs} $"),
+        answer: format!("${var} = {}$", answer.simplify()),
+        solution,
+        identifiers: vec![numerator1, numerator2],
+        combinations: even_range.len() * odd_range.len(),
+    }))
+}
+
+/// x/5 + x = 12
+/// Absolute difficulty: 6
+/// Relative difficulty: 7
 #[problem]
 fn one_denom_and_unit_variable_integers_positive(id: i32, _lang: Language) -> Result<Problem> {
     let denominator_range = num_gen::integer().range(3, 5);
@@ -73,8 +193,8 @@ fn one_denom_and_unit_variable_integers_positive(id: i32, _lang: Language) -> Re
     }))
 }
 /// x - x/3 = 8
-/// Absolute difficulty: 5
-/// Relative difficulty: 3
+/// Absolute difficulty: 6
+/// Relative difficulty: 7
 #[problem]
 fn unit_variable_and_one_denom_integers_positive(id: i32, _lang: Language) -> Result<Problem> {
     let denominator_range = num_gen::integer().range(3, 5);
@@ -110,8 +230,8 @@ fn unit_variable_and_one_denom_integers_positive(id: i32, _lang: Language) -> Re
 }
 
 /// x/4 - x = 9
-/// Absolute difficulty: 5
-/// Relative difficulty: 3
+/// Absolute difficulty: 6
+/// Relative difficulty: 7
 #[problem]
 fn unit_variable_and_one_denom_integers_with_negatives(
     id: i32,
