@@ -21,11 +21,11 @@ struct SolutionPart {
 ///
 /// # Usage:
 ///```rust
-/// use typst_writer::formatting::{self, Solution};
+/// use types::problems::Solution;
 ///
 /// let mut sol = Solution::with_steps();
-/// sol.add_line(String::from("Hello,")).with_step(formatting::subtract_number(1));
-/// sol.add_line(String::from("world!"));
+/// sol.line(String::from("Hello,")).step("do step");
+/// sol.line(String::from("world!"));
 /// let str = sol.to_string();
 ///```
 #[derive(Default)]
