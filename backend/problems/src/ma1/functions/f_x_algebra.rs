@@ -34,7 +34,7 @@ fn without_notation_y(id: i32, lang: Language) -> Result<Problem> {
 
     expression = expression.aligned();
     let mut solution = Solution::with_steps();
-    solution.line(&expression).step(format!("x = {x_value}"));
+    solution.line(expression).step(format!("x = {x_value}"));
     let replacement = [(symbols::X, &x_value)];
     solution
         .line(expression.print_replacements(&replacement))

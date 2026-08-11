@@ -67,20 +67,12 @@ impl InequalitySign {
 
     pub fn is_less(&self) -> bool {
         use InequalitySign::*;
-        match self {
-            Less => true,
-            Leq => true,
-            _ => false,
-        }
+        matches!(self, Less | Leq)
     }
 
     pub fn is_greater(&self) -> bool {
         use InequalitySign::*;
-        match self {
-            Less => false,
-            Leq => false,
-            _ => true,
-        }
+        matches!(self, Greater | Geq)
     }
 }
 
