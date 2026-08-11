@@ -34,3 +34,23 @@ pub trait MathDisplay: Display {
 }
 
 impl<T: Display> MathDisplay for T {}
+
+/// Trait for numeric and algebraic types which has some kind of numeric value up front
+///
+/// Useful for knowing when to add parentheses around something, for example,
+/// we might want to print 3 + 2x but also 3 + (-2x)
+pub trait HasCoef {
+    fn coef(&self) -> Number;
+}
+
+impl HasCoef for i32 {
+    fn coef(&self) -> Number {
+        Number::from(*self)
+    }
+}
+
+impl HasCoef for f64 {
+    fn coef(&self) -> Number {
+        Number::from(*self)
+    }
+}

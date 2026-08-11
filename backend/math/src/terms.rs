@@ -3,7 +3,7 @@ mod operations;
 use crate::num_gen::NumberGenerator;
 use crate::symbols::Symbol;
 use crate::utils::parenthesize;
-use crate::{Evaluable, Polynomial, Replacement, Replacements};
+use crate::{Evaluable, HasCoef, Polynomial, Replacement, Replacements};
 use crate::{Number, PolynomialVariable, VariableList, num_gen};
 use std::fmt::Display;
 
@@ -390,6 +390,12 @@ impl PartialEq for Term {
     }
 }
 impl Eq for Term {}
+
+impl HasCoef for Term {
+    fn coef(&self) -> Number {
+        self.coefficient
+    }
+}
 
 #[cfg(test)]
 mod tests {

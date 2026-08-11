@@ -1,5 +1,5 @@
 mod operations;
-use crate::{Evaluable, Number, Replacement, Term, symbols::Symbol};
+use crate::{Evaluable, HasCoef, Number, Replacement, Term, symbols::Symbol};
 use rand::{rng, seq::SliceRandom};
 use std::fmt::Display;
 
@@ -200,6 +200,16 @@ impl Display for Polynomial {
             }
         }
         Ok(())
+    }
+}
+
+impl HasCoef for Polynomial {
+    fn coef(&self) -> Number {
+        if let Some(first_term) = self.terms.first() {
+            first_term.coefficient
+        } else {
+            Number::Integer(0)
+        }
     }
 }
 

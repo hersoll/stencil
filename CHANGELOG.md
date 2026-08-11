@@ -5,6 +5,8 @@
 ### Added
 - Basic course with multiplication table problems
 - Some more equations with denominators
+- Added `show_simplification()` for fractions
+- Implemented `HasCoef` trait on numeric and algebra types
 
 ### Changed
 - Default course `mat1b`

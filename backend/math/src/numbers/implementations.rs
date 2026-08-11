@@ -1,4 +1,4 @@
-use crate::get_decimal_divisor;
+use crate::{HasCoef, get_decimal_divisor};
 
 use super::Number;
 use std::fmt::Display;
@@ -157,6 +157,12 @@ impl PartialOrd<i32> for Number {
 }
 
 impl Eq for Number {}
+
+impl HasCoef for Number {
+    fn coef(&self) -> Number {
+        *self
+    }
+}
 
 #[cfg(test)]
 mod tests {

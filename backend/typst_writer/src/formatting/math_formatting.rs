@@ -1,4 +1,9 @@
-use math::{Number, Term};
+use math::{
+    HasCoef,
+    Number::{self, Fraction},
+    Term,
+    utils::gcd,
+};
 use std::fmt::Display;
 
 /// The space between the operator and number in the solution step-by-step
@@ -64,10 +69,24 @@ pub fn multiply_number(val: impl Into<Number>) -> String {
     format!("dot {}", parentheses(&val))
 }
 
-pub fn parentheses<T: PartialOrd<Number> + Display>(val: &T) -> String {
-    if val < &Number::Integer(0) {
+pub fn parentheses<T: HasCoef + Display>(val: &T) -> String {
+    if val.coef() < Number::Integer(0) {
         format!("({val})")
     } else {
         format!("{val}")
+    }
+}
+
+/// Shows which number the numerator and denominator is divided by when simplified
+pub fn show_simplification(fraction: Number) -> String {
+    if let Fraction {
+        numerator,
+        denominator,
+    } = fraction
+    {
+        let gcd = gcd(numerator, denominator);
+        format!("{numerator}_(colored(div {gcd})) / {denominator}_(colored(div {gcd}))")
+    } else {
+        String::new()
     }
 }

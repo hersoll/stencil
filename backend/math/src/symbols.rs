@@ -5,7 +5,7 @@ pub use statics::*;
 pub mod inequality_sign;
 use std::fmt::Display;
 
-use crate::{Number, Polynomial, Term};
+use crate::{HasCoef, Number, Polynomial, Term};
 
 /// Represents symbolic values.
 ///
@@ -77,5 +77,11 @@ impl std::ops::Add<&'static Symbol> for Number {
         let t1 = Term::from_var(rhs);
         let t2 = Term::from_num(self);
         t1.and(&t2)
+    }
+}
+
+impl HasCoef for &'static Symbol {
+    fn coef(&self) -> Number {
+        Number::Integer(1)
     }
 }

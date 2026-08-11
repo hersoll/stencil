@@ -104,7 +104,14 @@ fn divided_by_x(id: i32, _lang: Language) -> Result<Problem> {
         .aligned(numerator, rhs * var)
         .step(formatting::divide_number(rhs));
     if answer.can_be_simplified() {
-        solution.aligned(var, format!("{answer} = {}", answer.simplify()));
+        solution.aligned(
+            var,
+            format!(
+                "{} = {}",
+                formatting::show_simplification(answer),
+                answer.simplify()
+            ),
+        );
     } else {
         solution.aligned(var, answer);
     }
@@ -140,7 +147,14 @@ fn two_fractions(id: i32, lang: Language) -> Result<Problem> {
         .aligned(numerator1 * denom2, numerator2 * var)
         .step(formatting::divide_number(numerator2));
     if answer.can_be_simplified() {
-        solution.aligned(var, format!("{answer} = {}", answer.simplify()));
+        solution.aligned(
+            var,
+            format!(
+                "{} = {}",
+                formatting::show_simplification(answer),
+                answer.simplify()
+            ),
+        );
     } else {
         solution.aligned(var, answer);
     }
