@@ -2,6 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{
     Number, Polynomial, Term,
+    formatting::parentheses,
     num_gen::{self, NumberGenerator},
     symbols,
 };
@@ -9,7 +10,6 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters},
 };
-use typst_writer::{self, formatting::parentheses};
 
 /// 3(x+1)
 /// Absolute difficulty: 1

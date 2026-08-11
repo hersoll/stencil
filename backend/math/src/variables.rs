@@ -1,4 +1,4 @@
-use crate::{Number, symbols::Symbol};
+use crate::{Number, formatting, symbols::Symbol};
 use std::{cmp::Ordering, collections::HashSet, fmt::Display};
 
 /// The internal representation of variables inside a [`Term`](crate::Term) (and by extension,
@@ -36,7 +36,12 @@ impl Display for PolynomialVariable {
         } else if self.exponent == 1 {
             write!(f, "{}", self.symbol)
         } else {
-            write!(f, "{}^{}", self.symbol, self.exponent)
+            write!(
+                f,
+                "{}^{}",
+                self.symbol,
+                formatting::parentheses(&self.exponent)
+            )
         }
     }
 }
@@ -279,7 +284,7 @@ mod tests {
     fn variable_negation() {
         let v1 = PolynomialVariable::from((&X, 2));
         let v2 = PolynomialVariable::from((&A, -3));
-        assert_eq!((-v1).to_string(), "x^-2");
+        assert_eq!((-v1).to_string(), "x^(-2)");
         assert_eq!((-v2).to_string(), "a^3");
     }
 
@@ -324,7 +329,7 @@ mod tests {
         assert_eq!((v1.clone() * v2).to_string(), "x^2 y^2 z");
         assert_eq!((v1 * v3.clone()).to_string(), "x^3 y z");
         assert_eq!((v4.clone() * v3.clone()).to_string(), "x^2 y^2");
-        assert_eq!((v3.clone() / v4.clone()).to_string(), "x^2 y^-2");
-        assert_eq!((v4 / v3).to_string(), "x^-2 y^2");
+        assert_eq!((v3.clone() / v4.clone()).to_string(), "x^2 y^(-2)");
+        assert_eq!((v4 / v3).to_string(), "x^(-2) y^2");
     }
 }

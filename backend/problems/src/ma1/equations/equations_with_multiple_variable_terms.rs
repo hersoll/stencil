@@ -2,6 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{
     Number, Polynomial, Term,
+    formatting::{divide_number, subtract_number, subtract_term},
     num_gen::{self, NumberGenerator},
     symbols,
 };
@@ -9,7 +10,6 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters, Solution},
 };
-use typst_writer::formatting::{divide_number, subtract_number, subtract_term};
 
 /// 4x + 1 = 2x + 3
 /// Absolute difficulty: 2

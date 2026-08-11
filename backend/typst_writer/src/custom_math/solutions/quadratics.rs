@@ -1,6 +1,5 @@
 use math::Number;
-
-use crate::formatting;
+use math::formatting;
 
 pub fn pq_long(p: impl Into<Number>, q: impl Into<Number>, unknown: char) -> String {
     let p = p.into();

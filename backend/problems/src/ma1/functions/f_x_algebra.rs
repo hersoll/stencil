@@ -1,7 +1,7 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    Evaluable, MathDisplay, Number, Term,
+    Evaluable, MathDisplay, Number, Term, formatting,
     functions::Function,
     num_gen::{self, NumberGenerator},
     symbols::{self, X},
@@ -70,7 +70,7 @@ fn without_notation_x(id: i32, lang: Language) -> Result<Problem> {
         {y} &= {coefficient}x {constant:+} \\ {sub_constant} \\
         {lhs} &= {coefficient}x \\ div {coefficient} \\
         {answer} &= x \\ ",
-        sub_constant = typst_writer::formatting::subtract_number(constant),
+        sub_constant = formatting::subtract_number(constant),
         lhs = answer * coefficient
     ));
 
@@ -141,8 +141,8 @@ fn find_x_where_f_x(id: i32, lang: Language) -> Result<Problem> {
        colored({y}) &= {coefficient}x {constant:+} \\ {sub_con}\\
               {y_c} &= {coefficient}x \\ {div_coef}\\
        {x} &= x \\",
-        sub_con = typst_writer::formatting::subtract_number(constant),
-        div_coef = typst_writer::formatting::divide_number(coefficient),
+        sub_con = formatting::subtract_number(constant),
+        div_coef = formatting::divide_number(coefficient),
         y_c = y - constant
     );
 
@@ -184,8 +184,8 @@ fn equation_f_x_equals(id: i32, lang: Language) -> Result<Problem> {
        colored({y}) &= {coefficient}{var} {constant:+} \\ {sub_con}\\
               {y_c} &= {coefficient}{var} \\ {div_coef}\\
        {x} &= {var} \\",
-        sub_con = typst_writer::formatting::subtract_number(constant),
-        div_coef = typst_writer::formatting::divide_number(coefficient),
+        sub_con = formatting::subtract_number(constant),
+        div_coef = formatting::divide_number(coefficient),
         y_c = y - constant
     );
 
@@ -228,8 +228,8 @@ fn find_y(id: i32, lang: Language) -> Result<Problem> {
            {f_name}({x}) &= {prod} {constant:+} \\ \\
            {f_name}({x}) &= {y} \\",
         prod = x * coefficient,
-        par_coef = typst_writer::formatting::parentheses(&coefficient),
-        par_x = typst_writer::formatting::parentheses(&x),
+        par_coef = formatting::parentheses(&coefficient),
+        par_x = formatting::parentheses(&x),
     );
 
     Ok(Problem::from(ProblemParameters {
@@ -287,8 +287,8 @@ fn combination_x_y(id: i32, lang: Language) -> Result<Problem> {
            {f_x_1} &= {prod} {constant:+} \\ \\
            {f_x_1} &= {y_1} \\",
         prod = x_1 * coefficient,
-        par_coef = typst_writer::formatting::parentheses(&coefficient),
-        par_x = typst_writer::formatting::parentheses(&x_1),
+        par_coef = formatting::parentheses(&coefficient),
+        par_x = formatting::parentheses(&x_1),
     ));
 
     let second_solution = equation_solution(&format!(
@@ -296,8 +296,8 @@ fn combination_x_y(id: i32, lang: Language) -> Result<Problem> {
        colored({y_2}) &= {coefficient}{var} {constant:+} \\ {sub_con}\\
               {y_c} &= {coefficient}{var} \\ {div_coef}\\
        {x_2} &= {var} \\",
-        sub_con = typst_writer::formatting::subtract_number(constant),
-        div_coef = typst_writer::formatting::divide_number(coefficient),
+        sub_con = formatting::subtract_number(constant),
+        div_coef = formatting::divide_number(coefficient),
         y_c = y_2 - constant
     ));
 
@@ -354,8 +354,8 @@ fn text_f_x_y(id: i32, lang: Language) -> Result<Problem> {
         "{f_name}(x) &= {coefficient}x {constant:+} \\x={x_1} \\
            {f_name}(colored({x_1})) &= {par_coef} dot colored({par_x}) {constant:+} \\ \\
            {f_x_1} &= {y_1} \\",
-        par_coef = typst_writer::formatting::parentheses(&coefficient),
-        par_x = typst_writer::formatting::parentheses(&x_1),
+        par_coef = formatting::parentheses(&coefficient),
+        par_x = formatting::parentheses(&x_1),
     ));
 
     let second_solution = equation_solution(&format!(
@@ -363,8 +363,8 @@ fn text_f_x_y(id: i32, lang: Language) -> Result<Problem> {
        colored({y_2}) &= {coefficient}x {constant:+} \\ {sub_con}\\
               {y_c} &= {coefficient}x \\ {div_coef}\\
        {x_2} &= x \\",
-        sub_con = typst_writer::formatting::subtract_number(constant),
-        div_coef = typst_writer::formatting::divide_number(coefficient),
+        sub_con = formatting::subtract_number(constant),
+        div_coef = formatting::divide_number(coefficient),
         y_c = y_2 - constant
     ));
 

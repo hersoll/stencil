@@ -7,9 +7,11 @@
 - Some more equations with denominators
 - Added `show_simplification()` for fractions
 - Implemented `HasCoef` trait on numeric and algebra types
+- Added more arithmetics impls for `Symbol`
 
 ### Changed
 - Default course `mat1b`
+- Moved `typst_writer::math_formatting` to `math::formatting`
 
 ### Fixed
 - `f(0)` problems no longer produces `k = -1`

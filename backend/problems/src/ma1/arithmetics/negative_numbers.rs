@@ -2,6 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{
     Number,
+    formatting::{add_number, parentheses, subtract_number},
     num_gen::{self, NumberGenerator},
 };
 use types::{
@@ -9,10 +10,7 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters},
 };
-use typst_writer::{
-    drawing::NumberLine,
-    formatting::{add_number, parentheses, subtract_number},
-};
+use typst_writer::drawing::NumberLine;
 
 /// 5 - 9
 /// Absolute difficulty: 1

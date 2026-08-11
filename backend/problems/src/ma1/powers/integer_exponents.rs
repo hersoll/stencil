@@ -1,7 +1,8 @@
+use crate::shuffle;
 use anyhow::Result;
 use macros::problem;
 use math::{
-    MathDisplay, Number, Term,
+    MathDisplay, Number, Term, formatting,
     num_gen::{self, NumberGenerator},
     symbols,
 };
@@ -9,9 +10,6 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters, Solution},
 };
-use typst_writer::formatting;
-
-use crate::shuffle;
 
 /// 5^4 * 5^2
 /// Absolute difficulty: 1

@@ -1,4 +1,4 @@
-use math::{
+use crate::{
     HasCoef,
     Number::{self, Fraction},
     Term,

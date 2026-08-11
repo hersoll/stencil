@@ -2,6 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{
     Number, Term,
+    formatting::parentheses,
     num_gen::{self, NumberGenerator},
     symbols::X,
 };
@@ -10,7 +11,7 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters},
 };
-use typst_writer::formatting::{equation_solution, parentheses};
+use typst_writer::formatting::equation_solution;
 
 /// Calculate k between (1, 3) and (4, 9) [positive integers]
 /// Absolute difficulty: 2

@@ -1,4 +1,5 @@
 mod evaluables;
+pub mod formatting;
 pub mod functions;
 pub mod num_gen;
 mod numbers;

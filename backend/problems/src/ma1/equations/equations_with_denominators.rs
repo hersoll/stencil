@@ -1,5 +1,6 @@
 use anyhow::Result;
 use macros::problem;
+use math::formatting::{self, divide_number, multiply_number};
 use math::{
     Number,
     num_gen::{self, NumberGenerator},
@@ -11,7 +12,6 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters, Solution},
 };
-use typst_writer::formatting::{self, divide_number, multiply_number};
 
 /// x/3 = 4
 /// Absolute difficulty: 1

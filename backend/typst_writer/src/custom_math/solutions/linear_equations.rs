@@ -1,4 +1,4 @@
-use crate::formatting::{divide_number, subtract_number};
+use math::formatting::{divide_number, subtract_number};
 use math::{self, Number, symbols::Symbol, utils::gcd};
 use types::problems::Solution;
 

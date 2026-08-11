@@ -2,6 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{
     self, Number, Term,
+    formatting::{divide_number, subtract_number},
     num_gen::{self, NumberGenerator},
     symbols::{self, X},
 };
@@ -9,10 +10,7 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters, Solution},
 };
-use typst_writer::{
-    custom_math::solutions,
-    formatting::{divide_number, subtract_number},
-};
+use typst_writer::custom_math::solutions;
 
 /// x + 3 = 12
 /// Absolute difficulty: 1

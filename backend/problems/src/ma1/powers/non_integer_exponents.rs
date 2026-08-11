@@ -1,7 +1,7 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    MathDisplay, Number, PolynomialVariable, Term,
+    MathDisplay, Number, PolynomialVariable, Term, formatting,
     num_gen::{self, NumberGenerator},
     symbols,
 };
@@ -10,7 +10,6 @@ use types::{
     lang::Language,
     problems::{Problem, ProblemParameters, Solution},
 };
-use typst_writer::formatting;
 
 /// Calculate 9^(1/2)
 /// Absolute difficulty: 5

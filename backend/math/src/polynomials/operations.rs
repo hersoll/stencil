@@ -1,4 +1,4 @@
-use crate::Number;
+use crate::{Number, symbols::Symbol};
 
 use super::{Polynomial, Term};
 
@@ -40,6 +40,24 @@ impl std::ops::Add<i32> for Polynomial {
     fn add(self, rhs: i32) -> Self::Output {
         let term_rhs: Term = rhs.into();
         self + term_rhs
+    }
+}
+
+/// poly + x
+impl std::ops::Add<&'static Symbol> for Polynomial {
+    type Output = Self;
+    fn add(self, rhs: &'static Symbol) -> Self::Output {
+        let term_rhs: Term = rhs.into();
+        self + term_rhs
+    }
+}
+
+/// x + poly
+impl std::ops::Add<Polynomial> for &'static Symbol {
+    type Output = Polynomial;
+    fn add(self, rhs: Polynomial) -> Self::Output {
+        let term: Term = self.into();
+        rhs + term
     }
 }
 

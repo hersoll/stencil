@@ -1,10 +1,8 @@
 mod columns;
 pub mod evaluables;
-mod math_formatting;
 mod solutions;
 
 pub use columns::*;
-pub use math_formatting::*;
 pub use solutions::*;
 
 // item = unbreakable, block = breakable
