@@ -13,6 +13,7 @@
 ### Changed
 - Default course `mat1b`
 - Moved `typst_writer::math_formatting` to `math::formatting`
+- Title and subtitle contents are not saved in frontend anymore
 
 ### Fixed
 - `f(0)` problems no longer produces `k = -1`

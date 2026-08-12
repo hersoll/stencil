@@ -57,7 +57,9 @@ export function setDefaultProblemOptions(next: ProblemOptions) {
 export function saveDocumentOptions() {
   localStorage.setItem(
     'document_options',
-    JSON.stringify($state.snapshot(documentOptions))
+    JSON.stringify(
+      $state.snapshot({ ...documentOptions, title: null, subtitle: null })
+    )
   );
 }
 
