@@ -228,5 +228,10 @@
         font-size: 0.45rem;
       }
     }
+
+    .eq-grid {
+      display: grid;
+      grid-template-columns: 3rem 1rem;
+    }
   }
 </style>

@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] - TBD
+## [1.0.0] - 2026-08-15
 
 ### Added
 - Basic course with multiplication table problems
@@ -20,6 +20,7 @@
 ### Fixed
 - `f(0)` problems no longer produces `k = -1`
 - Adjusted outdated doc-test
+- Improved mobile layout
 
 ## [0.12.7] - 2026-08-10
 

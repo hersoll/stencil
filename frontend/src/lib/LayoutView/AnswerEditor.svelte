@@ -230,4 +230,11 @@
       }
     }
   }
+
+  /* Mobile layout */
+  @container body (width < 50rem) {
+    .options-container {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
