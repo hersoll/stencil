@@ -58,13 +58,23 @@
 ## Evaluate expressions
 - [x] Separate from simplyfing expressions
 
-## Equations with multiple x
-- [ ] 3(x + 1) = 2x + 2
-- [ ] 3(x + 1) = 2x
-- [ ] 3(x + 1) = 1 - 2x
-- [ ] 3(x + 1) = 2(x - 1)
-- [ ] 3(x + 1) - 2x = 2(x - 1)
-- [ ] 3(x + 1) - 2(x + 3) = 2(x - 1)
+## Equations with parentheses
+### 4 / 1
+- [x] 3(x + 1) = 12
+### 4 / 2
+- [x] 3(2x + 1) = 12
+- [x] 2 + 3(x + 1) = 12
+### 5 / 6
+- [x] 2 - 3(x + 1) = 5
+- [x] 3(x + 1) = 1 - 2x
+- [x] 3(x + 1) = 2x
+### 5 / 7
+- [x] 2 - 3(4 - 2x) = 5
+- [x] 3(x + 1) = 2(x - 1)
+### 6 / 8
+- [x] 3(x + 1) - 2x = 2(x - 1)
+### 7 / 9
+- [x] 3(x + 1) - 2(x + 3) = 2(x - 1)
 
 ## Equations with denominators
 - [x] (x+1)/3 = 5

@@ -1,4 +1,5 @@
 mod equations_with_denominators;
 mod equations_with_multiple_variable_terms;
+mod equations_with_parentheses;
 mod inequalities;
 mod standard_equations;

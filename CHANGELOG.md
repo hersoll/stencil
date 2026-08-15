@@ -9,6 +9,7 @@
 - Implemented `HasCoef` trait on numeric and algebra types
 - Added more arithmetics impls for `Symbol`
 - Added more courses in selector
+- Added equations with parentheses
 
 ### Changed
 - Default course `mat1b`

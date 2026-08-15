@@ -84,8 +84,13 @@ pub fn show_simplification(fraction: Number) -> String {
         denominator,
     } = fraction
     {
-        let gcd = gcd(numerator, denominator);
-        format!("{numerator}_(colored(div {gcd})) / {denominator}_(colored(div {gcd}))")
+        // If this is actually an integer result, don't print the "divisions"
+        if fraction.is_integer() {
+            format!("{numerator} / {denominator}")
+        } else {
+            let gcd = gcd(numerator, denominator);
+            format!("{numerator}_(colored(div {gcd})) / {denominator}_(colored(div {gcd}))")
+        }
     } else {
         String::new()
     }
