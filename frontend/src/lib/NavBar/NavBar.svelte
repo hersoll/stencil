@@ -126,6 +126,7 @@
     }
     .mobile-settings {
       display: inline;
+      margin-left: 0.25rem;
     }
   }
 </style>

@@ -15,6 +15,7 @@
 - Default course `mat1b`
 - Moved `typst_writer::math_formatting` to `math::formatting`
 - Title and subtitle contents are not saved in frontend anymore
+- Moved settings icon on mobile layout
 
 ### Fixed
 - `f(0)` problems no longer produces `k = -1`
