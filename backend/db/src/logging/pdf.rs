@@ -62,7 +62,7 @@ pub async fn log_pdf_and_get_id(request: PDFRequest, time_taken: MicroSeconds) -
         font_size: d_o.font_size as SmallInt,
         answer_columns: d_o.answer_columns as SmallInt,
         lang: d_o.lang.to_string(),
-        write_solutions: d_o.write_solutions.to_string(),
+        write_solutions: d_o.show_solutions.to_string(),
         color: d_o.color,
         paper_size: d_o.paper_size.to_string(),
         x_margin: d_o.x_margin as SmallInt,

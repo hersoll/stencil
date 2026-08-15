@@ -194,7 +194,7 @@
     color: var(--text-muted);
   }
 
-  .write-solutions,
+  .show-solutions,
   .solution-decoration {
     border: none;
     font-size: 0.8rem;

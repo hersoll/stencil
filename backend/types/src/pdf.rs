@@ -20,7 +20,7 @@ const DEFAULT_Y_MARGIN: u8 = 20;
 const DEFAULT_LANG: Language = Language::Sv;
 const DEFAULT_MAX_PREFIX_GROUP: u8 = 3;
 const DEFAULT_PAPER_SIZE: PaperSize = PaperSize::A4;
-const DEFAULT_WRITE_SOLUTIONS: ShowSolutions = ShowSolutions::First;
+const DEFAULT_SHOW_SOLUTIONS: ShowSolutions = ShowSolutions::First;
 const DEFAULT_PAR_SPACING: Option<u8> = None;
 const DEFAULT_COLORS: bool = true;
 const DEFAULT_PAGE_BREAK_BEFORE_ANSWERS: bool = true;
@@ -174,7 +174,7 @@ pub struct DocumentOptions {
     pub font_size: u8,
     pub answer_columns: u8,
     pub lang: Language,
-    pub write_solutions: ShowSolutions,
+    pub show_solutions: ShowSolutions,
     pub color: bool,
     pub paper_size: PaperSize,
     pub x_margin: u8,
@@ -197,7 +197,7 @@ impl Default for DocumentOptions {
             font_size: DEFAULT_FONT_SIZE,
             answer_columns: DEFAULT_ANSWER_COLUMNS,
             lang: DEFAULT_LANG,
-            write_solutions: DEFAULT_WRITE_SOLUTIONS,
+            show_solutions: DEFAULT_SHOW_SOLUTIONS,
             color: DEFAULT_COLORS,
             paper_size: DEFAULT_PAPER_SIZE,
             x_margin: DEFAULT_X_MARGIN,

@@ -133,7 +133,7 @@ impl TypstFileBuilder {
 
     /// Decides if a particular problem should have its solution included
     fn should_include_solution(&mut self, problem_id: i32) -> bool {
-        match self.options.write_solutions {
+        match self.options.show_solutions {
             ShowSolutions::All => true,
             ShowSolutions::None => false,
             // Returns true if it was inserted (and thus is the first occurence)
