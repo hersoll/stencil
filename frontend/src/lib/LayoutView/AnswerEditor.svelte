@@ -35,11 +35,11 @@
   <div class="options-container">
     <!-- WRITE SOLUTIONS  -->
     <div class="label-div">
-      <label for="write_solutions">{i18n.t('document_option_solutions')}</label>
+      <label for="show_solutions">{i18n.t('document_option_solutions')}</label>
       <select
-        id="write_solutions"
-        class="write-solutions"
-        bind:value={documentOptions.writeSolutions}
+        id="show_solutions"
+        class="show-solutions"
+        bind:value={documentOptions.showSolutions}
       >
         <option value="First"
           >{i18n.t('document_option_solutions_first')}</option

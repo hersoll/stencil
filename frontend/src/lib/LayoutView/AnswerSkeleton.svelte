@@ -36,7 +36,7 @@
   <ol class="answer-list" style="--columns: {documentOptions.answerColumns};">
     <li>
       {i18n.t('answer')} A
-      {#if documentOptions.writeSolutions != 'None'}
+      {#if documentOptions.showSolutions != 'None'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <p>8 + 7 - 9 = <span>15</span> - 9 = 6</p>
@@ -45,7 +45,7 @@
     </li>
     <li>
       {i18n.t('answer')} A
-      {#if documentOptions.writeSolutions === 'All'}
+      {#if documentOptions.showSolutions === 'All'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <p>5 + 2 - 4 = <span>7</span> - 4 = 3</p>
@@ -54,7 +54,7 @@
     </li>
     <li>
       {i18n.t('answer')} A
-      {#if documentOptions.writeSolutions === 'All'}
+      {#if documentOptions.showSolutions === 'All'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <p>10 + 3 - 8 = <span>13</span> - 8 = 5</p>
@@ -63,7 +63,7 @@
     </li>
     <li>
       {i18n.t('answer')} A
-      {#if documentOptions.writeSolutions === 'All'}
+      {#if documentOptions.showSolutions === 'All'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <p>2 + 3 - 1 = <span>5</span> - 1 = 4</p>
@@ -72,7 +72,7 @@
     </li>
     <li>
       {i18n.t('answer')} B
-      {#if documentOptions.writeSolutions != 'None'}
+      {#if documentOptions.showSolutions != 'None'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <p>f(<span>3</span>) = 2 ⋅ <span>3</span> - 1 = 5</p>
@@ -81,7 +81,7 @@
     </li>
     <li>
       {i18n.t('answer')} A
-      {#if documentOptions.writeSolutions === 'All'}
+      {#if documentOptions.showSolutions === 'All'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <p>6 + 3 - 4 = <span>9</span> - 4 = 5</p>
@@ -90,7 +90,7 @@
     </li>
     <li>
       {i18n.t('answer')} A
-      {#if documentOptions.writeSolutions === 'All'}
+      {#if documentOptions.showSolutions === 'All'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <p>8 + 3 - 5 = <span>11</span> - 5 = 6</p>
@@ -99,7 +99,7 @@
     </li>
     <li>
       {i18n.t('answer')} B
-      {#if documentOptions.writeSolutions === 'All'}
+      {#if documentOptions.showSolutions === 'All'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <p>f(<span>5</span>) = 2 ⋅ <span>5</span> - 1 = 9</p>
@@ -108,7 +108,7 @@
     </li>
     <li>
       {i18n.t('answer')} C
-      {#if documentOptions.writeSolutions != 'None'}
+      {#if documentOptions.showSolutions != 'None'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <div class="eq-grid">
@@ -123,7 +123,7 @@
     </li>
     <li>
       {i18n.t('answer')} B
-      {#if documentOptions.writeSolutions === 'All'}
+      {#if documentOptions.showSolutions === 'All'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <p>f(<span>0</span>) = 2 ⋅ <span>0</span> - 1 = -1</p>
@@ -133,7 +133,7 @@
 
     <li>
       {i18n.t('answer')} C
-      {#if documentOptions.writeSolutions === 'All'}
+      {#if documentOptions.showSolutions === 'All'}
         <div class="solution {solutionClass}">
           <p>{i18n.t('solution')}:</p>
           <div class="eq-grid">
