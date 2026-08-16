@@ -1,9 +1,11 @@
 # Backend
 ## `math`
 - [ ] Change api for Term addition: `t1 + t2` should be public and net a polynomial, deprecate `.and()`, new `merge()` for internal use instead
+- [ ] Mark chapters/topics/problems younger than X weeks as 'new'
 
 # Frontend
 - [ ] Alert when problem set is empty
+- [ ] Display a badge next to new entries
 
 # New problems
 ## Order of operations

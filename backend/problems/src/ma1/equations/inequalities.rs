@@ -382,13 +382,10 @@ fn double_inequality(id: i32, lang: Language) -> Result<Problem> {
 fn double_split_inequality(id: i32, lang: Language) -> Result<Problem> {
     let lower_answer = num_gen::integer().range(-5, 3).random();
     let higher_answer = num_gen::integer()
-        .range(lower_answer, lower_answer + 7)
+        .range(lower_answer + 1, lower_answer + 7)
         .random();
-    let (coef_1, coef_range) = num_gen::integer()
-        .range(-4, 4)
-        .exclude_multiple(&[-1, 0, 1])
-        .and_random();
-    let coef_2 = coef_range.random();
+    let (coef_1, coef_range) = num_gen::integer().range(2, 5).and_random();
+    let coef_2 = coef_range.clone().exclude(coef_1).random();
     let var = symbols::get_unknown()?;
     let sign = InequalitySign::Less;
 
@@ -396,7 +393,8 @@ fn double_split_inequality(id: i32, lang: Language) -> Result<Problem> {
     let total_lower = coef_1 * lower_answer;
     let total_higher = coef_2 * higher_answer;
     let diff = total_higher - total_lower;
-    let const_1 = num_gen::integer().range(1, 9).random();
+    //excluding diff prevents const_2 = 0
+    let const_1 = num_gen::integer().range(1, 9).exclude(diff).random();
     let const_2 = const_1 - diff;
 
     let middle_number = total_lower + const_1;
@@ -436,7 +434,7 @@ fn double_split_inequality(id: i32, lang: Language) -> Result<Problem> {
         answer,
         solution,
         identifiers: vec![coef_1, coef_2],
-        combinations: coef_range.len().pow(2),
+        combinations: coef_range.len() * (coef_range.len() - 1),
     }))
 }
 

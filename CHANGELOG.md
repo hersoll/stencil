@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.1] - TBD
+### Fixed
+- Inequalities of type `2x + 1 < 5 < 4x - 2` no longer have negative coefficients and will have cleaner numbers
+
 ## [1.0.0] - 2026-08-15
 
 ### Added
