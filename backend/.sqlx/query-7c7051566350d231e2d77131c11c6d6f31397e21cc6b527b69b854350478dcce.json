@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module,\n        p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,\n        tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public\n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = ANY($1)\n        ORDER BY tp.topic_id, tp.order_index, p.name",
+  "query": "SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module,\n        p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,\n        tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public,\n            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = ANY($1)\n        ORDER BY tp.topic_id, tp.order_index, p.name",
   "describe": {
     "columns": [
       {
@@ -82,11 +82,17 @@
         "ordinal": 15,
         "name": "public",
         "type_info": "Bool"
+      },
+      {
+        "ordinal": 16,
+        "name": "is_new!",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4Array"
+        "Int4Array",
+        "Interval"
       ]
     },
     "nullable": [
@@ -105,8 +111,9 @@
       false,
       false,
       false,
-      false
+      false,
+      null
     ]
   },
-  "hash": "77da3efb75b73a72b1bd50fedc76288f749f943740c2ab5a2c617b3932f602c7"
+  "hash": "7c7051566350d231e2d77131c11c6d6f31397e21cc6b527b69b854350478dcce"
 }

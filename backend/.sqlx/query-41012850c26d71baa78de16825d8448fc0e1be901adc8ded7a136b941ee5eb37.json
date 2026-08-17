@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, name, desc_sv, desc_en, question_sv, question_en,\n            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public\n            FROM problems \n            WHERE (NOT $1::bool OR public)\n            ORDER BY module, name",
+  "query": "SELECT id, name, desc_sv, desc_en, question_sv, question_en,\n            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public,\n            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n            FROM problems \n            WHERE (NOT $2::bool OR public)\n            ORDER BY module, name",
   "describe": {
     "columns": [
       {
@@ -67,10 +67,16 @@
         "ordinal": 12,
         "name": "public",
         "type_info": "Bool"
+      },
+      {
+        "ordinal": 13,
+        "name": "is_new!",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
       "Left": [
+        "Interval",
         "Bool"
       ]
     },
@@ -87,8 +93,9 @@
       true,
       true,
       false,
-      false
+      false,
+      null
     ]
   },
-  "hash": "9df99919b576a61037a37c4fabba7b1e7dfb56a950ae36075166d19e0763d678"
+  "hash": "41012850c26d71baa78de16825d8448fc0e1be901adc8ded7a136b941ee5eb37"
 }

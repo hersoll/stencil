@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module, \n            p.question_sv, p.question_en, p.answer_sv, p.answer_en, \n            p.solution_sv, p.solution_en, p.prefix_id, p.public,\n            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty\n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = $1 AND (NOT $2::bool OR p.public)\n        ORDER BY tp.order_index, p.name",
+  "query": "SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module, \n            p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,\n            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public,\n            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = $1\n        ORDER BY tp.order_index, p.name",
   "describe": {
     "columns": [
       {
@@ -65,29 +65,34 @@
       },
       {
         "ordinal": 12,
-        "name": "public",
-        "type_info": "Bool"
-      },
-      {
-        "ordinal": 13,
         "name": "topic_id",
         "type_info": "Int4"
       },
       {
-        "ordinal": 14,
+        "ordinal": 13,
         "name": "absolute_difficulty",
         "type_info": "Int4"
       },
       {
-        "ordinal": 15,
+        "ordinal": 14,
         "name": "relative_difficulty",
         "type_info": "Int4"
+      },
+      {
+        "ordinal": 15,
+        "name": "public",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 16,
+        "name": "is_new!",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
       "Left": [
         "Int4",
-        "Bool"
+        "Interval"
       ]
     },
     "nullable": [
@@ -106,8 +111,9 @@
       false,
       false,
       false,
-      false
+      false,
+      null
     ]
   },
-  "hash": "4acc9072e10ba6b43d0086dded1e85c1234b2cbe61036b9b83b2573dd48a0575"
+  "hash": "56b616a270244e693d5d6c404194b69b11c2e447c7fb377acdb6714cd8041bdf"
 }

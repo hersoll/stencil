@@ -1,6 +1,7 @@
 <script lang="ts">
   import { setState } from '$src/globalStates.svelte';
   import type { TopicData } from '$src/types';
+  import i18n from '$src/i18n.svelte';
 
   let { topic }: { topic: TopicData } = $props();
 
@@ -26,6 +27,11 @@
     onchange={handleChange}
   />
   <label for={'topic_' + topic.id} class="no-select">{topic.desc}</label>
+  <span class="new-label">
+    {#if topic.isNew}
+      [{i18n.t('new_label')}!]
+    {/if}
+  </span>
 </div>
 
 <style>
@@ -37,7 +43,8 @@
     input {
       margin-top: 0.1rem;
     }
-    label {
+    label,
+    .new-label {
       color: var(--text-muted);
       cursor: pointer;
       transition: color 0.2s;
@@ -45,9 +52,14 @@
         color: var(--secondary-text);
       }
     }
+    .new-label {
+      color: var(--primary-text);
+      font-weight: 700;
+    }
     &:hover {
       cursor: pointer;
-      label {
+      label,
+      .new-label {
         color: var(--primary-text);
       }
       input {

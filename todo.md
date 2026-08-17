@@ -1,11 +1,13 @@
 # Backend
 ## `math`
 - [ ] Change api for Term addition: `t1 + t2` should be public and net a polynomial, deprecate `.and()`, new `merge()` for internal use instead
-- [ ] Mark chapters/topics/problems younger than X weeks as 'new'
+- [x] Mark chapters/topics/problems younger than X weeks as 'new'
+- [ ] Read and cache latest release notes from changelog (copy it during docker build!)
 
 # Frontend
 - [ ] Alert when problem set is empty
-- [ ] Display a badge next to new entries
+- [x] Display a badge next to new entries
+- [ ] Show version and patch notes
 
 # New problems
 ## Order of operations

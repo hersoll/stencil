@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public\n        FROM topics t\n        JOIN UNNEST($1::int[]) WITH ORDINALITY AS u(id, ord) ON t.id = u.id\n        ORDER BY u.ord",
+  "query": "SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public,\n            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n        FROM topics t\n        JOIN chapter_topics ct ON t.id = ct.topic_id\n        WHERE ct.chapter_id = $1\n        ORDER BY ct.order_index, t.name",
   "describe": {
     "columns": [
       {
@@ -27,11 +27,17 @@
         "ordinal": 4,
         "name": "public",
         "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "is_new!",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4Array"
+        "Int4",
+        "Interval"
       ]
     },
     "nullable": [
@@ -39,8 +45,9 @@
       false,
       false,
       false,
-      false
+      false,
+      null
     ]
   },
-  "hash": "7a50fa32215c0acb99e806e5c86ea4944f03f21206f9be78ae9f21f8fe54ecd4"
+  "hash": "326a9b22bb4fa6ebadb36b6d196c2ba0a20a828cec9d417b3d4dce9715c38746"
 }

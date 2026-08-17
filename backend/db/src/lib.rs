@@ -11,7 +11,10 @@ pub mod users;
 use anyhow::{Context, Result, anyhow};
 use once_cell::sync::{Lazy, OnceCell};
 use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, postgres::PgPoolOptions};
+use sqlx::{
+    PgPool,
+    postgres::{PgPoolOptions, types::PgInterval},
+};
 
 use tracing::info;
 use types::lang::Language;
@@ -19,7 +22,15 @@ use types::lang::Language;
 pub type ID = i32;
 pub type Name = String;
 pub type Description = String;
+pub type IsNew = bool;
 pub type PublicFlag = bool;
+
+/// The time for which a new entry is marked as 'new' in the frontend
+pub(crate) const NEW_THRESHOLD: PgInterval = PgInterval {
+    months: 0,
+    days: 14,
+    microseconds: 0,
+};
 
 /// Several functions are interested in whether the program is running in production mode or not.
 ///
@@ -40,6 +51,7 @@ pub struct DatabaseRow {
     desc_sv: Description,
     desc_en: Description,
     public: PublicFlag,
+    is_new: IsNew,
 }
 
 impl DatabaseRow {

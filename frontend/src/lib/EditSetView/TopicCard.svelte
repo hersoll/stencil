@@ -78,7 +78,12 @@
           : ''}"
         onclick={() => excludeProblem(problem.id)}
       >
-        <p class="no-select clickable problem-descriptor">{problem.desc}</p>
+        <span style="display: flex;">
+          <p class="no-select clickable problem-descriptor">{problem.desc}</p>
+          <p class="no-select clickable new-label">
+            {problem.isNew ? '[NY!]' : ''}
+          </p>
+        </span>
         <p class="no-select clickable difficulty-descriptor">
           {i18n.t(numToDifficultyStr(problem.absoluteDifficulty))}
         </p>
@@ -122,6 +127,11 @@
 
     .difficulty-descriptor {
       justify-self: end;
+    }
+    .new-label {
+      color: var(--primary-text);
+      margin-left: 0.4rem;
+      font-weight: 700;
     }
 
     &.excluded {

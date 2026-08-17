@@ -1,6 +1,10 @@
 # Changelog
 
 ## [1.0.1] - TBD
+
+### Added
+- Mark entries younger than 2 weeks as `[NEW!]`
+
 ### Fixed
 - Inequalities of type `2x + 1 < 5 < 4x - 2` no longer have negative coefficients and will have cleaner numbers
 

@@ -10,7 +10,7 @@ use tracing::info;
 
 use crate::api::parse_language;
 use db::{
-    self, HasDesc,
+    self, HasDesc, IsNew,
     chapters::{ChapterEntry, get_public_chapters_from_course},
     courses::{CourseEntry, get_course_by_name, get_public_courses},
     logging,
@@ -23,6 +23,7 @@ use types::{errors::ApiError, lang::Language};
 ///
 /// See [`get_course_list()`].
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct HTTPCourseData {
     id: i32,
     name: String,
@@ -42,24 +43,29 @@ impl HTTPCourseData {
 ///
 /// Not sent on its own, but as part of [`ChapterWithTopics`].
 #[derive(Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 struct HTTPTopicData {
     id: i32,
     desc: String,
+    is_new: IsNew,
 }
 impl HTTPTopicData {
     fn from_topic_entry(topic: &TopicEntry, lang: Language) -> Self {
         Self {
             id: topic.id,
             desc: topic.get_desc_for_lang(lang),
+            is_new: topic.is_new,
         }
     }
 }
 
 /// The relevant data about a chapter, including the topics it contains
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct ChapterWithTopics {
     id: i32,
     desc: String,
+    is_new: IsNew,
     topics: Vec<HTTPTopicData>,
 }
 impl ChapterWithTopics {
@@ -71,6 +77,7 @@ impl ChapterWithTopics {
         Self {
             id: chapter.id,
             desc: chapter.get_desc_for_lang(lang),
+            is_new: chapter.is_new,
             topics: topics.to_vec(),
         }
     }
@@ -84,6 +91,7 @@ struct HTTPProblemData {
     id: i32,
     absolute_difficulty: i32,
     desc: String,
+    is_new: IsNew,
 }
 impl HTTPProblemData {
     fn from_problem_and_topic_id(problem: &ProblemEntry, topic_id: i32, lang: Language) -> Self {
@@ -97,6 +105,7 @@ impl HTTPProblemData {
                 .absolute_difficulty
                 .number as i32,
             desc: problem.get_desc_for_lang(lang),
+            is_new: problem.is_new,
         }
     }
 }
@@ -109,6 +118,7 @@ impl HTTPProblemData {
 /// The struct also contains the descs for ease of use in the frontend. Otherwise there would have
 /// to be a lot of mapping and passing things around.
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct TopicWithProblems {
     id: i32,
     desc: String,

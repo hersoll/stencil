@@ -1,6 +1,6 @@
 use crate::{
-    DatabaseRow, DescriptionTranslations, HasDesc, ID, Name, PublicFlag, error_context,
-    error_context_by_name,
+    DatabaseRow, DescriptionTranslations, HasDesc, ID, IsNew, NEW_THRESHOLD, Name, PublicFlag,
+    error_context, error_context_by_name,
 };
 
 use anyhow::{Context, Result};
@@ -15,6 +15,7 @@ pub struct ChapterEntry {
     pub desc: DescriptionTranslations,
     pub course_ids: Vec<ID>,
     pub topic_ids: Vec<ID>,
+    pub is_new: IsNew,
 }
 /// The same data as [`ChapterEntry`], except it includes information about whether the entry is
 /// public or not.
@@ -39,6 +40,7 @@ impl From<DatabaseRow> for ChapterEntry {
             course_ids: Vec::new(),
             topic_ids: Vec::new(),
             name: row.name,
+            is_new: row.is_new,
         }
     }
 }
@@ -58,8 +60,10 @@ pub async fn get_all_chapter_data() -> Result<Vec<ChapterEntryForEditor>> {
     let pool = crate::get_pool();
     let chapter_data = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT id, name, desc_sv, desc_en, public
+        r#"SELECT id, name, desc_sv, desc_en, public,
+            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
             FROM chapters ORDER BY name"#,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await?;
@@ -78,14 +82,16 @@ pub async fn get_public_chapters_from_course(course_id: &i32) -> Result<Vec<Chap
     let pool = crate::get_pool();
     let chapters = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT ch.id, ch.name, ch.desc_sv, ch.desc_en, ch.public
+        r#"SELECT ch.id, ch.name, ch.desc_sv, ch.desc_en, ch.public,
+            (created_at >= NOW() - $3::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM chapters ch
         JOIN course_chapters cc ON ch.id = cc.chapter_id
         WHERE cc.course_id = $1
         AND (NOT $2::bool OR ch.public)
         ORDER BY cc.order_index, ch.name"#,
         course_id,
-        production_mode
+        production_mode,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await
@@ -102,14 +108,16 @@ pub async fn get_all_chapters_from_course(course_id: &i32) -> Result<Vec<Chapter
     let pool = crate::get_pool();
     let chapters = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT ch.id, ch.name, ch.desc_sv, ch.desc_en, ch.public
+        r#"SELECT ch.id, ch.name, ch.desc_sv, ch.desc_en, ch.public,
+            (created_at >= NOW() - $3::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM chapters ch
         JOIN course_chapters cc ON ch.id = cc.chapter_id
         WHERE cc.course_id = $1
         AND (NOT $2::bool OR ch.public)
         ORDER BY cc.order_index, ch.name"#,
         course_id,
-        production_mode
+        production_mode,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await
@@ -153,12 +161,14 @@ pub async fn get_chapters_from_topic(topic_id: &i32) -> Result<Vec<ChapterEntryF
     let pool = crate::get_pool();
     let chapters = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT c.id, c.name, c.desc_sv, c.desc_en, c.public
+        r#"SELECT c.id, c.name, c.desc_sv, c.desc_en, c.public,
+            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM chapters c
         JOIN chapter_topics ct ON c.id = ct.chapter_id
         WHERE ct.topic_id = $1
         ORDER BY c.name"#,
-        topic_id
+        topic_id,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await

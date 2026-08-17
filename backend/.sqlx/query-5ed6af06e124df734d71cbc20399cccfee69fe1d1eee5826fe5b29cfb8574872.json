@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public\n        FROM topics t\n        JOIN chapter_topics ct ON t.id = ct.topic_id\n        WHERE ct.chapter_id = $1\n        ORDER BY ct.order_index, t.name",
+  "query": "SELECT id, name, desc_sv, desc_en, public,\n            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n            FROM chapters ORDER BY name",
   "describe": {
     "columns": [
       {
@@ -27,11 +27,16 @@
         "ordinal": 4,
         "name": "public",
         "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "is_new!",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Interval"
       ]
     },
     "nullable": [
@@ -39,8 +44,9 @@
       false,
       false,
       false,
-      false
+      false,
+      null
     ]
   },
-  "hash": "69c6b59b0a1cfc4a43a6a7b3f6bb94a44587b4b9a118b706ca276b29112de808"
+  "hash": "5ed6af06e124df734d71cbc20399cccfee69fe1d1eee5826fe5b29cfb8574872"
 }

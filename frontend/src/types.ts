@@ -4,6 +4,7 @@ export type ProblemData = {
   id: number;
   absoluteDifficulty: number;
   desc: string;
+  isNew: boolean;
 };
 
 export type TopicWithProblems = {
@@ -15,11 +16,13 @@ export type TopicWithProblems = {
 export type TopicData = {
   id: number;
   desc: string;
+  isNew: boolean;
 };
 
 export type ChapterWithTopics = {
   id: number;
   desc: string;
+  isNew: boolean;
   topics: TopicData[];
 };
 

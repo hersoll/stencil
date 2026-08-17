@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, name, desc_sv, desc_en, public\n            FROM courses ORDER BY name",
+  "query": "SELECT id, name, desc_sv, desc_en, public, false as \"is_new!\"\n            FROM courses \n            WHERE (NOT $1::bool OR public)\n            ORDER BY name",
   "describe": {
     "columns": [
       {
@@ -27,18 +27,26 @@
         "ordinal": 4,
         "name": "public",
         "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "is_new!",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Bool"
+      ]
     },
     "nullable": [
       false,
       false,
       false,
       false,
-      false
+      false,
+      null
     ]
   },
-  "hash": "1c9d18c35e0c8081a4e472bcf1ba416bdcb5b657daedc25b7feec1484f01005a"
+  "hash": "fadae4c52290214781526b171e82a312e0d80dfd6b890d65f87fd1050dcb4243"
 }

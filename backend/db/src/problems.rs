@@ -1,6 +1,6 @@
 use crate::{
-    Description, DescriptionTranslations, HasDesc, ID, Name, PublicFlag, error_context,
-    error_context_by_name,
+    Description, DescriptionTranslations, HasDesc, ID, IsNew, NEW_THRESHOLD, Name, PublicFlag,
+    error_context, error_context_by_name,
 };
 use types::{
     difficulty::{AbsoluteDifficulty, RelativeDifficulty},
@@ -26,6 +26,7 @@ struct DBProblemRow {
     solution_sv: SolutionString,
     solution_en: SolutionString,
     public: PublicFlag,
+    is_new: IsNew,
 }
 
 struct DBProblemRowWithTopicDifficulties {
@@ -45,6 +46,7 @@ struct DBProblemRowWithTopicDifficulties {
     absolute_difficulty: AbsoluteDifficulty,
     relative_difficulty: RelativeDifficulty,
     public: PublicFlag,
+    is_new: IsNew,
 }
 
 impl From<DBProblemRow> for ProblemEntry {
@@ -71,6 +73,7 @@ impl From<DBProblemRow> for ProblemEntry {
                 },
             },
             topic_data: Vec::new(),
+            is_new: row.is_new,
         }
     }
 }
@@ -112,6 +115,7 @@ impl From<DBProblemRowWithTopicDifficulties> for ProblemEntry {
                 absolute_difficulty: row.absolute_difficulty,
                 relative_difficulty: row.relative_difficulty,
             }],
+            is_new: row.is_new,
         }
     }
 }
@@ -160,6 +164,7 @@ pub struct ProblemEntry {
     pub prefix_id: Option<ID>,
     pub translations: ProblemTranslations,
     pub topic_data: Vec<TopicSpecificData>,
+    pub is_new: IsNew,
 }
 /// The same data as [`ProblemEntry`], except it includes information about whether the entry is
 /// public or not.
@@ -234,8 +239,10 @@ pub async fn get_all_problem_data() -> Result<Vec<ProblemEntryForEditor>> {
     let problems = sqlx::query_as!(
         DBProblemRow,
         r#"SELECT id, name, desc_sv, desc_en, question_sv, question_en,
-            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public
+            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public,
+            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
             FROM problems ORDER BY module, name"#,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await?;
@@ -255,11 +262,13 @@ pub async fn get_public_problem_data() -> Result<Vec<ProblemEntry>> {
     let problems = sqlx::query_as!(
         DBProblemRow,
         r#"SELECT id, name, desc_sv, desc_en, question_sv, question_en,
-            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public
+            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public,
+            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
             FROM problems 
-            WHERE (NOT $1::bool OR public)
+            WHERE (NOT $2::bool OR public)
             ORDER BY module, name"#,
-        production_mode
+        NEW_THRESHOLD,
+        production_mode,
     )
     .fetch_all(pool)
     .await?;
@@ -278,12 +287,14 @@ pub async fn get_all_topic_problems_with_difficulties(
             DBProblemRowWithTopicDifficulties,
             r#"SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module, 
             p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,
-            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public
+            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public,
+            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = $1
         ORDER BY tp.order_index, p.name"#,
             topic_id,
+            NEW_THRESHOLD
         )
         .fetch_all(pool)
         .await
@@ -308,13 +319,15 @@ pub async fn get_public_topic_problems_with_difficulties(
         r#"SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module, 
             p.question_sv, p.question_en, p.answer_sv, p.answer_en, 
             p.solution_sv, p.solution_en, p.prefix_id, p.public,
-            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty
+            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty,
+            (created_at >= NOW() - $3::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = $1 AND (NOT $2::bool OR p.public)
         ORDER BY tp.order_index, p.name"#,
         topic_id,
-        production_mode
+        production_mode,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await
@@ -333,12 +346,14 @@ pub async fn get_topic_problems_with_difficulties_for_topics(
         DBProblemRowWithTopicDifficulties,
         r#"SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module,
         p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,
-        tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public
+        tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public,
+            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = ANY($1)
         ORDER BY tp.topic_id, tp.order_index, p.name"#,
         topic_ids,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await

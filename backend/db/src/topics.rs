@@ -1,6 +1,6 @@
 use crate::{
-    DatabaseRow, DescriptionTranslations, HasDesc, ID, Name, PublicFlag, error_context,
-    error_context_by_name,
+    DatabaseRow, DescriptionTranslations, HasDesc, ID, IsNew, NEW_THRESHOLD, Name, PublicFlag,
+    error_context, error_context_by_name,
     problems::{ProblemIdsAndDifficulties, TopicSpecificData},
 };
 
@@ -16,6 +16,7 @@ pub struct TopicEntry {
     pub desc: DescriptionTranslations,
     pub chapter_ids: Vec<ID>,
     pub problems: Vec<ProblemIdsAndDifficulties>,
+    pub is_new: IsNew,
 }
 /// The same data as [`TopicEntry`], except it includes information about whether the entry is
 /// public or not.
@@ -40,6 +41,7 @@ impl From<DatabaseRow> for TopicEntry {
             chapter_ids: Vec::new(),
             problems: Vec::new(),
             name: row.name,
+            is_new: row.is_new,
         }
     }
 }
@@ -59,8 +61,10 @@ pub async fn get_all_topic_data() -> Result<Vec<TopicEntryForEditor>> {
     let pool = crate::get_pool();
     let topics = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT id, name, desc_sv, desc_en, public
+        r#"SELECT id, name, desc_sv, desc_en, public,
+            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
             FROM topics ORDER BY name"#,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await?;
@@ -77,11 +81,13 @@ pub async fn get_topics_from_ids(topic_ids: &[ID]) -> Result<Vec<TopicEntry>> {
     let pool = crate::get_pool();
     let topics = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public
+        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public,
+            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM topics t
         JOIN UNNEST($1::int[]) WITH ORDINALITY AS u(id, ord) ON t.id = u.id
         ORDER BY u.ord"#,
-        topic_ids
+        topic_ids,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await
@@ -97,12 +103,14 @@ pub async fn get_topics_from_chapter(chapter_id: &i32) -> Result<Vec<TopicEntryF
     let pool = crate::get_pool();
     let topics = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public
+        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public,
+            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM topics t
         JOIN chapter_topics ct ON t.id = ct.topic_id
         WHERE ct.chapter_id = $1
         ORDER BY ct.order_index, t.name"#,
-        chapter_id
+        chapter_id,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await
@@ -118,11 +126,13 @@ pub async fn get_topics_from_problem(problem_id: &i32) -> Result<Vec<TopicEntryF
     let pool = crate::get_pool();
     let topics = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public
+        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public,
+            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM topics t
         JOIN topic_problems tp ON t.id = tp.topic_id
         WHERE tp.problem_id = $1"#,
-        problem_id
+        problem_id,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await
@@ -131,13 +141,14 @@ pub async fn get_topics_from_problem(problem_id: &i32) -> Result<Vec<TopicEntryF
     Ok(topics.into_iter().map(TopicEntryForEditor::from).collect())
 }
 
-/// struct needed for get_topics_for_chapters()
+/// struct needed for [`get_topics_for_chapters()`]
 struct SpecialTopicRow {
     id: i32,
     name: String,
     desc_sv: String,
     desc_en: String,
     chapter_id: i32,
+    is_new: IsNew,
 }
 impl From<SpecialTopicRow> for TopicEntry {
     fn from(value: SpecialTopicRow) -> Self {
@@ -150,6 +161,7 @@ impl From<SpecialTopicRow> for TopicEntry {
             },
             chapter_ids: Vec::new(),
             problems: Vec::new(),
+            is_new: value.is_new,
         }
     }
 }
@@ -164,14 +176,16 @@ pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32,
     let pool = crate::get_pool();
     let topics = sqlx::query_as!(
         SpecialTopicRow,
-        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, ct.chapter_id
+        r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, ct.chapter_id,
+            (created_at >= NOW() - $3::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
         FROM topics t
         JOIN chapter_topics ct ON t.id = ct.topic_id
         WHERE ct.chapter_id = ANY($1)
         AND (NOT $2::bool OR t.public)
         ORDER BY ct.chapter_id, ct.order_index, t.name"#,
         chapter_ids,
-        production_mode
+        production_mode,
+        NEW_THRESHOLD
     )
     .fetch_all(pool)
     .await?;

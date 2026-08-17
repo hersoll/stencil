@@ -8,6 +8,9 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// Representation of data about a course from the DB, the way it's sent to the user
+///
+/// Note that this struct does not have an `is_new` field, unlike `ChapterEntry` and the rest,
+/// since we don't care about new courses :)
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CourseEntry {
     pub id: ID,
@@ -59,7 +62,7 @@ pub async fn get_public_courses() -> Result<Vec<CourseEntry>> {
     let pool = crate::get_pool();
     let courses = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT id, name, desc_sv, desc_en, public
+        r#"SELECT id, name, desc_sv, desc_en, public, false as "is_new!"
             FROM courses 
             WHERE (NOT $1::bool OR public)
             ORDER BY name"#,
@@ -78,7 +81,7 @@ pub async fn get_all_courses() -> Result<Vec<CourseEntryForEditor>> {
     let pool = crate::get_pool();
     let courses = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT id, name, desc_sv, desc_en, public
+        r#"SELECT id, name, desc_sv, desc_en, public, false as "is_new!"
             FROM courses ORDER BY name"#,
     )
     .fetch_all(pool)
@@ -98,7 +101,7 @@ pub async fn get_course_by_name(name: &str) -> Result<CourseEntry> {
     let pool = crate::get_pool();
     let course = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT id, name, desc_sv, desc_en, public
+        r#"SELECT id, name, desc_sv, desc_en, public, false as "is_new!"
             FROM courses
             WHERE name = $1"#,
         name,
@@ -117,7 +120,7 @@ pub async fn get_courses_from_chapter(chapter_id: &i32) -> Result<Vec<CourseEntr
     let pool = crate::get_pool();
     let courses = sqlx::query_as!(
         DatabaseRow,
-        r#"SELECT co.id, co.name, co.desc_sv, co.desc_en, co.public
+        r#"SELECT co.id, co.name, co.desc_sv, co.desc_en, co.public, false as "is_new!"
         FROM courses co
         JOIN course_chapters coch ON co.id = coch.course_id
         WHERE coch.chapter_id = $1

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, name, desc_sv, desc_en, public\n            FROM chapters ORDER BY name",
+  "query": "SELECT co.id, co.name, co.desc_sv, co.desc_en, co.public, false as \"is_new!\"\n        FROM courses co\n        JOIN course_chapters coch ON co.id = coch.course_id\n        WHERE coch.chapter_id = $1\n        ORDER BY coch.order_index, co.name",
   "describe": {
     "columns": [
       {
@@ -27,18 +27,26 @@
         "ordinal": 4,
         "name": "public",
         "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "is_new!",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int4"
+      ]
     },
     "nullable": [
       false,
       false,
       false,
       false,
-      false
+      false,
+      null
     ]
   },
-  "hash": "3d1242c3d9c5a02458f589d64888f5e52d29ab215a1cf4a2d317997361b5e976"
+  "hash": "b8870238169652a7e23ae890668537f04aeac1cecc33d248df0a2a7d26b4fc3d"
 }
