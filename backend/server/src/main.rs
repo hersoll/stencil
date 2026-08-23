@@ -1,5 +1,6 @@
 pub mod api;
 pub mod config;
+pub mod github;
 pub mod middleware;
 pub mod pdf_generation;
 pub mod router;

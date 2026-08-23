@@ -63,6 +63,11 @@ export function saveDocumentOptions() {
   );
 }
 
+export const releases = $state<{
+  latest_tag: string;
+  notes: { tag_name: string; created_at: string; body: string }[];
+}>({ latest_tag: '', notes: [] });
+
 export const loadingState = $state({ loading: false });
 export function startLoading() {
   loadingState.loading = true;

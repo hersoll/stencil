@@ -23,6 +23,8 @@ pub fn create_router() -> Router {
 
     let user_routes = Router::new()
         .route("/defaults", get(api::public::get_defaults))
+        .route("/releases", get(api::public::get_releases))
+        .route("/releases/latest", get(api::public::get_latest_tag))
         .route("/translations/{lang}", get(api::public::get_translations))
         .route("/{lang}/course", get(api::public::get_course_list))
         .route(

@@ -1,6 +1,9 @@
+use anyhow::Result;
 use db;
 use registry;
 use tracing::{error, info};
+
+use crate::github::{fetch_github_releases, store_github_releases};
 
 pub async fn initialize() -> Result<(), Box<dyn std::error::Error>> {
     info!("Initializing database...");
@@ -23,6 +26,11 @@ pub async fn initialize() -> Result<(), Box<dyn std::error::Error>> {
         e
     })?;
     info!("Prefixes loaded!");
+
+    info!("Fetching GitHub releases...");
+    let releases = fetch_github_releases().await?;
+    store_github_releases(releases)?;
+    info!("Fetched and stored GitHub releases!");
 
     Ok(())
 }

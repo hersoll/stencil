@@ -1,8 +1,9 @@
 # Changelog
 
-## [1.1.0] - TBD
+## [1.1.0] - 2026-08-23
 
 ### Added
+- New release note page (where you might currently be reading this text!)
 - Mark entries younger than 2 weeks as `[NEW!]`
 - Trying to add a site description for SEO
 

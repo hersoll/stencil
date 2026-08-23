@@ -4,11 +4,13 @@
   import SetOptions from './SetOptions.svelte';
   import SelectAllButton from './SelectAllButton.svelte';
   import { setState } from '$src/globalStates.svelte';
+  import VersionTag from './VersionTag.svelte';
 
   let { courseName }: { courseName: string } = $props();
 </script>
 
 <CourseDisplay {courseName} />
+<VersionTag />
 <div class="footer">
   <SetOptions bind:problemOptions={setState.pendingSet} />
   <SelectAllButton />

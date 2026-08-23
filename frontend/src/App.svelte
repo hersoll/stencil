@@ -4,10 +4,10 @@
   import {
     loadingState,
     error,
+    releases,
     setDocumentOptions,
     setDefaultFormattingOptions,
     setDefaultProblemOptions,
-    documentOptions,
     setDefaultDocumentOptions
   } from '$src/globalStates.svelte';
   import NavBar from '$src/lib/NavBar/NavBar.svelte';
@@ -50,6 +50,19 @@
     setDefaultProblemOptions(problem_options);
   }
 
+  async function fetchVersion() {
+    const response: Response = await fetch(`${API_URL}/releases/latest`);
+
+    if (!response.ok) {
+      let text = await response.text();
+      error.message = `Status: ${response.status} \n${text}`;
+      return;
+    }
+
+    const text = await response.text();
+    releases.latest_tag = text.slice(1, -1);
+  }
+
   function loadLocalStorage() {
     let localDocumentOptionsString = localStorage.getItem('document_options');
     if (localDocumentOptionsString) {
@@ -82,6 +95,7 @@
   onMount(async () => {
     await i18n.init();
     await fetchDefaults();
+    await fetchVersion();
     loadLocalStorage();
   });
 </script>
