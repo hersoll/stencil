@@ -19,7 +19,7 @@ fn simple_missing_last_positive(id: i32, lang: Language) -> Result<Problem> {
     let (constant, const_range) = num_gen::integer().range(1, 9).and_random();
     let missing = constant.pow(2);
     let double = constant * 2;
-    let missing_icon = "suit.heart.filled";
+    let missing_icon = symbols::get_drawable()?;
     let var = symbols::X;
 
     let solution =
@@ -43,7 +43,7 @@ fn simple_missing_last_negative(id: i32, lang: Language) -> Result<Problem> {
     let (constant, const_range) = num_gen::integer().range(-9, -1).and_random();
     let missing = constant.pow(2);
     let double = constant * 2;
-    let missing_icon = "triangle.filled.t";
+    let missing_icon = symbols::get_drawable()?;
     let var = symbols::X;
 
     let solution =

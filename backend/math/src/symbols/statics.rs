@@ -103,3 +103,10 @@ pub static PHI_CAPS: &Symbol = &Symbol("Phi");
 pub static CHI_CAPS: &Symbol = &Symbol("Chi");
 pub static PSI_CAPS: &Symbol = &Symbol("Psi");
 pub static OMEGA_CAPS: &Symbol = &Symbol("Omega");
+
+// ============ Drawables ============
+pub static HEART: &Symbol = &Symbol("suit.heart.filled");
+pub static DIAMOND: &Symbol = &Symbol("suit.diamond.filled");
+pub static TRIANGLE: &Symbol = &Symbol("triangle.filled.t");
+pub static SQUARE: &Symbol = &Symbol("square.filled");
+pub static HEXAGON: &Symbol = &Symbol("hexa.filled");

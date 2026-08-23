@@ -20,6 +20,15 @@ pub fn get_unknown() -> Result<&'static Symbol> {
     get_random(&UNKNOWNS)
 }
 
+/// Get a random non-alphabetic symbol that is easily drawable by hand
+pub fn get_drawable() -> Result<&'static Symbol> {
+    let mut rng = rand::rng();
+    DRAWABLES
+        .choose(&mut rng)
+        .ok_or(anyhow!("The drawables array is somehow empty?"))
+        .copied()
+}
+
 pub fn get_unknown_with_exclusions<T: Into<Vec<&'static str>>>(
     exclusions_primitive: T,
 ) -> Result<&'static Symbol> {
@@ -111,4 +120,12 @@ static FUNCTION_NAMES: [WeightedSymbol; 5] = [
 static VARIABLES: [WeightedSymbol; 2] = [
     WeightedSymbol::new(symbols::X, 7),
     WeightedSymbol::new(symbols::T, 1),
+];
+
+static DRAWABLES: [&Symbol; 5] = [
+    symbols::HEART,
+    symbols::DIAMOND,
+    symbols::HEXAGON,
+    symbols::TRIANGLE,
+    symbols::SQUARE,
 ];
