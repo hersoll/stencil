@@ -1,13 +1,13 @@
 # Backend
 ## `math`
-- [ ] Change api for Term addition: `t1 + t2` should be public and net a polynomial, deprecate `.and()`, new `merge()` for internal use instead
+- [x] Change api for Term addition: `t1 + t2` should be public and net a polynomial, deprecate `.and()`, new `merge()` for internal use instead
 - [x] Mark chapters/topics/problems younger than X weeks as 'new'
-- [ ] Read and cache latest release notes from changelog (copy it during docker build!)
+- [x] Read and cache latest release notes from changelog
 
 # Frontend
 - [ ] Alert when problem set is empty
 - [x] Display a badge next to new entries
-- [ ] Show version and patch notes
+- [x] Show version and patch notes
 
 # New problems
 ## Order of operations
@@ -57,8 +57,8 @@
 
 ## Perfect squares
 ### 2 / 1
-- [ ] What's missing: (x + 3)^2 = x^2 + 6x + A
-- [ ] What's missing: (x - 3)^2 = x^2 - 6x + A
+- [x] What's missing: (x + 3)^2 = x^2 + 6x + A
+- [x] What's missing: (x - 3)^2 = x^2 - 6x + A
 ### 3 / 2
 - [ ] What's missing: (x + 3)^2 = x^2 + Ax + B
 - [ ] What's missing: (x - 3)^2 = x^2 - Ax + B

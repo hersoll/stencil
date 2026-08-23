@@ -4,6 +4,7 @@
 
 ### Added
 - New release note page (where you might currently be reading this text!)
+- New problems about rules of squares
 - Mark entries younger than 2 weeks as `[NEW!]`
 - Trying to add a site description for SEO
 

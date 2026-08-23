@@ -98,11 +98,23 @@ fn detect_group_prefix(
     let first = prefix_ids.first().and_then(|&id| id)?;
 
     if prefix_ids.iter().all(|&id| id == Some(first)) {
-        prefix_reg
-            .get(&first)
-            .map(|p| format!("{}:", p.get_group_text(lang)))
+        prefix_reg.get(&first).map(|p| {
+            format!(
+                "{}{}",
+                p.get_group_text(lang),
+                append_colon(p.get_group_text(lang))
+            )
+        })
     } else {
         None
+    }
+}
+
+fn append_colon(text: &str) -> &str {
+    if text.ends_with("?") || text.ends_with(":") || text.ends_with(".") || text.ends_with("!") {
+        ""
+    } else {
+        ":"
     }
 }
 
