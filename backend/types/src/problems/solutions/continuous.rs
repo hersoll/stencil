@@ -46,6 +46,11 @@ impl ContinuousSolution {
         self.write(s)
     }
 
+    pub fn align(&mut self, s: impl Display) -> &mut Self {
+        self.write(" &= ");
+        self.write(s)
+    }
+
     pub fn newline(&mut self) -> &mut Self {
         self.write(" \\ ")
     }

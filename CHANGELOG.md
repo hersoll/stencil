@@ -8,6 +8,7 @@
 - Mark entries younger than 2 weeks as `[NEW!]`
 - Trying to add a site description for SEO
 - New `symbols::get_drawable()` for non-alphabetic symbols
+- Added `Term + Polynomial` and `Term - Polynomial` impls
 
 ### Changed
 - Math API for creating `Polynomials` is simplified: `&t1 + &t2` instead of `t1.and(&t2)`

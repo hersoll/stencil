@@ -56,33 +56,33 @@
 - [ ] +13%, -4%, what increase/decrease to get back to original?
 
 ## Perfect squares
-### 2 / 1
+### 3 / 1
 - [x] What's missing: (x + 3)^2 = x^2 + 6x + A
 - [x] What's missing: (x - 3)^2 = x^2 - 6x + A
 ### 3 / 2
-- [ ] What's missing: (x + 3)^2 = x^2 + Ax + B
-- [ ] What's missing: (x - 3)^2 = x^2 - Ax + B
+- [x] What's missing: (x + 3)^2 = x^2 + Ax + 9
+- [x] What's missing: (x - 3)^2 = x^2 - Ax + 9
 ### 4 / 4
-- [ ] (x + 3)^2
-- [ ] (x - 3)^2
+- [x] (x + 3)^2
+- [x] (x - 3)^2
 ### 4 / 5
-- [ ] (x + 3)^2 - 6x
-- [ ] (x - 3)^2 + 6x
-- [ ] (x + 3)^2 + 5x (random)
-- [ ] (x + 3)^2 + 5 (random)
-- [ ] (x + 3)^2 + x^2
-- [ ] x^2 + (x + 3)^2
+- [x] (x + 3)^2 - 6x
+- [x] (x - 3)^2 + 6x
 ### 4 / 6
-- [ ] What's missing: (x + A)^2 = x^2 + Bx + 9
+- [x] (x + 3)^2 + 5x (random)
+- [x] (x + 3)^2 + 5 (random)
+- [x] (x + 3)^2 + x^2
+- [x] x^2 + (x + 3)^2
 ### 5 / 7
-- [ ] (2x +- 3)^2
+- [x] What's missing: (x + A)^2 = x^2 + Bx + 9
+- [x] (2x +- 3)^2
 ### 5 / 8
-- [ ] 2(x +- 3)^2
+- [x] 2(x +- 3)^2
 ### 6 / 9
-- [ ] x^2 - (x +- 3)^2
-- [ ] 2x - (x +- 3)^2
+- [x] (2x +- 3y)^2
 ### 6 / 10
-- [ ] (2x +- 3y)^2
+- [x] x^2 - (x +- 3)^2
+- [x] 2x - (x +- 3)^2
 ### 7 / 11
 - [ ] (x^2 +- 3)^2
 ### 8 / 12

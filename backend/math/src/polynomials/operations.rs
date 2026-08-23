@@ -38,6 +38,18 @@ where
     }
 }
 
+impl std::ops::Add<Polynomial> for Term {
+    type Output = Polynomial;
+    fn add(self, rhs: Polynomial) -> Self::Output {
+        let mut result = rhs.terms.clone();
+        match rhs.terms.iter().position(|t| t.variables == self.variables) {
+            Some(index) => result[index] = result[index].clone().merge(&self),
+            None => result.push(self),
+        }
+        Polynomial { terms: result }
+    }
+}
+
 /// x + poly
 /// TODO: Do we need this?
 impl std::ops::Add<Polynomial> for &'static Symbol {
@@ -96,6 +108,18 @@ where
             None => result.push(rhs),
         }
         Self { terms: result }
+    }
+}
+
+impl std::ops::Sub<Polynomial> for Term {
+    type Output = Polynomial;
+    fn sub(self, rhs: Polynomial) -> Self::Output {
+        let mut result = (-rhs.clone()).terms;
+        match rhs.terms.iter().position(|t| t.variables == self.variables) {
+            Some(index) => result[index] = result[index].clone().merge(&self),
+            None => result.push(self),
+        }
+        Polynomial { terms: result }
     }
 }
 

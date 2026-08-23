@@ -99,10 +99,9 @@ static UNKNOWNS: [WeightedSymbol; 12] = [
     WeightedSymbol::new(symbols::Z, 1),
 ];
 
-static DOUBLE_UNKNOWNS: [(&Symbol, &Symbol); 5] = [
+static DOUBLE_UNKNOWNS: [(&Symbol, &Symbol); 4] = [
     (symbols::A, symbols::B),
     (symbols::J, symbols::K),
-    (symbols::M, symbols::N),
     (symbols::P, symbols::Q),
     (symbols::X, symbols::Y),
 ];
