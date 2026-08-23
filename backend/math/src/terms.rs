@@ -333,6 +333,12 @@ impl From<&'static Symbol> for Term {
     }
 }
 
+impl From<&Term> for Term {
+    fn from(borrow: &Term) -> Self {
+        borrow.clone()
+    }
+}
+
 impl<T> From<(T, VariableList)> for Term
 where
     T: Into<Number>,

@@ -196,7 +196,7 @@ fn one_par_with_const(id: i32, _lang: Language) -> Result<Problem> {
         .aligned(&lhs, &rhs)
         .aligned(par_coef * lhs_poly.clone(), &rhs)
         .step(subtract_term(&rhs_term))
-        .aligned((par_coef * lhs_poly).and(&-rhs_term).simplify(), rhs_const)
+        .aligned(((par_coef * lhs_poly) - rhs_term).simplify(), rhs_const)
         .step(subtract_number(par_coef * lhs_const))
         .aligned(
             (par_coef * lhs_coef - rhs_coef) * var,
@@ -337,7 +337,7 @@ fn two_pars(id: i32, _lang: Language) -> Result<Problem> {
         .aligned(&lhs, &rhs)
         .aligned(par1 * poly1.clone(), par2 * poly2)
         .step(subtract_term(&final_term2))
-        .aligned((par1 * poly1).and(&-final_term2).simplify(), par2 * const2)
+        .aligned(((par1 * poly1) - final_term2).simplify(), par2 * const2)
         .step(subtract_number(par1 * const1))
         .aligned(final_coef * var, final_const)
         .step(divide_number(final_coef));
@@ -381,7 +381,7 @@ fn two_pars_with_term(id: i32, _lang: Language) -> Result<Problem> {
     let poly1 = term1.and(&const1);
     let poly2 = Term::from_var(var).and(&const2);
     let final_term_rhs = par2 * var;
-    let lhs_after_mult = (par1 * poly1.clone()).and(&term2);
+    let lhs_after_mult = par1 * poly1.clone() + &term2;
 
     let lhs = format!("{par1}({poly1}){term2:+}");
     let rhs = format!("{par2}({poly2})");
@@ -391,10 +391,7 @@ fn two_pars_with_term(id: i32, _lang: Language) -> Result<Problem> {
         .aligned(&lhs_after_mult, par2 * poly2.clone())
         .aligned(lhs_after_mult.simplify(), par2 * poly2)
         .step(subtract_term(&final_term_rhs))
-        .aligned(
-            lhs_after_mult.and(&-final_term_rhs).simplify(),
-            par2 * const2,
-        )
+        .aligned((lhs_after_mult - final_term_rhs).simplify(), par2 * const2)
         .step(subtract_number(par1 * const1))
         .aligned(final_coef * var, final_const);
     if final_coef != 1 {

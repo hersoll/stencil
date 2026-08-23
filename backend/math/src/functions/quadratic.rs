@@ -113,9 +113,7 @@ impl QuadraticFunction {
     }
 
     pub(crate) fn as_poly(&self, variable: &'static Symbol) -> Polynomial {
-        (self.a * variable * variable)
-            .and(&(self.b * variable))
-            .and(&Term::from_num(self.c))
+        (self.a * variable * variable) + &(self.b * variable) + &Term::from_num(self.c)
     }
 
     /// Returns the x value of the symmetry line

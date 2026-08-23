@@ -257,12 +257,7 @@ impl Function {
             FunctionKind::Exponential(ExponentialFunction { c, a }) => {
                 format!("{c} dot {a}^{x}", x = self.variable)
             }
-            FunctionKind::Quadratic(QuadraticFunction { a, b, c }) => {
-                let poly = (a * self.variable * self.variable)
-                    .and(&(b * self.variable))
-                    .and(&Term::from_num(c));
-                poly.to_string()
-            }
+            FunctionKind::Quadratic(function) => function.as_poly(self.variable).to_string(),
         }
     }
 

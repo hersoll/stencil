@@ -28,7 +28,7 @@ where
 {
     type Output = Self;
     fn add(self, rhs: T) -> Self::Output {
-        let rhs = rhs.clone().into();
+        let rhs = rhs.into();
         let mut result = self.terms.clone();
         match self.terms.iter().position(|t| t.variables == rhs.variables) {
             Some(index) => result[index] = result[index].clone().merge(&rhs),
@@ -74,9 +74,26 @@ impl std::ops::Sub for Polynomial {
                 .iter()
                 .position(|t| t.variables == term.variables)
             {
-                Some(index) => result[index] -= term,
+                Some(index) => result[index] = result[index].clone().merge(&-term),
                 None => result.push(-term),
             }
+        }
+        Self { terms: result }
+    }
+}
+
+/// poly + t1
+impl<T> std::ops::Sub<T> for Polynomial
+where
+    T: Into<Term> + Clone,
+{
+    type Output = Self;
+    fn sub(self, rhs: T) -> Self::Output {
+        let rhs = rhs.into();
+        let mut result = self.terms.clone();
+        match self.terms.iter().position(|t| t.variables == rhs.variables) {
+            Some(index) => result[index] = result[index].clone().merge(&-rhs),
+            None => result.push(rhs),
         }
         Self { terms: result }
     }

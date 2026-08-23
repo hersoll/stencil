@@ -1,7 +1,7 @@
 use anyhow::Result;
 use macros::problem;
 use math::{
-    Number, Polynomial, Term,
+    HasCoef, Polynomial, Term,
     formatting::{divide_number, subtract_number, subtract_term},
     num_gen::{self, NumberGenerator},
     symbols,
@@ -42,9 +42,9 @@ fn two_positive_coefs_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 
     sol.aligned(format!("{subtracted_term}{lhs_const:+}"), rhs_const) // 2x + 1 = 3
         .step(subtract_number(lhs_const));
-    if subtracted_term.coefficient.value() > 1.0 {
+    if subtracted_term.coef() > 1 {
         sol.aligned(&subtracted_term, rhs_const - lhs_const) // 2x = 2
-            .step(divide_number(subtracted_term.coefficient));
+            .step(divide_number(subtracted_term.coef()));
     }
     sol.aligned(unknown, answer);
 
@@ -89,9 +89,9 @@ fn two_positive_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
 
     sol.aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 1 = 2x + 3
         .step(subtract_number(rhs_const));
-    if subtracted_term.coefficient.value() > 1.0 {
+    if subtracted_term.coef() > 1 {
         sol.aligned(lhs_const - rhs_const, &subtracted_term) // -2 = 2x
-            .step(divide_number(subtracted_term.coefficient));
+            .step(divide_number(subtracted_term.coef()));
     }
     sol.aligned(answer, unknown); // -1 = x
 
@@ -137,7 +137,7 @@ fn one_negative_coef_lhs_greater(id: i32, _lang: Language) -> Result<Problem> {
         .aligned(format!("{subtracted_term}{lhs_const:+}"), rhs_const) // 6x + 1 = 4
         .step(subtract_number(lhs_const))
         .aligned(&subtracted_term, rhs_const - lhs_const) // 6x = 3
-        .step(divide_number(subtracted_term.coefficient))
+        .step(divide_number(subtracted_term.coef()))
         .aligned(unknown, answer); // x = 0.5
 
     Ok(Problem::from(ProblemParameters {
@@ -180,7 +180,7 @@ fn one_negative_coef_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
         .aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 4 = 6x + 1
         .step(subtract_number(rhs_const))
         .aligned(lhs_const - rhs_const, &subtracted_term) // 3 = 6x
-        .step(divide_number(subtracted_term.coefficient))
+        .step(divide_number(subtracted_term.coef()))
         .aligned(answer, unknown); // 0.5 = x
 
     Ok(Problem::from(ProblemParameters {
@@ -222,9 +222,9 @@ fn two_negative_coefs_rhs_greater(id: i32, _lang: Language) -> Result<Problem> {
         .step(subtract_term(&lhs_term))
         .aligned(lhs_const, format!("{subtracted_term}{rhs_const:+}")) // 4 = 2x + 8
         .step(subtract_number(rhs_const));
-    if subtracted_term.coefficient.value() > 1.0 {
+    if subtracted_term.coef() > 1 {
         sol.aligned(lhs_const - rhs_const, &subtracted_term) // -4 = 2x
-            .step(divide_number(subtracted_term.coefficient));
+            .step(divide_number(subtracted_term.coef()));
     }
     sol.aligned(answer, unknown); // -2 = x
 
@@ -310,7 +310,7 @@ fn positive_coefs_lhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
     solution
         .aligned(0, format!("{total_var}{rhs_const:+}")) // 0 = 2x - 6
         .step(subtract_number(rhs_const));
-    if total_var.coefficient > Number::Integer(1) {
+    if total_var.coef() > 1 {
         solution
             .aligned(-rhs_const, total_var) // 6 = 2x
             .step(divide_number(rhs_coef - lhs_coef));
@@ -353,7 +353,7 @@ fn positive_coefs_rhs_has_zero(id: i32, _lang: Language) -> Result<Problem> {
     solution
         .aligned(format!("{total_var}{lhs_const:+}"), 0) // 2x - 6 = 0
         .step(subtract_number(lhs_const));
-    if total_var.coefficient > Number::Integer(1) {
+    if total_var.coef() > 1 {
         solution
             .aligned(total_var, -lhs_const) // 2x = 6
             .step(divide_number(lhs_coef - rhs_coef));

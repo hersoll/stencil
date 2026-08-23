@@ -28,16 +28,19 @@ where
 {
     type Output = Polynomial;
     fn add(self, rhs: T) -> Self::Output {
-        let rhs = rhs.clone().into();
+        let rhs = rhs.into();
         Polynomial::from_terms(&[&self, &rhs]).simplify()
     }
 }
 
-impl std::ops::Add<&Term> for Term {
+impl<T> std::ops::Add<T> for &Term
+where
+    T: Into<Term> + Clone,
+{
     type Output = Polynomial;
-    fn add(self, rhs: &Term) -> Self::Output {
-        let rhs = rhs.clone();
-        self + rhs
+    fn add(self, rhs: T) -> Self::Output {
+        let rhs = rhs.into();
+        self.clone() + rhs
     }
 }
 
@@ -47,16 +50,8 @@ where
 {
     type Output = Polynomial;
     fn sub(self, rhs: T) -> Self::Output {
-        let rhs = rhs.clone().into();
+        let rhs = rhs.into();
         Polynomial::from_terms(&[&self, &-rhs]).simplify()
-    }
-}
-
-impl std::ops::Sub<&Term> for Term {
-    type Output = Polynomial;
-    fn sub(self, rhs: &Term) -> Self::Output {
-        let rhs = rhs.clone();
-        self - rhs
     }
 }
 
@@ -167,7 +162,7 @@ mod tests {
         let t2 = 2 * (X * X);
         assert_eq!((t1 + t2).to_string(), "5x^2");
         let t3 = Term::from_var((X, 4));
-        let t4 = 4 * t3.clone();
+        let t4 = 4 * t3;
         let t5 = Term::from_num_and_vars((2, 3), (X, 4));
         assert_eq!((t4 + t5).to_string(), "(14x^4)/3");
 

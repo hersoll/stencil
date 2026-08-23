@@ -90,7 +90,7 @@ impl Polynomial {
                 .iter()
                 .position(|t| t.variables == term.variables)
             {
-                Some(index) => result.terms[index] += term.clone(),
+                Some(index) => result.terms[index] = result.terms[index].clone().merge(term),
                 None => result.terms.push(term.clone()),
             }
         }
@@ -248,8 +248,8 @@ mod tests {
         let t2 = 2 * (X * X);
         let t3 = -2 * X;
         let t4 = A;
-        let p1 = t1 + &t2 + &t3 + &t4;
-        let p2 = t2 + t1 + t4 + t3;
+        let p1 = &t1 + &t2 + &t3 + t4; // t4 does not need a borrow since it is a symbol
+        let p2 = t2 + &t1 + t4 + &t3;
         assert_eq!(p1.to_string(), "2x^2+a+x");
         assert_eq!(p1.to_string(), p2.to_string());
     }
@@ -260,9 +260,9 @@ mod tests {
         let t2 = 2 * (X * X);
         let t3 = -3 * X;
         let t4 = Term::from_var(A);
-        let polynomial = t1.and(&t2).and(&t3).and(&t4);
-        assert_eq!(format!("{polynomial}"), "3x+2x^2-3x+a");
-        assert_eq!(format!("{polynomial:+}"), "+3x+2x^2-3x+a");
+        let polynomial = t1 + &t2 + &t3 + &t4;
+        assert_eq!(format!("{polynomial}"), "2x^2+a");
+        assert_eq!(format!("{polynomial:+}"), "+2x^2+a");
     }
 
     #[test]
@@ -287,7 +287,7 @@ mod tests {
         let t_x = -3 * X;
         let t_x_2 = 2 * (X * X);
         let t_const = Term::from(4);
-        let expression = t_x.and(&t_x_2).and(&t_const);
+        let expression = &t_x + &t_x_2 + &t_const;
         assert_eq!(expression.sorted().to_string(), "2x^2-3x+4");
         let t_y_3 = Term::from_var((Y, 3));
         let expression = Polynomial::from_terms(&[&t_x, &t_x_2, &t_const, &t_y_3]);
@@ -299,7 +299,7 @@ mod tests {
         let t1: Term = 2 * X;
         let t2: Term = -3 * (X * X);
         let t3: Term = 4 * A;
-        let exp = t1.and(&t2).and(&t3);
+        let exp = &t1 + &t2 + &t3;
         let replacements = [(A, &Number::Integer(-2)), (X, &Number::Integer(5))];
         let full_evaluation = exp.evaluate(&replacements);
         assert_eq!(full_evaluation.to_string(), "-73");
