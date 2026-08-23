@@ -1,8 +1,4 @@
-use crate::VariableList;
-use crate::symbols::Symbol;
-
-use super::super::Number;
-use super::Term;
+use crate::{Number, Polynomial, Term, VariableList, symbols::Symbol};
 
 impl std::ops::Neg for Term {
     type Output = Self;
@@ -25,43 +21,45 @@ impl std::ops::Neg for &Term {
         }
     }
 }
-/// Do not add terms manually, only meant to be used inside Polynomial implementation
-///
-/// Use `t1.and(t2)` to quickly create Polynomials
-impl std::ops::Add for Term {
-    type Output = Self;
-    fn add(self, rhs: Self) -> Self::Output {
-        assert_eq!(self.variables, rhs.variables);
-        Self {
-            coefficient: self.coefficient + rhs.coefficient,
-            variables: self.variables,
-            colored: self.colored,
-        }
+
+impl<T> std::ops::Add<T> for Term
+where
+    T: Into<Term> + Clone,
+{
+    type Output = Polynomial;
+    fn add(self, rhs: T) -> Self::Output {
+        let rhs = rhs.clone().into();
+        Polynomial::from_terms(&[&self, &rhs]).simplify()
     }
 }
-impl std::ops::AddAssign for Term {
-    fn add_assign(&mut self, rhs: Self) {
-        assert_eq!(self.variables, rhs.variables);
-        self.coefficient += rhs.coefficient;
+
+impl std::ops::Add<&Term> for Term {
+    type Output = Polynomial;
+    fn add(self, rhs: &Term) -> Self::Output {
+        let rhs = rhs.clone();
+        self + rhs
     }
 }
-impl std::ops::Sub for Term {
-    type Output = Self;
-    fn sub(self, rhs: Self) -> Self::Output {
-        assert_eq!(self.variables, rhs.variables);
-        Self {
-            coefficient: self.coefficient - rhs.coefficient,
-            variables: self.variables,
-            colored: self.colored,
-        }
+
+impl<T> std::ops::Sub<T> for Term
+where
+    T: Into<Term> + Clone,
+{
+    type Output = Polynomial;
+    fn sub(self, rhs: T) -> Self::Output {
+        let rhs = rhs.clone().into();
+        Polynomial::from_terms(&[&self, &-rhs]).simplify()
     }
 }
-impl std::ops::SubAssign for Term {
-    fn sub_assign(&mut self, rhs: Self) {
-        assert_eq!(self.variables, rhs.variables);
-        self.coefficient -= rhs.coefficient;
+
+impl std::ops::Sub<&Term> for Term {
+    type Output = Polynomial;
+    fn sub(self, rhs: &Term) -> Self::Output {
+        let rhs = rhs.clone();
+        self - rhs
     }
 }
+
 impl std::ops::Mul for Term {
     type Output = Term;
     fn mul(self, rhs: Self) -> Self::Output {
@@ -168,12 +166,8 @@ mod tests {
         let t1 = 3 * (X * X);
         let t2 = 2 * (X * X);
         assert_eq!((t1 + t2).to_string(), "5x^2");
-        // += assignment
-        let mut t3 = Term::from_var((X, 4));
+        let t3 = Term::from_var((X, 4));
         let t4 = 4 * t3.clone();
-        t3 += t4.clone();
-        assert_eq!(t3.to_string(), "5x^4");
-
         let t5 = Term::from_num_and_vars((2, 3), (X, 4));
         assert_eq!((t4 + t5).to_string(), "(14x^4)/3");
 
@@ -195,11 +189,6 @@ mod tests {
         let t1 = 3 * (X * X);
         let t2 = 2 * (X * X);
         assert_eq!((t1 - t2).to_string(), "x^2");
-        // -= assignment
-        let mut t3 = Term::from_var((X, 4));
-        let t4 = 4 * t3.clone();
-        t3 -= t4;
-        assert_eq!(t3.to_string(), "-3x^4");
     }
 
     #[test]

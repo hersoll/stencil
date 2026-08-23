@@ -4,6 +4,7 @@
 
 ### Added
 - Mark entries younger than 2 weeks as `[NEW!]`
+- Trying to add a site description for SEO
 
 ### Fixed
 - Inequalities of type `2x + 1 < 5 < 4x - 2` no longer have negative coefficients and will have cleaner numbers

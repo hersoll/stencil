@@ -13,7 +13,7 @@ impl std::ops::Add for Polynomial {
                 .iter()
                 .position(|t| t.variables == term.variables)
             {
-                Some(index) => result[index] = result[index].clone() + term,
+                Some(index) => result[index] = result[index].clone().merge(&term),
                 None => result.push(term),
             }
         }
@@ -22,37 +22,24 @@ impl std::ops::Add for Polynomial {
 }
 
 /// poly + t1
-impl std::ops::Add<Term> for Polynomial {
+impl<T> std::ops::Add<T> for Polynomial
+where
+    T: Into<Term> + Clone,
+{
     type Output = Self;
-    fn add(self, rhs: Term) -> Self::Output {
+    fn add(self, rhs: T) -> Self::Output {
+        let rhs = rhs.clone().into();
         let mut result = self.terms.clone();
         match self.terms.iter().position(|t| t.variables == rhs.variables) {
-            Some(index) => result[index] += rhs,
+            Some(index) => result[index] = result[index].clone().merge(&rhs),
             None => result.push(rhs),
         }
         Self { terms: result }
     }
 }
 
-/// poly + 3
-impl std::ops::Add<i32> for Polynomial {
-    type Output = Self;
-    fn add(self, rhs: i32) -> Self::Output {
-        let term_rhs: Term = rhs.into();
-        self + term_rhs
-    }
-}
-
-/// poly + x
-impl std::ops::Add<&'static Symbol> for Polynomial {
-    type Output = Self;
-    fn add(self, rhs: &'static Symbol) -> Self::Output {
-        let term_rhs: Term = rhs.into();
-        self + term_rhs
-    }
-}
-
 /// x + poly
+/// TODO: Do we need this?
 impl std::ops::Add<Polynomial> for &'static Symbol {
     type Output = Polynomial;
     fn add(self, rhs: Polynomial) -> Self::Output {

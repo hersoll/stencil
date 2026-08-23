@@ -51,6 +51,18 @@ impl Term {
         }
     }
 
+    /// Merge two terms of identical degrees (and variables) into a single Term
+    ///
+    /// Meant for Polynomial arithmetics
+    pub fn merge(self, rhs: &Term) -> Self {
+        assert_eq!(self.variables, rhs.variables);
+        Self {
+            coefficient: self.coefficient + rhs.coefficient,
+            variables: self.variables,
+            colored: self.colored,
+        }
+    }
+
     /// Alias method to quickly create a `Polynomial`.
     ///
     /// Example:

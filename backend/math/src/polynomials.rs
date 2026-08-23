@@ -25,25 +25,6 @@ impl Polynomial {
         Self { terms }
     }
 
-    /// Method used to chain multiple [`Term`]s into an ergonomic [`Polynomial`] creation:
-    /// ```rust
-    /// use math::Term;
-    /// use math::symbols::{X, Y};
-    ///
-    /// let t1 = Term::from_var(X);
-    /// let t2 = Term::from_var(Y);
-    /// let t3 = 2 * X;
-    /// let p1 = t1.and(&t2).and(&t3);
-    /// assert_eq!(p1.to_string(), String::from("x+y+2x"));
-    /// ```
-    ///
-    /// The first [`.and()`](Term::and) call comes from [`Term::and`], but that call returns a [`Polynomial`] and
-    /// therefore this method is needed to do the second [`.and()`](Polynomial::and) call.
-    pub fn and(mut self, term: &Term) -> Polynomial {
-        self.push(term.clone());
-        self
-    }
-
     /// Ergonomic wrapper for pushing into the inner [`Vec`]
     pub fn push(&mut self, term: Term) {
         self.terms.push(term);
@@ -265,12 +246,12 @@ mod tests {
     fn polynomial_creation() {
         let t1 = 3 * X;
         let t2 = 2 * (X * X);
-        let t3 = -3 * X;
-        let t4 = Term::from_var(A);
-        let p1 = t1.and(&t2).and(&t3).and(&t4);
-        let p2 = t2.and(&t1).and(&t4).and(&t3);
-        assert_eq!(p1.to_string(), "3x+2x^2-3x+a");
-        assert_eq!(p2.to_string(), "2x^2+3x+a-3x");
+        let t3 = -2 * X;
+        let t4 = A;
+        let p1 = t1 + &t2 + &t3 + &t4;
+        let p2 = t2 + t1 + t4 + t3;
+        assert_eq!(p1.to_string(), "2x^2+a+x");
+        assert_eq!(p1.to_string(), p2.to_string());
     }
 
     #[test]
