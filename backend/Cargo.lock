@@ -419,7 +419,7 @@ dependencies = [
 
 [[package]]
 name = "db"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -1284,7 +1284,7 @@ checksum = "112b39cec0b298b6c1999fee3e31427f74f676e4cb9879ed1a121b43661a4154"
 
 [[package]]
 name = "macros"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "ctor",
  "proc-macro2",
@@ -1310,7 +1310,7 @@ checksum = "47e1ffaa40ddd1f3ed91f717a33c8c0ee23fff369e3aa8772b9605cc1d22f4c3"
 
 [[package]]
 name = "math"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "rand 0.9.4",
@@ -1569,7 +1569,7 @@ dependencies = [
 
 [[package]]
 name = "problems"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "ctor",
@@ -1818,7 +1818,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
 name = "registry"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "db",
@@ -2463,7 +2463,7 @@ checksum = "6ce2be8dc25455e1f91df71bfa12ad37d7af1092ae736f3a6cd0e37bc7810596"
 
 [[package]]
 name = "stencil"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "argon2",
@@ -2894,7 +2894,7 @@ checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
 
 [[package]]
 name = "types"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -2907,7 +2907,7 @@ dependencies = [
 
 [[package]]
 name = "typst_writer"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "db",
