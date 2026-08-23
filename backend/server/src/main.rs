@@ -20,15 +20,12 @@ async fn main() {
 
     // Set up tracing
     let default_filter = if cfg!(debug_assertions) {
-        "debug,stencil=debug,sqlx=warn"
+        "debug,stencil=debug,sqlx=warn,reqwest=warn,hyper=warn,h2=warn"
     } else {
-        "info,stencil=info,sqlx=warn"
+        "info,stencil=info,sqlx=warn,reqwest=warn,hyper=warn,h2=warn"
     };
     tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| default_filter.into()),
-        )
+        .with(tracing_subscriber::EnvFilter::new(default_filter))
         .with(tracing_subscriber::fmt::layer().with_target(false))
         .init();
 
