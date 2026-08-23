@@ -281,7 +281,11 @@ fn push_grouped_enum(
     let mut grouped_answers = String::new();
 
     // The prefix text before writing sub-problems
-    writeln!(grouped_questions, "{prefix_text}: \n\n")?;
+    writeln!(
+        grouped_questions,
+        "{prefix_text}{} \n\n",
+        append_colon(prefix_text)
+    )?;
 
     grouped_questions += &subquestions_start();
     grouped_answers += &subanswers_start();

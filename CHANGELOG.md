@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1] - TBD
+### Fixed
+- No extra colons after punctuation in prefix text when problems are grouped
+
 ## [1.1.0] - 2026-08-23
 
 ### Added
