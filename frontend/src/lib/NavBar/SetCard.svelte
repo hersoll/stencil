@@ -3,6 +3,7 @@
   import { setState } from '$src/globalStates.svelte';
   import { fade, fly } from 'svelte/transition';
   import {
+    difficultyInRange,
     type ProblemSetSpec,
     type TopicWithProblems,
     type View
@@ -10,6 +11,7 @@
   import DeleteIcon from '../SVGIcons/DeleteIcon.svelte';
   import ReorderIcon from '../SVGIcons/ReorderIcon.svelte';
   import { fetchProblemsForTopics } from '$src/commonFunctions.svelte';
+  import DangerIcon from '../SVGIcons/DangerIcon.svelte';
 
   let {
     options = $bindable(),
@@ -78,6 +80,18 @@
     moveSetToIndex(setState.draggedSetIndex);
     setState.draggedSetIndex = setIndex;
   }
+
+  let setIsEmpty = $derived(
+    !topicsWithProblems.some(topic =>
+      topic.problems.some(problem =>
+        difficultyInRange(
+          problem.absoluteDifficulty,
+          options.problem_options.startingDifficulty,
+          options.problem_options.endingDifficulty
+        )
+      )
+    )
+  );
 </script>
 
 <div
@@ -134,6 +148,9 @@
   </button>
 
   <div class="icon-container">
+    {#if setIsEmpty}
+      <DangerIcon />
+    {/if}
     <button
       class="reorder-btn"
       onmouseover={() => (isDraggable = true)}

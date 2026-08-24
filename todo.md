@@ -1,18 +1,14 @@
 # Backend
-## `math`
-- [x] Change api for Term addition: `t1 + t2` should be public and net a polynomial, deprecate `.and()`, new `merge()` for internal use instead
-- [x] Mark chapters/topics/problems younger than X weeks as 'new'
-- [x] Read and cache latest release notes from changelog
 
 # Frontend
-- [ ] Alert when problem set is empty
-- [x] Display a badge next to new entries
-- [x] Show version and patch notes
 
 # New problems
 ## Order of operations
 - [ ] Which parentheses can be removed? A/B/C Addition, multiplication, power
 - [ ] Which needs to be done from left to right?
+
+## Multiplying parentheses
+TODO!
 
 ## Calculating rates of change
 ### 3 / 3
@@ -54,39 +50,6 @@
 - [ ] Text: increase by 7%, decrease by 13%, comes out Y. What was the original?
 - [ ] Text: increase by 7% 5 times, comes out Y. What was the original?
 - [ ] +13%, -4%, what increase/decrease to get back to original?
-
-## Perfect squares
-### 3 / 1
-- [x] What's missing: (x + 3)^2 = x^2 + 6x + A
-- [x] What's missing: (x - 3)^2 = x^2 - 6x + A
-### 3 / 2
-- [x] What's missing: (x + 3)^2 = x^2 + Ax + 9
-- [x] What's missing: (x - 3)^2 = x^2 - Ax + 9
-### 4 / 4
-- [x] (x + 3)^2
-- [x] (x - 3)^2
-### 4 / 5
-- [x] (x + 3)^2 - 6x
-- [x] (x - 3)^2 + 6x
-### 4 / 6
-- [x] (x + 3)^2 + 5x (random)
-- [x] (x + 3)^2 + 5 (random)
-- [x] (x + 3)^2 + x^2
-- [x] x^2 + (x + 3)^2
-### 5 / 7
-- [x] What's missing: (x + A)^2 = x^2 + Bx + 9
-- [x] (2x +- 3)^2
-### 5 / 8
-- [x] 2(x +- 3)^2
-### 6 / 9
-- [x] (2x +- 3y)^2
-### 6 / 10
-- [x] x^2 - (x +- 3)^2
-- [x] 2x - (x +- 3)^2
-### 7 / 11
-- [x] (x^2 +- 3)^2
-### 8 / 12
-- [x] ((x + 1)^2 - 2x)^2
 
 ## Difference of squares
 ### 4 / 4

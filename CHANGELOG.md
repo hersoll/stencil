@@ -1,6 +1,10 @@
 # Changelog
 
 ## [1.1.1] - TBD
+
+### Added
+- Alert icon shows in sidebar when a set is empty
+
 ### Fixed
 - No extra colons after punctuation in prefix text when problems are grouped
 
