@@ -1,9 +1,10 @@
 # Changelog
 
-## [1.1.1] - TBD
+## [1.1.1] - 2026-08-24
 
 ### Added
 - Alert icon shows in sidebar when a set is empty
+- Mock release notes in dev mode
 
 ### Fixed
 - No extra colons after punctuation in prefix text when problems are grouped
