@@ -94,6 +94,10 @@ impl Polynomial {
                 None => result.terms.push(term.clone()),
             }
         }
+        // The polynomial might contain terms that are 0. We want to purge them, since they
+        // mess with the term count for sorting (binomials specifically)
+        result.terms.retain(|term| term.coefficient != 0);
+
         result.sort();
         result
     }

@@ -7,6 +7,7 @@
 
 ### Fixed
 - No extra colons after punctuation in prefix text when problems are grouped
+- `Polynomials` now purge zeroes when simplifying
 - Problems like `-2(2x - 2)` showed `-4x + 4` in the answer instead of `4 - 4x`
 
 ## [1.1.0] - 2026-08-23
