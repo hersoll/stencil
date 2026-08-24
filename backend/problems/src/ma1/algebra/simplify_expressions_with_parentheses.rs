@@ -100,7 +100,7 @@ fn negative_integer_mult(id: i32, _lang: Language) -> Result<Problem> {
     Ok(Problem::from(ProblemParameters {
         id,
         question,
-        answer,
+        answer: simplified,
         solution,
         identifiers: vec![factor, constant],
         combinations: f_range.len() * c_range.len(),
