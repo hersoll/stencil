@@ -11,6 +11,7 @@
 ### Fixed
 - Removed hard date limit for `[NEW]` labels
 - Editor properly attaches the `is_new` field to entries
+- Changed starting date for dashboard stats from July 1st to August 1st
 
 ## [1.1.1] - 2026-08-24
 

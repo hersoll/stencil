@@ -221,7 +221,7 @@ pub async fn get_pdf_count_monthly_for_all_time() -> Result<Vec<TimeLineCount>> 
         r#"
         WITH months AS (
             SELECT generate_series(
-                '2026-07-01 00:00:00'::timestamp,
+                '2026-08-01 00:00:00'::timestamp,
                 date_trunc('month', (now() AT TIME ZONE 'utc')),
                 interval '1 month'
             ) AS month_start
@@ -235,7 +235,7 @@ pub async fn get_pdf_count_monthly_for_all_time() -> Result<Vec<TimeLineCount>> 
                 date_trunc('month', created_at) AS month_start,
                 COUNT(*) AS count
             FROM logs_pdf
-            WHERE created_at >= '2026-07-01 00:00:00'::timestamp 
+            WHERE created_at >= '2026-08-01 00:00:00'::timestamp 
             GROUP BY 1
         ) c USING (month_start)
         ORDER BY m.month_start;
