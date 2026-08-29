@@ -7,27 +7,6 @@
 - [ ] Which parentheses can be removed? A/B/C Addition, multiplication, power
 - [ ] Which needs to be done from left to right?
 
-## Multiplying parentheses
-### 4 / 3
-- [x] (x + 3)(x + 5)
-### 4 / 4
-- [x] (x - 3)(x + 5)
-### 4 / 5
-- [x] (x + 3)(x - 5)
-- [x] (x - 3)(x - 5)
-### 5 / 6
-- [x] (2x - 3)(x + 5)
-### 5 / 7
-- [x] (2x - 3)(3x + 5)
-### 5 / 8
-- [ ] 2(x + 3)(x - 5)
-### 6 / 9
-- [ ] (x + 3)(x - 5) = (x + 2)(x - 4)
-- [ ] (x + 3y)(2x - y)
-### 7 / 10
-- [ ] x^2 - (x - 3)(x - 5)
-- [ ] 2x - (x - 3)(x - 5)
-
 ## Calculating rates of change
 ### 3 / 3
 - [ ] X is increased by Y%

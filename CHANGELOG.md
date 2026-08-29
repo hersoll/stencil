@@ -1,8 +1,9 @@
 # Changelog
 
-## [1.1.2] - TBD
+## [1.1.2] - 2026-08-29
 
 ### Added
+- Added problems for multiplying parentheses 
 - Implemented `&Polynomial * &Polynomial`
 - Equation solutions are now automatically scaled down when too wide
 
