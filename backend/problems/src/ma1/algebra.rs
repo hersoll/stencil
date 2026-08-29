@@ -1,3 +1,4 @@
 mod evaluate_expressions_without_parentheses;
+mod multiply_parentheses;
 mod simplify_expressions_with_parentheses;
 mod simplify_expressions_without_parentheses;
