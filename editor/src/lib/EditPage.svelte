@@ -260,7 +260,8 @@
     position: absolute;
     top: 2rem;
     right: 8rem;
-    background-color: lavender;
+    background-color: var(--primary);
+    color: black;
     box-shadow: var(--shadow-elevation-low);
   }
 </style>

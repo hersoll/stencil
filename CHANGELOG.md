@@ -4,8 +4,9 @@
 
 ### Added
 - Added problems for multiplying parentheses 
-- Implemented `&Polynomial * &Polynomial`
 - Equation solutions are now automatically scaled down when too wide
+- Implemented `&Polynomial * &Polynomial`
+- Improved visibility for buttons in editor while in dark mode
 
 ### Fixed
 - Removed hard date limit for `[NEW]` labels

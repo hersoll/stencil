@@ -381,9 +381,9 @@
     cursor: pointer;
 
     &.private {
-      background-color: lavender;
+      background-color: var(--primary);
       .list-text {
-        color: var(--primary-text);
+        color: black;
       }
     }
   }
