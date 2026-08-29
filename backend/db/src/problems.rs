@@ -240,7 +240,7 @@ pub async fn get_all_problem_data() -> Result<Vec<ProblemEntryForEditor>> {
         DBProblemRow,
         r#"SELECT id, name, desc_sv, desc_en, question_sv, question_en,
             answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public,
-            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $1::interval) AS "is_new!"
             FROM problems ORDER BY module, name"#,
         NEW_THRESHOLD
     )
@@ -263,7 +263,7 @@ pub async fn get_public_problem_data() -> Result<Vec<ProblemEntry>> {
         DBProblemRow,
         r#"SELECT id, name, desc_sv, desc_en, question_sv, question_en,
             answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public,
-            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $1::interval) AS "is_new!"
             FROM problems 
             WHERE (NOT $2::bool OR public)
             ORDER BY module, name"#,
@@ -288,7 +288,7 @@ pub async fn get_all_topic_problems_with_difficulties(
             r#"SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module, 
             p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,
             tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public,
-            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $2::interval) AS "is_new!"
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = $1
@@ -320,7 +320,7 @@ pub async fn get_public_topic_problems_with_difficulties(
             p.question_sv, p.question_en, p.answer_sv, p.answer_en, 
             p.solution_sv, p.solution_en, p.prefix_id, p.public,
             tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty,
-            (created_at >= NOW() - $3::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $3::interval) AS "is_new!"
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = $1 AND (NOT $2::bool OR p.public)
@@ -347,7 +347,7 @@ pub async fn get_topic_problems_with_difficulties_for_topics(
         r#"SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module,
         p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,
         tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public,
-            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $2::interval) AS "is_new!"
         FROM problems p
         JOIN topic_problems tp ON p.id = tp.problem_id
         WHERE tp.topic_id = ANY($1)

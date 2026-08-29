@@ -62,7 +62,7 @@ pub async fn get_all_topic_data() -> Result<Vec<TopicEntryForEditor>> {
     let topics = sqlx::query_as!(
         DatabaseRow,
         r#"SELECT id, name, desc_sv, desc_en, public,
-            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $1::interval) AS "is_new!"
             FROM topics ORDER BY name"#,
         NEW_THRESHOLD
     )
@@ -82,7 +82,7 @@ pub async fn get_topics_from_ids(topic_ids: &[ID]) -> Result<Vec<TopicEntry>> {
     let topics = sqlx::query_as!(
         DatabaseRow,
         r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public,
-            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $2::interval) AS "is_new!"
         FROM topics t
         JOIN UNNEST($1::int[]) WITH ORDINALITY AS u(id, ord) ON t.id = u.id
         ORDER BY u.ord"#,
@@ -104,7 +104,7 @@ pub async fn get_topics_from_chapter(chapter_id: &i32) -> Result<Vec<TopicEntryF
     let topics = sqlx::query_as!(
         DatabaseRow,
         r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public,
-            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $2::interval) AS "is_new!"
         FROM topics t
         JOIN chapter_topics ct ON t.id = ct.topic_id
         WHERE ct.chapter_id = $1
@@ -127,7 +127,7 @@ pub async fn get_topics_from_problem(problem_id: &i32) -> Result<Vec<TopicEntryF
     let topics = sqlx::query_as!(
         DatabaseRow,
         r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public,
-            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $2::interval) AS "is_new!"
         FROM topics t
         JOIN topic_problems tp ON t.id = tp.topic_id
         WHERE tp.problem_id = $1"#,
@@ -177,7 +177,7 @@ pub async fn get_topics_for_chapters(chapter_ids: &[i32]) -> Result<HashMap<i32,
     let topics = sqlx::query_as!(
         SpecialTopicRow,
         r#"SELECT t.id, t.name, t.desc_sv, t.desc_en, ct.chapter_id,
-            (created_at >= NOW() - $3::interval AND created_at >= DATE '2026-08-17') AS "is_new!"
+            (created_at >= NOW() - $3::interval) AS "is_new!"
         FROM topics t
         JOIN chapter_topics ct ON t.id = ct.topic_id
         WHERE ct.chapter_id = ANY($1)

@@ -8,6 +8,7 @@
 - Equation solutions are now automatically scaled down when too wide
 
 ### Fixed
+- Removed hard date limit for `[NEW]` labels
 - Editor properly attaches the `is_new` field to entries
 
 ## [1.1.1] - 2026-08-24
