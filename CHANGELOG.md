@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.2] - TBD
+
+### Added
+- Implemented `&Polynomial * &Polynomial`
+
 ## [1.1.1] - 2026-08-24
 
 ### Added

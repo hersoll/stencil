@@ -137,6 +137,20 @@ impl std::ops::Mul<Polynomial> for Polynomial {
     }
 }
 
+/// &poly_1 * &poly_2
+impl<'a> std::ops::Mul<&'a Polynomial> for &'a Polynomial {
+    type Output = Polynomial;
+    fn mul(self, rhs: Self) -> Self::Output {
+        let mut result = Polynomial::new();
+        for lhs_term in &self.terms {
+            for rhs_term in rhs.terms.clone() {
+                result.terms.push(lhs_term.clone() * rhs_term);
+            }
+        }
+        result
+    }
+}
+
 /// 3 * poly
 impl std::ops::Mul<Polynomial> for i32 {
     type Output = Polynomial;
