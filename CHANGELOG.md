@@ -4,6 +4,7 @@
 
 ### Added
 - Implemented `&Polynomial * &Polynomial`
+- Equation solutions are now automatically scaled down when too wide
 
 ### Fixed
 - Editor properly attaches the `is_new` field to entries

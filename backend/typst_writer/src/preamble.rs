@@ -26,17 +26,46 @@ pub static PREAMBLE_STR: &str = r##"
       }
     }
 
-    let color-operations = operations.map(op => if op != $$ { colored(op) } else { op })
+    for op in operations {
+      if op != $$ {
+        let size = measure(op)
+        if size.width > max-op-width {
+          max-op-width = size.width
+        }
+      }
+    }
 
-    align(center)[#share-align({
-      grid(
-        columns: (max-eq-width, auto),
-        inset: (top: 0.2em, rest: 0.5em),
-        align: (left, horizon + left),
-        grid.vline(x: 1, stroke: (paint: line_color, thickness: 0.5pt)),
-        ..equations.zip(color-operations).flatten(),
-      )
-    })]
+    layout(available => {
+      let inset = 0.5em
+      let natural-width = max-eq-width + max-op-width + inset
+
+      let factor = calc.min(
+        1,
+        available.width.pt() / natural-width.to-absolute().pt(),
+      ) * 100%
+
+      let color-operations = operations.map(op => if op != $$ { colored(op) } else { op })
+
+      align(center)[
+        #scale(factor, reflow: true)[
+          #share-align({
+            grid(
+              columns: (max-eq-width, auto),
+              inset: (top: 0.2em, rest: inset),
+              align: (left, horizon + left),
+              grid.vline(
+                x: 1,
+                stroke: (
+                  paint: line_color,
+                  thickness: 0.5pt,
+                ),
+              ),
+              ..equations.zip(color-operations).flatten(),
+            )
+          })
+        ]
+      ]
+    })
   }
 }
 
