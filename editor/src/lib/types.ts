@@ -57,6 +57,7 @@ export type CourseEntryRaw = {
   desc: DescriptionTranslations;
   chapter_ids: number[];
   public: boolean;
+  is_new: boolean;
 };
 
 export type ChapterEntryRaw = {
@@ -66,6 +67,7 @@ export type ChapterEntryRaw = {
   course_ids: number[];
   topic_ids: number[];
   public: boolean;
+  is_new: boolean;
 };
 
 export type ProblemIdsAndDifficulties = {
@@ -82,6 +84,7 @@ export type TopicEntryRaw = {
   chapter_ids: number[];
   problems: ProblemIdsAndDifficulties[];
   public: boolean;
+  is_new: boolean;
 };
 
 export type TopicDifficultyData = {
@@ -99,6 +102,7 @@ export type ProblemEntryRaw = {
   translations: ProblemTranslations;
   topic_data: TopicDifficultyData[];
   public: boolean;
+  is_new: boolean;
 };
 
 export type PrefixEntryRaw = {
@@ -168,7 +172,8 @@ export const defaultCourseEntry = {
   name: '',
   desc: { ...defaultDescriptionTranslations },
   chapter_ids: [],
-  public: false
+  public: false,
+  is_new: false
 } satisfies CourseEntry;
 
 export const defaultChapterEntry = {
@@ -178,7 +183,8 @@ export const defaultChapterEntry = {
   desc: { ...defaultDescriptionTranslations },
   course_ids: [],
   topic_ids: [],
-  public: false
+  public: false,
+  is_new: false
 } satisfies ChapterEntry;
 
 export const defaultTopicEntry = {
@@ -188,7 +194,8 @@ export const defaultTopicEntry = {
   desc: { ...defaultDescriptionTranslations },
   chapter_ids: [],
   problems: [],
-  public: false
+  public: false,
+  is_new: false
 } satisfies TopicEntry;
 
 export const defaultProblemEntry = {
@@ -203,7 +210,8 @@ export const defaultProblemEntry = {
     en: { ...defaultTranslatedProblem }
   },
   topic_data: [],
-  public: false
+  public: false,
+  is_new: false
 } satisfies ProblemEntry;
 
 export const defaultPrefixEntry = {

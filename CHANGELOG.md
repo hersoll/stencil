@@ -5,6 +5,9 @@
 ### Added
 - Implemented `&Polynomial * &Polynomial`
 
+### Fixed
+- Editor properly attaches the `is_new` field to entries
+
 ## [1.1.1] - 2026-08-24
 
 ### Added
