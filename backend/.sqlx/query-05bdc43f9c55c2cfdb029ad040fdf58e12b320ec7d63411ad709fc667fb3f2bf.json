@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, name, desc_sv, desc_en, public,\n            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n            FROM topics ORDER BY name",
+  "query": "SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public,\n            (created_at >= NOW() - $2::interval) AS \"is_new!\"\n        FROM topics t\n        JOIN UNNEST($1::int[]) WITH ORDINALITY AS u(id, ord) ON t.id = u.id\n        ORDER BY u.ord",
   "describe": {
     "columns": [
       {
@@ -36,6 +36,7 @@
     ],
     "parameters": {
       "Left": [
+        "Int4Array",
         "Interval"
       ]
     },
@@ -48,5 +49,5 @@
       null
     ]
   },
-  "hash": "7a50e8615abd020394b5e0f57a8afef80b92baf544d8970584b97fb98c15cf4e"
+  "hash": "05bdc43f9c55c2cfdb029ad040fdf58e12b320ec7d63411ad709fc667fb3f2bf"
 }

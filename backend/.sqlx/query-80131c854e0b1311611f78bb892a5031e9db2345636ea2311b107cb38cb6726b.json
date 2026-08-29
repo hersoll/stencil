@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT c.id, c.name, c.desc_sv, c.desc_en, c.public,\n            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n        FROM chapters c\n        JOIN chapter_topics ct ON c.id = ct.chapter_id\n        WHERE ct.topic_id = $1\n        ORDER BY c.name",
+  "query": "SELECT t.id, t.name, t.desc_sv, t.desc_en, t.public,\n            (created_at >= NOW() - $2::interval) AS \"is_new!\"\n        FROM topics t\n        JOIN chapter_topics ct ON t.id = ct.topic_id\n        WHERE ct.chapter_id = $1\n        ORDER BY ct.order_index, t.name",
   "describe": {
     "columns": [
       {
@@ -49,5 +49,5 @@
       null
     ]
   },
-  "hash": "3840eb618736673651412e2e16e8d26b8b518bf0458261e3784c2de63eccd27c"
+  "hash": "80131c854e0b1311611f78bb892a5031e9db2345636ea2311b107cb38cb6726b"
 }

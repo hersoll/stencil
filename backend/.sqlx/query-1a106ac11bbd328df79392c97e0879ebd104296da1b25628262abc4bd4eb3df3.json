@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, name, desc_sv, desc_en, question_sv, question_en,\n            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public,\n            (created_at >= NOW() - $1::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n            FROM problems ORDER BY module, name",
+  "query": "SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module, \n            p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,\n            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public,\n            (created_at >= NOW() - $2::interval) AS \"is_new!\"\n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = $1\n        ORDER BY tp.order_index, p.name",
   "describe": {
     "columns": [
       {
@@ -25,57 +25,73 @@
       },
       {
         "ordinal": 4,
-        "name": "question_sv",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 5,
-        "name": "question_en",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 6,
-        "name": "answer_sv",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 7,
-        "name": "answer_en",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 8,
-        "name": "solution_sv",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 9,
-        "name": "solution_en",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 10,
-        "name": "prefix_id",
-        "type_info": "Int4"
-      },
-      {
-        "ordinal": 11,
         "name": "module",
         "type_info": "Text"
       },
       {
+        "ordinal": 5,
+        "name": "question_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "question_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "answer_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "answer_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "solution_sv",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "solution_en",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "prefix_id",
+        "type_info": "Int4"
+      },
+      {
         "ordinal": 12,
+        "name": "topic_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "absolute_difficulty",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 14,
+        "name": "relative_difficulty",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 15,
         "name": "public",
         "type_info": "Bool"
       },
       {
-        "ordinal": 13,
+        "ordinal": 16,
         "name": "is_new!",
         "type_info": "Bool"
       }
     ],
     "parameters": {
       "Left": [
+        "Int4",
         "Interval"
       ]
     },
@@ -84,6 +100,7 @@
       false,
       false,
       false,
+      false,
       true,
       true,
       true,
@@ -91,10 +108,12 @@
       true,
       true,
       true,
+      false,
+      false,
       false,
       false,
       null
     ]
   },
-  "hash": "a5ba570c54b8700ea802aae5c7a1780d787e27b8c22a20c4282be30dc866c7a1"
+  "hash": "1a106ac11bbd328df79392c97e0879ebd104296da1b25628262abc4bd4eb3df3"
 }

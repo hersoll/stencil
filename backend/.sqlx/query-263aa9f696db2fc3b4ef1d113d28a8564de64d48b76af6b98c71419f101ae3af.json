@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module, \n            p.question_sv, p.question_en, p.answer_sv, p.answer_en, \n            p.solution_sv, p.solution_en, p.prefix_id, p.public,\n            tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty,\n            (created_at >= NOW() - $3::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = $1 AND (NOT $2::bool OR p.public)\n        ORDER BY tp.order_index, p.name",
+  "query": "SELECT id, name, desc_sv, desc_en, question_sv, question_en,\n            answer_sv, answer_en, solution_sv, solution_en, prefix_id, module, public,\n            (created_at >= NOW() - $1::interval) AS \"is_new!\"\n            FROM problems ORDER BY module, name",
   "describe": {
     "columns": [
       {
@@ -25,43 +25,43 @@
       },
       {
         "ordinal": 4,
-        "name": "module",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 5,
         "name": "question_sv",
         "type_info": "Text"
       },
       {
-        "ordinal": 6,
+        "ordinal": 5,
         "name": "question_en",
         "type_info": "Text"
       },
       {
-        "ordinal": 7,
+        "ordinal": 6,
         "name": "answer_sv",
         "type_info": "Text"
       },
       {
-        "ordinal": 8,
+        "ordinal": 7,
         "name": "answer_en",
         "type_info": "Text"
       },
       {
-        "ordinal": 9,
+        "ordinal": 8,
         "name": "solution_sv",
         "type_info": "Text"
       },
       {
-        "ordinal": 10,
+        "ordinal": 9,
         "name": "solution_en",
         "type_info": "Text"
       },
       {
-        "ordinal": 11,
+        "ordinal": 10,
         "name": "prefix_id",
         "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "module",
+        "type_info": "Text"
       },
       {
         "ordinal": 12,
@@ -70,29 +70,12 @@
       },
       {
         "ordinal": 13,
-        "name": "topic_id",
-        "type_info": "Int4"
-      },
-      {
-        "ordinal": 14,
-        "name": "absolute_difficulty",
-        "type_info": "Int4"
-      },
-      {
-        "ordinal": 15,
-        "name": "relative_difficulty",
-        "type_info": "Int4"
-      },
-      {
-        "ordinal": 16,
         "name": "is_new!",
         "type_info": "Bool"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4",
-        "Bool",
         "Interval"
       ]
     },
@@ -101,7 +84,6 @@
       false,
       false,
       false,
-      false,
       true,
       true,
       true,
@@ -109,12 +91,10 @@
       true,
       true,
       true,
-      false,
-      false,
       false,
       false,
       null
     ]
   },
-  "hash": "3c02c6a7f5dca50bce45d278a7248c1eb1553128e5e07f5b3583b1a5dbaa9730"
+  "hash": "263aa9f696db2fc3b4ef1d113d28a8564de64d48b76af6b98c71419f101ae3af"
 }

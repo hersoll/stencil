@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module,\n        p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,\n        tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public,\n            (created_at >= NOW() - $2::interval AND created_at >= DATE '2026-08-17') AS \"is_new!\"\n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = ANY($1)\n        ORDER BY tp.topic_id, tp.order_index, p.name",
+  "query": "SELECT p.id, p.name, p.desc_sv, p.desc_en, p.module,\n        p.question_sv, p.question_en, p.answer_sv, p.answer_en, p.solution_sv, p.solution_en, p.prefix_id,\n        tp.topic_id, tp.absolute_difficulty, tp.relative_difficulty, p.public,\n            (created_at >= NOW() - $2::interval) AS \"is_new!\"\n        FROM problems p\n        JOIN topic_problems tp ON p.id = tp.problem_id\n        WHERE tp.topic_id = ANY($1)\n        ORDER BY tp.topic_id, tp.order_index, p.name",
   "describe": {
     "columns": [
       {
@@ -115,5 +115,5 @@
       null
     ]
   },
-  "hash": "7c7051566350d231e2d77131c11c6d6f31397e21cc6b527b69b854350478dcce"
+  "hash": "85036e7e738635e975836c4216527cdaa6b7591067103c99b9743ca4c8fc7fcc"
 }
