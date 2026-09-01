@@ -24,6 +24,11 @@ pub async fn get_pdf_count() -> Result<impl IntoResponse, ApiError> {
     Ok((StatusCode::OK, Json(json!(count))))
 }
 
+pub async fn get_unique_pdf_count() -> Result<impl IntoResponse, ApiError> {
+    let count = stats::get_unique_pdf_count_all_time().await?;
+    Ok((StatusCode::OK, Json(json!(count))))
+}
+
 pub async fn get_pdf_timeline(
     Path(duration_path): Path<DurationPath>,
 ) -> Result<impl IntoResponse, ApiError> {

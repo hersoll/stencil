@@ -48,6 +48,20 @@ pub async fn get_pdf_count_all_time() -> Result<i64> {
     Ok(record.count)
 }
 
+/// Returns the number of unique (as in, not a reload of another PDF) PDFs that has been generated, ever
+pub async fn get_unique_pdf_count_all_time() -> Result<i64> {
+    let pool = crate::get_pool();
+    let record = sqlx::query!(
+        r#"SELECT COUNT(*) as "count!" 
+        FROM logs_pdf WHERE previous_pdf IS NULL
+        "#,
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(record.count)
+}
+
 /// Returns the PDF count for every hour in the last 24 hours
 pub async fn get_pdf_count_hourly_for_day() -> Result<Vec<TimeLineCount>> {
     let pool = crate::get_pool();

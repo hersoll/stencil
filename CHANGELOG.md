@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.3] - TBD
+
+### Added
+- Added unique PDF count alongside total PDF count in dashboard
+
 ## [1.1.2] - 2026-08-29
 
 ### Added

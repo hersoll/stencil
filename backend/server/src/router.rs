@@ -149,6 +149,7 @@ pub fn create_router() -> Router {
         .nest("/leaderboard", leaderboard_routes)
         .nest("/boxplots", box_plot_routes)
         .route("/pdf", get(api_counts::get_pdf_count))
+        .route("/pdf/unique", get(api_counts::get_unique_pdf_count))
         .route("/pdf/{duration}", get(api_counts::get_pdf_timeline))
         .route(
             "/pdf/{attribute}/{duration}",
