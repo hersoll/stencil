@@ -4,6 +4,10 @@
 
 ### Added
 - Added unique PDF count alongside total PDF count in dashboard
+- Two more standard equations concerning negative numbers
+
+### Changed
+- Updated some examples in equation problem descriptions
 
 ## [1.1.2] - 2026-08-29
 

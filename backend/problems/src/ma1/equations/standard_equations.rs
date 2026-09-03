@@ -139,9 +139,76 @@ fn positive_answers(id: i32, _lang: Language) -> Result<Problem> {
     }))
 }
 
-/// 6x + 8 = 19
+/// 6x + 8 = -4
 /// Absolute difficulty: 2
 /// Relative difficulty: 4
+#[problem]
+fn negative_answer(id: i32, _lang: Language) -> Result<Problem> {
+    let var = symbols::get_unknown()?;
+    let answer = num_gen::integer().range(-10, -1).random();
+    let (coef, coef_range) = num_gen::integer().range(2, 9).and_random();
+    let (constant, const_range) = num_gen::integer()
+        .range(-10, (-coef * answer).max(Number::Integer(10)))
+        .exclude(0)
+        .and_random();
+
+    let term = coef * var;
+    let poly = term.clone() + constant;
+    let rhs = coef * answer + constant;
+
+    let solution = Solution::with_steps()
+        .aligned(&poly, rhs)
+        .step(subtract_number(constant))
+        .aligned(&term, coef * answer)
+        .step(divide_number(coef))
+        .aligned(var, answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("${poly} = {rhs}$"),
+        answer: format!("${var} = {answer}$"),
+        solution,
+        identifiers: vec![coef, constant],
+        combinations: coef_range.len() * const_range.len(),
+    }))
+}
+
+/// 2 - 3x = 11
+/// Absolute difficulty: 3
+/// Relative difficulty: 5
+#[problem]
+fn negative_coef(id: i32, _lang: Language) -> Result<Problem> {
+    let var = symbols::get_unknown()?;
+    let answer = num_gen::integer().range(-10, 10).exclude(0).random();
+    let (coef, coef_range) = num_gen::integer().range(-9, -2).and_random();
+    let (constant, const_range) = num_gen::integer().range(1, 20).and_random();
+
+    let term = coef * var;
+    let poly = (&term + constant).simplify();
+    let rhs = coef * answer + constant;
+
+    let solution = Solution::with_steps()
+        .aligned(&poly, rhs)
+        .step(subtract_number(constant))
+        .aligned(&term, coef * answer)
+        .step(divide_number(coef))
+        .aligned(var, answer)
+        .to_string();
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question: format!("${poly} = {rhs}$"),
+        answer: format!("${var} = {answer}$"),
+        solution,
+        identifiers: vec![coef, constant],
+        combinations: coef_range.len() * const_range.len(),
+    }))
+}
+
+/// 6x + 8 = 19
+/// Absolute difficulty: 3
+/// Relative difficulty: 8
 #[problem]
 fn positive_rational(id: i32, _lang: Language) -> Result<Problem> {
     let (denominator, denominator_range) = num_gen::integer().range(2, 9).and_random();
