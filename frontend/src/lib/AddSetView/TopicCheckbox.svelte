@@ -38,7 +38,7 @@
   div {
     display: flex;
     height: 1.75rem;
-    gap: 0.25rem;
+    gap: 0.32rem;
     align-items: center;
     input {
       margin-top: 0.1rem;

@@ -8,6 +8,7 @@
 
 ### Changed
 - Updated some examples in equation problem descriptions
+- Slightly increased spacing between checkboxes and descriptions in `AddSetView`
 
 ## [1.1.2] - 2026-08-29
 
