@@ -121,6 +121,8 @@ impl Number {
     /// Note that this also can extend the number of decimals if needed (but not in the PDF):
     ///   0.123                   0.12
     /// `(123, 3).round(2)` --> `(12, 2)`
+    ///   0.128                   0.13
+    /// `(128, 3).round(2)` --> `(13, 2)`
     ///   12.3                    12.30 (12.3 in the document)
     /// `(123, 1).round(2)` --> `(1230, 2)`
     ///

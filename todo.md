@@ -1,5 +1,6 @@
 # Backend
 - [ ] Problem spacing is sometimes not respected at bottom when another problem set is below
+
 # Frontend
 
 # New problems
@@ -8,17 +9,18 @@
 - [ ] Which needs to be done from left to right?
 
 ## Calculating rates of change
+### 3 / 2
+- [x] X is increased by Y%
 ### 3 / 3
-- [ ] X is increased by Y%
-- [ ] X is decreased by Y%
-### 4 / 4
-- [ ] From X to Y, how many percent?
-### 4 / 5
-- [ ] Secret number increased by X%, got Y
-- [ ] Secret number decreased by X%, got Y
-### 4 / 6
+- [x] X is decreased by Y%
+### 3 / 4
 - [ ] Text: X is increased Y%
 - [ ] Text: X is decreased Y%
+### 4 / 5
+- [ ] From X to Y, how many percent?
+### 4 / 6
+- [ ] Secret number increased by X%, got Y
+- [ ] Secret number decreased by X%, got Y
 ### 4 / 7
 - [ ] Text: From X to Y, how many percent?
 - [ ] Text: increased by X%, got Y
