@@ -8,24 +8,6 @@
 - [ ] Which parentheses can be removed? A/B/C Addition, multiplication, power
 - [ ] Which needs to be done from left to right?
 
-## Calculating rates of change
-### 3 / 2
-- [x] X is increased by Y%
-### 3 / 3
-- [x] X is decreased by Y%
-### 3 / 4
-- [ ] Text: X is increased Y%
-- [ ] Text: X is decreased Y%
-### 4 / 5
-- [ ] From X to Y, how many percent?
-### 4 / 6
-- [ ] Secret number increased by X%, got Y
-- [ ] Secret number decreased by X%, got Y
-### 4 / 7
-- [ ] Text: From X to Y, how many percent?
-- [ ] Text: increased by X%, got Y
-- [ ] Text: decreased by X%, got Y
-
 ## Repeated rates of change
 ### 3 / 3
 - [ ] Total rate of change: Increase by 10% and 20%
