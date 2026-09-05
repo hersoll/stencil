@@ -39,8 +39,7 @@ fn simple_increase(id: i32, lang: Language) -> Result<Problem> {
         .write(equation_text)
         .equals(format!("{value} dot {change}"))
         .linebreak_equality()
-        .write("&=")
-        .write(answer);
+        .align(answer);
     if answer != rounded {
         solution.write(format!("approx {rounded}"));
     }
@@ -81,8 +80,7 @@ fn simple_decrease(id: i32, lang: Language) -> Result<Problem> {
         .write(equation_text)
         .equals(format!("{value} dot {change}"))
         .linebreak_equality()
-        .write("&=")
-        .write(answer);
+        .align(answer);
     if answer != rounded {
         solution.write(format!("approx {rounded}"));
     }
@@ -134,8 +132,7 @@ fn text_simple_decrease(id: i32, lang: Language) -> Result<Problem> {
         .write(equation_text)
         .equals(format!("{value} dot {change}"))
         .linebreak_equality()
-        .write("&=")
-        .write(answer);
+        .align(answer);
     if answer != rounded {
         solution.write(format!("approx {rounded}"));
     }

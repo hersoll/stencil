@@ -3,8 +3,9 @@
 ## [1.1.3] - TBD
 
 ### Added
-- Added unique PDF count alongside total PDF count in dashboard
 - Two more standard equations concerning negative numbers
+- Problems about calculations using change factors
+- Added unique PDF count alongside total PDF count in dashboard
 
 ### Changed
 - Updated some examples in equation problem descriptions
