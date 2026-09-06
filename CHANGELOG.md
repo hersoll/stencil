@@ -1,11 +1,12 @@
 # Changelog
 
-## [1.1.3] - TBD
+## [1.1.3] - 2026-09-06
 
 ### Added
 - Two more standard equations concerning negative numbers
 - Problems about calculations using change factors
 - Added unique PDF count alongside total PDF count in dashboard
+- `Solution.approx()` method for more ergonomic solution creation
 
 ### Changed
 - Updated some examples in equation problem descriptions

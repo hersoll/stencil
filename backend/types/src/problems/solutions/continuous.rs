@@ -46,6 +46,11 @@ impl ContinuousSolution {
         self.write(s)
     }
 
+    pub fn approx(&mut self, s: impl Display) -> &mut Self {
+        self.write(" approx ");
+        self.write(s)
+    }
+
     pub fn align(&mut self, s: impl Display) -> &mut Self {
         self.write(" &= ");
         self.write(s)
