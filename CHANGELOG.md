@@ -5,6 +5,7 @@
 ### Added
 - Two more standard equations concerning negative numbers
 - Problems about calculations using change factors
+- Problems about repeated changes
 - Added unique PDF count alongside total PDF count in dashboard
 - `Solution.approx()` method for more ergonomic solution creation
 

@@ -9,24 +9,6 @@
 - [ ] Which needs to be done from left to right?
 
 ## Repeated rates of change
-### 4 / 3
-- [ ] Total rate of change: Increase by 10% and 20%
-- [ ] Total rate of change: Decrease by 10% and 20%
-### 4 / 4
-- [ ] Increase by 7%, increase by 13%
-- [ ] Decrease by 7%, decrease by 13%
-- [ ] Increase by 7%, decrease by 13%
-### 4 / 5
-- [ ] Text: Increase by 10% and 15%
-- [ ] Text: Decrease by 10% and 23%
-### 4 / 6
-- [ ] Text: increase by 7%, decrease by 13%
-- [ ] Increase by 6% 4 times
-- [ ] Decrease by 6% 4 times
-### 5 / 8
-- [ ] Text: Increase by 6% 4 times
-- [ ] Text: Decrease by 6% 4 times
-- [ ] Text: Increase by 6% per day, one week?
 ### 6 / 9
 - [ ] Text: increase by 7%, decrease by 13%, comes out Y. What was the original?
 - [ ] Text: increase by 7% 5 times, comes out Y. What was the original?
