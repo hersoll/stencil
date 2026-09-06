@@ -9,7 +9,7 @@
 - [ ] Which needs to be done from left to right?
 
 ## Repeated rates of change
-### 3 / 3
+### 4 / 3
 - [ ] Total rate of change: Increase by 10% and 20%
 - [ ] Total rate of change: Decrease by 10% and 20%
 ### 4 / 4

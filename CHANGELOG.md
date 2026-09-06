@@ -11,6 +11,9 @@
 - Updated some examples in equation problem descriptions
 - Slightly increased spacing between checkboxes and descriptions in `AddSetView`
 
+### Fixed
+- Decimal numbers have their decimal count reduced if possible during `.to_decimal()`
+
 ## [1.1.2] - 2026-08-29
 
 ### Added

@@ -82,7 +82,10 @@ impl Number {
                 denominator: denom,
             } => {
                 let approximation = num as f64 / denom as f64;
-                Number::decimal_from_f64(approximation, 6)
+                let mut num = Number::decimal_from_f64(approximation, 6);
+                // If there are trailing zeroes we reduce the decimal count
+                num.shave_zeroes();
+                num
             }
             Irrational { value: val, .. } => Number::decimal_from_f64(val, 6),
         }
@@ -353,6 +356,19 @@ impl Number {
             graph_string
         }
     }
+
+    /// Removes trailing zeroes in a decimal number
+    ///
+    /// Example:
+    /// shave_zeroes(22.1000) => 22.1
+    pub fn shave_zeroes(&mut self) {
+        if let Decimal { integer, decimals } = self {
+            while *decimals > 0 && *integer % 10 == 0 {
+                *integer /= 10;
+                *decimals -= 1;
+            }
+        }
+    }
 }
 
 /// It is quite common to want access to the "divisor" of `Decimal` numbers, for example when it
@@ -491,5 +507,44 @@ mod tests {
 
         let decimal_number = Number::decimal_from_f64(0.12, 2);
         assert!(matches!(decimal_number.simplify(), Number::Decimal { .. })); // Should not have changed
+    }
+
+    #[test]
+    fn shave_zeroes() {
+        let mut decimal = Decimal {
+            integer: 22000,
+            decimals: 3,
+        };
+        decimal.shave_zeroes();
+        if let Decimal { integer, decimals } = decimal {
+            assert_eq!(integer, 22);
+            assert_eq!(decimals, 0);
+        } else {
+            panic!("Not decimal anymore")
+        }
+
+        let mut decimal = Decimal {
+            integer: 22000,
+            decimals: 2,
+        };
+        decimal.shave_zeroes();
+        if let Decimal { integer, decimals } = decimal {
+            assert_eq!(integer, 220);
+            assert_eq!(decimals, 0);
+        } else {
+            panic!("Not decimal anymore")
+        }
+
+        let mut decimal = Decimal {
+            integer: 22010,
+            decimals: 2,
+        }; // 220.10
+        decimal.shave_zeroes();
+        if let Decimal { integer, decimals } = decimal {
+            assert_eq!(integer, 2201); // 220.1
+            assert_eq!(decimals, 1);
+        } else {
+            panic!("Not decimal anymore")
+        }
     }
 }

@@ -37,7 +37,7 @@ impl Polynomial {
     /// use math::symbols::{X, Y, Z};
     /// let t1 = X * Z;
     /// let t2 = 2 * (Y * X);
-    /// let poly = t1.and(&t2);
+    /// let poly = t1 + &t2;
     /// assert_ne!(poly.get_symbols(), vec![X, Z, Y]);
     /// assert_eq!(poly.get_symbols(), vec![X, Y, Z]);
     /// ```
@@ -70,7 +70,7 @@ impl Polynomial {
     /// use math::symbols::X;
     /// let t1 = 2 * X;
     /// let t2 = 3 * X;
-    /// let polynomial = t1.and(&t2).simplify();
+    /// let polynomial = (t1 + &t2).simplify();
     /// assert_eq!(polynomial.to_string(), "5x");
     /// ```
     ///
@@ -79,7 +79,7 @@ impl Polynomial {
     /// let t1 = X * X;
     /// let t2 = 3 * X;
     /// let t3 = 2 * (X * X);
-    /// let polynomial = t1.and(&t2).and(&t3).simplify();
+    /// let polynomial = (t1 + &t2 + &t3).simplify();
     /// assert_eq!(polynomial.to_string(), "3x^2+3x");
     /// ```
     pub fn simplify(&self) -> Self {
@@ -254,8 +254,8 @@ mod tests {
         let t4 = A;
         let p1 = &t1 + &t2 + &t3 + t4; // t4 does not need a borrow since it is a symbol
         let p2 = t2 + &t1 + t4 + &t3;
-        assert_eq!(p1.to_string(), "2x^2+a+x");
-        assert_eq!(p1.to_string(), p2.to_string());
+        assert_eq!(p1.simplify().to_string(), "2x^2+a+x");
+        assert_eq!(p1.simplify().to_string(), p2.simplify().to_string());
     }
 
     #[test]
