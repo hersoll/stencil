@@ -8,6 +8,7 @@
 //! otherwise you're better of just treating pi as a `Symbol` in the problem.
 mod implementations;
 mod operations;
+
 use tracing::error;
 
 use crate::{
@@ -146,6 +147,44 @@ impl Number {
             },
             Irrational { value, .. } => Self::decimal_from_f64(*value, new_decimal_places),
             _ => *self,
+        }
+    }
+
+    /// Rounds the number to specified amount of digits.
+    ///
+    /// ## Examples
+    /// 12 345 -> 1 digit -> 10 000
+    /// 12 345 -> 2 digits -> 12 000
+    /// 12 345 -> 4 digits -> 12 350
+    /// 34.56 -> 3 digits -> 34.6
+    pub fn significant_digits(&self, digits: u32) -> Self {
+        // Will be negative if the number is, say, 0.0034 (-2.xxx)
+        let mut digits_in_integer_part = f64::log10(self.value());
+        if digits_in_integer_part > 0.0 {
+            // If self = 23, log10(23) = 1.36, we want 2
+            digits_in_integer_part = digits_in_integer_part.ceil();
+        } else {
+            // If self = 0.034, log10(0.034) = -1.47, we want -2
+            digits_in_integer_part = digits_in_integer_part.floor();
+        }
+        // Example: rounding 12 345 to two significant digits
+        let multiplier = 10.0_f64.powf(digits as f64 - digits_in_integer_part);
+        // 12 345 has now become 12.345
+        let decimal_value_with_specified_digits = self.value() * multiplier;
+        // 12 345 has now become 12
+        let rounded_value = decimal_value_with_specified_digits.round();
+        // Multiply 12 back up to 12 000
+        let multiplier = 10.0_f64.powf(digits_in_integer_part - digits as f64);
+        let final_value = rounded_value * multiplier;
+
+        let decimals_in_final_number = i8::max(digits as i8 - digits_in_integer_part as i8, 0);
+        let mut number_as_decimal =
+            Self::decimal_from_f64(final_value, decimals_in_final_number as u8);
+        number_as_decimal.shave_zeroes();
+        if number_as_decimal.is_integer() {
+            Number::Integer(final_value as i32)
+        } else {
+            number_as_decimal
         }
     }
 
@@ -468,6 +507,24 @@ mod tests {
 
         for case in cases {
             assert_eq!(case.0.round(1).value(), case.1);
+        }
+    }
+
+    #[test]
+    fn significant_digits() {
+        let cases = [
+            (Number::decimal_from_f64(123.45, 2), Number::Integer(120)),
+            (Number::decimal_from_f64(125.45, 2), Number::Integer(130)),
+            (
+                Number::decimal_from_f64(1.32, 2),
+                Number::decimal_from_f64(1.3, 1),
+            ),
+            (Number::Integer(18_857), Number::Integer(19_000)),
+            (Number::Integer(1_884_567), Number::Integer(1_900_000)),
+        ];
+
+        for case in cases {
+            assert_eq!(case.0.significant_digits(2), case.1);
         }
     }
 
