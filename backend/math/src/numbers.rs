@@ -188,6 +188,15 @@ impl Number {
         }
     }
 
+    /// Rounds the number to the closest amount of the specified integer
+    /// ## Examples:
+    /// 12 345.to_nearest(1 000) -> 12 000
+    /// 12 345.to_nearest(10) -> 12 350
+    /// 234 567.to_nearest(1 000) -> 235 000
+    pub fn to_nearest(&self, target: i32) -> Self {
+        todo!()
+    }
+
     /// Calling value() is useful even for integers, since it lets us do things like
     /// num.value().pow(-2), which will be a float.
     pub fn value(&self) -> f64 {
@@ -526,6 +535,11 @@ mod tests {
         for case in cases {
             assert_eq!(case.0.significant_digits(2), case.1);
         }
+    }
+
+    #[test]
+    fn to_nearest() {
+        assert_eq!(Number::Integer(1234).to_nearest(100), 1200);
     }
 
     #[test]
