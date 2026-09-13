@@ -4,6 +4,7 @@
 
 ### Added
 - New `.significant_digits()` rounding method
+- New `.to_nearest()` rounding method
 
 ## [1.1.3] - 2026-09-06
 

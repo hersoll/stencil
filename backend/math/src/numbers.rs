@@ -188,6 +188,21 @@ impl Number {
         }
     }
 
+    /// Rounds the number to the closest amount of the specified integer
+    /// ## Examples:
+    /// 12 345.to_nearest(1 000) -> 12 000
+    /// 12 345.to_nearest(10) -> 12 350
+    /// 234 567.to_nearest(1 000) -> 235 000
+    pub fn to_nearest(&self, target: i32) -> Self {
+        // Example: Round 12 345 to nearest 1 000:
+        // Start by dividing it: 12 345 / 1 000 = 12.345
+        // Round the number to an integer: 12
+        // Multiply by 1 000: 12 000
+        let normalized = self.value() / target as f64;
+        let rounded = normalized.round() as i32;
+        Self::Integer(rounded * target)
+    }
+
     /// Calling value() is useful even for integers, since it lets us do things like
     /// num.value().pow(-2), which will be a float.
     pub fn value(&self) -> f64 {
@@ -526,6 +541,30 @@ mod tests {
         for case in cases {
             assert_eq!(case.0.significant_digits(2), case.1);
         }
+    }
+
+    #[test]
+    fn to_nearest() {
+        // Normal integers
+        assert_eq!(Number::Integer(1235).to_nearest(1), 1235);
+        assert_eq!(Number::Integer(1235).to_nearest(10), 1240);
+        assert_eq!(Number::Integer(1235).to_nearest(100), 1200);
+        assert_eq!(Number::Integer(1235).to_nearest(1_000), 1000);
+        assert_eq!(Number::Integer(1235).to_nearest(10_000), 0);
+        assert_eq!(Number::Integer(1235).to_nearest(100_000), 0);
+        // Negative integers
+        assert_eq!(Number::Integer(-1235).to_nearest(1), -1235);
+        assert_eq!(Number::Integer(-1235).to_nearest(10), -1240);
+        assert_eq!(Number::Integer(-1235).to_nearest(100), -1200);
+        // Large integer
+        assert_eq!(
+            Number::Integer(34_567_890).to_nearest(1_000_000),
+            35_000_000
+        );
+        // Decimals
+        assert_eq!(Number::decimal_from_f64(75.34, 2).to_nearest(1), 75);
+        assert_eq!(Number::decimal_from_f64(75.34, 2).to_nearest(10), 80);
+        assert_eq!(Number::decimal_from_f64(75.34, 2).to_nearest(100), 100);
     }
 
     #[test]
