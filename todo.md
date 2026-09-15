@@ -2,6 +2,7 @@
 - [ ] Problem spacing is sometimes not respected at bottom when another problem set is below
 
 # Frontend
+- [ ] Count as a "new" PDF if donwload button is pressed
 
 # New problems
 ## Order of operations
