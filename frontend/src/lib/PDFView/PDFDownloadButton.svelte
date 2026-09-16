@@ -5,6 +5,8 @@
   function downloadPDF(e: Event) {
     e.preventDefault();
     if (!PDFState.url) return;
+    // If we download the PDF, it's reasonable to assume any other PDFs created will be "new"
+    PDFState.previous_pdf = null;
     const link = document.createElement('a');
     link.href = PDFState.url;
     link.download = PDFState.fileName;
