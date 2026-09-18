@@ -5,6 +5,7 @@
 ### Added
 - New `.significant_digits()` rounding method
 - New `.to_nearest()` rounding method
+- New general `multiply()` and `divide()` equation steps
 - Downloading a PDF resets the `previous_pdf` tracking
 
 ## [1.1.3] - 2026-09-06

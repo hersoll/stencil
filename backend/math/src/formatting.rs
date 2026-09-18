@@ -59,9 +59,17 @@ where
     }
 }
 
+pub fn divide(val: impl Display) -> String {
+    format!("div {val}")
+}
+
 pub fn divide_number(val: impl Into<Number>) -> String {
     let val = val.into();
     format!("div {}", parentheses(&val))
+}
+
+pub fn multiply(val: impl Display) -> String {
+    format!("dot {val}")
 }
 
 pub fn multiply_number(val: impl Into<Number>) -> String {
