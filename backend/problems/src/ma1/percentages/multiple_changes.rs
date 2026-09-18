@@ -2,6 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{
     MathDisplay,
+    formatting::divide,
     num_gen::{self, NumberGenerator},
     symbols::X,
     utils::{change_factor_to_percentage, to_change_factor},
@@ -377,5 +378,44 @@ fn repeated_decreases(id: i32, lang: Language) -> Result<Problem> {
         solution,
         identifiers: decrease,
         combinations: dec_range,
+    }))
+}
+
+/// Text: increase by 7% 5 times, comes out Y. What was the original?
+/// Absolute difficulty: 6
+/// Relative difficulty: 9
+#[problem]
+fn old_after_increases(id: i32, lang: Language) -> Result<Problem> {
+    let (increase, inc_range) = num_gen::integer().range(2, 9).and_random();
+    let duration = num_gen::integer().range(4, 9).random();
+    let new_value = num_gen::integer().range_step(100, 400, 10).random();
+    let factor = to_change_factor(increase);
+    let old_value = (new_value / factor.pow(duration)).to_decimal();
+    let answer = old_value.round(0);
+
+    let question = get_question(id, lang)?.replace_multiple(&[
+        ("new", new_value),
+        ("increase", increase),
+        ("duration", duration),
+    ]);
+
+    let mut solution = Solution::with_steps();
+    let (new, old, ff, time) = labels(lang);
+    solution
+        .aligned(new, format!("{old} dot {ff}^{time}"))
+        .aligned(new_value, format!("{X} dot {factor}^{duration}"))
+        .step(divide(format!("{factor}^{duration}")))
+        .aligned(format!("{new_value} / {factor}^{duration}"), X)
+        .line(format!("{answer} &approx {X}"));
+
+    let answer = get_answer(id, lang)?.replace_one("answer", answer.as_math());
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question,
+        answer,
+        solution,
+        identifiers: increase,
+        combinations: inc_range,
     }))
 }
