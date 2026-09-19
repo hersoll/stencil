@@ -103,3 +103,60 @@ pub fn show_simplification(fraction: Number) -> String {
         String::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn adding_numbers() {
+        assert_eq!(add_number(2), format!("+ #h({OPERATOR_SPACE}em) 2"));
+        assert_eq!(add_number(-2), format!("- #h({OPERATOR_SPACE}em) 2"));
+        assert_eq!(add_number(0), "");
+        assert_eq!(
+            add_number(2.01),
+            format!("+ #h({OPERATOR_SPACE}em) num(\"2.01\")")
+        );
+        assert_eq!(
+            add_number(-2.01),
+            format!("- #h({OPERATOR_SPACE}em) num(\"2.01\")")
+        );
+    }
+
+    #[test]
+    fn subtracting_numbers() {
+        assert_eq!(subtract_number(2), format!("- #h({OPERATOR_SPACE}em) 2"));
+        assert_eq!(subtract_number(-2), format!("+ #h({OPERATOR_SPACE}em) 2"));
+        assert_eq!(subtract_number(0), "");
+        assert_eq!(
+            subtract_number(2.01),
+            format!("- #h({OPERATOR_SPACE}em) num(\"2.01\")")
+        );
+        assert_eq!(
+            subtract_number(-2.01),
+            format!("+ #h({OPERATOR_SPACE}em) num(\"2.01\")")
+        );
+    }
+
+    #[test]
+    fn adding_terms() {
+        use crate::symbols::X;
+        assert_eq!(add_term(&(2 * X)), format!("+ #h({OPERATOR_SPACE}em) 2x"));
+        assert_eq!(add_term(&(-2 * X)), format!("- #h({OPERATOR_SPACE}em) 2x"));
+        assert_eq!(add_term(&(0 * X)), "");
+    }
+
+    #[test]
+    fn subtracting_terms() {
+        use crate::symbols::X;
+        assert_eq!(
+            subtract_term(&(2 * X)),
+            format!("- #h({OPERATOR_SPACE}em) 2x")
+        );
+        assert_eq!(
+            subtract_term(&(-2 * X)),
+            format!("+ #h({OPERATOR_SPACE}em) 2x")
+        );
+        assert_eq!(subtract_term(&(0 * X)), "");
+    }
+}

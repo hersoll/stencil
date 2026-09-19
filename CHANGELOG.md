@@ -8,6 +8,7 @@
 - New `.to_nearest()` rounding method
 - New general `multiply()` and `divide()` equation steps
 - Downloading a PDF resets the `previous_pdf` tracking
+- New formatting tests (not enough of them)
 
 ## [1.1.3] - 2026-09-06
 
