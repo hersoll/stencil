@@ -469,3 +469,50 @@ fn old_before_one_of_each_change(id: i32, lang: Language) -> Result<Problem> {
         combinations: inc_range.len().pow(2),
     }))
 }
+
+/// Which change will revert +8% -23%?
+/// Absolute difficulty: 7
+/// Relative difficulty: 10
+#[problem]
+fn revert_changes(id: i32, lang: Language) -> Result<Problem> {
+    let (increase, inc_range) = num_gen::integer()
+        .range(6, 29)
+        .exclude_multiple(&[10, 20])
+        .and_random();
+    let decrease = inc_range.random();
+
+    let first_factor = to_change_factor(increase);
+    let second_factor = to_change_factor(-decrease);
+    let total_factor = first_factor * second_factor;
+    let reverting_factor = (1 / total_factor).round(3);
+    let answer = change_factor_to_percentage(reverting_factor);
+
+    let question =
+        get_question(id, lang)?.replace_multiple(&[("first", increase), ("second", decrease)]);
+
+    use Language::*;
+    let answer = match (lang, reverting_factor > 1) {
+        (Sv, true) => format!("Öka med ${answer}%$"),
+        (Sv, false) => format!("Minska med ${}%$", answer.abs()),
+        (En, true) => format!("Increase by ${answer}%$"),
+        (En, false) => format!("Decrease by ${}%$", answer.abs()),
+    };
+
+    let mut solution = Solution::with_steps();
+    solution
+        .aligned(format!("{first_factor} dot {second_factor} dot {X}"), 1)
+        .aligned(format!("{total_factor} dot {X}"), 1)
+        .step(divide_number(total_factor))
+        .line(format!(
+            "{X} = 1 / {total_factor} &approx {reverting_factor}"
+        ));
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question,
+        answer,
+        solution,
+        identifiers: vec![increase, decrease],
+        combinations: inc_range.len().pow(2),
+    }))
+}
