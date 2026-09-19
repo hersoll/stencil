@@ -3,6 +3,7 @@
 ## [1.1.4] - TBD
 
 ### Added
+- Harder problems about multiple changes
 - New `.significant_digits()` rounding method
 - New `.to_nearest()` rounding method
 - New general `multiply()` and `divide()` equation steps

@@ -10,7 +10,7 @@
 
 ## Repeated rates of change
 ### 6 / 9
-- [ ] Text: increase by 7%, decrease by 13%, comes out Y. What was the original?
+- [x] Text: increase by 7%, decrease by 13%, comes out Y. What was the original?
 - [x] Text: increase by 7% 5 times, comes out Y. What was the original?
 ### 7 / 10
 - [ ] +13%, -4%, what increase/decrease to get back to original?

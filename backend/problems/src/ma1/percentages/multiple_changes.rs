@@ -2,7 +2,7 @@ use anyhow::Result;
 use macros::problem;
 use math::{
     MathDisplay,
-    formatting::divide,
+    formatting::{divide, divide_number},
     num_gen::{self, NumberGenerator},
     symbols::X,
     utils::{change_factor_to_percentage, to_change_factor},
@@ -385,7 +385,7 @@ fn repeated_decreases(id: i32, lang: Language) -> Result<Problem> {
 /// Absolute difficulty: 6
 /// Relative difficulty: 9
 #[problem]
-fn old_after_increases(id: i32, lang: Language) -> Result<Problem> {
+fn old_before_increases(id: i32, lang: Language) -> Result<Problem> {
     let (increase, inc_range) = num_gen::integer().range(2, 9).and_random();
     let duration = num_gen::integer().range(4, 9).random();
     let new_value = num_gen::integer().range_step(100, 400, 10).random();
@@ -417,5 +417,55 @@ fn old_after_increases(id: i32, lang: Language) -> Result<Problem> {
         solution,
         identifiers: increase,
         combinations: inc_range,
+    }))
+}
+
+/// Text: Total change before +8% -23%
+/// Absolute difficulty: 6
+/// Relative difficulty: 9
+#[problem]
+fn old_before_one_of_each_change(id: i32, lang: Language) -> Result<Problem> {
+    let (increase, inc_range) = num_gen::integer()
+        .range(6, 29)
+        .exclude_multiple(&[10, 20])
+        .and_random();
+    let decrease = inc_range.random();
+    let new_value = num_gen::integer().range(201, 599).random();
+
+    let first_factor = to_change_factor(increase);
+    let second_factor = to_change_factor(-decrease);
+    let total_factor = first_factor * second_factor;
+    let old_value = (new_value / total_factor).round(0);
+
+    let question = get_question(id, lang)?.replace_multiple(&[
+        ("first", increase),
+        ("second", decrease),
+        ("new", new_value),
+    ]);
+
+    let answer = get_answer(id, lang)?.replace_one("answer", old_value);
+
+    let (new, old, ff, _time) = labels(lang);
+    let mut solution = Solution::with_steps();
+    solution
+        .aligned(new, format!("{old} dot {ff}"))
+        .aligned(
+            new_value,
+            format!("{X} dot {first_factor} dot {second_factor}"),
+        )
+        .aligned(new_value, format!("{X} dot {total_factor}"))
+        .step(divide_number(total_factor))
+        .aligned(
+            X,
+            format!("{new_value} / {total_factor} approx {old_value}"),
+        );
+
+    Ok(Problem::from(ProblemParameters {
+        id,
+        question,
+        answer,
+        solution,
+        identifiers: vec![increase, decrease],
+        combinations: inc_range.len().pow(2),
     }))
 }
